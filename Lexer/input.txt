@@ -1,0 +1,4 @@
+int x=8
+int integer = 5 + 7
+int x = integer + 9
+int x=y+8
