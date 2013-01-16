@@ -131,4 +131,28 @@ public class SampleGrammar extends LexicalGrammar {
         addPattern("DAMPERSAND", NFA.literal("&&"));
         addPattern("DPIPE", NFA.literal("||"));
     }
+
+    private NFA escapeSequence() {
+        // escapeSequence -> \b|\t|\n|\f|\r|\"|\'|\\|(OctalEscape)
+        // http://docs.oracle.com/javase/specs/jls/se5.0/html/lexical.html#101089
+        return NFA.concatenate(NFA.literal("\\"),
+                                     NFA.union(NFA.literal("b"),
+                                               NFA.literal("t"),
+                                               NFA.literal("n"),
+                                               NFA.literal("f"),
+                                               NFA.literal("r"),
+                                               NFA.literal("\""),
+                                               NFA.literal("'"),
+                                               NFA.literal("\\"),
+                                               octal()));
+    }
+
+    private NFA octal() {
+        return NFA.union(NFA.acceptRange('0', '7'),
+                         NFA.concatenate(NFA.acceptRange('0', '7'),
+                                         NFA.acceptRange('0', '7')),
+                         NFA.concatenate(NFA.acceptRange('0', '3'),
+                                         NFA.acceptRange('0', '7'),
+                                         NFA.acceptRange('0', '7')));
+    }
 }

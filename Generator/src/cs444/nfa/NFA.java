@@ -92,7 +92,7 @@ public class NFA {
         return NFA.acceptRange('1', '9');
     }
 
-    private static NFA acceptRange(char first, char last) {
+    public static NFA acceptRange(char first, char last) {
         NFA result = new NFA();
         NFAState start = result.getStartState();
         NFAState accepting = result.getAcceptingState();
@@ -133,32 +133,6 @@ public class NFA {
         currentState.addTransition(new EpsilonTransition(acceptingState));
 
         return result;
-    }
-
-    public static NFA escapeSequence() {
-        // escapeSequence -> \b|\t|\n|\f|\r|\"|\'|\\|(OctalEscape)
-        // http://docs.oracle.com/javase/specs/jls/se5.0/html/lexical.html#101089
-        NFA result = NFA.concatenate(NFA.literal("\\"),
-                                     NFA.union(NFA.literal("b"),
-                                               NFA.literal("t"),
-                                               NFA.literal("n"),
-                                               NFA.literal("f"),
-                                               NFA.literal("r"),
-                                               NFA.literal("\""),
-                                               NFA.literal("'"),
-                                               NFA.literal("\\"),
-                                               NFA.octal()));
-
-        return result;
-    }
-
-    private static NFA octal() {
-        return NFA.union(acceptRange('0', '7'),
-                         NFA.concatenate(acceptRange('0', '7'),
-                                         acceptRange('0', '7')),
-                         NFA.concatenate(acceptRange('0', '3'),
-                                         acceptRange('0', '7'),
-                                         acceptRange('0', '7')));
     }
 
     private final ArrayList<NFAState> states;
