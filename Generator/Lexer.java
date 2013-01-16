@@ -431,6 +431,12 @@ public class Lexer {
             return new Token(Token.Id.PCT, lexeme);
         }
     }
+    private final Token.Factory DECIMAL_INTEGER_LITERALFactory = new Token.Factory {
+        @Override
+        public Token create(String lexeme) {
+            return new Token(Token.Id.DECIMAL_INTEGER_LITERAL, lexeme);
+        }
+    }
     private final Token.Factory CATCHFactory = new Token.Factory {
         @Override
         public Token create(String lexeme) {
@@ -553,6 +559,7 @@ public class Lexer {
         case 0: return GTFactory;
         case 0: return INTERFACEFactory;
         case 0: return PCTFactory;
+        case 0: return DECIMAL_INTEGER_LITERALFactory;
         case 0: return CATCHFactory;
         case 0: return FALSEFactory;
         case 0: return LONGFactory;

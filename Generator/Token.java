@@ -75,6 +75,7 @@ public class Token {
         GT,
         INTERFACE,
         PCT,
+        DECIMAL_INTEGER_LITERAL,
         CATCH,
         FALSE,
         LONG,

@@ -72,11 +72,10 @@ public class SampleGrammar extends LexicalGrammar {
         addPattern("WHILE", NFA.literal("while"));
 
         //Literals
-        //TODO: need NFA.nonZeroDigit
-        //		    	addPattern("DECIMAL_INTEGER_LITERAL", NFA.union(NFA.literal("0"),
-        //		    			NFA.concatenate(NFA.nonZeroDigit(),
-        //		    					NFA.zeroOrMore(NFA.digit()))));
-        //
+        addPattern("DECIMAL_INTEGER_LITERAL", NFA.union(NFA.literal("0"),
+                NFA.concatenate(NFA.nonZeroDigit(),
+                        NFA.zeroOrMore(NFA.digit()))));
+
         addPattern("TRUE", NFA.literal("true"));
         addPattern("FALSE", NFA.literal("false"));
 

@@ -94,6 +94,15 @@ public class NFA {
         return result;
     }
     
+    public static NFA nonZeroDigit(){
+        NFA result = new NFA();
+        NFAState start = result.getStartState();
+        NFAState accepting = result.getAcceptingState();
+        start.addTransition(new RangeTransition('1', '9', accepting));
+        
+        return result;
+    }
+    
     public static NFA letter() {
         
         NFA result = new NFA();
