@@ -99,7 +99,13 @@ public class NFA {
         NFA result = new NFA();
         NFAState start = result.getStartState();
         NFAState accepting = result.getAcceptingState();
-        start.addTransition(new MultiRangeTransition(accepting, new Range('A', 'Z'), new Range('a', 'z')));
+        start.addTransition(new MultiRangeTransition(accepting,
+                new Range('A', 'Z'), new Range('a', 'z')));
+
+        // '_' and '$' are also considered letters in Java
+        // (http://docs.oracle.com/javase/specs/jls/se5.0/html/lexical.html#3.8)
+        start.addTransition(new CharacterTransition('_', accepting));
+        start.addTransition(new CharacterTransition('$', accepting));
         
         return result;
     }
