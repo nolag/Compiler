@@ -139,6 +139,24 @@ public class NFA {
         return result;
     }
 
+    /// singleChar() -> everthing but ', \, \n, or \r
+    public static NFA singleChar() {
+        NFA result = new NFA();
+        NFAState start = result.getStartState();
+        NFAState accepting = result.getAcceptingState();
+
+        // everything, but:
+        // \n -> 10; \r -> 13; ' -> 39; \ -> 92;
+        start.addTransition(new MultiRangeTransition(accepting,
+                new Range((char) 0, (char) 9),
+                new Range((char) 11, (char) 12),
+                new Range((char) 14, (char) 38),
+                new Range((char) 40, (char) 91),
+                new Range((char) 93, (char) 127)));
+
+        return result;
+    }
+
     private final ArrayList<NFAState> states;
 
     private NFA() {

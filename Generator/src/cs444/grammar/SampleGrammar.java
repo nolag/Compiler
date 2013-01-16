@@ -78,12 +78,9 @@ public class SampleGrammar extends LexicalGrammar {
         addPattern("TRUE", NFA.literal("true"));
         addPattern("FALSE", NFA.literal("false"));
 
-        //		    	//TODO: singleChar() -> everthing but ', \, \n, or \r
-        //		    	//escapeSequence -> \b|\t|\n|\f|\r|\"|\'|\\|(OctalEscape)
-        //		    	//http://docs.oracle.com/javase/specs/jls/se5.0/html/lexical.html#101089
-        //		    	addPattern("CHAR_LITERAL", NFA.concatenate(NFA.literal("'"),
-        //		    			NFA.union(NFA.singleChar(), NFA.escapeSequence(),
-        //		    					NFA.literal("'"))));
+        addPattern("CHAR_LITERAL", NFA.concatenate(NFA.literal("'"),
+                NFA.union(NFA.singleChar(), escapeSequence(),
+                        NFA.literal("'"))));
 
         //TODO: stringCharacter() -> everything but ", \, \n, or \r
         //		    	addPattern("STR_LITERAL", NFA.concatenate(NFA.literal("\""),

@@ -419,6 +419,12 @@ public class Lexer {
             return new Token(Token.Id.ENUM, lexeme);
         }
     }
+    private final Token.Factory CHAR_LITERALFactory = new Token.Factory {
+        @Override
+        public Token create(String lexeme) {
+            return new Token(Token.Id.CHAR_LITERAL, lexeme);
+        }
+    }
     private final Token.Factory FINALLYFactory = new Token.Factory {
         @Override
         public Token create(String lexeme) {
@@ -569,6 +575,7 @@ public class Lexer {
         case 0: return ASSERTFactory;
         case 0: return TRYFactory;
         case 0: return ENUMFactory;
+        case 0: return CHAR_LITERALFactory;
         case 0: return FINALLYFactory;
         case 0: return GTFactory;
         case 0: return INTERFACEFactory;
