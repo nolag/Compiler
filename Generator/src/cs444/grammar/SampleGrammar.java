@@ -8,18 +8,17 @@ public class SampleGrammar extends LexicalGrammar {
         addPattern("WHITESPACE", NFA.union(NFA.literal(" "), NFA.literal("\t"),
                 NFA.literal("\n"), NFA.literal("\r")));
 
-        //TODO: implement NFA.anything() and review END_LINE_COMMENT NFA
-        //		addPattern("COMMENT", NFA.concatenate(NFA.literal("/"), NFA.literal("*"),
-        //		                   NFA.zeroOrMore(NFA.anything()),
-        //		                   NFA.literal("*"), NFA.literal("/")));
-        //
-        //		addPattern("END_LINE_COMMENT", NFA.concatenate(NFA.literal("/"), NFA.literal("/"),
-        //		                            NFA.zeroOrMore(NFA.anything),
-        //		                            NFA.union(NFA.literal("\r"), NFA.literal("\n"))));
+        addPattern("COMMENT", NFA.concatenate(NFA.literal("/"), NFA.literal("*"),
+                                              NFA.zeroOrMore(NFA.anyCharacter()),
+                                              NFA.literal("*"), NFA.literal("/")));
+
+        addPattern("END_LINE_COMMENT", NFA.concatenate(NFA.literal("/"), NFA.literal("/"),
+                                                       NFA.zeroOrMore(NFA.anyCharacter()),
+                                                       NFA.union(NFA.literal("\r"), NFA.literal("\n"))));
 
         addPattern("ID", NFA.concatenate(NFA.letter(),
-                NFA.zeroOrMore(NFA.union(NFA.letter(),
-                        NFA.digit()))));
+                                         NFA.zeroOrMore(NFA.union(NFA.letter(),
+                                                                  NFA.digit()))));
 
         addPattern("ABSTRACT", NFA.literal("abstract"));
         addPattern("CONTINUE", NFA.literal("continue"));

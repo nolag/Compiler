@@ -137,16 +137,16 @@ public class Lexer {
             return new Token(Token.Id.SLASH, lexeme);
         }
     }
-    private final Token.Factory SYNCHRONIZEDFactory = new Token.Factory {
-        @Override
-        public Token create(String lexeme) {
-            return new Token(Token.Id.SYNCHRONIZED, lexeme);
-        }
-    }
     private final Token.Factory BOOLEANFactory = new Token.Factory {
         @Override
         public Token create(String lexeme) {
             return new Token(Token.Id.BOOLEAN, lexeme);
+        }
+    }
+    private final Token.Factory SYNCHRONIZEDFactory = new Token.Factory {
+        @Override
+        public Token create(String lexeme) {
+            return new Token(Token.Id.SYNCHRONIZED, lexeme);
         }
     }
     private final Token.Factory EXCLAMATIONFactory = new Token.Factory {
@@ -215,6 +215,12 @@ public class Lexer {
             return new Token(Token.Id.PLUS, lexeme);
         }
     }
+    private final Token.Factory END_LINE_COMMENTFactory = new Token.Factory {
+        @Override
+        public Token create(String lexeme) {
+            return new Token(Token.Id.END_LINE_COMMENT, lexeme);
+        }
+    }
     private final Token.Factory VOIDFactory = new Token.Factory {
         @Override
         public Token create(String lexeme) {
@@ -249,6 +255,12 @@ public class Lexer {
         @Override
         public Token create(String lexeme) {
             return new Token(Token.Id.DOT, lexeme);
+        }
+    }
+    private final Token.Factory COMMENTFactory = new Token.Factory {
+        @Override
+        public Token create(String lexeme) {
+            return new Token(Token.Id.COMMENT, lexeme);
         }
     }
     private final Token.Factory NEFactory = new Token.Factory {
@@ -305,16 +317,16 @@ public class Lexer {
             return new Token(Token.Id.NULL, lexeme);
         }
     }
-    private final Token.Factory ELSEFactory = new Token.Factory {
-        @Override
-        public Token create(String lexeme) {
-            return new Token(Token.Id.ELSE, lexeme);
-        }
-    }
     private final Token.Factory DEFAULTFactory = new Token.Factory {
         @Override
         public Token create(String lexeme) {
             return new Token(Token.Id.DEFAULT, lexeme);
+        }
+    }
+    private final Token.Factory ELSEFactory = new Token.Factory {
+        @Override
+        public Token create(String lexeme) {
+            return new Token(Token.Id.ELSE, lexeme);
         }
     }
     private final Token.Factory STRICTFPFactory = new Token.Factory {
@@ -510,8 +522,8 @@ public class Lexer {
         case 0: return FINALFactory;
         case 0: return IMPORTFactory;
         case 0: return SLASHFactory;
-        case 0: return SYNCHRONIZEDFactory;
         case 0: return BOOLEANFactory;
+        case 0: return SYNCHRONIZEDFactory;
         case 0: return EXCLAMATIONFactory;
         case 0: return IMPLEMENTSFactory;
         case 0: return CONTINUEFactory;
@@ -523,12 +535,14 @@ public class Lexer {
         case 0: return DAMPERSANDFactory;
         case 0: return PIPEFactory;
         case 0: return PLUSFactory;
+        case 0: return END_LINE_COMMENTFactory;
         case 0: return VOIDFactory;
         case 0: return SUPERFactory;
         case 0: return EQFactory;
         case 0: return RBRACKETFactory;
         case 0: return GOTOFactory;
         case 0: return DOTFactory;
+        case 0: return COMMENTFactory;
         case 0: return NEFactory;
         case 0: return GEFactory;
         case 0: return BYTEFactory;
@@ -538,8 +552,8 @@ public class Lexer {
         case 0: return STATICFactory;
         case 0: return SWITCHFactory;
         case 0: return NULLFactory;
-        case 0: return ELSEFactory;
         case 0: return DEFAULTFactory;
+        case 0: return ELSEFactory;
         case 0: return STRICTFPFactory;
         case 0: return BECOMESFactory;
         case 0: return AMPERSANDFactory;

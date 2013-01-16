@@ -84,6 +84,10 @@ public class NFA {
         return result;
     }
 
+    public static NFA anyCharacter() {
+        return NFA.acceptRange((char)0, (char)127);
+    }
+    
     public static NFA digit() {
         return NFA.acceptRange('0', '9');
     }
