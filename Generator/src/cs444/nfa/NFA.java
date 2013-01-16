@@ -85,24 +85,22 @@ public class NFA {
     }
     
     public static NFA digit() {
-        
-        NFA result = new NFA();
-        NFAState start = result.getStartState();
-        NFAState accepting = result.getAcceptingState();
-        start.addTransition(new RangeTransition('0', '9', accepting));
-        
-        return result;
+        return NFA.acceptRange('0', '9');
     }
     
     public static NFA nonZeroDigit(){
+        return NFA.acceptRange('1', '9');
+    }
+
+    private static NFA acceptRange(char first, char last) {
         NFA result = new NFA();
         NFAState start = result.getStartState();
         NFAState accepting = result.getAcceptingState();
-        start.addTransition(new RangeTransition('1', '9', accepting));
+        start.addTransition(new RangeTransition(first, last, accepting));
         
         return result;
     }
-    
+
     public static NFA letter() {
         
         NFA result = new NFA();
@@ -137,6 +135,32 @@ public class NFA {
         return result;
     }
     
+    public static NFA escapeSequence() {
+        // escapeSequence -> \b|\t|\n|\f|\r|\"|\'|\\|(OctalEscape)
+        // http://docs.oracle.com/javase/specs/jls/se5.0/html/lexical.html#101089
+        NFA result = NFA.concatenate(NFA.literal("\\"), 
+                                     NFA.union(NFA.literal("b"),
+                                               NFA.literal("t"),
+                                               NFA.literal("n"),
+                                               NFA.literal("f"),
+                                               NFA.literal("r"),
+                                               NFA.literal("\""),
+                                               NFA.literal("'"),
+                                               NFA.literal("\\"),
+                                               NFA.octal()));
+
+        return result;
+    }
+
+    private static NFA octal() {
+        return NFA.union(acceptRange('0', '7'),
+                         NFA.concatenate(acceptRange('0', '7'),
+                                         acceptRange('0', '7')),
+                         NFA.concatenate(acceptRange('0', '3'),
+                                         acceptRange('0', '7'),
+                                         acceptRange('0', '7')));
+    }
+
     private final ArrayList<NFAState> states;
     
     private NFA() {
