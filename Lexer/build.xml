@@ -34,4 +34,9 @@
         </javac>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target name="Compiler">
+        <java classname="cs444.lexer.Compiler" failonerror="true" fork="yes">
+            <classpath refid="Lexer.classpath"/>
+        </java>
+    </target>
 </project>

@@ -34,16 +34,6 @@
         </javac>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-    <target name="SampleGrammar">
-        <java classname="cs444.grammar.SampleGrammar" failonerror="true" fork="yes">
-            <classpath refid="Generator.classpath"/>
-        </java>
-    </target>
-    <target name="NFA">
-        <java classname="cs444.nfa.NFA" failonerror="true" fork="yes">
-            <classpath refid="Generator.classpath"/>
-        </java>
-    </target>
     <target name="Program">
         <java classname="cs444.Program" failonerror="true" fork="yes">
             <classpath refid="Generator.classpath"/>
