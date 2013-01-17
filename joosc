@@ -1,0 +1,2 @@
+#!/bin/bash
+java -cp Lexer/bin cs444.lexer.Compiler $1
