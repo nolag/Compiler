@@ -27,6 +27,14 @@ public class DFA {
             resolveState(statesToResolve.poll());
     }
     
+    public int getSize() {
+        return states.size();
+    }
+    
+    public DFAState getState(int id) {
+        return states.get(id);
+    }
+    
     private DFAState createState(NFAStateSet nfaStates) {
         DFAState state = new DFAState(nfaStates, states.size());
         states.add(state);

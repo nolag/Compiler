@@ -2,6 +2,7 @@ package cs444.nfa;
 
 import java.util.ArrayList;
 
+import cs444.grammar.TokenMetadata;
 import cs444.nfa.transition.CharacterTransition;
 import cs444.nfa.transition.EpsilonTransition;
 import cs444.nfa.transition.MultiRangeTransition;
@@ -200,7 +201,7 @@ public class NFA {
         return states.get(id);
     }
 
-    private Iterable<NFAState> getStates() {
+    public Iterable<NFAState> getStates() {
         return states;
     }
 

@@ -1,5 +1,7 @@
 package cs444.dfa;
 
+import java.util.Iterator;
+
 import cs444.nfa.NFAState;
 import cs444.nfa.NFAStateSet;
 
@@ -7,7 +9,6 @@ public class DFAState {
 
     private final int id;
     private final NFAStateSet states;
-    //private final DFATransitionDefinition transitions;
     private final DFAState[] transitions;
     
     public DFAState(NFAStateSet states, int id) {
@@ -15,7 +16,6 @@ public class DFAState {
         this.id = id;
         this.states = states;
         
-        //transitions = new DFATransitionDefinition();
         transitions = new DFAState[128];
     }
     
@@ -39,6 +39,32 @@ public class DFAState {
     
     public Iterable<NFAState> getNFAStates() {
         return states.getStates();
+    }
+    
+    public int getPriority() {
+        
+        NFAState state = getHighestPriorityNFAState();
+        return null != state ? state.getPriority() : -1;
+    }
+    
+    private NFAState getHighestPriorityNFAState() {
+        
+        NFAState max = null;
+        
+        if (isAccepting()) {
+            
+            Iterator<NFAState> it = getNFAStates().iterator();
+            
+            max = it.next();
+            while (it.hasNext()) {
+                
+                NFAState current = it.next();
+                if (current.getPriority() > max.getPriority())
+                    max = current;
+            }
+        }
+        
+        return max;
     }
     
     public void addTransition(int ch, DFAState state) {

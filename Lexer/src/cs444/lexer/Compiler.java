@@ -16,14 +16,17 @@ public class Compiler {
         try {
             
             reader = new BufferedReader(new FileReader(args[0]));
-            Lexer scanner = new Lexer(reader);
+            Lexer.load(reader);
+            Lexer scanner = Lexer.getInstance();
             
             Token token;
             while (null != (token = scanner.getNextToken())) {
                 
                 System.out.println(token.toString());
             }
-            
+         
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             
             if (null != reader)

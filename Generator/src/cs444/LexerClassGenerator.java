@@ -3,8 +3,8 @@ package cs444;
 import java.io.IOException;
 import java.io.Writer;
 
-import cs444.dfa.DFAState;
 import cs444.grammar.LexicalGrammar;
+import cs444.grammar.TokenMetadata;
 
 public class LexerClassGenerator extends Generator {
     
@@ -21,15 +21,100 @@ public class LexerClassGenerator extends Generator {
         writeLine("public class Lexer {");
         indent();
         
-        generateTokenFactories();
+        writeLine("private static Lexer instance;");
+        writeLine("public static void load(Reader reader) throws IOException {");
+        indent();
+        writeLine("if (null == instance) instance = new Lexer(reader);");
+        dedent();
+        writeLine("}");
         
-        writeLine("private final boolean[] acceptTable =");
-        generateAcceptTable();
+        writeLine("public static Lexer getInstance() {");
+        indent();
+        writeLine("return instance;");
+        dedent();
+        writeLine("}");    
         
-        writeLine("private final int[][] stateTable =");
-        generateStateTable();
+        writeLine("private class LexerState {");
+        indent();
+        writeLine("private final LexerState[] transitions;");
+        writeLine("private final boolean accepting;");
+        writeLine("private Token.Type type;");
+        writeLine("public LexerState(LexerState[] transitions, boolean accepting) {");
+        indent();
+        writeLine("this.transitions = transitions;");
+        writeLine("this.accepting = accepting;");
+        dedent();
+        writeLine("}");
+        writeLine("public LexerState(LexerState[] transitions, boolean accepting, Token.Type type) {");
+        indent();
+        writeLine("this(transitions, accepting);");
+        writeLine("this.type = type;");
+        dedent();
+        writeLine("}");
+        writeLine("public final LexerState getNextState(int ch) {");
+        indent();
+        writeLine("return transitions[ch];");
+        dedent();
+        writeLine("}");
+        writeLine("public final boolean isAccepting() {");
+        indent();
+        writeLine("return accepting;");
+        dedent();
+        writeLine("}");
+        writeLine("public final Token createToken(String lexeme) {");
+        writeLine("return new Token(type, lexeme);");
+        writeLine("}");
+        dedent();
+        writeLine("}");
         
-        writeLine("private final int initialState;");
+        // States
+        
+        int[][] stateTable = grammar.getStateTable();
+        int[] acceptTable = grammar.getAcceptTable();
+        TokenMetadata[] data = grammar.getTokenMetadata();
+        
+        for (int i = 0; i < stateTable.length; i++) {
+            
+            String transitions = "{ ";
+            
+            int[] row = stateTable[i];
+            for (int j = 0; j < row.length; j++) {
+                if (row[j] != -1)
+                    transitions += "State" + row[j] + ".getInstance()";
+                else
+                    transitions += "null";
+                
+                if (j < row.length - 1)
+                    transitions += ", ";
+            }
+            
+            transitions += " }";
+            
+            boolean accepting = (acceptTable[i] != -1);
+            
+            writeLine("private static final class State" + i + " {");
+            indent();
+            
+            String instance = "private static final LexerState instance = Lexer.getInstance().new LexerState(new LexerState[] " +
+                              transitions + ", " + accepting;
+            
+            if (accepting) {
+                String type = grammar.getTokenName(acceptTable[i]);
+                instance += ", Token.Type." + type;
+            }
+                              
+            instance += ");";
+            
+            writeLine(instance);
+            writeLine("public static LexerState getInstance() {");
+            indent();
+            writeLine("return instance;");
+            dedent();
+            writeLine("}");
+            dedent();
+            writeLine("}");
+        }
+        
         writeLine("private final Reader reader;");
         writeLine("private int nextChar;");
         
@@ -38,7 +123,6 @@ public class LexerClassGenerator extends Generator {
                 
         writeLine("this.reader = reader;");
         writeLine("nextChar = reader.read();");
-        writeLine("initialState = 0;");
         
         dedent();
         writeLine("}");
@@ -47,19 +131,19 @@ public class LexerClassGenerator extends Generator {
         indent();
         
         writeLine("String lexeme = \"\";");
-        writeLine("int state = initialState;");
+        writeLine("LexerState state = State0.getInstance();");
             
         writeLine("while (nextChar != -1) {");
         indent();    
         
-        writeLine("int previewState = stateTable[state][nextChar];");
+        writeLine("LexerState previewState = state.getNextState(nextChar);");
             
-        writeLine("if (previewState == -1) {");
+        writeLine("if (null == previewState) {");
         indent();        
         
-        writeLine("if (acceptTable[state])");
+        writeLine("if (state.isAccepting())");
         indent();
-        writeLine("return new Token(Token.Id.Declaration, lexeme);");
+        writeLine("return state.createToken(lexeme);");
         dedent();
         writeLine("else");
         indent();
@@ -77,10 +161,10 @@ public class LexerClassGenerator extends Generator {
         dedent();
         writeLine("}");
         
-        writeLine("if (acceptTable[state])");
+        writeLine("if (state.isAccepting())");
         
         indent();
-        writeLine("return new Token(Token.Id.Declaration, lexeme);");
+        writeLine("return state.createToken(lexeme);");
         dedent();
         
         writeLine("return null;");
@@ -91,76 +175,75 @@ public class LexerClassGenerator extends Generator {
         dedent();
         writeLine("}");
     }
-
-    private void generateTokenFactories() throws IOException {
-        
-        for (String name : grammar.getTokenNames()) {
-            
-            writeLine("private final Token.Factory " + name + "Factory = new Token.Factory {");
-            indent();    
-            writeLine("@Override");
-            writeLine("public Token create(String lexeme) {");
-            indent();
-            writeLine("return new Token(Token.Id." + name + ", lexeme);");
-            dedent();
-            writeLine("}");
-            dedent();
-            writeLine("}");
-        }
-
-        writeLine("private static Token.Factory getFactory(int state) {");
-        indent();
-        writeLine("switch (state) {");
-           
-        for (String name : grammar.getTokenNames()) {
-            writeLine("case " + grammar.getAcceptingState(name) + ": return " + name + "Factory;");
-        }
-                
-        writeLine("}");
-        writeLine("return null;");
-        dedent();
-        writeLine("}");
-    }
-
-    private void generateStateTable() {
-        
-//result += "{ ";
+//
+//    private void generateTokenFactory() throws IOException {
 //        
-//        for (int i = 0; i < states.size(); i++) {
-//            
-//            result += "  { ";
-//            
-//            int[] row = states.get(i).getTransitionRow();
-//            for (int j = 0; j < row.length; j++) {
-//                
-//                result += row[j];
-//                
-//                if (j < row.length - 1)
-//                    result += ", ";
-//            }
-//            
-//            result += " }";
-//            
-//            if (i < states.size() - 1)
-//                result += ",\n";
+//        writeLine("private Token createToken(int id, String lexeme) {");
+//        indent();
+//        
+//        writeLine("switch (id) {");
+//        indent();
+//        
+//        TokenMetadata[] data = grammar.getTokenMetadata();
+//        for (int i = 0; i < data.length; i++) {
+//            writeLine("case " + data[i].getPriority() + ": return new Token(Token.Type." + data[i].getName() + ", lexeme);");
 //        }
 //        
-//        result += " };\n";
+//        writeLine("default: return null;");
+//        dedent();
+//        writeLine("}");
 //        
-//        return result;
-    }
-
-    private void generateAcceptTable() {
-        
-/*        result += "{ ";
-        
-        for (DFAState state : states) {
-            result += state.isAccepting();
-            
-            if (state.getId() != states.size() - 1)
-                result += ", ";
-        }
-        
-        result += " };\n\n";*/
-    }
+//        dedent();
+//        writeLine("}");
+//    }
+//
+//    private void generateStateTable() throws IOException {
+//        
+//        int[][] stateTable = grammar.getStateTable();
+//        
+//        indent();
+//        for (int i = 0; i < stateTable.length; i++) {
+//            
+//            String line = "";
+//            if (i == 0)
+//                line += "{ { ";
+//            else
+//                line += "  { ";
+//            
+//            int[] row = stateTable[i];
+//            for (int j = 0; j < row.length; j++) {
+//                
+//                line += row[j];
+//                
+//                if (j < row.length - 1)
+//                    line += ", ";
+//            }
+//            
+//            line += " }";
+//            
+//            if (i < stateTable.length - 1)
+//                line += ",";
+//            else
+//                line += " };";
+//            
+//            writeLine(line);
+//        }
+//        
+//        dedent();
+//    }
+//
+//    private void generateAcceptTable() throws IOException {
+//        
+//        String result = "{ ";
+//        int[] acceptTable = grammar.getAcceptTable();
+//        
+//        for (int i = 0; i < acceptTable.length; i++) {
+//            result += acceptTable[i];
+//            if (i < acceptTable.length - 1)
+//                result += ", ";
+//        }
+//        
+//        result += " };";
+//        writeLine(result);
+//    }
 }

@@ -1,42 +1,108 @@
 package cs444.lexer;
 
-public class Token {
-
+public final class Token {
     public enum Type {
-        Number,
-        Declaration,
-        Identifier,
-        Equals,
-        Plus,
-        Minus,
-        WhiteSpace,
-        EndOfFile
+        SWITCH,
+        TRY,
+        DAMPERSAND,
+        AMPERSAND,
+        IMPORT,
+        IMPLEMENTS,
+        COMMA,
+        TRANSIENT,
+        EXTENDS,
+        GT,
+        END_LINE_COMMENT,
+        CHAR_LITERAL,
+        WHITESPACE,
+        DPIPE,
+        FOR,
+        DOT,
+        LBRACE,
+        PRIVATE,
+        ENUM,
+        STATIC,
+        GE,
+        SUPER,
+        PUBLIC,
+        PCT,
+        CHAR,
+        FINAL,
+        INT,
+        MINUS,
+        LBRACKET,
+        PLUS,
+        ABSTRACT,
+        DEFAULT,
+        CONST,
+        THROW,
+        DOUBLE,
+        BREAK,
+        VOLATILE,
+        BOOLEAN,
+        RPAREN,
+        COMMENT,
+        CONTINUE,
+        RBRACE,
+        CATCH,
+        ID,
+        PROTECTED,
+        TRUE,
+        NEW,
+        LONG,
+        BYTE,
+        THROWS,
+        STRICTFP,
+        CASE,
+        SHORT,
+        NATIVE,
+        BECOMES,
+        THIS,
+        STR_LITERAL,
+        NE,
+        EQ,
+        FALSE,
+        ASSERT,
+        NULL,
+        GOTO,
+        FLOAT,
+        DO,
+        WHILE,
+        ELSE,
+        PACKAGE,
+        EXCLAMATION,
+        DECIMAL_INTEGER_LITERAL,
+        SEMI,
+        RETURN,
+        INSTANCEOF,
+        PIPE,
+        LE,
+        FINALLY,
+        SYNCHRONIZED,
+        RBRACKET,
+        LPAREN,
+        CLASS,
+        SLASH,
+        INTERFACE,
+        STAR,
+        VOID,
+        LT
     }
-    
-    private final Type id;
+    private final Type type;
     private final String lexeme;
-    
-	public Token(Type id, String lexeme) {
-	    
-	    this.id = id;
-	    this.lexeme = lexeme;
-	}
-
-	public Token(Type id) {
-	    this(id, null);
-	}
-	
-    public Type getId() {
-        return id;
+    public Token(Type type, String lexeme) {
+        this.type = type;
+        this.lexeme = lexeme;
     }
-
+    public Type getType() {
+        return type;
+    }
     public String getLexeme() {
         return lexeme;
     }
-    
     @Override
     public String toString() {
-        
-        return "<" + getLexeme() + ">";
+        return "<" + type.toString() + ", " + lexeme.trim() + ">";
     }
 }
+

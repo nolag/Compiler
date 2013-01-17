@@ -2,12 +2,14 @@ package cs444.nfa;
 
 import java.util.ArrayList;
 
+import cs444.grammar.TokenMetadata;
 import cs444.nfa.transition.NFATransition;
 
 public class NFAState {
 
     private final boolean accepting;
     private final ArrayList<NFATransition> transitions;
+    private TokenMetadata data;
     private NFA parent;
     
     public NFAState(boolean accepting) {
@@ -23,6 +25,20 @@ public class NFAState {
     
     public int getId() {
         return parent.getId(this);
+    }
+
+    public void setTokenMetadata(TokenMetadata data) {
+        this.data = data;
+    }
+    
+    public TokenMetadata getTokenMetadata() {
+        return data;
+    }
+    
+    public int getPriority() {
+        
+        TokenMetadata data = getTokenMetadata();
+        return null != data ? data.getPriority() : -1;
     }
     
     public void setParent(NFA parent) {
