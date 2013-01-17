@@ -6,7 +6,7 @@ public class SampleGrammar extends LexicalGrammar {
 
     public SampleGrammar() {
         addPattern("WHITESPACE", NFA.union(NFA.literal(" "), NFA.literal("\t"),
-                NFA.literal("\n"), NFA.literal("\r")));
+                                           NFA.literal("\n"), NFA.literal("\r")));
 
         addPattern("COMMENT", NFA.concatenate(NFA.literal("/"), NFA.literal("*"),
                                               NFA.zeroOrMore(NFA.anyCharacter()),
@@ -72,20 +72,20 @@ public class SampleGrammar extends LexicalGrammar {
 
         //Literals
         addPattern("DECIMAL_INTEGER_LITERAL", NFA.union(NFA.literal("0"),
-                NFA.concatenate(NFA.nonZeroDigit(),
-                        NFA.zeroOrMore(NFA.digit()))));
+                                                        NFA.concatenate(NFA.nonZeroDigit(),
+                                                                        NFA.zeroOrMore(NFA.digit()))));
 
         addPattern("TRUE", NFA.literal("true"));
         addPattern("FALSE", NFA.literal("false"));
 
         addPattern("CHAR_LITERAL", NFA.concatenate(NFA.literal("'"),
-                NFA.union(NFA.singleChar(), escapeSequence(),
-                        NFA.literal("'"))));
+                                                   NFA.union(NFA.singleChar(), escapeSequence(),
+                                                             NFA.literal("'"))));
 
         addPattern("STR_LITERAL", NFA.concatenate(NFA.literal("\""),
-                NFA.zeroOrMore(NFA.union(NFA.stringCharacter(),
-                        escapeSequence())),
-                        NFA.literal("\"")));
+                                                  NFA.zeroOrMore(NFA.union(NFA.stringCharacter(),
+                                                                           escapeSequence())),
+                                                  NFA.literal("\"")));
 
         addPattern("NULL", NFA.literal("null"));
 
@@ -131,15 +131,15 @@ public class SampleGrammar extends LexicalGrammar {
         // escapeSequence -> \b|\t|\n|\f|\r|\"|\'|\\|(OctalEscape)
         // http://docs.oracle.com/javase/specs/jls/se5.0/html/lexical.html#101089
         return NFA.concatenate(NFA.literal("\\"),
-                                     NFA.union(NFA.literal("b"),
-                                               NFA.literal("t"),
-                                               NFA.literal("n"),
-                                               NFA.literal("f"),
-                                               NFA.literal("r"),
-                                               NFA.literal("\""),
-                                               NFA.literal("'"),
-                                               NFA.literal("\\"),
-                                               octal()));
+                               NFA.union(NFA.literal("b"),
+                                         NFA.literal("t"),
+                                         NFA.literal("n"),
+                                         NFA.literal("f"),
+                                         NFA.literal("r"),
+                                         NFA.literal("\""),
+                                         NFA.literal("'"),
+                                         NFA.literal("\\"),
+                                         octal()));
     }
 
     private NFA octal() {
