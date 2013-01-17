@@ -87,7 +87,7 @@ public class NFA {
     public static NFA anyCharacter() {
         return NFA.acceptRange((char)0, (char)127);
     }
-    
+
     public static NFA digit() {
         return NFA.acceptRange('0', '9');
     }
@@ -139,7 +139,7 @@ public class NFA {
         return result;
     }
 
-    /// singleChar() -> everthing but ', \, \n, or \r
+    /// singleChar() -> everything but ', \, \n, or \r
     public static NFA singleChar() {
         NFA result = new NFA();
         NFAState start = result.getStartState();
@@ -152,6 +152,24 @@ public class NFA {
                 new Range((char) 11, (char) 12),
                 new Range((char) 14, (char) 38),
                 new Range((char) 40, (char) 91),
+                new Range((char) 93, (char) 127)));
+
+        return result;
+    }
+
+    //stringCharacter() -> everything but ", \, \n, or \r
+    public static NFA stringCharacter() {
+        NFA result = new NFA();
+        NFAState start = result.getStartState();
+        NFAState accepting = result.getAcceptingState();
+
+        // everything, but:
+        // \n -> 10; \r -> 13; " -> 34; \ -> 92;
+        start.addTransition(new MultiRangeTransition(accepting,
+                new Range((char) 0, (char) 9),
+                new Range((char) 11, (char) 12),
+                new Range((char) 14, (char) 33),
+                new Range((char) 35, (char) 91),
                 new Range((char) 93, (char) 127)));
 
         return result;

@@ -72,6 +72,7 @@ public class Token {
         TRUE,
         ASSERT,
         TRY,
+        STR_LITERAL,
         ENUM,
         CHAR_LITERAL,
         FINALLY,

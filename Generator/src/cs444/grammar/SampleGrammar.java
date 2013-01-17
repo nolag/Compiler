@@ -82,11 +82,10 @@ public class SampleGrammar extends LexicalGrammar {
                 NFA.union(NFA.singleChar(), escapeSequence(),
                         NFA.literal("'"))));
 
-        //TODO: stringCharacter() -> everything but ", \, \n, or \r
-        //		    	addPattern("STR_LITERAL", NFA.concatenate(NFA.literal("\""),
-        //		    			NFA.zeroOrMore(NFA.union(NFA.stringCharacter(),
-        //		    					NFA.escapeSequence())),
-        //		    					NFA.literal("\"")));
+        addPattern("STR_LITERAL", NFA.concatenate(NFA.literal("\""),
+                NFA.zeroOrMore(NFA.union(NFA.stringCharacter(),
+                        escapeSequence())),
+                        NFA.literal("\"")));
 
         addPattern("NULL", NFA.literal("null"));
 
