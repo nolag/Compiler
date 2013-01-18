@@ -11,6 +11,9 @@ public class Lexer {
     public static Lexer getInstance() {
         return instance;
     }
+    public static void reset() {
+        instance = null;
+    }
     private class LexerState {
         private final LexerState[] transitions;
         private final boolean accepting;
@@ -1950,4 +1953,3 @@ public class Lexer {
         return null;
     }
 }
-

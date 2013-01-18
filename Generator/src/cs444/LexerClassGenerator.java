@@ -34,6 +34,12 @@ public class LexerClassGenerator extends Generator {
         dedent();
         writeLine("}");    
         
+        writeLine("public static void reset() {");
+        indent();
+        writeLine("instance = null;");
+        dedent();
+        writeLine("}");
+
         writeLine("private class LexerState {");
         indent();
         writeLine("private final LexerState[] transitions;");

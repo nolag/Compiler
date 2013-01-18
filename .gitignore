@@ -31,3 +31,6 @@ local.properties
 
 # PDT-specific
 .buildpath
+
+# ant-junit output
+TEST*Test.xml
