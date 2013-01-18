@@ -23,6 +23,7 @@ public class SampleGrammar extends LexicalGrammar {
         addPattern("ABSTRACT", NFA.literal("abstract"));
         addPattern("CONTINUE", NFA.literal("continue"));
         addPattern("FOR", NFA.literal("for"));
+        addPattern("IF", NFA.literal("if"));
         addPattern("NEW", NFA.literal("new"));
         addPattern("SWITCH", NFA.literal("switch"));
         addPattern("ASSERT", NFA.literal("assert"));
