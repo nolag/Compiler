@@ -32,6 +32,9 @@ public class TokenClassGenerator extends Generator {
             writeLine(line);
         }
         
+        writeLine("EOF,");
+        writeLine("EMPTY");
+        
         dedent();
         writeLine("}");
         

@@ -68,6 +68,8 @@ public final class Token {
         FLOAT,
         WHILE,
         ELSE,
+        EMPTY,
+        EOF,
         DO,
         PACKAGE,
         EXCLAMATION,
@@ -87,7 +89,7 @@ public final class Token {
         SLASH,
         LT,
         INTERFACE,
-        STAR
+        STAR,
     }
     private final Type type;
     private final String lexeme;

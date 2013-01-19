@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Lexer {
+public class Lexer implements ILexer{
     private static final Map<Integer, LexerState> states;
     static {
         HashMap<Integer, LexerState> map = new HashMap<Integer, LexerState>();
@@ -1282,7 +1282,7 @@ public class Lexer {
         this.reader = reader;
         nextChar = reader.read();
     }
-    public Token getNextToken() throws Exception {
+    public Token getNextToken() throws LexerException, IOException {
         String lexeme = "";
         LexerState state = states.get(0);
         while (nextChar != -1) {

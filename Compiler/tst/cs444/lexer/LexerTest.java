@@ -1,4 +1,4 @@
-package test.cs444.lexer;
+package cs444.lexer;
 
 import static org.junit.Assert.*;
 
