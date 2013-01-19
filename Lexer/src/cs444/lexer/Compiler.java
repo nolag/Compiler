@@ -1,4 +1,4 @@
-package src.cs444.lexer;
+package cs444.lexer;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

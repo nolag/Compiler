@@ -1,4 +1,4 @@
-package src.cs444.lexer;
+package cs444.lexer;
 
 public class LexerState {
     private final int[] transitions;

@@ -5,8 +5,7 @@ import cs444.nfa.NFA;
 public class JoosGrammar extends LexicalGrammar {
 
     public JoosGrammar() {
-        addPattern("IF", NFA.literal("if"));
-        
+
         addPattern("WHITESPACE", NFA.union(NFA.literal(" "), NFA.literal("\t"),
                                            NFA.literal("\n"), NFA.literal("\r")));
 
@@ -22,6 +21,7 @@ public class JoosGrammar extends LexicalGrammar {
                                          NFA.zeroOrMore(NFA.union(NFA.letter(),
                                                                   NFA.digit()))));
 
+        addPattern("IF", NFA.literal("if"));
         addPattern("ABSTRACT", NFA.literal("abstract"));
         addPattern("CONTINUE", NFA.literal("continue"));
         addPattern("FOR", NFA.literal("for"));

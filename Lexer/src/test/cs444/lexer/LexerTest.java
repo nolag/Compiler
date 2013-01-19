@@ -1,4 +1,4 @@
-package cs444.lexer;
+package test.cs444.lexer;
 
 import static org.junit.Assert.*;
 
@@ -6,9 +6,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.junit.After;
 import org.junit.Test;
 
+import cs444.lexer.Lexer;
+import cs444.lexer.Token;
 import cs444.lexer.Token.Type;
 
 public class LexerTest {
@@ -43,25 +44,18 @@ public class LexerTest {
         assertTokenFor("999990", Token.Type.DECIMAL_INTEGER_LITERAL);
     }
 
-    @After
-    public void runAfterEveryTest() throws IOException {
-        Lexer.reset();
-    }
-
     private void assertTokenFor(String string, Type tokenType) throws Exception {
         Lexer scanner = getScannerFor(string);
 
         Token token = scanner.getNextToken();
         assertToken(tokenType, string, token);
         assertNull(scanner.getNextToken());
-        Lexer.reset();
     }
 
     private Lexer getScannerFor(String input) throws IOException {
         BufferedReader reader = new BufferedReader(new StringReader(input));
 
-        Lexer.load(reader);
-        return Lexer.getInstance();
+        return new Lexer(reader);
     }
 
     private void assertToken(Token.Type type, String lexeme, Token token){
