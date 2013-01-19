@@ -1,4 +1,4 @@
-package cs444.lexer;
+package src.cs444.lexer;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -16,8 +16,7 @@ public class Compiler {
         try {
             
             reader = new BufferedReader(new FileReader(args[0]));
-            Lexer.load(reader);
-            Lexer scanner = Lexer.getInstance();
+            Lexer scanner = new Lexer(reader);
             
             Token token;
             while (null != (token = scanner.getNextToken())) {

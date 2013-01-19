@@ -36,6 +36,8 @@ public class LexicalGrammar {
             storedNfas.toArray(nfas);
             NFA nfa = NFA.union(nfas);
             
+            System.out.println(nfa.toString());
+            
             dfa = new DFA(nfa);
         }
         

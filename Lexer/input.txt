@@ -1,4 +1,6 @@
-int x=8
-int integer = 5 + 7
-int x = integer + 9
-int x=y+8
+public class Program {
+	/* method comment */
+	public static void main(String[] args) {
+		System.out.println("Hello World");	// line comment
+	}
+}

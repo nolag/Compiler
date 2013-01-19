@@ -1,22 +1,23 @@
-package src.cs444.lexer;
+package cs444.lexer;
 
 public final class Token {
     public enum Type {
+<<<<<<< Updated upstream
         SWITCH,
+        IF,
         TRY,
         AMPERSAND,
-        IF,
         DAMPERSAND,
         IMPLEMENTS,
         IMPORT,
         CHAR_LITERAL,
         COMMA,
-        END_LINE_COMMENT,
         LBRACE,
+        END_LINE_COMMENT,
         EXTENDS,
         WHITESPACE,
-        DOT,
         FOR,
+        DOT,
         TRANSIENT,
         STATIC,
         DPIPE,
@@ -31,19 +32,20 @@ public final class Token {
         FINAL,
         CHAR,
         LBRACKET,
+        ABSTRACT,
         DEFAULT,
         PLUS,
         CONST,
-        ABSTRACT,
-        VOLATILE,
         THROW,
         BREAK,
+        VOLATILE,
         BOOLEAN,
         DOUBLE,
+        COMMENT,
+        CONTINUE,
         RPAREN,
         RBRACE,
         ID,
-        COMMENT,
         PROTECTED,
         TRUE,
         BYTE,
@@ -51,7 +53,6 @@ public final class Token {
         NEW,
         CATCH,
         LONG,
-        CONTINUE,
         SHORT,
         CASE,
         NATIVE,
@@ -88,6 +89,15 @@ public final class Token {
         LT,
         INTERFACE,
         STAR
+=======
+        Minus,
+        Number,
+        Plus,
+        Declaration,
+        Identifier,
+        WhiteSpace,
+        Equals
+>>>>>>> Stashed changes
     }
     private final Type type;
     private final String lexeme;
@@ -106,5 +116,3 @@ public final class Token {
         return "<" + type.toString() + ", " + lexeme.trim() + ">";
     }
 }
-
-

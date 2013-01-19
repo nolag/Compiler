@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
-import cs444.grammar.SampleGrammar;
+import cs444.grammar.JoosGrammar;
 
 public class Program {
 
@@ -25,7 +25,7 @@ public class Program {
     public static void main(String[] args) {
 
         BufferedWriter writer = null;
-        SampleGrammar grammar = new SampleGrammar();
+        JoosGrammar grammar = new JoosGrammar();
         
         try {
             

@@ -2,17 +2,19 @@ package cs444.grammar;
 
 import cs444.nfa.NFA;
 
-public class SampleGrammar extends LexicalGrammar {
+public class JoosGrammar extends LexicalGrammar {
 
-    public SampleGrammar() {
+    public JoosGrammar() {
+        addPattern("IF", NFA.literal("if"));
+        
         addPattern("WHITESPACE", NFA.union(NFA.literal(" "), NFA.literal("\t"),
                                            NFA.literal("\n"), NFA.literal("\r")));
 
-        addPattern("COMMENT", NFA.concatenate(NFA.literal("/"), NFA.literal("*"),
+        addPattern("COMMENT", NFA.concatenate(NFA.literal("/*"),
                                               NFA.zeroOrMore(NFA.anyCharacter()),
-                                              NFA.literal("*"), NFA.literal("/")));
+                                              NFA.literal("*/")));
 
-        addPattern("END_LINE_COMMENT", NFA.concatenate(NFA.literal("/"), NFA.literal("/"),
+        addPattern("END_LINE_COMMENT", NFA.concatenate(NFA.literal("//"),
                                                        NFA.zeroOrMore(NFA.anyCharacter()),
                                                        NFA.union(NFA.literal("\r"), NFA.literal("\n"))));
 
@@ -23,7 +25,6 @@ public class SampleGrammar extends LexicalGrammar {
         addPattern("ABSTRACT", NFA.literal("abstract"));
         addPattern("CONTINUE", NFA.literal("continue"));
         addPattern("FOR", NFA.literal("for"));
-        addPattern("IF", NFA.literal("if"));
         addPattern("NEW", NFA.literal("new"));
         addPattern("SWITCH", NFA.literal("switch"));
         addPattern("ASSERT", NFA.literal("assert"));

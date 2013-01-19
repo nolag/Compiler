@@ -56,10 +56,13 @@ public class DFAState {
             Iterator<NFAState> it = getNFAStates().iterator();
             
             max = it.next();
+            while (!max.isAccepting())
+                max = it.next();
+            
             while (it.hasNext()) {
                 
                 NFAState current = it.next();
-                if (current.getPriority() > max.getPriority())
+                if (current.isAccepting() && current.getPriority() > max.getPriority())
                     max = current;
             }
         }
