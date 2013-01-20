@@ -86,6 +86,8 @@ public final class Token {
         LT,
         INTERFACE,
         STAR
+        EOF,
+        EMPTY
     }
     private final Type type;
     private final String lexeme;
