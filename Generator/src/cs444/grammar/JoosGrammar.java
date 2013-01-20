@@ -9,12 +9,14 @@ public class JoosGrammar extends LexicalGrammar {
         addPattern("WHITESPACE", NFA.union(NFA.literal(" "), NFA.literal("\t"),
                                            NFA.literal("\n"), NFA.literal("\r")));
 
-        addPattern("COMMENT", NFA.concatenate(NFA.literal("/*"),
-                                              NFA.zeroOrMore(NFA.anyCharacter()),
-                                              NFA.literal("*/")));
+        // Traditional comment pattern: /\*([^*]|(\*+([^*/])))*\*+/
+        addPattern("COMMENT", NFA.concatenate(NFA.literal("/*"), 
+        		NFA.zeroOrMore(NFA.union(anythingButStar(), 
+        				NFA.concatenate(NFA.oneOrMore(NFA.literal("*")), anythingButSlash()))),
+        		NFA.oneOrMore(NFA.literal("*")), NFA.literal("/")));
 
         addPattern("END_LINE_COMMENT", NFA.concatenate(NFA.literal("//"),
-                                                       NFA.zeroOrMore(NFA.anyCharacter()),
+                                                       NFA.zeroOrMore(anythingButEndOfLine()),
                                                        NFA.union(NFA.literal("\r"), NFA.literal("\n"))));
 
         addPattern("ID", NFA.concatenate(NFA.letter(),
@@ -129,7 +131,25 @@ public class JoosGrammar extends LexicalGrammar {
         addPattern("DPIPE", NFA.literal("||"));
     }
 
-    private NFA escapeSequence() {
+    private NFA anythingButEndOfLine() {
+		return NFA.union(NFA.acceptRange((char)0, (char)9),
+				NFA.acceptRange((char)11, (char)12),
+				NFA.acceptRange((char)14, (char)127));
+	}
+
+	private NFA anythingButSlash() {
+		// / is 47
+    	return NFA.union(NFA.acceptRange((char)0, (char)46),
+    			NFA.acceptRange((char)48, (char)127));
+	}
+
+	private NFA anythingButStar() {
+		// * is 42
+		return NFA.union(NFA.acceptRange((char)0, (char)41), 
+				NFA.acceptRange((char)43, (char)127));
+	}
+
+	private NFA escapeSequence() {
         // escapeSequence -> \b|\t|\n|\f|\r|\"|\'|\\|(OctalEscape)
         // http://docs.oracle.com/javase/specs/jls/se5.0/html/lexical.html#101089
         return NFA.concatenate(NFA.literal("\\"),
