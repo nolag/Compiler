@@ -72,10 +72,68 @@ public class LexerTest {
     public void testValidCharLiterals() throws Exception {
     	TestHelper.assertTokenFor("'a'", Token.Type.CHAR_LITERAL);
     	TestHelper.assertTokenFor("'%'", Token.Type.CHAR_LITERAL);
-    	TestHelper.assertTokenFor("'\t'", Token.Type.CHAR_LITERAL);
+    	TestHelper.assertTokenFor("'\\t'", Token.Type.CHAR_LITERAL);
     	TestHelper.assertTokenFor("'\\'", Token.Type.CHAR_LITERAL);
     	TestHelper.assertTokenFor("'\\''", Token.Type.CHAR_LITERAL);
     	TestHelper.assertTokenFor("'\\177'", Token.Type.CHAR_LITERAL);
+
+    	// TODO: make sure this produce a lexical error.
+    	// TestHelper.assertTokenFor("''", Token.Type.CHAR_LITERAL);
+    }
+
+    @Test
+    public void testValidStringLiterals() throws Exception {
+        TestHelper.assertTokenFor("\"\"", Token.Type.STR_LITERAL);   // empty string
+        TestHelper.assertTokenFor("\"This is a string\"", Token.Type.STR_LITERAL); // normal string
+        TestHelper.assertTokenFor("\"\\t\"", Token.Type.STR_LITERAL); // escape "\t"
+        TestHelper.assertTokenFor("\"\\\"\"", Token.Type.STR_LITERAL); // a string containing " alone
+    }
+
+    @Test
+    public void testNullLiteral() throws Exception{
+        TestHelper.assertTokenFor("null", Token.Type.NULL);
+    }
+
+    @Test
+    public void testSeparators() throws Exception{
+        TestHelper.assertTokenFor("(", Token.Type.LPAREN);
+        TestHelper.assertTokenFor(")", Token.Type.RPAREN);
+        TestHelper.assertTokenFor("{", Token.Type.LBRACE);
+        TestHelper.assertTokenFor("}", Token.Type.RBRACE);
+        TestHelper.assertTokenFor("[", Token.Type.LBRACKET);
+        TestHelper.assertTokenFor("]", Token.Type.RBRACKET);
+        TestHelper.assertTokenFor(";", Token.Type.SEMI);
+        TestHelper.assertTokenFor(",", Token.Type.COMMA);
+        TestHelper.assertTokenFor(".", Token.Type.DOT);
+    }
+
+    @Test
+    public void testOperators() throws Exception{
+        //Operators
+        TestHelper.assertTokenFor("=", Token.Type.BECOMES);
+        //arithmetic operators
+        TestHelper.assertTokenFor("+", Token.Type.PLUS);
+        TestHelper.assertTokenFor("-", Token.Type.MINUS);
+        TestHelper.assertTokenFor("*", Token.Type.STAR);
+        TestHelper.assertTokenFor("/", Token.Type.SLASH);
+        TestHelper.assertTokenFor("%", Token.Type.PCT);
+
+        //comparison operators
+        TestHelper.assertTokenFor("<", Token.Type.LT);
+        TestHelper.assertTokenFor(">", Token.Type.GT);
+        TestHelper.assertTokenFor("<=", Token.Type.LE);
+        TestHelper.assertTokenFor(">=", Token.Type.GE);
+        TestHelper.assertTokenFor("==", Token.Type.EQ);
+        TestHelper.assertTokenFor("!=", Token.Type.NE);
+
+        //eager boolean operators
+        TestHelper.assertTokenFor("&", Token.Type.AMPERSAND);
+        TestHelper.assertTokenFor("|", Token.Type.PIPE);
+        TestHelper.assertTokenFor("!", Token.Type.EXCLAMATION);
+
+        //lazy boolean operators
+        TestHelper.assertTokenFor("&&", Token.Type.DAMPERSAND);
+        TestHelper.assertTokenFor("||", Token.Type.DPIPE);
     }
 
     @Test
