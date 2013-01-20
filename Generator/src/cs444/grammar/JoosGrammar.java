@@ -70,7 +70,7 @@ public class JoosGrammar extends LexicalGrammar {
         addPattern("VOLATILE", NFA.literal("volatile"));
         addPattern("CONST", NFA.literal("const"));
         addPattern("FLOAT", NFA.literal("float"));
-        addPattern("NATIVE", NFA.literal("super"));
+        addPattern("NATIVE", NFA.literal("native"));
         addPattern("SUPER", NFA.literal("super"));
         addPattern("WHILE", NFA.literal("while"));
 
@@ -83,8 +83,8 @@ public class JoosGrammar extends LexicalGrammar {
         addPattern("FALSE", NFA.literal("false"));
 
         addPattern("CHAR_LITERAL", NFA.concatenate(NFA.literal("'"),
-                                                   NFA.union(NFA.singleChar(), escapeSequence(),
-                                                             NFA.literal("'"))));
+                                                   NFA.union(NFA.singleChar(), escapeSequence()),
+                                                   NFA.literal("'")));
 
         addPattern("STR_LITERAL", NFA.concatenate(NFA.literal("\""),
                                                   NFA.zeroOrMore(NFA.union(NFA.stringCharacter(),

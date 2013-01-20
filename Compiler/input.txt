@@ -1,6 +1,7 @@
 public class Program {
 	/* method comment */
 	public static void main(String[] args) {
+		char ch = '\'';
 		System.out.println("Hello World");	// line comment
 	}
 }
