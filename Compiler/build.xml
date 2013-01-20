@@ -4,7 +4,7 @@
               To include a user specific buildfile here, simply create one in the same
               directory with the processing instruction <?eclipse.ant.import?>
               as the first entry and export the buildfile again. -->
-<project basedir="." default="build" name="Lexer">
+<project basedir="." default="build" name="Compiler">
     <property environment="env"/>
     <property name="junit.output.dir" value="junit"/>
     <property name="debuglevel" value="source,lines,vars"/>
@@ -14,7 +14,7 @@
         <pathelement location="../../../../../opt/eclipse/plugins/org.junit_4.8.2.v4_8_2_v20110321-1705/junit.jar"/>
         <pathelement location="../../../../../opt/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
     </path>
-    <path id="Lexer.classpath">
+    <path id="Compiler.classpath">
         <pathelement location="bin"/>
         <path refid="JUnit 4.libraryclasspath"/>
     </path>
@@ -22,13 +22,11 @@
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
-                <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
         <copy includeemptydirs="false" todir="bin">
-            <fileset dir="test">
-                <exclude name="**/*.launch"/>
+            <fileset dir="tst">
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
@@ -43,34 +41,26 @@
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
             <src path="src"/>
-            <classpath refid="Lexer.classpath"/>
+            <classpath refid="Compiler.classpath"/>
         </javac>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
-            <src path="test"/>
-            <classpath refid="Lexer.classpath"/>
+            <src path="tst"/>
+            <classpath refid="Compiler.classpath"/>
         </javac>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
     <target name="Compiler">
         <java classname="cs444.lexer.Compiler" failonerror="true" fork="yes">
-            <classpath refid="Lexer.classpath"/>
+            <classpath refid="Compiler.classpath"/>
         </java>
     </target>
-    <target name="LexerTest">
+    <target name="tests">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="xml"/>
             <test name="cs444.lexer.LexerTest" todir="${junit.output.dir}"/>
-            <classpath refid="Lexer.classpath"/>
-            <formatter type="plain" usefile="false" />
-        </junit>
-    </target>
-    <target name="LexerTest.runAfterEveryTest">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="cs444.lexer.LexerTest" todir="${junit.output.dir}"/>
-            <classpath refid="Lexer.classpath"/>
+            <test name="cs444.parser.AllTests" todir="${junit.output.dir}"/>
+            <classpath refid="Compiler.classpath"/>
         </junit>
     </target>
     <target name="junitreport">
