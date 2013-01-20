@@ -47,4 +47,16 @@ public class LexerMultipleTokensTest {
 		TestHelper.assertToken(Token.Type.WHILE, "while", scanner.getNextToken());
 		assertNull(scanner.getNextToken());
 	}
+
+	@Test
+	public void testDetectTokenAfterStringLiteral() throws Exception {
+ 		String string = "\"Hello world\" while";
+
+		Lexer scanner = TestHelper.getScannerFor(string);
+
+		TestHelper.assertToken(Token.Type.STR_LITERAL, "\"Hello world\"", scanner.getNextToken());
+		TestHelper.assertToken(Token.Type.WHITESPACE, " ", scanner.getNextToken());
+		TestHelper.assertToken(Token.Type.WHILE, "while", scanner.getNextToken());
+		assertNull(scanner.getNextToken());
+	}
 }
