@@ -1351,15 +1351,22 @@ public class Lexer implements ILexer{
                 if (state.isAccepting())
                     return state.createToken(lexeme);
                 else
-                    throw new LexerException();
+                    throw new LexerException("Error scanning " +
+                    		lexeme + (char)nextChar + ".");
             } else {
                 lexeme += (char)nextChar;
                 nextChar = reader.read();
                 state = states.get(previewState);
             }
         }
-        if (state.isAccepting())
+        if (state.isAccepting()){
             return state.createToken(lexeme);
+        }
+        
+        if (lexeme != ""){
+        	throw new LexerException("Unexpected end of file reached while scanning a token");
+        }
+
         return null;
     }
 }
