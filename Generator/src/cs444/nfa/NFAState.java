@@ -7,7 +7,7 @@ import cs444.nfa.transition.NFATransition;
 
 public class NFAState {
 
-    private final boolean accepting;
+    private boolean accepting;
     private final ArrayList<NFATransition> transitions;
     private TokenMetadata data;
     private NFA parent;
@@ -69,4 +69,8 @@ public class NFAState {
     public String toString() {
         return "State(" + getId() + ", " + isAccepting() + ")";
     }
+
+	public void setAcceptingState(boolean b) {
+		this.accepting = b;
+	}
 }
