@@ -2,8 +2,6 @@ package cs444.lexer;
 
 import org.junit.Test;
 
-import cs444.TestHelper;
-
 public class LexerTest {
     @Test
     public void testValidTraditionalComment() throws Exception {

@@ -1,6 +1,6 @@
 package cs444.parser.symbols;
 
-import cs444.parser.factory.ISymbolFactory;
+import cs444.parser.symbols.factories.ISymbolFactory;
 
 public class StateTerminal {
 

@@ -5,10 +5,11 @@ import java.io.IOException;
 import cs444.lexer.ILexer;
 import cs444.lexer.LexerException;
 import cs444.lexer.Token;
-import cs444.parser.factory.ISymbolFactory;
+import cs444.lexer.Token.Parse;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.StateTerminal;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
+import cs444.parser.symbols.factories.ISymbolFactory;
 
 public class Parser {
     private final ISymbolFactory startFactory;
@@ -18,14 +19,15 @@ public class Parser {
     }
 
     //TODO make this return a tree
-    public void parse(ILexer lexer) throws IOException, LexerException, UnexpectedTokenException{
+    public ISymbol parse(ILexer lexer) throws IOException, LexerException, UnexpectedTokenException{
         ISymbol start = startFactory.create();
         Token token;
         while((token = lexer.getNextToken()) != null){
+            if(Token.typeToParse.get(token.type) == Parse.IGNORE) continue;
             if(start.giveToken(token)){
-                if(token.getType() !=  Token.Type.EOF) throw new UnexpectedTokenException(token, new StateTerminal [] {});
+                if(token.type !=  Token.Type.EOF) throw new UnexpectedTokenException(token, new StateTerminal [] {});
             }
         }
-        //TODO make the returned tree here :)
+        return start;
     }
 }

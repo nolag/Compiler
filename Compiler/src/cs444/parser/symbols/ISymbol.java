@@ -11,4 +11,17 @@ public interface ISymbol {
      * @throws UnexpectedTokenException thrown if the token is illegal and the ITerminal can't reduce
      */
     boolean giveToken(Token token) throws UnexpectedTokenException;
+    
+    /**
+     * 
+     * @return the rule or token that is represented by this ISymbol
+     */
+    String rule();
+    
+    /**
+     * 
+     * @return the name of the symbol
+     */
+    String getName();
+    
 }

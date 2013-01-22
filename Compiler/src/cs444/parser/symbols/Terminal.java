@@ -1,8 +1,8 @@
 package cs444.parser.symbols;
 
 import cs444.lexer.Token;
-import cs444.parser.factory.TerminalFactory;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
+import cs444.parser.symbols.factories.TerminalFactory;
 
 public class Terminal implements ISymbol{
 
@@ -17,7 +17,7 @@ public class Terminal implements ISymbol{
 
     public boolean giveToken(Token token) throws UnexpectedTokenException {
         if(reduce) return true;
-        if(token.getType() != type) throw new UnexpectedTokenException(token,
+        if(token.type != type) throw new UnexpectedTokenException(token,
                 new StateTerminal[]{ new StateTerminal(new TerminalFactory(type), 0) });
         this.token = token;
         reduce = true;
@@ -27,4 +27,13 @@ public class Terminal implements ISymbol{
     public String getType() {
         return type.name();
     }
+
+	public String rule() {
+		return "";
+	}
+
+	public String getName() {
+	    if(Token.typeToParse.get(token.type) != Token.Parse.VALID) return "";
+		return token.toString();
+	}
 }

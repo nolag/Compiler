@@ -17,6 +17,6 @@ public class UnexpectedTokenException extends Exception{
     }
 
     public UnexpectedTokenException(Token t, StateTerminal [] expectedTokens){
-        super("Unexpected " + t.getType() + " token with value " + t.getLexeme() + " expected token types " + tokensAsString(expectedTokens));
+        super("Unexpected " + t.type + " token with value " + t.type + " expected token types " + tokensAsString(expectedTokens));
     }
 }
