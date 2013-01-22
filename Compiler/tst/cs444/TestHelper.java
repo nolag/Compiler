@@ -20,6 +20,12 @@ public class TestHelper {
 		assertNull(scanner.getNextToken());
 	}
 
+	// Used mainly to test the scanner throws exceptions for lexically invalid strings
+	public static void scanString(String string) throws Exception {
+		Lexer scanner = getScannerFor(string);
+		while (null != scanner.getNextToken()){}
+	}
+
 	public static Lexer getScannerFor(String input) throws IOException {
 		BufferedReader reader = new BufferedReader(new StringReader(input));
 

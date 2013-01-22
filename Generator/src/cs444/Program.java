@@ -44,13 +44,13 @@ public class Program {
         
         try {
             
-            writer = new BufferedWriter(new FileWriter("Lexer.java"));
-            LexerClassGenerator lexer = new LexerClassGenerator(grammar, writer);
+            writer = new BufferedWriter(new FileWriter("JoosDFA.java"));
+            DFAClassGenerator lexer = new DFAClassGenerator(grammar, writer);
             lexer.generate();
             
         } catch (IOException e) {
 
-            System.err.println("Error writing to Lexer.java.");
+            System.err.println("Error writing to JoosDFA.java.");
             
         } finally {
             

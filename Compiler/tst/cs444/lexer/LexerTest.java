@@ -20,6 +20,11 @@ public class LexerTest {
        TestHelper.assertTokenFor("/* some comment ***/", Token.Type.COMMENT);
     }
 
+    @Test(expected = LexerException.class)
+    public void testTraditionalCommentsWithoutClosing() throws Exception {
+    	TestHelper.scanString("/* some comment that never ends");
+    }
+
     @Test
     public void testValidEndOfLineComment() throws Exception {
         TestHelper.assertTokenFor("// some comment", Token.Type.END_LINE_COMMENT);
@@ -76,9 +81,16 @@ public class LexerTest {
     	TestHelper.assertTokenFor("'\\'", Token.Type.CHAR_LITERAL);
     	TestHelper.assertTokenFor("'\\''", Token.Type.CHAR_LITERAL);
     	TestHelper.assertTokenFor("'\\177'", Token.Type.CHAR_LITERAL);
+    }
 
-    	// TODO: make sure this produce a lexical error.
-    	// TestHelper.assertTokenFor("''", Token.Type.CHAR_LITERAL);
+    @Test(expected = LexerException.class)
+    public void testIlegalEmptyCharLiteral() throws Exception {
+    	TestHelper.scanString("\'\'");
+    }
+
+    @Test(expected = LexerException.class)
+    public void testCharLiteralWithoutClosingQuote() throws Exception {
+    	TestHelper.scanString("\'");
     }
 
     @Test
@@ -87,6 +99,11 @@ public class LexerTest {
         TestHelper.assertTokenFor("\"This is a string\"", Token.Type.STR_LITERAL); // normal string
         TestHelper.assertTokenFor("\"\\t\"", Token.Type.STR_LITERAL); // escape "\t"
         TestHelper.assertTokenFor("\"\\\"\"", Token.Type.STR_LITERAL); // a string containing " alone
+    }
+
+    @Test(expected = LexerException.class)
+    public void testStringLiteralWithoutClosingQuote() throws Exception {
+    	TestHelper.scanString("\"");
     }
 
     @Test

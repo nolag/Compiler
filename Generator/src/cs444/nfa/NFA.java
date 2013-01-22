@@ -42,7 +42,11 @@ public class NFA {
 
                 NFA currentNFA = nfas[i];
                 result.addAllStates(currentNFA);
-                previousNFA.getAcceptingState().addTransition(new EpsilonTransition(currentNFA.getStartState()));
+
+                NFAState previousAcceptingState = previousNFA.getAcceptingState();
+                previousAcceptingState.addTransition(new EpsilonTransition(currentNFA.getStartState()));
+                previousAcceptingState.setAcceptingState(false);
+
                 previousNFA = currentNFA;
             }
 
