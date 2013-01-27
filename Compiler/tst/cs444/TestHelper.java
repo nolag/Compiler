@@ -34,8 +34,8 @@ public class TestHelper {
 
 	public static void assertToken(Token.Type type, String lexeme, Token token){
 		String failMessage = "Unexpected token: " + token;
-		assertEquals(failMessage, type, token.getType());
-		assertEquals(failMessage, lexeme, token.getLexeme());
+		assertEquals(failMessage, type, token.type);
+		assertEquals(failMessage, lexeme, token.lexeme);
 	}
 
 	// useful for debugging
