@@ -1,7 +1,11 @@
 package cs444.parser;
 
-import cs444.parser.symbols.factories.ISymbolFactory;
+import java.util.Map;
+
+import cs444.parser.symbols.SymbolState;
+import cs444.parser.symbols.factories.NonTerminalFactory;
 
 public interface IParserRule {
-    ISymbolFactory getStartSymbol();
+    Map<Integer, Map<String, SymbolState>> getRules();
+    NonTerminalFactory getStartRule();
 }

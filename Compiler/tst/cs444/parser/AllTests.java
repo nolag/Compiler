@@ -46,34 +46,41 @@ public class AllTests {
         tokens.add(new Token(Token.Type.EQ, "="));
         tokens.add(new Token(Token.Type.ID, "q"));
         tokens.add(new Token(Token.Type.SEMI, ";"));
+        tokens.add(new Token(Token.Type.ID, "d"));
+        tokens.add(new Token(Token.Type.PLUS, "+"));
+        tokens.add(new Token(Token.Type.EQ, "="));
+        tokens.add(new Token(Token.Type.ID, "o"));
+        tokens.add(new Token(Token.Type.ID, "x"));
+        tokens.add(new Token(Token.Type.MINUS, "-"));
+        tokens.add(new Token(Token.Type.EQ, "="));
+        tokens.add(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "100"));
         tokens.add(new Token(Token.Type.EOF, "<EOF>"));
         tokens.add(null);
         MockLexer lexer = new MockLexer(tokens);
         ISymbol start = parser.parse(lexer);
 
-        String expected =  "decl -> <INT, int> <ID, i> <EQ, => <DECIMAL_INTEGER_LITERAL, 11> decl \n"
-        		+ "decl -> <INT, int> <ID, x> <EQ, => <ID, q> ";
-
+        String expected =  "DCLS_BECOMES -> DCLS BECOMES \n" +
+                "DCLS -> INT ID EQ DECIMAL_INTEGER_LITERAL DCLS \n" +
+                "INT -> int\n" +
+                "ID -> i\n" +
+                "EQ -> =\n" +
+                "DECIMAL_INTEGER_LITERAL -> 11\n" +
+                "DCLS -> INT ID EQ ID \n" +
+                "INT -> int\n" +
+                "ID -> x\n" +
+                "EQ -> =\n" +
+                "ID -> q\n" +
+                "BECOMES -> ID PLUS EQ ID BECOMES \n" +
+                "ID -> d\n" +
+                "PLUS -> +\n" +
+                "EQ -> =\n" +
+                "ID -> o\n" +
+                "BECOMES -> ID MINUS EQ DECIMAL_INTEGER_LITERAL \n" +
+                "ID -> x\n" +
+                "MINUS -> -\n" +
+                "EQ -> =\n" +
+                "DECIMAL_INTEGER_LITERAL -> 100";
         assertEquals(expected, start.rule());
-
-        List<Token> tokens2 = new LinkedList<Token>();
-        tokens2.add(new Token(Token.Type.ID, "d"));
-        tokens2.add(new Token(Token.Type.PLUS, "+"));
-        tokens2.add(new Token(Token.Type.EQ, "="));
-        tokens2.add(new Token(Token.Type.ID, "o"));
-        tokens2.add(new Token(Token.Type.ID, "x"));
-        tokens2.add(new Token(Token.Type.MINUS, "-"));
-        tokens2.add(new Token(Token.Type.EQ, "="));
-        tokens2.add(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "100"));
-        tokens2.add(new Token(Token.Type.EOF, "<EOF>"));
-        tokens2.add(null);
-        MockLexer lexer2 = new MockLexer(tokens2);
-        ISymbol start2 = parser.parse(lexer2);
-
-        String expected2 =  "becomes -> <ID, d> <PLUS, +> <EQ, => <ID, o> becomes \n"
-                + "becomes -> <ID, x> <MINUS, -> <EQ, => <DECIMAL_INTEGER_LITERAL, 100> ";
-
-        assertEquals(expected2, start2.rule());
     }
 
     @Test(expected = UnexpectedTokenException.class)

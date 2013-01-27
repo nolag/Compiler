@@ -3,11 +3,9 @@ package cs444.generator;
 import java.io.IOException;
 import java.io.Writer;
 
-import cs444.generator.parser.exceptions.UndeclaredRuleException;
-
 public abstract class Generator {
 
-    private final Writer writer;
+    protected final Writer writer;
     private int indent;
 
     public Generator(Writer writer) {
@@ -31,5 +29,5 @@ public abstract class Generator {
         writer.write(str + '\n');
     }
 
-    public abstract void generate() throws IOException, UndeclaredRuleException;
+    public abstract void generate() throws IOException;
 }

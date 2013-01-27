@@ -1,33 +1,76 @@
 package cs444.parser;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Stack;
 
 import cs444.lexer.ILexer;
 import cs444.lexer.LexerException;
 import cs444.lexer.Token;
 import cs444.lexer.Token.Parse;
 import cs444.parser.symbols.ISymbol;
-import cs444.parser.symbols.StateTerminal;
+import cs444.parser.symbols.NonTerminal;
+import cs444.parser.symbols.SymbolState;
+import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
-import cs444.parser.symbols.factories.ISymbolFactory;
+import cs444.parser.symbols.factories.NonTerminalFactory;
 
 public class Parser {
-    private final ISymbolFactory startFactory;
+    private final Map<Integer, Map<String, SymbolState>> states;
+
+    private final Stack<ISymbol> symbolStack = new Stack<ISymbol>();
+    private final Stack<Integer> stateStack = new Stack<Integer>();
+    private final NonTerminalFactory startFactory;
 
     public Parser(IParserRule rule){
-        this.startFactory = rule.getStartSymbol();
+        states = rule.getRules();
+        startFactory = rule.getStartRule();
     }
 
     //TODO make this return a tree
     public ISymbol parse(ILexer lexer) throws IOException, LexerException, UnexpectedTokenException{
-        ISymbol start = startFactory.create();
         Token token;
+        stateStack.push(0);
+        Map<String, SymbolState> nextStates = states.get(0);
+
         while((token = lexer.getNextToken()) != null){
             if(Token.typeToParse.get(token.type) == Parse.IGNORE) continue;
-            if(start.giveToken(token)){
-                if(token.type !=  Token.Type.EOF) throw new UnexpectedTokenException(token, new StateTerminal [] {});
+            Terminal terminal = new Terminal(token);
+            SymbolState symbolState = nextStates.get(terminal.token.type.toString());
+
+            if(symbolState == null) throw new UnexpectedTokenException(token, nextStates.keySet() );
+
+            while(symbolState.shouldReduce()){
+                int numReduce = symbolState.numRed;
+                ISymbol [] children = new ISymbol[numReduce];
+
+                for(int i = 0; i < numReduce; i++){
+                    children[numReduce - 1 - i] = symbolStack.pop();
+                    stateStack.pop();
+
+                }
+                nextStates = states.get(stateStack.peek());
+                NonTerminal nonTerminal = symbolState.factory.create(children);
+                symbolState = nextStates.get(nonTerminal.getName());
+                if(symbolState == null) throw new UnexpectedTokenException(token, nextStates.keySet() );
+                symbolStack.push(nonTerminal);
+                stateStack.push(symbolState.to);
+                nextStates = states.get(symbolState.to);
+                symbolState = nextStates.get(terminal.token.type.toString());
+                if(symbolState == null) throw new UnexpectedTokenException(token, nextStates.keySet() );
             }
+
+            stateStack.push(symbolState.to);
+            nextStates = states.get(symbolState.to);
+            symbolStack.push(terminal);
         }
-        return start;
+        int numLeft = symbolStack.size();
+        ISymbol [] leftOvers = new ISymbol[numLeft];
+
+        for(int i = 0; i < numLeft; i++){
+            leftOvers[numLeft - 1 - i] = symbolStack.pop();
+        }
+
+        return startFactory.create(leftOvers);
     }
 }
