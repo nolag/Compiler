@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. -->
 <project basedir="." default="build" name="Compiler">
     <property environment="env"/>
     <property name="junit.output.dir" value="junit"/>
@@ -57,11 +52,18 @@
     <target name="tests">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
             <test name="cs444.lexer.LexerTest" todir="${junit.output.dir}"/>
             <test name="cs444.parser.AllTests" todir="${junit.output.dir}"/>
             <classpath refid="Compiler.classpath"/>
         </junit>
+    </target>
+    <target name="LexerTest">
+      <mkdir dir="${junit.output.dir}"/>
+      <junit fork="yes" printsummary="withOutAndErr">
+        <formatter type="brief" usefile="false" />
+        <test name="cs444.lexer.LexerTest" todir="${junit.output.dir}"/>
+        <classpath refid="Compiler.classpath"/>
+      </junit>
     </target>
     <target name="junitreport">
         <junitreport todir="${junit.output.dir}">
