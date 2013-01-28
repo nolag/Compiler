@@ -34,12 +34,13 @@
     <target name="build-subprojects"/>
     <target depends="init" name="build-project">
         <echo message="${ant.project.name}: ${ant.file}"/>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}" includeantruntime="true">
             <src path="src"/>
             <classpath refid="Compiler.classpath"/>
         </javac>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}" includeantruntime="true">
             <src path="tst"/>
+            <exclude name="cs444/integration/fixtures/**" />
             <classpath refid="Compiler.classpath"/>
         </javac>
     </target>
@@ -53,10 +54,21 @@
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
             <test name="cs444.lexer.LexerTest" todir="${junit.output.dir}"/>
-            <test name="cs444.parser.AllTests" todir="${junit.output.dir}"/>
+            <test name="cs444.lexer.LexerMultipleTokensTest" todir="${junit.output.dir}"/>
+            <test name="cs444.parser.ParserTest" todir="${junit.output.dir}"/>
+            <test name="cs444.integration.parser.JoosRulesTest" todir="${junit.output.dir}"/>
             <classpath refid="Compiler.classpath"/>
         </junit>
     </target>
+
+    <target name="integration-tests">
+      <junit fork="yes" printsummary="withOutAndErr">
+        <test name="cs444.integration.parser.JoosRulesTest" todir="${junit.output.dir}"/>
+        <formatter type="brief" usefile="false" />
+        <classpath refid="Compiler.classpath"/>
+      </junit>
+    </target>
+
     <target name="LexerTest">
       <mkdir dir="${junit.output.dir}"/>
       <junit fork="yes" printsummary="withOutAndErr">
