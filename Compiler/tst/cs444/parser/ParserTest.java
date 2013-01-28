@@ -16,7 +16,7 @@ import cs444.parser.rules.TestRule;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
 
-public class AllTests {
+public class ParserTest {
 
     private final Parser parser = new Parser(new TestRule());
 
