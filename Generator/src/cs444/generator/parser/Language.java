@@ -23,20 +23,12 @@ public abstract class Language extends Generator{
     protected Language(Writer writer, List<String> rules, String startRule, LexicalGrammar tokenGrammar, String name){
         super(writer);
 
+        initializeTerminals(tokenGrammar);
         this.rules = toUpperCase(rules);
+        initializeNonTerminals();
 
         this.startRule = startRule.toUpperCase();
         this.name = name;
-
-        TokenMetadata [] metaDataList = tokenGrammar.getTokenMetadata();
-
-        for(TokenMetadata metaData :  metaDataList) terminals.add(metaData.name);
-
-        for(String rule : this.rules) nonTerminals.add(rule.split(" ")[0]);
-
-        terminals.add("EOF");
-
-        nonTerminals.add("S");
     }
 
 	public ByteArrayInputStream getLangStream() {
@@ -78,16 +70,7 @@ public abstract class Language extends Generator{
         writeLine("");
         writeLine("Map<Integer, Map<String, SymbolState>> rules = new HashMap<Integer, Map<String, SymbolState>>();");
 
-        for(String nonTerminal : nonTerminals )
-            writeLine("NonTerminalFactory " + nonTerminal.toLowerCase() + " = new NonTerminalFactory(\"" + nonTerminal + "\");");
-
-        writeLine("");
-
-        List<String> addTo = new LinkedList<String>();
-
-        LanguageGenerator.create(getLangStream(), addTo);
-
-        for(String line : addTo) writeLine(line);
+        generateNonTerminalFactories();
 
         writeLine("return rules;");
 
@@ -97,7 +80,37 @@ public abstract class Language extends Generator{
         dedent();
         writeLine("}");
     }
-    
+
+	private void generateDFA() throws IOException {
+      List<String> addTo = new LinkedList<String>();
+
+      LanguageGenerator.create(getLangStream(), addTo);
+
+      for(String line : addTo) writeLine(line);
+	}
+
+	private void generateNonTerminalFactories() throws IOException {
+		for(String nonTerminal : nonTerminals )
+            writeLine("NonTerminalFactory " + nonTerminal.toLowerCase() + " = new NonTerminalFactory(\"" + nonTerminal + "\");");
+
+        writeLine("");
+	}
+
+	private void initializeNonTerminals() {
+		for(String rule : this.rules) nonTerminals.add(rule.split(" ")[0]);
+
+        nonTerminals.add("S");
+	}
+
+	private void initializeTerminals(LexicalGrammar tokenGrammar) {
+		TokenMetadata [] metaDataList = tokenGrammar.getTokenMetadata();
+
+        for(TokenMetadata metaData :  metaDataList){
+        	terminals.add(metaData.name);
+        }
+        terminals.add("EOF");
+	}
+
     private List<String> toUpperCase(List<String> rules) {
 		List<String> upperCasedRules = new LinkedList<String>();
 		for(String rule : rules){
