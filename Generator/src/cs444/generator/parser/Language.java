@@ -83,7 +83,7 @@ public abstract class Language extends Generator{
 
         List<String> addTo = new LinkedList<String>();
 
-        Jslr1.create(getLangStream(), addTo);
+        LanguageGenerator.create(getLangStream(), addTo);
 
         for(String line : addTo) writeLine(line);
 

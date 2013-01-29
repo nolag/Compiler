@@ -45,7 +45,7 @@ import java.util.Set;
  * this file is modified.
  */
 
-public class Jslr1 {
+public class LanguageGenerator {
     public static final void create(InputStream in, List<String> addTo) {
         Grammar grammar;
         try {
@@ -55,11 +55,11 @@ public class Jslr1 {
             System.exit(1);
             return;
         }
-        Generator jsalr = new Generator(grammar);
+        Generator generator = new Generator(grammar);
         try {
-            jsalr.computeFirstFollowNullable();
-            jsalr.generateLR1Table();
-            jsalr.generateOutput(addTo);
+            generator.computeFirstFollowNullable();
+            generator.generateLALR1Table();
+            generator.generateOutput(addTo);
         } catch(Error e) {
             System.err.println("Error performing LALR(1) construction: "+e);
             System.exit(1);
