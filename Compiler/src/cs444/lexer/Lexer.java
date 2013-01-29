@@ -5,6 +5,8 @@ import java.io.Reader;
 
 public class Lexer implements ILexer{
     private final Reader reader;
+	private boolean emittedLastToken;
+	private boolean emittedEOF;
     private int nextChar;
     private IDFA dfa;
 
@@ -31,12 +33,23 @@ public class Lexer implements ILexer{
                 state = dfa.getState(previewState);
             }
         }
-
-        if (state.isAccepting()){
-            return state.createToken(lexeme);
-        }
+		
+        if (!emittedLastToken) {
+        	
+        	emittedLastToken = true;
+        	if (state.isAccepting())
+        		return state.createToken(lexeme);
+        	else
+        		throw new LexerException("Error scanning " +
+                		lexeme + (char)nextChar + ".");
+        	
+        } else if (emittedLastToken && !emittedEOF) {
+			
+        	emittedEOF = true;
+			return new Token(Token.Type.EOF, "<EOF>");
+		}
         
-        if (lexeme != ""){
+        if (lexeme != "") {
         	throw new LexerException("Unexpected end of file reached while scanning a token");
         }
 

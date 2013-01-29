@@ -18,6 +18,7 @@ public class LexerMultipleTokensTest {
 		TestHelper.assertToken(Token.Type.COMMENT, "/* some comment */", scanner.getNextToken());
 		TestHelper.assertToken(Token.Type.WHITESPACE, "\n", scanner.getNextToken());
 		TestHelper.assertToken(Token.Type.IF, "if", scanner.getNextToken());
+		TestHelper.assertToken(Token.Type.EOF, "<EOF>", scanner.getNextToken());
 		assertNull(scanner.getNextToken());
 	}
 
@@ -33,6 +34,7 @@ public class LexerMultipleTokensTest {
 		TestHelper.assertToken(Token.Type.IF, "if", scanner.getNextToken());
 		TestHelper.assertToken(Token.Type.WHITESPACE, " ", scanner.getNextToken());
 		TestHelper.assertToken(Token.Type.COMMENT, "/* some other comment */", scanner.getNextToken());
+		TestHelper.assertToken(Token.Type.EOF, "<EOF>", scanner.getNextToken());
 		assertNull(scanner.getNextToken());
 	}
 
@@ -45,6 +47,7 @@ public class LexerMultipleTokensTest {
 
 		TestHelper.assertToken(Token.Type.END_LINE_COMMENT, "// some comment\n", scanner.getNextToken());
 		TestHelper.assertToken(Token.Type.WHILE, "while", scanner.getNextToken());
+		TestHelper.assertToken(Token.Type.EOF, "<EOF>", scanner.getNextToken());
 		assertNull(scanner.getNextToken());
 	}
 
@@ -57,6 +60,7 @@ public class LexerMultipleTokensTest {
 		TestHelper.assertToken(Token.Type.STR_LITERAL, "\"Hello world\"", scanner.getNextToken());
 		TestHelper.assertToken(Token.Type.WHITESPACE, " ", scanner.getNextToken());
 		TestHelper.assertToken(Token.Type.WHILE, "while", scanner.getNextToken());
+		TestHelper.assertToken(Token.Type.EOF, "<EOF>", scanner.getNextToken());
 		assertNull(scanner.getNextToken());
 	}
 }
