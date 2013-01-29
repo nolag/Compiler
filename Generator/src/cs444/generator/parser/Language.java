@@ -93,31 +93,30 @@ public abstract class Language extends Generator{
 
 	private void generateNonTerminalFactories() throws IOException {
       for(String nonTerminal : nonTerminals ){
-            writeLine("NonTerminalFactory " + nonTerminal.toLowerCase() + " = new NonTerminalFactory(\"" + nonTerminal + "\");");
+            writeLine("NonTerminalFactory " + nonTerminal + " = new NonTerminalFactory(\"" + nonTerminal + "\");");
       }
       writeLine("");
 	}
 
 	private void initializeNonTerminals() {
-		for(String rule : this.rules) nonTerminals.add(rule.split(" ")[0]);
-
-        nonTerminals.add("S");
+      for(String rule : this.rules) nonTerminals.add(rule.split(" ")[0]);
+      nonTerminals.add("S");
 	}
 
-	private void initializeTerminals(LexicalGrammar tokenGrammar) {
-		TokenMetadata [] metaDataList = tokenGrammar.getTokenMetadata();
+    private void initializeTerminals(LexicalGrammar tokenGrammar) {
+        TokenMetadata [] metaDataList = tokenGrammar.getTokenMetadata();
 
         for(TokenMetadata metaData :  metaDataList){
-        	terminals.add(metaData.name);
+            terminals.add(metaData.name.toUpperCase());
         }
         terminals.add("EOF");
-	}
+    }
 
     private List<String> toUpperCase(List<String> rules) {
-		List<String> upperCasedRules = new LinkedList<String>();
-		for(String rule : rules){
-			upperCasedRules.add(rule.toUpperCase());
-		}
-		return upperCasedRules;
-	}
+        List<String> upperCasedRules = new LinkedList<String>();
+        for(String rule : rules){
+            upperCasedRules.add(rule.toUpperCase());
+        }
+        return upperCasedRules;
+    }
 }

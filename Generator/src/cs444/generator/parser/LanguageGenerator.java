@@ -660,7 +660,7 @@ class Generator {
                 line += stateMap.get(sa.nextState);
             } else if(a instanceof ReduceAction) {
                 ReduceAction ra = (ReduceAction)a;
-                line += ra.rule.lhs.toLowerCase() +  ",  " + ra.rule.rhs.length;
+                line += ra.rule.lhs +  ",  " + ra.rule.rhs.length;
             } else throw new Error("Internal error: unknown action");
 
             addTo.add(line + "));");
