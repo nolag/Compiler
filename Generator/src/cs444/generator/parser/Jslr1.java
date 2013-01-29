@@ -58,7 +58,7 @@ public class Jslr1 {
         Generator jsalr = new Generator(grammar);
         try {
             jsalr.computeFirstFollowNullable();
-            jsalr.generateSLR1Table();
+            jsalr.generateLR1Table();
             jsalr.generateOutput(addTo);
         } catch(Error e) {
             System.err.println("Error performing LALR(1) construction: "+e);

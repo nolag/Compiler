@@ -32,6 +32,8 @@ public abstract class Language extends Generator{
 
         terminals.add("EOF");
 
+        nonTerminals.add("S");
+
         for(String rule : rules) nonTerminals.add(rule.split(" ")[0]);
     }
 
@@ -42,12 +44,12 @@ public abstract class Language extends Generator{
 
         sb.append(nonTerminals.size()).append("\n");
 
-
         for(String nonTerminal : nonTerminals) sb.append(nonTerminal).append("\n");
 
-        sb.append(startRule).append("\n");
+        //Start Rule
+        sb.append("S\n");
 
-        sb.append(rules.size()).append("\n");
+        sb.append(rules.size() + 1).append("\nS ").append(startRule).append(" EOF\n");
 
         for(String rule : rules) sb.append(rule).append("\n");
 
@@ -68,7 +70,6 @@ public abstract class Language extends Generator{
         writeLine("import cs444.parser.symbols.factories.NonTerminalFactory;");
         writeLine("public class " + name +" implements IParserRule{");
         indent();
-        writeLine("private NonTerminalFactory start;");
         writeLine("public Map<Integer, Map<String, SymbolState>> getRules() {");
         indent();
 
@@ -86,18 +87,7 @@ public abstract class Language extends Generator{
 
         for(String line : addTo) writeLine(line);
 
-        writeLine("start = " + startRule.toLowerCase() + ";");
         writeLine("return rules;");
-
-        dedent();
-        writeLine("}");
-
-        writeLine("");
-
-        writeLine("public NonTerminalFactory getStartRule(){");
-        indent();
-
-        writeLine("return start;");
 
         dedent();
         writeLine("}");

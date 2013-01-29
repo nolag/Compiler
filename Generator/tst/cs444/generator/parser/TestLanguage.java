@@ -26,7 +26,7 @@ public class TestLanguage extends Language{
         rules.add("BECOMES id minus eq decimal_integer_literal BECOMES");
         rules.add("BECOMES ");
         rules.add("DCLS ");
-        rules.add("DCLS_BECOMES DCLS BECOMES EOF");
+        rules.add("DCLS_BECOMES DCLS BECOMES");
     }
 
     private TestLanguage(Writer writer){

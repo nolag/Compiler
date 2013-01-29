@@ -13,18 +13,15 @@ import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.SymbolState;
 import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
-import cs444.parser.symbols.factories.NonTerminalFactory;
 
 public class Parser {
     private final Map<Integer, Map<String, SymbolState>> states;
 
     private final Stack<ISymbol> symbolStack = new Stack<ISymbol>();
     private final Stack<Integer> stateStack = new Stack<Integer>();
-    private final NonTerminalFactory startFactory;
 
     public Parser(IParserRule rule){
         states = rule.getRules();
-        startFactory = rule.getStartRule();
     }
 
     //TODO make this return a tree
@@ -64,13 +61,8 @@ public class Parser {
             nextStates = states.get(symbolState.to);
             symbolStack.push(terminal);
         }
-        int numLeft = symbolStack.size();
-        ISymbol [] leftOvers = new ISymbol[numLeft];
-
-        for(int i = 0; i < numLeft; i++){
-            leftOvers[numLeft - 1 - i] = symbolStack.pop();
-        }
-
-        return startFactory.create(leftOvers);
+        //Pop off EOF
+        symbolStack.pop();
+        return symbolStack.lastElement();
     }
 }
