@@ -18,7 +18,7 @@ import cs444.parser.symbols.exceptions.UnexpectedTokenException;
 public class JoosRulesTest {
 
     @Test
-    public void testEmptyPackage() throws IOException,
+    public void testParseEmptyPackage() throws IOException,
                                             LexerException,
                                             UnexpectedTokenException {
         ISymbol parseTree = parseTreeFor("EmptyPackage");
@@ -29,6 +29,13 @@ public class JoosRulesTest {
             "ID -> mypackage";
 
         assertEquals(expected, parseTree.rule());
+    }
+
+    @Test
+    public void testParseCompleteCompUnit() throws IOException,
+                                              LexerException,
+                                              UnexpectedTokenException {
+        parseTreeFor("CompleteCompUnit");
     }
 
     private ISymbol parseTreeFor(String fileName) throws IOException,

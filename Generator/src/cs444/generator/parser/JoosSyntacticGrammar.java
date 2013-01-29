@@ -13,85 +13,151 @@ public class JoosSyntacticGrammar extends Language {
     private static final List<String> rules = new LinkedList<String>();
 
     static{
-        rules.add("CompilationUnit PackageDeclaration");
-        rules.add("PackageDeclaration package id semi");
-
         // CompilationUnit:
         // PackageDeclaration_opt ImportDeclarations_opt TypeDeclarations_opt
-        // rules.add("CompilationUnit TypeDeclarations");
-        // rules.add("CompilationUnit ImportDeclarations");
-        // rules.add("CompilationUnit ImportDeclarations TypeDeclarations");
-        // rules.add("CompilationUnit PackageDeclaration");
-        // rules.add("CompilationUnit PackageDeclaration TypeDeclarations");
-        // rules.add("CompilationUnit PackageDeclaration ImportDeclarations");
-        // rules.add("CompilationUnit PackageDeclaration ImportDeclarations TypeDeclarations");
+        rules.add("CompilationUnit TypeDeclarations");
+        rules.add("CompilationUnit ImportDeclarations");
+        rules.add("CompilationUnit ImportDeclarations TypeDeclarations");
+        rules.add("CompilationUnit PackageDeclaration");
+        rules.add("CompilationUnit PackageDeclaration TypeDeclarations");
+        rules.add("CompilationUnit PackageDeclaration ImportDeclarations");
+        rules.add("CompilationUnit PackageDeclaration ImportDeclarations TypeDeclarations");
 
-        // // ImportDeclarations:
-        // // ImportDeclaration
-        // // ImportDeclarations ImportDeclaration
-        // rules.add("ImportDeclarations ImportDeclaration");
-        // rules.add("ImportDeclarations ImportDeclarations ImportDeclaration");
+        // ImportDeclarations:
+        // ImportDeclaration
+        // ImportDeclarations ImportDeclaration
+        rules.add("ImportDeclarations ImportDeclaration");
+        rules.add("ImportDeclarations ImportDeclarations ImportDeclaration");
 
-        // // TypeDeclarations:
-        // // TypeDeclaration
-        // // TypeDeclarations TypeDeclaration
-        // rules.add("TypeDeclarations TypeDeclaration");
-        // rules.add("TypeDeclarations TypeDeclarations TypeDeclaration");
+        // TypeDeclarations:
+        // TypeDeclaration
+        // TypeDeclarations TypeDeclaration
+        rules.add("TypeDeclarations TypeDeclaration");
+        rules.add("TypeDeclarations TypeDeclarations TypeDeclaration");
 
-        // rules.add("PackageDeclaration package id semi");
+        rules.add("PackageDeclaration package id semi");
 
-        // // ImportDeclaration:
-        // // SingleTypeImportDeclaration
-        // // TypeImportOnDemandDeclaration
-        // rules.add("ImportDeclaration SingleTypeImportDeclaration");
-        // rules.add("ImportDeclaration TypeImportOnDemandDeclaration");
+        // ImportDeclaration:
+        // SingleTypeImportDeclaration
+        // TypeImportOnDemandDeclaration
+        rules.add("ImportDeclaration SingleTypeImportDeclaration");
+        rules.add("ImportDeclaration TypeImportOnDemandDeclaration");
 
-        // // SingleTypeImportDeclaration:
-        // // import TypeName
-        // rules.add("SingleTypeImportDeclaration import id semi");
+        // SingleTypeImportDeclaration:
+        // import TypeName
+        rules.add("SingleTypeImportDeclaration import id semi");
 
-        // // TypeImportOnDemandDeclaration:
-        // // import PackageOrTypeName . * ;
-        // rules.add("TypeImportOnDemandDeclaration import id dot star semi");
+        // TypeImportOnDemandDeclaration:
+        // import PackageOrTypeName . * ;
+        rules.add("TypeImportOnDemandDeclaration import id dot star semi");
 
-        // // TypeDeclaration:
+        // TypeDeclaration:
+        // ClassDeclaration
+        // InterfaceDeclaration
+        // ;
+        rules.add("TypeDeclaration ClassDeclaration");
+ // TODO: uncomment this after adding rules for InterfaceDeclaration
+ // rules.add("TypeDeclaration InterfaceDeclaration");
+        rules.add("TypeDeclaration semi");
+
+        // ClassDeclaration:
+        // ClassModifiers_opt class Identifier Super_opt Interfaces_opt ClassBody
+        rules.add("ClassDeclaration class id ClassBody");
+        rules.add("ClassDeclaration class id Interfaces ClassBody");
+        rules.add("ClassDeclaration class id SuperClass ClassBody");
+        rules.add("ClassDeclaration class id SuperClass Interfaces ClassBody");
+        rules.add("ClassDeclaration ClassModifiers class id ClassBody");
+        rules.add("ClassDeclaration ClassModifiers class id Interfaces ClassBody");
+        rules.add("ClassDeclaration ClassModifiers class id SuperClass ClassBody");
+        rules.add("ClassDeclaration ClassModifiers class id SuperClass Interfaces ClassBody");
+
+        // ClassModifiers:
+        // ClassModifier
+        // ClassModifiers ClassModifier
+        // ClassModifier: one of: public protected private abstract static final strictfp
+        rules.add("ClassModifiers ClassModifier");
+        rules.add("ClassModifiers ClassModifiers ClassModifier");
+        rules.add("ClassModifier public");
+        rules.add("ClassModifier protected");
+        rules.add("ClassModifier private");
+        rules.add("ClassModifier abstract");
+        rules.add("ClassModifier static");
+        rules.add("ClassModifier final");
+        // TODO: this is not required by Joos
+        rules.add("ClassModifier strictfp");
+
+        // Super:
+        // extends ClassType
+        rules.add("SuperClass extends ClassType");
+        rules.add("ClassType id");
+
+        // Interfaces:
+        // implements InterfaceTypeList
+        rules.add("Interfaces implements InterfaceTypeList");
+
+        // InterfaceTypeList:
+        // InterfaceType
+        // InterfaceTypeList , InterfaceType
+        rules.add("InterfaceTypeList InterfaceType");
+        rules.add("InterfaceTypeList InterfaceTypeList comma InterfaceType");
+        rules.add("InterfaceType id");
+
+        // ClassBody:
+        // { ClassBodyDeclarations_opt }
+        rules.add("ClassBody lbrace rbrace");
+        // rules.add("ClassBody LBRACE ClassBodyDeclarations RBRACE");
+
+        // // ClassBodyDeclarations:
+        // // ClassBodyDeclaration
+        // // ClassBodyDeclarations ClassBodyDeclaration
+        // rules.add("ClassBodyDeclarations ClassBodyDeclaration");
+        // rules.add("ClassBodyDeclarations ClassBodyDeclarations ClassBodyDeclaration");
+
+        // // ClassBodyDeclaration:
+        // // ClassMemberDeclaration
+        // // InstanceInitializer
+        // // StaticInitializer
+        // // ConstructorDeclaration
+        // rules.add("ClassBodyDeclaration ClassMemberDeclaration");
+        // rules.add("ClassBodyDeclaration InstanceInitializer");
+        // rules.add("ClassBodyDeclaration StaticInitializer");
+        // rules.add("ClassBodyDeclaration ConstructorDeclaration");
+
+        // // ClassMemberDeclaration:
+        // // FieldDeclaration
+        // // MethodDeclaration
         // // ClassDeclaration
         // // InterfaceDeclaration
         // // ;
-        // rules.add("TypeDeclaration ClassDeclaration");
-        // rules.add("TypeDeclaration InterfaceDeclaration");
-        // rules.add("TypeDeclaration semi");
+        // rules.add("ClassMemberDeclaration FieldDeclaration");
+        // rules.add("ClassMemberDeclaration MethodDeclaration");
+        // rules.add("ClassMemberDeclaration ClassDeclaration");
+        // rules.add("ClassMemberDeclaration InterfaceDeclaration");
+        // rules.add("ClassMemberDeclaration semi");
 
-        // // ClassDeclaration:
-        // // ClassModifiers_opt class Identifier Super_opt Interfaces_opt ClassBody
-        // rules.add("ClassDeclaration class id ClassBody");
-        // rules.add("ClassDeclaration class id Interfaces ClassBody");
-        // rules.add("ClassDeclaration class id Super ClassBody");
-        // rules.add("ClassDeclaration class id Super Interfaces ClassBody");
-        // rules.add("ClassDeclaration ClassModifiers class id ClassBody");
-        // rules.add("ClassDeclaration ClassModifiers class id Interfaces ClassBody");
-        // rules.add("ClassDeclaration ClassModifiers class id Super ClassBody");
-        // rules.add("ClassDeclaration ClassModifiers class id Super Interfaces ClassBody");
+        // // FieldDeclaration:
+        // // FieldModifiers_opt Type VariableDeclarators ;
+        // rules.add("FieldDeclaration Type VariableDeclarators semi");
+        // rules.add("FieldDeclaration FieldModifiers Type VariableDeclarators semi");
 
-        // // ClassModifiers:
-        // // ClassModifier
-        // // ClassModifiers ClassModifier
-        // // ClassModifier: one of: public protected private abstract static final strictfp
-        // rules.add("ClassModifiers ClassModifier");
-        // rules.add("ClassModifiers ClassModifiers ClassModifier");
-        // rules.add("ClassModifier public");
-        // rules.add("ClassModifier protected");
-        // rules.add("ClassModifier private");
-        // rules.add("ClassModifier abstract");
-        // rules.add("ClassModifier static");
-        // rules.add("ClassModifier final");
-        // // TODO: this is not required by Joos
-        // rules.add("ClassModifier strictfp");
+        // // VariableDeclarators:
+        // // VariableDeclarator
+        // // VariableDeclarators , VariableDeclarator
+        // rules.add("VariableDeclarators VariableDeclarator");
+        // rules.add("VariableDeclarators VariableDeclarators semi Declarator");
 
-        // // Super:
-        // // extends ClassType
-        // rules.add("Super extends id");
+        // // VariableDeclarator:
+        // // VariableDeclaratorId
+        // // VariableDeclaratorId = VariableInitializer
+        // rules.add("VariableDeclarator VariableDeclaratorId");
+        // // VariableDeclaratorId = VariableInitializer
 
+        // VariableDeclaratorId:
+        // Identifier
+        // VariableDeclaratorId [ ]
+        // VariableInitializer:
+        // Expression
+        // ArrayInitializer
     }
 
     JoosSyntacticGrammar(Writer writer){
