@@ -39,6 +39,5 @@ public class JoosDFA implements IParserRule{
         rules.put(3, state3);
         state3.put("ID", new SymbolState(6));
         return rules;
->>>>>>> adds more rules and changes the casing of rules, so we don't have to uppercase every terminal
     }
 }

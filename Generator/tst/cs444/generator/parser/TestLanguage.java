@@ -18,15 +18,15 @@ public class TestLanguage extends Language{
     static{
         rules.add("DCLS int id eq id semi DCLS");
         rules.add("DCLS int id eq decimal_integer_literal semi DCLS");
-        rules.add("BECOMES id eq id BECOMES");
-        rules.add("BECOMES id plus eq id BECOMES");
-        rules.add("BECOMES id minus eq id BECOMES");
-        rules.add("BECOMES id eq decimal_integer_literal BECOMES");
-        rules.add("BECOMES id plus eq decimal_integer_literal BECOMES");
-        rules.add("BECOMES id minus eq decimal_integer_literal BECOMES");
-        rules.add("BECOMES ");
+        rules.add("N_BECOMES id eq id N_BECOMES");
+        rules.add("N_BECOMES id plus eq id N_BECOMES");
+        rules.add("N_BECOMES id minus eq id N_BECOMES");
+        rules.add("N_BECOMES id eq decimal_integer_literal N_BECOMES");
+        rules.add("N_BECOMES id plus eq decimal_integer_literal N_BECOMES");
+        rules.add("N_BECOMES id minus eq decimal_integer_literal N_BECOMES");
+        rules.add("N_BECOMES ");
         rules.add("DCLS ");
-        rules.add("DCLS_BECOMES DCLS BECOMES");
+        rules.add("DCLS_BECOMES DCLS N_BECOMES");
     }
 
     private TestLanguage(Writer writer){

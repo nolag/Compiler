@@ -56,9 +56,22 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
-    <target name="Program">
-        <java classname="cs444.Program" failonerror="true" fork="yes">
+    <target name="LexerGenerator">
+        <java classname="cs444.generator.Program" failonerror="true" fork="yes">
             <classpath refid="Generator.classpath"/>
         </java>
+    </target>
+    <target name="ParserGenerator" depends="build">
+      <java classname="cs444.generator.parser.ParserGenerator" failonerror="true" fork="yes">
+        <classpath refid="Generator.classpath"/>
+      </java>
+    </target>
+    <target name="TestLanguage">
+      <java classname="cs444.generator.parser.TestLanguage" failonerror="true" fork="yes">
+        <classpath refid="Generator.classpath"/>
+      </java>
+    </target>
+    <target name="GenJoosSyntax" depends="ParserGenerator">
+      <copy file="JoosDFA.java" todir="../Compiler/src/cs444/parser/" />
     </target>
 </project>
