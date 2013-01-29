@@ -72,6 +72,8 @@ public abstract class Language extends Generator{
 
         generateNonTerminalFactories();
 
+        generateDFA();
+
         writeLine("return rules;");
 
         dedent();
@@ -90,10 +92,10 @@ public abstract class Language extends Generator{
 	}
 
 	private void generateNonTerminalFactories() throws IOException {
-		for(String nonTerminal : nonTerminals )
+      for(String nonTerminal : nonTerminals ){
             writeLine("NonTerminalFactory " + nonTerminal.toLowerCase() + " = new NonTerminalFactory(\"" + nonTerminal + "\");");
-
-        writeLine("");
+      }
+      writeLine("");
 	}
 
 	private void initializeNonTerminals() {
