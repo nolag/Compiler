@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -19,17 +18,22 @@ import cs444.parser.symbols.exceptions.UnexpectedTokenException;
 public class JoosRulesTest {
 
     @Test
-    public void testSimpleCompUnit() throws IOException,
+    public void testEmptyPackage() throws IOException,
                                             LexerException,
                                             UnexpectedTokenException {
-        ISymbol parseTree = parseTreeFor("SimpleCompUnit");
+        ISymbol parseTree = parseTreeFor("EmptyPackage");
 
+        String expected =  "CompilationUnit -> PACKAGE ID \n" +
+            "PACKAGE -> package\n" +
+            "ID -> mypackage";
+
+        assertEquals(expected, parseTree.rule());
     }
 
     private ISymbol parseTreeFor(String fileName) throws IOException,
                                                          LexerException,
                                                          UnexpectedTokenException{
-        String filePath = "../fixtures/" + fileName + ".java";
+        String filePath = "tst/cs444/integration/fixtures/" + fileName + ".java";
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(new JoosRules());

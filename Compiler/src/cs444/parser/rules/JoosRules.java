@@ -12,15 +12,26 @@ public class JoosRules implements IParserRule{
     public Map<Integer, Map<String, SymbolState>> getRules() {
         
         Map<Integer, Map<String, SymbolState>> rules = new HashMap<Integer, Map<String, SymbolState>>();
-        NonTerminalFactory dcls_becomes = new NonTerminalFactory("DCLS_BECOMES");
+        NonTerminalFactory packagedeclaration = new NonTerminalFactory("PackageDeclaration");
+        NonTerminalFactory compilationunit = new NonTerminalFactory("CompilationUnit");
         
+        Map<String, SymbolState> state5 = new HashMap<String, SymbolState>();
+        rules.put(5, state5);
+        state5.put("EOF", new SymbolState(1));
         Map<String, SymbolState> state0 = new HashMap<String, SymbolState>();
         rules.put(0, state0);
-        state0.put("ID", new SymbolState(1));
-        Map<String, SymbolState> state1 = new HashMap<String, SymbolState>();
-        rules.put(1, state1);
-        state1.put("EOF", new SymbolState(2));
-        start = dcls_becomes;
+        state0.put("PACKAGE", new SymbolState(2));
+        Map<String, SymbolState> state4 = new HashMap<String, SymbolState>();
+        rules.put(4, state4);
+        state4.put("SEMI", new SymbolState(3));
+        Map<String, SymbolState> state2 = new HashMap<String, SymbolState>();
+        rules.put(2, state2);
+        state2.put("ID", new SymbolState(4));
+        Map<String, SymbolState> state3 = new HashMap<String, SymbolState>();
+        rules.put(3, state3);
+        state3.put("EOF", new SymbolState(packagedeclaration,  3));
+        state0.put("PACKAGEDECLARATION", new SymbolState(5));
+        start = compilationunit;
         return rules;
     }
     
