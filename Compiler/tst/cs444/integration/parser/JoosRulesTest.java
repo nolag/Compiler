@@ -11,7 +11,7 @@ import java.io.IOException;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.Parser;
-import cs444.parser.rules.JoosRules;
+import cs444.parser.JoosDFA;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
 
@@ -23,7 +23,8 @@ public class JoosRulesTest {
                                             UnexpectedTokenException {
         ISymbol parseTree = parseTreeFor("EmptyPackage");
 
-        String expected =  "CompilationUnit -> PACKAGE ID \n" +
+        String expected =  "COMPILATIONUNIT -> PACKAGEDECLARATION \n" +
+            "PACKAGEDECLARATION -> PACKAGE ID \n" +
             "PACKAGE -> package\n" +
             "ID -> mypackage";
 
@@ -36,7 +37,7 @@ public class JoosRulesTest {
         String filePath = "tst/cs444/integration/fixtures/" + fileName + ".java";
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         Lexer lexer = new Lexer(reader);
-        Parser parser = new Parser(new JoosRules());
+        Parser parser = new Parser(new JoosDFA());
 
         return parser.parse(lexer);
     }

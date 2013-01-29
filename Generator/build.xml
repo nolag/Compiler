@@ -72,6 +72,6 @@
       </java>
     </target>
     <target name="GenJoosSyntax" depends="ParserGenerator">
-      <copy file="JoosRules.java" todir="../Compiler/src/cs444/parser/rules" />
+      <copy file="JoosDFA.java" todir="../Compiler/src/cs444/parser/" />
     </target>
 </project>

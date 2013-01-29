@@ -650,7 +650,7 @@ class Generator {
                 addTo.add("rules.put(" + map + ", " + state + ");");
             }
 
-            String name = p.getO2().toUpperCase();
+            String name = p.getO2();
 
             String line = state + ".put(\"" + name + "\", new SymbolState(";
 

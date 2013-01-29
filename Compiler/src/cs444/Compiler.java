@@ -5,7 +5,7 @@ import java.io.FileReader;
 
 import cs444.lexer.Lexer;
 import cs444.parser.Parser;
-import cs444.parser.rules.JoosRules;
+import cs444.parser.rules.JoosDFA;
 import cs444.parser.symbols.ISymbol;
 
 public class Compiler {
@@ -22,7 +22,7 @@ public class Compiler {
 
             reader = new BufferedReader(new FileReader(args[0]));
             Lexer lexer = new Lexer(reader);
-            Parser parser = new Parser(new JoosRules());
+            Parser parser = new Parser(new JoosDFA());
 
             ISymbol parseTree = parser.parse(lexer);
 

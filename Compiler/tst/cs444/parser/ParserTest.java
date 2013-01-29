@@ -59,7 +59,7 @@ public class ParserTest {
         MockLexer lexer = new MockLexer(tokens);
         ISymbol start = parser.parse(lexer);
 
-        String expected =  "DCLS_BECOMES -> DCLS BECOMES \n" +
+        String expected =  "DCLS_BECOMES -> DCLS N_BECOMES \n" +
                 "DCLS -> INT ID EQ DECIMAL_INTEGER_LITERAL DCLS \n" +
                 "INT -> int\n" +
                 "ID -> i\n" +
@@ -70,12 +70,12 @@ public class ParserTest {
                 "ID -> x\n" +
                 "EQ -> =\n" +
                 "ID -> q\n" +
-                "BECOMES -> ID PLUS EQ ID BECOMES \n" +
+                "N_BECOMES -> ID PLUS EQ ID N_BECOMES \n" +
                 "ID -> d\n" +
                 "PLUS -> +\n" +
                 "EQ -> =\n" +
                 "ID -> o\n" +
-                "BECOMES -> ID MINUS EQ DECIMAL_INTEGER_LITERAL \n" +
+                "N_BECOMES -> ID MINUS EQ DECIMAL_INTEGER_LITERAL \n" +
                 "ID -> x\n" +
                 "MINUS -> -\n" +
                 "EQ -> =\n" +

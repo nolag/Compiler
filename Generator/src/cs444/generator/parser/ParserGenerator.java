@@ -14,12 +14,12 @@ public class ParserGenerator {
         BufferedWriter writer = null;
 
         try {
-            writer = new BufferedWriter(new FileWriter("JoosRules.java"));
+            writer = new BufferedWriter(new FileWriter("JoosDFA.java"));
             Language language = new JoosSyntacticGrammar(writer);
             language.generate();
 
         } catch (IOException e) {
-            System.err.println("Error writing to JoosRules.java.");
+            System.err.println("Error writing to JoosDFA.java.");
         } finally {
             writer.close();
         }
