@@ -25,7 +25,7 @@ public class LexerTest {
 
     @Test
     public void testValidEndOfLineComment() throws Exception {
-        TestHelper.assertTokenFor("// some comment", Token.Type.END_LINE_COMMENT);
+        TestHelper.assertTokenFor("// some comment\n", Token.Type.END_LINE_COMMENT);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class LexerTest {
     	TestHelper.assertTokenFor("'a'", Token.Type.CHAR_LITERAL);
     	TestHelper.assertTokenFor("'%'", Token.Type.CHAR_LITERAL);
     	TestHelper.assertTokenFor("'\\t'", Token.Type.CHAR_LITERAL);
-    	TestHelper.assertTokenFor("'\\'", Token.Type.CHAR_LITERAL);
+    	TestHelper.assertTokenFor("'\\\\'", Token.Type.CHAR_LITERAL);
     	TestHelper.assertTokenFor("'\\''", Token.Type.CHAR_LITERAL);
     	TestHelper.assertTokenFor("'\\177'", Token.Type.CHAR_LITERAL);
     }

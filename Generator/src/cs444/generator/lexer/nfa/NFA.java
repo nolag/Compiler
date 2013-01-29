@@ -11,7 +11,11 @@ import cs444.generator.lexer.nfa.transition.RangeTransition;
 
 public class NFA {
 
-    public static NFA union(NFA... nfas) {
+	public static NFA union(NFA... nfas) {
+		return union(true, nfas);
+	}
+	
+    public static NFA union(boolean mergeAccepts, NFA... nfas) {
 
         NFA result = new NFA();
 
@@ -19,7 +23,7 @@ public class NFA {
         NFAState accepting = result.getAcceptingState();
 
         for (NFA nfa : nfas) {
-            result.addAllStates(nfa);
+            result.addAllStates(nfa, mergeAccepts);
             start.addTransition(new EpsilonTransition(nfa.getStartState()));
             nfa.getAcceptingState().addTransition(new EpsilonTransition(accepting));
         }
@@ -33,7 +37,7 @@ public class NFA {
 
         if (nfas.length > 0) {
 
-            result.addAllStates(nfas[0]);
+            result.addAllStates(nfas[0], true);
             NFAState start = result.getStartState();
             start.addTransition(new EpsilonTransition(nfas[0].getStartState()));
 
@@ -41,11 +45,10 @@ public class NFA {
             for (int i = 1; i < nfas.length; i++) {
 
                 NFA currentNFA = nfas[i];
-                result.addAllStates(currentNFA);
+                result.addAllStates(currentNFA, true);
 
                 NFAState previousAcceptingState = previousNFA.getAcceptingState();
                 previousAcceptingState.addTransition(new EpsilonTransition(currentNFA.getStartState()));
-                previousAcceptingState.setAcceptingState(false);
 
                 previousNFA = currentNFA;
             }
@@ -59,7 +62,7 @@ public class NFA {
     public static NFA oneOrMore(NFA nfa) {
 
         NFA result = new NFA();
-        result.addAllStates(nfa);
+        result.addAllStates(nfa, true);
 
         NFAState start = result.getStartState();
         start.addTransition(new EpsilonTransition(nfa.getStartState()));
@@ -75,7 +78,7 @@ public class NFA {
     public static NFA zeroOrMore(NFA nfa) {
 
         NFA result = new NFA();
-        result.addAllStates(nfa);
+        result.addAllStates(nfa, true);
 
         NFAState start = result.getStartState();
         start.addTransition(new EpsilonTransition(nfa.getStartState()));
@@ -219,8 +222,9 @@ public class NFA {
         states.add(state);
     }
 
-    private void addAllStates(NFA nfa) {
+    private void addAllStates(NFA nfa, boolean clearAccepts) {
         for (NFAState state : nfa.getStates()) {
+        	if (clearAccepts) state.setAccepting(false);
             addState(state);
         }
     }

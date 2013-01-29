@@ -35,7 +35,7 @@ public class LexicalGrammar {
             Collection<NFA> storedNfas = patterns.values();
             NFA[] nfas = new NFA[storedNfas.size()];
             storedNfas.toArray(nfas);
-            NFA nfa = NFA.union(nfas);
+            NFA nfa = NFA.union(false, nfas); 
 
             System.out.println(nfa.toString());
 

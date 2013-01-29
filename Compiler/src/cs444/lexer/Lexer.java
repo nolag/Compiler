@@ -46,7 +46,7 @@ public class Lexer implements ILexer{
         } else if (emittedLastToken && !emittedEOF) {
 			
         	emittedEOF = true;
-			return new Token(Token.Type.EOF, "<EOF>");
+			return new Token(Token.Type.EOF, "");
 		}
         
         if (lexeme != "") {

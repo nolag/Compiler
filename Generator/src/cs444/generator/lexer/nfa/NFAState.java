@@ -48,6 +48,10 @@ public class NFAState {
     public boolean isAccepting() {
         return accepting;
     }
+    
+    public void setAccepting(boolean accepting) {
+    	this.accepting = accepting;
+    }
 
     public void addTransition(NFATransition transition) {
         transitions.add(transition);
@@ -69,8 +73,4 @@ public class NFAState {
     public String toString() {
         return "State(" + getId() + ", " + isAccepting() + ")";
     }
-
-	public void setAcceptingState(boolean b) {
-		this.accepting = b;
-	}
 }
