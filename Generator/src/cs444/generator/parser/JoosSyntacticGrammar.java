@@ -13,6 +13,43 @@ public class JoosSyntacticGrammar extends Language {
     private static final List<String> rules = new LinkedList<String>();
 
     static{
+        // *** Names ***
+        // PackageName:
+        // Identifier
+        // PackageName . Identifier
+        rules.add("PackageName id");
+        rules.add("PackageName PackageName dot id");
+
+        // TypeName:
+        // Identifier
+        // PackageOrTypeName . Identifier
+        rules.add("TypeName id");
+        rules.add("TypeName PackageOrTypeName dot id");
+
+        // ExpressionName:
+        // Identifier
+        // AmbiguousName . Identifier
+        rules.add("ExpressionName id");
+        rules.add("ExpressionName AmbiguousName dot id");
+
+        // MethodName:
+        // Identifier
+        // AmbiguousName . Identifier
+        rules.add("MethodName id");
+        rules.add("MethodName AmbiguousName dot id");
+
+        // PackageOrTypeName:
+        // Identifier
+        // PackageOrTypeName . Identifier
+        rules.add("PackageOrTypeName id");
+        rules.add("PackageOrTypeName PackageOrTypeName dot id");
+
+        // AmbiguousName:
+        // Identifier
+        // AmbiguousName . Identifier
+        rules.add("AmbiguousName id");
+        rules.add("AmbiguousName AmbiguousName dot id");
+
         // CompilationUnit:
         // PackageDeclaration_opt ImportDeclarations_opt TypeDeclarations_opt
         rules.add("CompilationUnit TypeDeclarations");
@@ -34,8 +71,7 @@ public class JoosSyntacticGrammar extends Language {
         // TypeDeclarations TypeDeclaration
         rules.add("TypeDeclarations TypeDeclaration");
         rules.add("TypeDeclarations TypeDeclarations TypeDeclaration");
-
-        rules.add("PackageDeclaration package id semi");
+        rules.add("PackageDeclaration package PackageName semi");
 
         // ImportDeclaration:
         // SingleTypeImportDeclaration
@@ -45,11 +81,11 @@ public class JoosSyntacticGrammar extends Language {
 
         // SingleTypeImportDeclaration:
         // import TypeName
-        rules.add("SingleTypeImportDeclaration import id semi");
+        rules.add("SingleTypeImportDeclaration import TypeName semi");
 
         // TypeImportOnDemandDeclaration:
         // import PackageOrTypeName . * ;
-        rules.add("TypeImportOnDemandDeclaration import id dot star semi");
+        rules.add("TypeImportOnDemandDeclaration import PackageOrTypeName dot star semi");
 
         // TypeDeclaration:
         // ClassDeclaration
@@ -89,7 +125,7 @@ public class JoosSyntacticGrammar extends Language {
         // Super:
         // extends ClassType
         rules.add("SuperClass extends ClassType");
-        rules.add("ClassType id");
+        rules.add("ClassType TypeName");
 
         // Interfaces:
         // implements InterfaceTypeList
@@ -100,7 +136,7 @@ public class JoosSyntacticGrammar extends Language {
         // InterfaceTypeList , InterfaceType
         rules.add("InterfaceTypeList InterfaceType");
         rules.add("InterfaceTypeList InterfaceTypeList comma InterfaceType");
-        rules.add("InterfaceType id");
+        rules.add("InterfaceType TypeName");
 
         // ClassBody:
         // { ClassBodyDeclarations_opt }
