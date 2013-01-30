@@ -196,7 +196,7 @@ public class JoosSyntacticGrammar extends Language {
         // ArrayInitializer
     }
 
-    JoosSyntacticGrammar(Writer writer){
+    public JoosSyntacticGrammar(Writer writer){
         super(writer, rules, startRule, tokenGrammar, "JoosDFA");
     }
 }

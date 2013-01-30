@@ -1,19 +1,18 @@
 package cs444.integration.parser;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 
-import cs444.TestHelper;
+import org.junit.Test;
+
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
-import cs444.parser.Parser;
 import cs444.parser.JoosDFA;
+import cs444.parser.Parser;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
 
@@ -88,7 +87,7 @@ public class JoosRulesTest {
     private ISymbol parseTreeForFile(String fileName) throws IOException,
                                                              LexerException,
                                                              UnexpectedTokenException{
-        String filePath = "tst/cs444/integration/fixtures/" + fileName + ".java";
+        String filePath =  fileName + ".java";
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(new JoosDFA());

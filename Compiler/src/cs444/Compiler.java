@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 import cs444.lexer.Lexer;
+import cs444.parser.JoosDFA;
 import cs444.parser.Parser;
-import cs444.parser.rules.JoosDFA;
 import cs444.parser.symbols.ISymbol;
 
 public class Compiler {
