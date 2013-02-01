@@ -1,13 +1,14 @@
 package cs444.parser.symbols;
 
 
-public class NonTerminal implements ISymbol{
 
-    private final ISymbol[] children;
+public class NonTerminal extends ANonTerminal{
     private final String name;
 
     public NonTerminal(String name, ISymbol [] children){
-    	this.children = children;
+    	for(ISymbol child : children){
+    	    if(!child.empty()) this.children.add(child);
+    	}
     	this.name = name;
     }
 
@@ -35,10 +36,10 @@ public class NonTerminal implements ISymbol{
 	}
 
     public boolean empty() {
-        if(children.length == 0) return true;
-        for(ISymbol child : children){
-            if(!child.empty()) return false;
-        }
-        return true;
+        return children.isEmpty();
+    }
+
+    public Iterable<ISymbol> getChildren() {
+        return children;
     }
 }

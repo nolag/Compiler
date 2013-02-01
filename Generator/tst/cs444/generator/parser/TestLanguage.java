@@ -16,17 +16,17 @@ public class TestLanguage extends Language{
     private static final List<String> rules = new LinkedList<String>();
 
     static{
-        rules.add("DCLS int id eq id semi DCLS");
-        rules.add("DCLS int id eq decimal_integer_literal semi DCLS");
-        rules.add("N_BECOMES id eq id N_BECOMES");
-        rules.add("N_BECOMES id plus eq id N_BECOMES");
-        rules.add("N_BECOMES id minus eq id N_BECOMES");
-        rules.add("N_BECOMES id eq decimal_integer_literal N_BECOMES");
-        rules.add("N_BECOMES id plus eq decimal_integer_literal N_BECOMES");
-        rules.add("N_BECOMES id minus eq decimal_integer_literal N_BECOMES");
-        rules.add("N_BECOMES ");
+        rules.add("ID_NUM id");
+        rules.add("ID_NUM decimal_integer_literal");
+        rules.add("ASSIGN id eq ID_NUM");
+        rules.add("ASSIGN id plus eq ID_NUM");
+        rules.add("ASSIGN id minus eq ID_NUM");
+        rules.add("DCL int id eq ID_NUM SEMI");
+        rules.add("ASSIGNS ASSIGN ASSIGNS");
+        rules.add("ASSIGNS ");
+        rules.add("DCLS DCLS DCL");
         rules.add("DCLS ");
-        rules.add("DCLS_BECOMES DCLS N_BECOMES");
+        rules.add("DCLS_BECOMES DCLS ASSIGNS");
     }
 
     private TestLanguage(Writer writer){

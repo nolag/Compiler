@@ -1,6 +1,7 @@
 package cs444.parser.symbols;
 
 
+
 public interface ISymbol {
 
     /**
@@ -20,5 +21,11 @@ public interface ISymbol {
      * @return if the rule becomes empty so that it can be known if it should be added to a tree
      */
     boolean empty();
+
+    /**
+     *
+     * @return children of the ISymbol
+     */
+    Iterable<ISymbol> getChildren();
 
 }

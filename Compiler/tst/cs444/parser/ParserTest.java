@@ -12,8 +12,8 @@ import org.junit.Test;
 import cs444.lexer.ILexer;
 import cs444.lexer.LexerException;
 import cs444.lexer.Token;
-import cs444.parser.rules.TestRule;
-import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.NonTerminal;
+import cs444.parser.symbols.ast.factories.ListedSymbolFactory;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
 
 public class ParserTest {
@@ -46,6 +46,11 @@ public class ParserTest {
         tokens.add(new Token(Token.Type.EQ, "="));
         tokens.add(new Token(Token.Type.ID, "q"));
         tokens.add(new Token(Token.Type.SEMI, ";"));
+        tokens.add(new Token(Token.Type.INT, "int"));
+        tokens.add(new Token(Token.Type.ID, "z"));
+        tokens.add(new Token(Token.Type.EQ, "="));
+        tokens.add(new Token(Token.Type.ID, "w"));
+        tokens.add(new Token(Token.Type.SEMI, ";"));
         tokens.add(new Token(Token.Type.ID, "d"));
         tokens.add(new Token(Token.Type.PLUS, "+"));
         tokens.add(new Token(Token.Type.EQ, "="));
@@ -54,33 +59,134 @@ public class ParserTest {
         tokens.add(new Token(Token.Type.MINUS, "-"));
         tokens.add(new Token(Token.Type.EQ, "="));
         tokens.add(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "100"));
+        tokens.add(new Token(Token.Type.ID, "zz"));
+        tokens.add(new Token(Token.Type.EQ, "="));
+        tokens.add(new Token(Token.Type.ID, "yy"));
         tokens.add(new Token(Token.Type.EOF, "<EOF>"));
         tokens.add(null);
         MockLexer lexer = new MockLexer(tokens);
-        ISymbol start = parser.parse(lexer);
+        NonTerminal start = parser.parse(lexer);
 
-        String expected =  "DCLS_BECOMES -> DCLS N_BECOMES \n" +
-                "DCLS -> INT ID EQ DECIMAL_INTEGER_LITERAL DCLS \n" +
+        String expected =  "DCLS_BECOMES -> DCLS ASSIGNS \n" +
+                "DCLS -> DCLS DCL \n" +
+                "DCLS -> DCLS DCL \n" +
+                "DCLS -> DCL \n" +
+                "DCL -> INT ID EQ ID_NUM \n" +
+                "INT -> int\n" +
+                "ID -> i\n" +
+                "EQ -> =\n" +
+                "ID_NUM -> DECIMAL_INTEGER_LITERAL \n" +
+                "DECIMAL_INTEGER_LITERAL -> 11\n" +
+                "DCL -> INT ID EQ ID_NUM \n" +
+                "INT -> int\n" +
+                "ID -> x\n" +
+                "EQ -> =\n" +
+                "ID_NUM -> ID \n" +
+                "ID -> q\n" +
+                "DCL -> INT ID EQ ID_NUM \n" +
+                "INT -> int\n" +
+                "ID -> z\n" +
+                "EQ -> =\n" +
+                "ID_NUM -> ID \n" +
+                "ID -> w\n" +
+                "ASSIGNS -> ASSIGN ASSIGNS \n" +
+                "ASSIGN -> ID PLUS EQ ID_NUM \n" +
+                "ID -> d\n" +
+                "PLUS -> +\n" +
+                "EQ -> =\n" +
+                "ID_NUM -> ID \n" +
+                "ID -> o\n" +
+                "ASSIGNS -> ASSIGN ASSIGNS \n" +
+                "ASSIGN -> ID MINUS EQ ID_NUM \n" +
+                "ID -> x\n" +
+                "MINUS -> -\n" +
+                "EQ -> =\n" +
+                "ID_NUM -> DECIMAL_INTEGER_LITERAL \n" +
+                "DECIMAL_INTEGER_LITERAL -> 100\n" +
+                "ASSIGNS -> ASSIGN \n" +
+                "ASSIGN -> ID EQ ID_NUM \n" +
+                "ID -> zz\n" +
+                "EQ -> =\n" +
+                "ID_NUM -> ID \n" +
+                "ID -> yy";
+        assertEquals(expected, start.rule());
+        ListedSymbolFactory listRed = new ListedSymbolFactory();
+        start = (NonTerminal)listRed.convertAll(start);
+        expected =  "DCLS_BECOMES -> DCLS ASSIGNS \n" +
+                "DCLS -> DCL DCL DCL \n" +
+                "DCL -> INT ID EQ ID_NUM \n" +
+                "INT -> int\n" +
+                "ID -> i\n" +
+                "EQ -> =\n" +
+                "ID_NUM -> DECIMAL_INTEGER_LITERAL \n" +
+                "DECIMAL_INTEGER_LITERAL -> 11\n" +
+                "DCL -> INT ID EQ ID_NUM \n" +
+                "INT -> int\n" +
+                "ID -> x\n" +
+                "EQ -> =\n" +
+                "ID_NUM -> ID \n" +
+                "ID -> q\n" +
+                "DCL -> INT ID EQ ID_NUM \n" +
+                "INT -> int\n" +
+                "ID -> z\n" +
+                "EQ -> =\n" +
+                "ID_NUM -> ID \n" +
+                "ID -> w\n" +
+                "ASSIGNS -> ASSIGN ASSIGN ASSIGN \n" +
+                "ASSIGN -> ID PLUS EQ ID_NUM \n" +
+                "ID -> d\n" +
+                "PLUS -> +\n" +
+                "EQ -> =\n" +
+                "ID_NUM -> ID \n" +
+                "ID -> o\n" +
+                "ASSIGN -> ID MINUS EQ ID_NUM \n" +
+                "ID -> x\n" +
+                "MINUS -> -\n" +
+                "EQ -> =\n" +
+                "ID_NUM -> DECIMAL_INTEGER_LITERAL \n" +
+                "DECIMAL_INTEGER_LITERAL -> 100\n" +
+                "ASSIGN -> ID EQ ID_NUM \n" +
+                "ID -> zz\n" +
+                "EQ -> =\n" +
+                "ID_NUM -> ID \n" +
+                "ID -> yy";
+        assertEquals(expected, start.rule());
+
+/*        OneChildFactory childFact = new OneChildFactory();
+        start = (NonTerminal)childFact.convertAll(start);
+        expected =  "DCLS_BECOMES -> DCLS ASSIGNS \n" +
+                "DCLS -> DCL DCL DCL \n" +
+                "DCL -> INT ID EQ DECIMAL_INTEGER_LITERAL \n" +
                 "INT -> int\n" +
                 "ID -> i\n" +
                 "EQ -> =\n" +
                 "DECIMAL_INTEGER_LITERAL -> 11\n" +
-                "DCLS -> INT ID EQ ID \n" +
+                "DCL -> INT ID EQ ID \n" +
                 "INT -> int\n" +
                 "ID -> x\n" +
                 "EQ -> =\n" +
                 "ID -> q\n" +
-                "N_BECOMES -> ID PLUS EQ ID N_BECOMES \n" +
+                "DCL -> INT ID EQ ID \n" +
+                "INT -> int\n" +
+                "ID -> z\n" +
+                "EQ -> =\n" +
+                "ID -> w\n" +
+                "ASSIGNS -> ASSIGN ASSIGN ASSIGN \n" +
+                "ASSIGN -> ID PLUS EQ ID \n" +
                 "ID -> d\n" +
                 "PLUS -> +\n" +
                 "EQ -> =\n" +
                 "ID -> o\n" +
-                "N_BECOMES -> ID MINUS EQ DECIMAL_INTEGER_LITERAL \n" +
+                "ASSIGN -> ID MINUS EQ DECIMAL_INTEGER_LITERAL \n" +
                 "ID -> x\n" +
                 "MINUS -> -\n" +
                 "EQ -> =\n" +
-                "DECIMAL_INTEGER_LITERAL -> 100";
-        assertEquals(expected, start.rule());
+                "DECIMAL_INTEGER_LITERAL -> 100\n" +
+                "ASSIGN -> ID EQ ID \n" +
+                "ID -> zz\n" +
+                "EQ -> =\n" +
+                "ID -> yy";
+        assertEquals(expected, start.rule());*/
     }
 
     @Test(expected = UnexpectedTokenException.class)

@@ -25,7 +25,7 @@ public class Parser {
     }
 
     //TODO make this return a tree
-    public ISymbol parse(ILexer lexer) throws IOException, LexerException, UnexpectedTokenException{
+    public NonTerminal parse(ILexer lexer) throws IOException, LexerException, UnexpectedTokenException{
         Token token;
         stateStack.push(0);
         Map<String, SymbolState> nextStates = states.get(0);
@@ -63,6 +63,6 @@ public class Parser {
         }
         //Pop off EOF
         symbolStack.pop();
-        return symbolStack.lastElement();
+        return (NonTerminal)symbolStack.lastElement();
     }
 }
