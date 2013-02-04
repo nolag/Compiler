@@ -14,6 +14,7 @@ import cs444.lexer.LexerException;
 import cs444.lexer.Token;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.factories.ListedSymbolFactory;
+import cs444.parser.symbols.ast.factories.OneChildFactory;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
 
 public class ParserTest {
@@ -152,7 +153,7 @@ public class ParserTest {
                 "ID -> yy";
         assertEquals(expected, start.rule());
 
-/*        OneChildFactory childFact = new OneChildFactory();
+        OneChildFactory childFact = new OneChildFactory();
         start = (NonTerminal)childFact.convertAll(start);
         expected =  "DCLS_BECOMES -> DCLS ASSIGNS \n" +
                 "DCLS -> DCL DCL DCL \n" +
@@ -186,7 +187,7 @@ public class ParserTest {
                 "ID -> zz\n" +
                 "EQ -> =\n" +
                 "ID -> yy";
-        assertEquals(expected, start.rule());*/
+        assertEquals(expected, start.rule());
     }
 
     @Test(expected = UnexpectedTokenException.class)

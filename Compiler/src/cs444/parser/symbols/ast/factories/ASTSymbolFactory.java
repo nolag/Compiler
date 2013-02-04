@@ -2,7 +2,6 @@ package cs444.parser.symbols.ast.factories;
 
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
-import cs444.parser.symbols.NonTerminal;
 
 public abstract class ASTSymbolFactory{
 
@@ -14,7 +13,7 @@ public abstract class ASTSymbolFactory{
     public ISymbol convertAll(ANonTerminal start){
         ISymbol retVal  = convert(start);
 
-        if(!NonTerminal.class.isAssignableFrom(retVal.getClass())) return retVal;
+        if(!ANonTerminal.class.isAssignableFrom(retVal.getClass())) return retVal;
         start = (ANonTerminal) retVal;
         int numChildren = start.children.size();
         for(int i = 0; i < numChildren; i++){
