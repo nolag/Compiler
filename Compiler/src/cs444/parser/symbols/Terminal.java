@@ -9,7 +9,7 @@ public class Terminal implements ISymbol{
 
     public final Token token;
 
-    private static final List<ISymbol> nochildren = new LinkedList<ISymbol>();
+    public static final List<ISymbol> nochildren = new LinkedList<ISymbol>();
 
     public Terminal(Token token){
         this.token = token;

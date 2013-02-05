@@ -13,8 +13,12 @@ import cs444.lexer.ILexer;
 import cs444.lexer.LexerException;
 import cs444.lexer.Token;
 import cs444.parser.symbols.NonTerminal;
+import cs444.parser.symbols.Terminal;
+import cs444.parser.symbols.ast.IntegerLiteralSymbol;
+import cs444.parser.symbols.ast.factories.IntegerLiteralFactory;
 import cs444.parser.symbols.ast.factories.ListedSymbolFactory;
 import cs444.parser.symbols.ast.factories.OneChildFactory;
+import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
 
 public class ParserTest {
@@ -35,7 +39,7 @@ public class ParserTest {
     }
 
     @Test
-    public void testGoodSequence() throws IOException, LexerException, UnexpectedTokenException{
+    public void testGoodSequence() throws IOException, LexerException, UnexpectedTokenException, OutOfRangeException{
         List<Token> tokens = new LinkedList<Token>();
         tokens.add(new Token(Token.Type.INT, "int"));
         tokens.add(new Token(Token.Type.ID, "i"));
@@ -246,5 +250,49 @@ public class ParserTest {
         tokens.add(null);
         MockLexer lexer = new MockLexer(tokens);
         parser.parse(lexer);
+    }
+
+    @Test
+    public void basicNumbers() throws OutOfRangeException {
+        IntegerLiteralFactory fact = new IntegerLiteralFactory();
+        Terminal [] children = new Terminal[1];
+        children[0] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483647"));
+        NonTerminal nonTerm = new NonTerminal("numHolder", children);
+        nonTerm = (NonTerminal) fact.convertAll(nonTerm);
+
+        assertEquals(1, nonTerm.children.size());
+
+        IntegerLiteralSymbol result = (IntegerLiteralSymbol)nonTerm.children.get(0);
+        assertEquals(2147483647, result.value);
+
+        children = new Terminal[2];
+        children[0] = new Terminal(new Token(Token.Type.MINUS, "-"));
+        children[1] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483648"));
+        nonTerm = new NonTerminal("numHolder", children);
+        nonTerm = (NonTerminal) fact.convertAll(nonTerm);
+
+        assertEquals(1, nonTerm.children.size());
+
+        result = (IntegerLiteralSymbol)nonTerm.children.get(0);
+        assertEquals(-2147483648, result.value);
+    }
+
+    @Test(expected = OutOfRangeException.class)
+    public void numberTooSmall() throws OutOfRangeException{
+        IntegerLiteralFactory fact = new IntegerLiteralFactory();
+        Terminal [] children = new Terminal[2];
+        children[0] = new Terminal(new Token(Token.Type.MINUS, "-"));
+        children[1] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483649"));
+        NonTerminal nonTerm = new NonTerminal("numHolder", children);
+        nonTerm = (NonTerminal) fact.convertAll(nonTerm);
+    }
+
+    @Test(expected = OutOfRangeException.class)
+    public void numberTooBig() throws OutOfRangeException{
+        IntegerLiteralFactory fact = new IntegerLiteralFactory();
+        Terminal [] children = new Terminal[1];
+        children[0] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483648"));
+        NonTerminal nonTerm = new NonTerminal("numHolder", children);
+        nonTerm = (NonTerminal) fact.convertAll(nonTerm);
     }
 }
