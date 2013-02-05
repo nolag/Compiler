@@ -12,14 +12,14 @@ public class BNFGrammar extends LexicalGrammar {
                                            NFA.literal("\n"), NFA.literal("\r")), Type.IGNORE);
 
         addPattern("LHS", NFA.concatenate(NFA.capitalLetter(),
-                                          NFA.zeroOrMore(NFA.anyCharacter()),
+                                          NFA.zeroOrMore(NFA.union(NFA.letter(), NFA.digit())),
                                           NFA.literal(":")), Type.VALID);
 
         // this covers all keywords, and also lparen, rparen, lbrace, rbrace, lbracket, rbracket, pipe
         addPattern("TERMINAL", NFA.oneOrMore(NFA.smallLetter()), Type.VALID);
 
         addPattern("NON_TERMINAL", NFA.concatenate(NFA.capitalLetter(),
-                                                   NFA.zeroOrMore(NFA.anyCharacter())), Type.VALID);
+                                                   NFA.zeroOrMore(NFA.union(NFA.letter(), NFA.digit()))), Type.VALID);
 
         addPattern("INTEGER_LITERAL", NFA.literal("IntegerLiteral"), Type.VALID);
         addPattern("FLOATING_POINT_LITERAL", NFA.literal("FloatingPointLiteral"), Type.VALID);
