@@ -9,11 +9,11 @@ import cs444.cfgrulesgenerator.lexer.Token;
 
 public class RulesGenerator {
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	public static void main(String[] args) throws IOException {
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    public static void main(String[] args) throws IOException {
 
         BufferedReader reader = null;
 
@@ -22,10 +22,10 @@ public class RulesGenerator {
             Lexer lexer = new Lexer(reader);
 
             Token token;
-			while((token = lexer.getNextToken()) != null){
+            while((token = lexer.getNextToken()) != null){
             	System.out.println(token);
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -33,5 +33,5 @@ public class RulesGenerator {
             if (null != reader)
                 reader.close();
         }
-	}
+    }
 }
