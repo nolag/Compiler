@@ -12,6 +12,13 @@ public class BNFGrammar extends LexicalGrammar {
 
         addPattern("NEWLINE", NFA.union(NFA.literal("\n"), NFA.literal("\r")), Type.VALID);
 
+
+        addPattern("END_LINE_COMMENT", NFA.concatenate(NFA.literal("//"),
+                                                       NFA.zeroOrMore(anythingButEndOfLine()),
+                                                       NFA.union(NFA.literal("\r"),
+                                                                 NFA.literal("\n"))),
+                   Type.IGNORE);
+
         addPattern("LHS", NFA.concatenate(NFA.capitalLetter(),
                                           NFA.zeroOrMore(NFA.union(NFA.letter(), NFA.digit())),
                                           NFA.literal(":")), Type.VALID);
@@ -68,5 +75,11 @@ public class BNFGrammar extends LexicalGrammar {
         //lazy boolean operators
         addPattern("DAMPERSAND", NFA.literal("&&"), Type.VALID);
         addPattern("DPIPE", NFA.literal("||"), Type.VALID);
+    }
+
+    private NFA anythingButEndOfLine() {
+        return NFA.union(NFA.acceptRange((char)0, (char)9),
+                         NFA.acceptRange((char)11, (char)12),
+                         NFA.acceptRange((char)14, (char)127));
     }
 }
