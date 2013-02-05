@@ -37,12 +37,15 @@ public class RulesFactory implements IRulesFactory {
 
         if (token.type == Token.Type.EOF) return null;
 
+        List<Token> rightHandSide = new ArrayList<Token>();
         if(token.type == Token.Type.LHS){
             this.currentLHS = token;
+            token = getNextRelevantToken(); // get first symbol of RHS
         }
 
+        rightHandSide.add(token); // add first symbol of rightHandSide
         if(this.currentLHS != null){
-            Rule initialRule = getNextRule(this.currentLHS);
+            Rule initialRule = getNextBNFRule(rightHandSide); // add rest of symbols
             // TODO: expand initial rule until no more expansions and add new rules to buffer
             rule = initialRule;
         }else{                  // right hand side without left hand side => ERROR
@@ -53,20 +56,19 @@ public class RulesFactory implements IRulesFactory {
         return rule;
     }
 
-    private Rule getNextRule(Token leftHandSide) throws LexerException, IOException {
-        List<Token> rightHandSide = new ArrayList<Token>();
-
-        Token token = getNextRelevantToken();
+    private Rule getNextBNFRule(List<Token> rightHandSide) throws LexerException, IOException {
+        Token token;
 
         // there is at most a rule per line
-        while(token.type != Token.Type.EOF &&
+        while((token = lexer.getNextToken()).type != Token.Type.EOF &&
               token.type != Token.Type.NEWLINE){
 
+            if(Token.typeToParse.get(token.type) == Parse.IGNORE) continue;
+
             rightHandSide.add(token);
-            token = lexer.getNextToken();
         }
 
-        return new Rule(leftHandSide, rightHandSide);
+        return new Rule(currentLHS, rightHandSide);
     }
 
     private Token getNextRelevantToken() throws LexerException, IOException {
