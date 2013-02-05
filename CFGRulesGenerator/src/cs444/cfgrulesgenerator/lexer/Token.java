@@ -7,47 +7,48 @@ import java.util.HashMap;
 import java.util.Map;
 public final class Token {
     public enum Type {
+        CHARACTER_LITERAL,
         LHS,
-        COMMA,
-        STRING_LITERAL,
         STAR,
-        LPAREN,
+        DPIPE,
+        STRING_LITERAL,
         RPAREN,
         EQ,
-        DPIPE,
+        DAMPERSAND,
+        PIPE,
         GE,
         MINUS,
-        PIPE,
-        DAMPERSAND,
+        LPAREN,
+        END_LINE_COMMENT,
         WHITESPACE,
         BECOMES,
-        BOOLEAN_LITERAL,
         SEMI,
-        CHARACTER_LITERAL,
+        BOOLEAN_LITERAL,
         LE,
         NULL_LITERAL,
         SLASH,
         LT,
         RBRACKET,
         DOT,
-        RBRACE,
-        NE,
         NEWLINE,
+        NE,
         FLOATING_POINT_LITERAL,
         LBRACE,
         PLUS,
         INTEGER_LITERAL,
         PCT,
-        NON_TERMINAL,
-        GT,
+        RBRACE,
         LBRACKET,
+        GT,
+        NON_TERMINAL,
         AMPERSAND,
-        EXCLAMATION,
         TERMINAL,
+        EXCLAMATION,
+        COMMA,
         EOF
     }
     public static enum Parse {VALID, SYNTAX_ONLY, IGNORE}
-    public static final Map<Type, Parse> typeToParse = new HashMap<Type, Parse>(){{put(Type.LHS, Parse.VALID); put(Type.COMMA, Parse.VALID); put(Type.STRING_LITERAL, Parse.VALID); put(Type.STAR, Parse.VALID); put(Type.LPAREN, Parse.VALID); put(Type.RPAREN, Parse.VALID); put(Type.EQ, Parse.VALID); put(Type.DPIPE, Parse.VALID); put(Type.GE, Parse.VALID); put(Type.MINUS, Parse.VALID); put(Type.PIPE, Parse.VALID); put(Type.DAMPERSAND, Parse.VALID); put(Type.WHITESPACE, Parse.IGNORE); put(Type.BECOMES, Parse.VALID); put(Type.BOOLEAN_LITERAL, Parse.VALID); put(Type.SEMI, Parse.VALID); put(Type.CHARACTER_LITERAL, Parse.VALID); put(Type.LE, Parse.VALID); put(Type.NULL_LITERAL, Parse.VALID); put(Type.SLASH, Parse.VALID); put(Type.LT, Parse.VALID); put(Type.RBRACKET, Parse.VALID); put(Type.DOT, Parse.VALID); put(Type.RBRACE, Parse.VALID); put(Type.NE, Parse.VALID); put(Type.NEWLINE, Parse.VALID); put(Type.FLOATING_POINT_LITERAL, Parse.VALID); put(Type.LBRACE, Parse.VALID); put(Type.PLUS, Parse.VALID); put(Type.INTEGER_LITERAL, Parse.VALID); put(Type.PCT, Parse.VALID); put(Type.NON_TERMINAL, Parse.VALID); put(Type.GT, Parse.VALID); put(Type.LBRACKET, Parse.VALID); put(Type.AMPERSAND, Parse.VALID); put(Type.EXCLAMATION, Parse.VALID); put(Type.TERMINAL, Parse.VALID); }};
+    public static final Map<Type, Parse> typeToParse = new HashMap<Type, Parse>(){{put(Type.CHARACTER_LITERAL, Parse.VALID); put(Type.LHS, Parse.VALID); put(Type.STAR, Parse.VALID); put(Type.DPIPE, Parse.VALID); put(Type.STRING_LITERAL, Parse.VALID); put(Type.RPAREN, Parse.VALID); put(Type.EQ, Parse.VALID); put(Type.DAMPERSAND, Parse.VALID); put(Type.PIPE, Parse.VALID); put(Type.GE, Parse.VALID); put(Type.MINUS, Parse.VALID); put(Type.LPAREN, Parse.VALID); put(Type.END_LINE_COMMENT, Parse.IGNORE); put(Type.WHITESPACE, Parse.IGNORE); put(Type.BECOMES, Parse.VALID); put(Type.SEMI, Parse.VALID); put(Type.BOOLEAN_LITERAL, Parse.VALID); put(Type.LE, Parse.VALID); put(Type.NULL_LITERAL, Parse.VALID); put(Type.SLASH, Parse.VALID); put(Type.LT, Parse.VALID); put(Type.RBRACKET, Parse.VALID); put(Type.DOT, Parse.VALID); put(Type.NEWLINE, Parse.VALID); put(Type.NE, Parse.VALID); put(Type.FLOATING_POINT_LITERAL, Parse.VALID); put(Type.LBRACE, Parse.VALID); put(Type.PLUS, Parse.VALID); put(Type.INTEGER_LITERAL, Parse.VALID); put(Type.PCT, Parse.VALID); put(Type.RBRACE, Parse.VALID); put(Type.LBRACKET, Parse.VALID); put(Type.GT, Parse.VALID); put(Type.NON_TERMINAL, Parse.VALID); put(Type.AMPERSAND, Parse.VALID); put(Type.TERMINAL, Parse.VALID); put(Type.EXCLAMATION, Parse.VALID); put(Type.COMMA, Parse.VALID); }};
     public final Type type;
     public final String lexeme;
     public Token(Type type, String lexeme) {

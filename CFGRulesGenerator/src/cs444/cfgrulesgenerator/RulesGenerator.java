@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import cs444.cfgrulesgenerator.lexer.Lexer;
-import cs444.cfgrulesgenerator.lexer.Token;
 
 public class RulesGenerator {
 
@@ -18,12 +17,12 @@ public class RulesGenerator {
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(new FileReader("JavaSyntax.txt"));
-            Lexer lexer = new Lexer(reader);
+            reader = new BufferedReader(new FileReader("JoosSyntax.txt"));
+            IRulesFactory rulesFactory = new RulesFactory(new Lexer(reader));
 
-            Token token;
-            while((token = lexer.getNextToken()) != null){
-            	System.out.println(token);
+            Rule rule;
+            while((rule = rulesFactory.getNextRule()) != null){
+            	System.out.println(rule);
             }
 
         } catch (Exception e) {
