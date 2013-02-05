@@ -28,28 +28,6 @@ AssignmentOperator:
 
 =
 
-+=
-
--=
-
-*=
-
-/=
-
-&=
-
-|=
-
-^=
-
-%=
-
-<<=
-
->>=
-
->>>=
-
 Type:
 
 Identifier { . Identifier } BracketsOpt
@@ -66,13 +44,9 @@ Expression
 
 Expression1:
 
-Expression2 [Expression1Rest]
+Expression2
 
-Expression1Rest:
-
-[? Expression : Expression1]
-
-Expression2 :
+Expression2:
 
 Expression3 [Expression2Rest]
 
@@ -89,8 +63,6 @@ Infixop:
 &&
 
 |
-
-^
 
 &
 
@@ -128,7 +100,7 @@ PrefixOp Expression3
 
 ( Expr | Type ) Expression3
 
-Primary {Selector} {PostfixOp}
+Primary {Selector}
 
 Primary:
 
@@ -158,23 +130,11 @@ Arguments
 
 PrefixOp:
 
-++
-
---
-
 !
-
-∼
 
 +
 
 -
-
-PostfixOp:
-
-++
-
---
 
 Selector:
 
@@ -262,13 +222,13 @@ BlockStatements:
 
 { BlockStatement }
 
-BlockStatement :
+BlockStatement:
 
 LocalVariableDeclarationStatement
 
 ClassOrInterfaceDeclaration
 
-[Identifier :] Statement
+Statement
 
 LocalVariableDeclarationStatement:
 
@@ -288,8 +248,6 @@ do Statement while ParExpression ;
 
 try Block ( Catches | [Catches] finally Block )
 
-switch ParExpression { SwitchBlockStatementGroups }
-
 synchronized ParExpression Block
 
 return [Expression] ;
@@ -304,8 +262,6 @@ continue [Identifier]
 
 ExpressionStatement
 
-Identifier : Statement
-
 Catches:
 
 CatchClause {CatchClause}
@@ -313,20 +269,6 @@ CatchClause {CatchClause}
 CatchClause:
 
 catch ( FormalParameter ) Block
-
-SwitchBlockStatementGroups:
-
-{ SwitchBlockStatementGroup }
-
-SwitchBlockStatementGroup:
-
-SwitchLabel BlockStatements
-
-SwitchLabel:
-
-case ConstantExpression :
-
-default :
 
 MoreStatementExpressions:
 
