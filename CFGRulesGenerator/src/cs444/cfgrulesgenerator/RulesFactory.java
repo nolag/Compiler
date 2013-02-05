@@ -26,7 +26,6 @@ public class RulesFactory implements IRulesFactory {
 
     // return null when no more rules
     public Rule getNextRule() throws UnexpectedTokenException, LexerException, IOException{
-        Token token;
         Rule rule = null;
 
         // TODO: check if buffer is not empty
@@ -34,10 +33,7 @@ public class RulesFactory implements IRulesFactory {
         // to buffer
         // return expanded rule
 
-        // skip tokens until we find something useful
-        while((token = lexer.getNextToken()).type != Token.Type.EOF &&
-              (Token.typeToParse.get(token.type) == Parse.IGNORE ||
-               token.type == Token.Type.NEWLINE)) ;
+        Token token = getNextRelevantToken();
 
         if (token.type == Token.Type.EOF) return null;
 
@@ -60,11 +56,7 @@ public class RulesFactory implements IRulesFactory {
     private Rule getNextRule(Token leftHandSide) throws LexerException, IOException {
         List<Token> rightHandSide = new ArrayList<Token>();
 
-        Token token;
-        // skip all whitespace and newline until first symbol
-        while((token = lexer.getNextToken()).type != Token.Type.EOF &&
-              (token.type == Token.Type.NEWLINE ||
-               Token.typeToParse.get(token.type) == Parse.IGNORE)){}
+        Token token = getNextRelevantToken();
 
         // there is at most a rule per line
         while(token.type != Token.Type.EOF &&
@@ -75,5 +67,16 @@ public class RulesFactory implements IRulesFactory {
         }
 
         return new Rule(leftHandSide, rightHandSide);
+    }
+
+    private Token getNextRelevantToken() throws LexerException, IOException {
+        Token token;
+
+        // skip all whitespace and newline until first symbol
+        while((token = lexer.getNextToken()).type != Token.Type.EOF &&
+              (Token.typeToParse.get(token.type) == Parse.IGNORE ||
+               token.type == Token.Type.NEWLINE)) ;
+
+        return token;
     }
 }

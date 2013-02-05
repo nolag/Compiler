@@ -15,10 +15,12 @@ public class Rule{
 
     public String toString(){
         StringBuffer result = new StringBuffer();
-        result.append(leftHandSide.lexeme + " ");
+
+        // TODO: remove ':' and wrap rules inside "rules.add("...");"
+        result.append(leftHandSide.lexeme);
 
         for (Token symbol : rightHandSide) {
-            result.append(symbol.lexeme + " ");
+            result.append(" " + symbol.lexeme);
         }
 
         return result.toString();
