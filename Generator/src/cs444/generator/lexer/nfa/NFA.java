@@ -128,6 +128,14 @@ public class NFA {
         return result;
     }
 
+    public static NFA capitalLetter() {
+        return NFA.acceptRange('A', 'Z');
+    }
+
+    public static NFA smallLetter() {
+        return NFA.acceptRange('a', 'z');
+    }
+
     public static NFA literal(String literal) {
 
         NFA result = new NFA();
