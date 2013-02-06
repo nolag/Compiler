@@ -64,7 +64,7 @@
     <target name="integration-tests">
       <junit fork="yes" printsummary="withOutAndErr">
         <test name="cs444.integration.parser.JoosRulesTest" todir="${junit.output.dir}"/>
-        <formatter type="brief" usefile="false" />
+        <formatter type="plain" usefile="false" />
         <classpath refid="Compiler.classpath"/>
       </junit>
     </target>
@@ -72,7 +72,7 @@
     <target name="LexerTest">
       <mkdir dir="${junit.output.dir}"/>
       <junit fork="yes" printsummary="withOutAndErr">
-        <formatter type="brief" usefile="false" />
+        <formatter type="plain" usefile="false" />
         <test name="cs444.lexer.LexerTest" todir="${junit.output.dir}"/>
         <classpath refid="Compiler.classpath"/>
       </junit>
