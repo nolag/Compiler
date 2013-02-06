@@ -22,7 +22,7 @@ public class RuleExpanderTest extends TestHelper{
     @Test
     public void testSquareBrackets() throws BNFParseException {
        	// N -> A [B] C
-       	Rule BNFrule = ruleFor(new Token(Token.Type.LHS, "N"),
+       	Rule BNFrule = ruleFor(new Token(Token.Type.LHS, "N:"),
                                new Token(Token.Type.NON_TERMINAL, "A"),
                                new Token(Token.Type.LBRACKET, "["),
                                new Token(Token.Type.NON_TERMINAL, "B"),
@@ -30,47 +30,76 @@ public class RuleExpanderTest extends TestHelper{
                                new Token(Token.Type.NON_TERMINAL, "C"));
 
         // N -> A C
-       	Rule expectedRule1 = ruleFor(new Token(Token.Type.LHS, "N"),
+       	Rule expectedRule1 = ruleFor(new Token(Token.Type.LHS, "N:"),
                                      new Token(Token.Type.NON_TERMINAL, "A"),
                                      new Token(Token.Type.NON_TERMINAL, "C"));
 
         // N -> A B C
-       	Rule expectedRule2 = ruleFor(new Token(Token.Type.LHS, "N"),
+       	Rule expectedRule2 = ruleFor(new Token(Token.Type.LHS, "N:"),
                                      new Token(Token.Type.NON_TERMINAL, "A"),
                                      new Token(Token.Type.NON_TERMINAL, "B"),
                                      new Token(Token.Type.NON_TERMINAL, "C"));
 
        	List<Rule> expandedRules = RuleExpander.expand(BNFrule);
         assertEquals(2, expandedRules.size());
-       	assertEquals(expectedRule1, expandedRules.get(0));
-       	assertEquals(expectedRule2, expandedRules.get(1));
+       	assertEquals(expectedRule1.toString(), expandedRules.get(0).toString());
+       	assertEquals(expectedRule2.toString(), expandedRules.get(1).toString());
     }
 
-    //    @Test
-//    public void testBracesFull() {
-//    	// N -> A {B} C
-//    	Rule BNFrule = ruleFor(new Token(Token.Type.LHS, "N"),
-//    			new Token(Token.Type.NON_TERMINAL, "A"),
-//    			new Token(Token.Type.LBRACE, "{"),
-//    			new Token(Token.Type.NON_TERMINAL, "B"),
-//    			new Token(Token.Type.RBRACE, "}"),
-//    			new Token(Token.Type.NON_TERMINAL, "C"));
-//
-//    	Rule expectedRule1 = ruleFor(new Token(Token.Type.LHS, "N"),
-//    			new Token(Token.Type.NON_TERMINAL, "A"),
-//    			new Token(Token.Type.NON_TERMINAL, "N_B1"),
-//    			new Token(Token.Type.NON_TERMINAL, "C"));
-//
-//    	Rule expectedRule2 = ruleFor(new Token(Token.Type.LHS, "N_B1"),
-//    			new Token(Token.Type.NON_TERMINAL, "N_B1"),
-//    			new Token(Token.Type.NON_TERMINAL, "B"));
-//
-//    	Rule expectedRule3 = ruleFor(new Token(Token.Type.LHS, "N_B1"),
-//    			new Token(Token.Type.EPSILON, " "));
-//
-//    	List<Rule> expandedRules = RuleExpander.expand(BNFrule);
-//    	assertEquals(expectedRule1, expandedRules.get(0));
-//    	assertEquals(expectedRule2, expandedRules.get(1));
-//    	assertEquals(expectedRule3, expandedRules.get(2));
-//    }
+    @Test
+    public void testSquareBracketsMultiSymbols() throws BNFParseException {
+       	// N -> A [B C]
+       	Rule BNFrule = ruleFor(new Token(Token.Type.LHS, "N:"),
+                               new Token(Token.Type.NON_TERMINAL, "A"),
+                               new Token(Token.Type.LBRACKET, "["),
+                               new Token(Token.Type.NON_TERMINAL, "B"),
+                               new Token(Token.Type.NON_TERMINAL, "C"),
+                               new Token(Token.Type.RBRACKET, "]"));
+
+        // N -> A
+       	Rule expectedRule1 = ruleFor(new Token(Token.Type.LHS, "N:"),
+                                     new Token(Token.Type.NON_TERMINAL, "A"));
+
+        // N -> A B C
+       	Rule expectedRule2 = ruleFor(new Token(Token.Type.LHS, "N:"),
+                                     new Token(Token.Type.NON_TERMINAL, "A"),
+                                     new Token(Token.Type.NON_TERMINAL, "B"),
+                                     new Token(Token.Type.NON_TERMINAL, "C"));
+
+       	List<Rule> expandedRules = RuleExpander.expand(BNFrule);
+        assertEquals(2, expandedRules.size());
+       	assertEquals(expectedRule1.toString(), expandedRules.get(0).toString());
+       	assertEquals(expectedRule2.toString(), expandedRules.get(1).toString());
+    }
+
+    // @Test
+    // public void testBracesFull() {
+    //     // N -> A {B} C
+    //     Rule BNFrule = ruleFor(new Token(Token.Type.LHS, "N:"),
+    //                            new Token(Token.Type.NON_TERMINAL, "A"),
+    //                            new Token(Token.Type.LBRACE, "{"),
+    //                            new Token(Token.Type.NON_TERMINAL, "B"),
+    //                            new Token(Token.Type.RBRACE, "}"),
+    //                            new Token(Token.Type.NON_TERMINAL, "C"));
+
+    //     // N -> A N_B1 C
+    //     Rule expectedRule1 = ruleFor(new Token(Token.Type.LHS, "N:"),
+    //                                  new Token(Token.Type.NON_TERMINAL, "A"),
+    //                                  new Token(Token.Type.NON_TERMINAL, "N_B1"),
+    //                                  new Token(Token.Type.NON_TERMINAL, "C"));
+
+    //     // N_B1 -> N_B1 B
+    //     Rule expectedRule2 = ruleFor(new Token(Token.Type.LHS, "N_B1"),
+    //                                  new Token(Token.Type.NON_TERMINAL, "N_B1"),
+    //                                  new Token(Token.Type.NON_TERMINAL, "B"));
+
+    //     // N_B1 -> epsilon
+    //     Rule expectedRule3 = ruleFor(new Token(Token.Type.LHS, "N_B1"),
+    //                                  new Token(Token.Type.EPSILON, " "));
+
+    //     List<Rule> expandedRules = RuleExpander.expand(BNFrule);
+    //     assertEquals(expectedRule1, expandedRules.get(0));
+    //     assertEquals(expectedRule2, expandedRules.get(1));
+    //     assertEquals(expectedRule3, expandedRules.get(2));
+    // }
 }

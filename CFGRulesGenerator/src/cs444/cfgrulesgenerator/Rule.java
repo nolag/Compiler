@@ -10,7 +10,7 @@ import cs444.generator.lexer.nfa.transition.Range;
 
 public class Rule{
     public final Token leftHandSide;
-    public final List<Token> rightHandSide;
+    private final List<Token> rightHandSide;
 
     public Rule(Token leftHandSide, List<Token> righHandSide){
         this.leftHandSide = leftHandSide;
@@ -76,5 +76,13 @@ public class Rule{
         default:
             return null;
         }
+    }
+
+    public Token getRightHandSideToken(int index){
+    	return this.rightHandSide.get(index);
+    }
+
+    public int rightHandSideSize(){
+        return this.rightHandSide.size();
     }
 }
