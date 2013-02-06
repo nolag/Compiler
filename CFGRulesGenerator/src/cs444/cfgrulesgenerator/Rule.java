@@ -40,8 +40,9 @@ public class Rule{
     public String toString(){
         StringBuffer result = new StringBuffer();
 
-        // TODO: remove ':' and wrap rules inside "rules.add("...");"
-        result.append(leftHandSide.lexeme);
+        String lHSLexeme = leftHandSide.lexeme;
+        // do not return ':'
+        result.append(lHSLexeme.subSequence(0, leftHandSide.lexeme.length() - 1));
 
         for (Token symbol : rightHandSide) {
             result.append(" " + symbol.lexeme);
