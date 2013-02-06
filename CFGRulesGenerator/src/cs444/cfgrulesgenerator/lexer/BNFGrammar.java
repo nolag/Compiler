@@ -8,6 +8,8 @@ public class BNFGrammar extends LexicalGrammar {
 
     public BNFGrammar() {
 
+        addPattern("EPSILON", NFA.literal(""), Type.VALID);
+
         addPattern("WHITESPACE", NFA.union(NFA.literal(" "), NFA.literal("\t")), Type.IGNORE);
 
         addPattern("NEWLINE", NFA.union(NFA.literal("\n"), NFA.literal("\r")), Type.VALID);
