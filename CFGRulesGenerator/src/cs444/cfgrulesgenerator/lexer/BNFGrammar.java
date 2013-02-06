@@ -23,18 +23,16 @@ public class BNFGrammar extends LexicalGrammar {
                                           NFA.zeroOrMore(NFA.union(NFA.letter(), NFA.digit())),
                                           NFA.literal(":")), Type.VALID);
 
-        // this covers all keywords, and also lparen, rparen, lbrace, rbrace, lbracket, rbracket, pipe
-        addPattern("TERMINAL", NFA.oneOrMore(NFA.smallLetter()), Type.VALID);
+        // this covers all keywords, and also lparen, rparen, lbrace, rbrace, lbracket,
+        // rbracket, pipe, literals
+        addPattern("TERMINAL", NFA.oneOrMore(NFA.union(NFA.literal("_"),
+                                                       NFA.smallLetter())), Type.VALID);
 
         addPattern("NON_TERMINAL", NFA.concatenate(NFA.capitalLetter(),
-                                                   NFA.zeroOrMore(NFA.union(NFA.letter(), NFA.digit()))), Type.VALID);
-
-        addPattern("INTEGER_LITERAL", NFA.literal("IntegerLiteral"), Type.VALID);
-        addPattern("FLOATING_POINT_LITERAL", NFA.literal("FloatingPointLiteral"), Type.VALID);
-        addPattern("CHARACTER_LITERAL", NFA.literal("CharacterLiteral"), Type.VALID);
-        addPattern("STRING_LITERAL", NFA.literal("StringLiteral"), Type.VALID);
-        addPattern("BOOLEAN_LITERAL", NFA.literal("BooleanLiteral"), Type.VALID);
-        addPattern("NULL_LITERAL", NFA.literal("NullLiteral"), Type.VALID);
+                                                   NFA.zeroOrMore(NFA.union(NFA.literal("_"),
+                                                                            NFA.letter(),
+                                                                            NFA.digit()))),
+                   Type.VALID);
 
         // Special characters. This are chars that have meaning in BNF, so for the actual symbols in
         // the Joos grammar, we will be using TERMINAL token

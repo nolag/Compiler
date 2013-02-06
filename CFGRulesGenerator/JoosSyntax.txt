@@ -12,15 +12,25 @@ Literal:
 
 IntegerLiteral
 
-FloatingPointLiteral
+floating_point_literal
 
-CharacterLiteral
+char_literal
 
-StringLiteral
+str_literal
 
 BooleanLiteral
 
-NullLiteral
+null
+
+IntegerLiteral:
+
+decimal_integer_literal
+
+BooleanLiteral:
+
+(true | false)
+
+StringLiteral:
 
 Expression:
 
