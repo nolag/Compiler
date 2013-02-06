@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. -->
 <project basedir="." default="build" name="Generator">
     <property environment="env"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
+    <path id="JUnit 4.libraryclasspath">
+      <pathelement location="../../../../../opt/eclipse/plugins/org.junit_4.8.2.v4_8_2_v20110321-1705/junit.jar"/>
+      <pathelement location="../../../../../opt/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+    </path>
     <path id="Generator.classpath">
         <pathelement location="bin"/>
+        <path refid="JUnit 4.libraryclasspath"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -66,6 +66,11 @@
         <classpath refid="Generator.classpath"/>
       </java>
     </target>
+    <target name="RulesGenerator">
+        <java classname="cs444.cfgrulesgenerator.RulesGenerator" failonerror="true" fork="yes">
+            <classpath refid="Generator.classpath"/>
+        </java>
+    </target>
     <target name="TestLanguage">
       <java classname="cs444.generator.parser.TestLanguage" failonerror="true" fork="yes">
         <classpath refid="Generator.classpath"/>
@@ -74,4 +79,31 @@
     <target name="GenJoosSyntax" depends="ParserGenerator">
       <copy file="JoosDFA.java" todir="../Compiler/src/cs444/parser/" />
     </target>
+    <!-- TESTS -->
+    <target name="RuleExpanderTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+          <formatter type="plain" usefile="false" />
+            <test name="cs444.cfgrulesgenerator.RuleExpanderTest" todir="${junit.output.dir}"/>
+            <classpath refid="Generator.classpath"/>
+        </junit>
+    </target>
+    <target name="RuleTest">
+      <mkdir dir="${junit.output.dir}"/>
+      <junit fork="yes" printsummary="withOutAndErr">
+        <formatter type="plain" usefile="false" />
+        <test name="cs444.cfgrulesgenerator.RuleTest" todir="${junit.output.dir}"/>
+        <classpath refid="Generator.classpath"/>
+      </junit>
+    </target>
+    <target name="GeneretorTests">
+      <mkdir dir="${junit.output.dir}"/>
+      <junit fork="yes" printsummary="withOutAndErr">
+        <formatter type="plain" usefile="false" />
+        <test name="cs444.cfgrulesgenerator.RuleExpanderTest" todir="${junit.output.dir}"/>
+        <test name="cs444.cfgrulesgenerator.RuleTest" todir="${junit.output.dir}"/>
+        <classpath refid="Generator.classpath"/>
+      </junit>
+    </target>
+    <!-- END TESTS -->
 </project>
