@@ -27,7 +27,7 @@ public class RuleExpander{
         }
     }
 
-	// if N -> A [B] C then
+    // if N -> A [B] C then
     // first rule: N -> A C
     // second rule: N -> A B C
     private List<Rule> expandZeroOrOneBNFExpr(Rule rule, Range bNFExpr) {
@@ -67,13 +67,9 @@ public class RuleExpander{
 
         // first rule: N -> A N_B1 C
         List<Token> firstRuleRHS = new ArrayList<Token>();
-        for(int i = 0; i < bNFExpr.from; i++){ // add A
-            firstRuleRHS.add(rule.getRightHandSideToken(i));
-        }
+        addSymbolsBeforeExpr(rule, bNFExpr, firstRuleRHS); // add A
         firstRuleRHS.add(newNonTerm); // add N_B1
-        for(int i = bNFExpr.to + 1; i < rule.rightHandSideSize(); i++){
-            firstRuleRHS.add(rule.getRightHandSideToken(i));
-        }
+        addSymbolsAfterExpr(rule, bNFExpr, firstRuleRHS);
         ret.add(new Rule(rule.leftHandSide, firstRuleRHS));
 
         // second rule: N_B1 -> N_B1 B
@@ -104,9 +100,57 @@ public class RuleExpander{
         return new Token(Token.Type.NON_TERMINAL, newNonTerm.toString());
     }
 
+    // N -> a (b | c | ... | d) e
+    // 1: N -> a b e
+    // 2: N -> a c e
+    // ...
     private List<Rule> expandOrBNFExpr(Rule rule, Range bNFExpr) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        List<Rule> ret = new ArrayList<Rule>();
 
+        int numPipes = countNumOfPipes(rule, bNFExpr);
+
+        // create numPipes + 1 rules
+        for(int i = 0, currSubExprIndex = bNFExpr.from + 1;
+            i <= numPipes; i++){
+            List<Token> rightHandSide = new ArrayList<Token>();
+            addSymbolsBeforeExpr(rule, bNFExpr, rightHandSide);
+
+            Token token;
+            for(; (token = rule.getRightHandSideToken(currSubExprIndex)).type !=
+                    Token.Type.PIPE &&
+                    currSubExprIndex < bNFExpr.to; currSubExprIndex++){
+                rightHandSide.add(token);
+            }
+            currSubExprIndex++; // point to next token after '|'
+
+            addSymbolsAfterExpr(rule, bNFExpr, rightHandSide);
+
+            ret.add(new Rule(rule.leftHandSide, rightHandSide));
+        }
+
+        return ret;
+    }
+
+    private int countNumOfPipes(Rule rule, Range bNFExpr){
+        int counter = 0;
+        for(int i = bNFExpr.from + 1; i < bNFExpr.to; i++){
+            if(rule.getRightHandSideToken(i).type ==
+               Token.Type.PIPE) counter++;
+        }
+        return counter;
+    }
+
+    private void addSymbolsBeforeExpr(Rule rule, Range bNFExpr,
+                                      List<Token> ruleRHS) {
+        for(int i = 0; i < bNFExpr.from; i++){
+            ruleRHS.add(rule.getRightHandSideToken(i));
+        }
+    }
+
+    private void addSymbolsAfterExpr(Rule rule, Range bNFExpr,
+                                     List<Token> ruleRHS) {
+        for(int i = bNFExpr.to + 1; i < rule.rightHandSideSize(); i++){
+            ruleRHS.add(rule.getRightHandSideToken(i));
+        }
+    }
 }
