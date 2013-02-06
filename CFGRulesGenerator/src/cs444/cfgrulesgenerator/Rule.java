@@ -1,6 +1,9 @@
 package cs444.cfgrulesgenerator;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.print.attribute.standard.MediaSize.Other;
 
 import cs444.cfgrulesgenerator.exceptions.BNFParseException;
 import cs444.cfgrulesgenerator.lexer.Token;
@@ -14,7 +17,24 @@ public class Rule{
 
     public Rule(Token leftHandSide, List<Token> righHandSide){
         this.leftHandSide = leftHandSide;
-        this.rightHandSide = righHandSide;
+        this.rightHandSide = replaceTerminalSymbols(righHandSide);
+    }
+
+    private List<Token> replaceTerminalSymbols(List<Token> tokens) {
+    	List<Token> ret = new ArrayList<Token>();
+
+    	for (Token origToken : tokens) {
+            Token newToken;
+            Token.Type type = origToken.type;
+            if(isALogogram(type)){
+                newToken = new Token(type, type.toString().toLowerCase());
+            }else{
+                newToken = origToken;
+            }
+            ret.add(newToken);
+        }
+
+        return ret;
     }
 
     public String toString(){
@@ -98,4 +118,13 @@ public class Rule{
         // let's use toString for now
         return this.toString().equals(other.toString());
     }
+   
+    // check if token is representing one of the symbols ; , = + ...
+	private boolean isALogogram(Token.Type type) {
+		return Token.typeToParse.get(type) == Parse.VALID &&
+		   type != Token.Type.LHS &&
+		   type != Token.Type.TERMINAL &&
+		   type != Token.Type.NON_TERMINAL;
+	}
+
 }

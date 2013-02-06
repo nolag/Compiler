@@ -30,8 +30,6 @@ BooleanLiteral:
 
 (true | false)
 
-StringLiteral:
-
 Expression:
 
 Expression1 [AssignmentOperator Expression1]]

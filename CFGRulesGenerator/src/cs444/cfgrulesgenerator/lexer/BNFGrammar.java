@@ -8,7 +8,7 @@ public class BNFGrammar extends LexicalGrammar {
 
     public BNFGrammar() {
 
-        addPattern("EPSILON", NFA.literal(""), Type.VALID);
+        addPattern("EPSILON", NFA.literal(""), Type.IGNORE); // This type is used for CFG rules, not for scanning
 
         addPattern("WHITESPACE", NFA.union(NFA.literal(" "), NFA.literal("\t")), Type.IGNORE);
 
