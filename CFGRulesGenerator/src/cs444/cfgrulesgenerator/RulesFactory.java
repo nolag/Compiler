@@ -30,10 +30,9 @@ public class RulesFactory implements IRulesFactory {
     public Rule getNextRule() throws UnexpectedTokenException, LexerException, IOException, BNFParseException{
         Rule rule = null;
 
-        // TODO: check if buffer is not empty
-        // extract next rule from buffer, expand many times, add them
-        // to buffer
-        // return expanded rule
+        if (!buffer.isEmpty()){
+            return getNextExpandedRuleFromBuffer();
+        }
 
         Token token = getNextRelevantToken();
 

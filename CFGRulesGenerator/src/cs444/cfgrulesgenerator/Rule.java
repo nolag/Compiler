@@ -31,7 +31,11 @@ public class Rule{
     }
 
     public boolean isInSimpleForm(){
-        // TODO
+        for(int i = 0; i < rightHandSideSize(); i++){
+            if (Token.typeToParse.get(rightHandSide.get(i).type) ==
+                Parse.SYNTAX_ONLY) return false;
+        }
+
         return true;
     }
 
