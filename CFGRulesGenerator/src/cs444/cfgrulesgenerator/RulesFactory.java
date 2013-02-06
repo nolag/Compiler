@@ -8,6 +8,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 
+import cs444.cfgrulesgenerator.exceptions.BNFParseException;
 import cs444.cfgrulesgenerator.exceptions.UnexpectedTokenException;
 import cs444.cfgrulesgenerator.lexer.ILexer;
 import cs444.cfgrulesgenerator.lexer.LexerException;
@@ -18,6 +19,7 @@ public class RulesFactory implements IRulesFactory {
     private final ILexer lexer;
     private Token currentLHS = null;
     private final Queue<Rule> buffer;
+    private final RuleExpander ruleExpander = new RuleExpander();
 
     public RulesFactory(ILexer lexer){
         this.lexer = lexer;
@@ -25,30 +27,28 @@ public class RulesFactory implements IRulesFactory {
     }
 
     // return null when no more rules
-    public Rule getNextRule() throws UnexpectedTokenException, LexerException, IOException{
-        Token token;
+    public Rule getNextRule() throws UnexpectedTokenException, LexerException, IOException, BNFParseException{
         Rule rule = null;
 
-        // TODO: check if buffer is not empty
-        // extract next rule from buffer, expand many times, add them
-        // to buffer
-        // return expanded rule
+        if (!buffer.isEmpty()){
+            return getNextExpandedRuleFromBuffer();
+        }
 
-        // skip tokens until we find something useful
-        while((token = lexer.getNextToken()).type != Token.Type.EOF &&
-              (Token.typeToParse.get(token.type) == Parse.IGNORE ||
-               token.type == Token.Type.NEWLINE)) ;
+        Token token = getNextRelevantToken();
 
         if (token.type == Token.Type.EOF) return null;
 
+        List<Token> rightHandSide = new ArrayList<Token>();
         if(token.type == Token.Type.LHS){
             this.currentLHS = token;
+            token = getNextRelevantToken(); // get first symbol of RHS
         }
 
+        rightHandSide.add(token); // add first symbol of rightHandSide
         if(this.currentLHS != null){
-            Rule initialRule = getNextRule(this.currentLHS);
-            // TODO: expand initial rule until no more expansions and add new rules to buffer
-            rule = initialRule;
+            Rule initialRule = getNextBNFRule(rightHandSide); // add rest of symbols
+            buffer.add(initialRule);
+            rule = getNextExpandedRuleFromBuffer();
         }else{                  // right hand side without left hand side => ERROR
             Set<String> expected = new TreeSet<String>();
             expected.add(Token.Type.LHS.toString());
@@ -57,23 +57,40 @@ public class RulesFactory implements IRulesFactory {
         return rule;
     }
 
-    private Rule getNextRule(Token leftHandSide) throws LexerException, IOException {
-        List<Token> rightHandSide = new ArrayList<Token>();
+    // gets next expanded rule from buffer
+    private Rule getNextExpandedRuleFromBuffer() throws BNFParseException {
+    	Rule rule;
 
-        Token token;
-        // skip all whitespace and newline until first symbol
-        while((token = lexer.getNextToken()).type != Token.Type.EOF &&
-              (token.type == Token.Type.NEWLINE ||
-               Token.typeToParse.get(token.type) == Parse.IGNORE)){}
-
-        // there is at most a rule per line
-        while(token.type != Token.Type.EOF &&
-              token.type != Token.Type.NEWLINE){
-
-            rightHandSide.add(token);
-            token = lexer.getNextToken();
+        while(!(rule = buffer.remove()).isInSimpleForm()){
+            buffer.addAll(ruleExpander.expand(rule));
         }
 
-        return new Rule(leftHandSide, rightHandSide);
+    	return rule;
+    }
+
+    private Rule getNextBNFRule(List<Token> rightHandSide) throws LexerException, IOException {
+        Token token;
+
+        // there is at most a rule per line
+        while((token = lexer.getNextToken()).type != Token.Type.EOF &&
+              token.type != Token.Type.NEWLINE){
+
+            if(Token.typeToParse.get(token.type) == Parse.IGNORE) continue;
+
+            rightHandSide.add(token);
+        }
+
+        return new Rule(currentLHS, rightHandSide);
+    }
+
+    private Token getNextRelevantToken() throws LexerException, IOException {
+        Token token;
+
+        // skip all whitespace and newline until first symbol
+        while((token = lexer.getNextToken()).type != Token.Type.EOF &&
+              (Token.typeToParse.get(token.type) == Parse.IGNORE ||
+               token.type == Token.Type.NEWLINE)) ;
+
+        return token;
     }
 }

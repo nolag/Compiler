@@ -8,6 +8,8 @@ public class BNFGrammar extends LexicalGrammar {
 
     public BNFGrammar() {
 
+        addPattern("EPSILON", NFA.literal(""), Type.IGNORE); // This type is used for CFG rules, not for scanning
+
         addPattern("WHITESPACE", NFA.union(NFA.literal(" "), NFA.literal("\t")), Type.IGNORE);
 
         addPattern("NEWLINE", NFA.union(NFA.literal("\n"), NFA.literal("\r")), Type.VALID);
@@ -23,28 +25,26 @@ public class BNFGrammar extends LexicalGrammar {
                                           NFA.zeroOrMore(NFA.union(NFA.letter(), NFA.digit())),
                                           NFA.literal(":")), Type.VALID);
 
-        // this covers all keywords, and also lparen, rparen, lbrace, rbrace, lbracket, rbracket, pipe
-        addPattern("TERMINAL", NFA.oneOrMore(NFA.smallLetter()), Type.VALID);
+        // this covers all keywords, and also lparen, rparen, lbrace, rbrace, lbracket,
+        // rbracket, pipe, literals
+        addPattern("TERMINAL", NFA.oneOrMore(NFA.union(NFA.literal("_"),
+                                                       NFA.smallLetter())), Type.VALID);
 
         addPattern("NON_TERMINAL", NFA.concatenate(NFA.capitalLetter(),
-                                                   NFA.zeroOrMore(NFA.union(NFA.letter(), NFA.digit()))), Type.VALID);
-
-        addPattern("INTEGER_LITERAL", NFA.literal("IntegerLiteral"), Type.VALID);
-        addPattern("FLOATING_POINT_LITERAL", NFA.literal("FloatingPointLiteral"), Type.VALID);
-        addPattern("CHARACTER_LITERAL", NFA.literal("CharacterLiteral"), Type.VALID);
-        addPattern("STRING_LITERAL", NFA.literal("StringLiteral"), Type.VALID);
-        addPattern("BOOLEAN_LITERAL", NFA.literal("BooleanLiteral"), Type.VALID);
-        addPattern("NULL_LITERAL", NFA.literal("NullLiteral"), Type.VALID);
+                                                   NFA.zeroOrMore(NFA.union(NFA.literal("_"),
+                                                                            NFA.letter(),
+                                                                            NFA.digit()))),
+                   Type.VALID);
 
         // Special characters. This are chars that have meaning in BNF, so for the actual symbols in
         // the Joos grammar, we will be using TERMINAL token
-        addPattern("PIPE", NFA.literal("|"), Type.VALID);
-        addPattern("LPAREN", NFA.literal("("), Type.VALID);
-        addPattern("RPAREN", NFA.literal(")"), Type.VALID);
-        addPattern("LBRACE", NFA.literal("{"), Type.VALID);
-        addPattern("RBRACE", NFA.literal("}"), Type.VALID);
-        addPattern("LBRACKET", NFA.literal("["), Type.VALID);
-        addPattern("RBRACKET", NFA.literal("]"), Type.VALID);
+        addPattern("PIPE", NFA.literal("|"), Type.SYNTAX_ONLY);
+        addPattern("LPAREN", NFA.literal("("), Type.SYNTAX_ONLY);
+        addPattern("RPAREN", NFA.literal(")"), Type.SYNTAX_ONLY);
+        addPattern("LBRACE", NFA.literal("{"), Type.SYNTAX_ONLY);
+        addPattern("RBRACE", NFA.literal("}"), Type.SYNTAX_ONLY);
+        addPattern("LBRACKET", NFA.literal("["), Type.SYNTAX_ONLY);
+        addPattern("RBRACKET", NFA.literal("]"), Type.SYNTAX_ONLY);
 
         // Other terminals
         addPattern("SEMI", NFA.literal(";"), Type.VALID);
