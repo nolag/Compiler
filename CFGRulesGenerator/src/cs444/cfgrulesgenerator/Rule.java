@@ -3,8 +3,6 @@ package cs444.cfgrulesgenerator;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.print.attribute.standard.MediaSize.Other;
-
 import cs444.cfgrulesgenerator.exceptions.BNFParseException;
 import cs444.cfgrulesgenerator.lexer.Token;
 import cs444.cfgrulesgenerator.lexer.Token.Parse;
