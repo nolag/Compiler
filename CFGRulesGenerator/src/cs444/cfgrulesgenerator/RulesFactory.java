@@ -8,6 +8,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 
+import cs444.cfgrulesgenerator.exceptions.BNFParseException;
 import cs444.cfgrulesgenerator.exceptions.UnexpectedTokenException;
 import cs444.cfgrulesgenerator.lexer.ILexer;
 import cs444.cfgrulesgenerator.lexer.LexerException;
@@ -25,7 +26,7 @@ public class RulesFactory implements IRulesFactory {
     }
 
     // return null when no more rules
-    public Rule getNextRule() throws UnexpectedTokenException, LexerException, IOException{
+    public Rule getNextRule() throws UnexpectedTokenException, LexerException, IOException, BNFParseException{
         Rule rule = null;
 
         // TODO: check if buffer is not empty
@@ -46,14 +47,25 @@ public class RulesFactory implements IRulesFactory {
         rightHandSide.add(token); // add first symbol of rightHandSide
         if(this.currentLHS != null){
             Rule initialRule = getNextBNFRule(rightHandSide); // add rest of symbols
-            // TODO: expand initial rule until no more expansions and add new rules to buffer
-            rule = initialRule;
+            buffer.add(initialRule);
+            rule = getNextExpandedRuleFromBuffer();
         }else{                  // right hand side without left hand side => ERROR
             Set<String> expected = new TreeSet<String>();
             expected.add(Token.Type.LHS.toString());
             throw new UnexpectedTokenException(token, expected);
         }
         return rule;
+    }
+
+    // gets next expanded rule from buffer
+    private Rule getNextExpandedRuleFromBuffer() throws BNFParseException {
+    	Rule rule;
+
+        while(!(rule = buffer.remove()).isInSimpleForm()){
+            buffer.addAll(RuleExpander.expand(rule));
+        }
+
+    	return rule;
     }
 
     private Rule getNextBNFRule(List<Token> rightHandSide) throws LexerException, IOException {

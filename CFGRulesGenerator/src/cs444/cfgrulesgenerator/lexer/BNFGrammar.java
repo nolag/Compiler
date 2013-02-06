@@ -38,13 +38,13 @@ public class BNFGrammar extends LexicalGrammar {
 
         // Special characters. This are chars that have meaning in BNF, so for the actual symbols in
         // the Joos grammar, we will be using TERMINAL token
-        addPattern("PIPE", NFA.literal("|"), Type.VALID);
-        addPattern("LPAREN", NFA.literal("("), Type.VALID);
-        addPattern("RPAREN", NFA.literal(")"), Type.VALID);
-        addPattern("LBRACE", NFA.literal("{"), Type.VALID);
-        addPattern("RBRACE", NFA.literal("}"), Type.VALID);
-        addPattern("LBRACKET", NFA.literal("["), Type.VALID);
-        addPattern("RBRACKET", NFA.literal("]"), Type.VALID);
+        addPattern("PIPE", NFA.literal("|"), Type.SYNTAX_ONLY);
+        addPattern("LPAREN", NFA.literal("("), Type.SYNTAX_ONLY);
+        addPattern("RPAREN", NFA.literal(")"), Type.SYNTAX_ONLY);
+        addPattern("LBRACE", NFA.literal("{"), Type.SYNTAX_ONLY);
+        addPattern("RBRACE", NFA.literal("}"), Type.SYNTAX_ONLY);
+        addPattern("LBRACKET", NFA.literal("["), Type.SYNTAX_ONLY);
+        addPattern("RBRACKET", NFA.literal("]"), Type.SYNTAX_ONLY);
 
         // Other terminals
         addPattern("SEMI", NFA.literal(";"), Type.VALID);

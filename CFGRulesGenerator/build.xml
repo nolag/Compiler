@@ -6,6 +6,7 @@
               as the first entry and export the buildfile again. -->
 <project basedir="." default="build" name="CFGRulesGenerator">
     <property environment="env"/>
+    <property name="junit.output.dir" value="junit"/>
     <property name="Generator.location" value="../Generator"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
@@ -13,15 +14,24 @@
     <path id="Generator.classpath">
         <pathelement location="${Generator.location}/bin"/>
     </path>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="../../../../../opt/eclipse/plugins/org.junit_4.8.2.v4_8_2_v20110321-1705/junit.jar"/>
+        <pathelement location="../../../../../opt/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+    </path>
     <path id="CFGRulesGenerator.classpath">
         <pathelement location="bin"/>
         <path refid="Generator.classpath"/>
+        <path refid="JUnit 4.libraryclasspath"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
-                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="tst">
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
@@ -42,16 +52,53 @@
             <src path="src"/>
             <classpath refid="CFGRulesGenerator.classpath"/>
         </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}" includeantruntime="false">
+            <src path="tst"/>
+            <classpath refid="CFGRulesGenerator.classpath"/>
+        </javac>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target name="RulesGenerator">
+        <java classname="cs444.cfgrulesgenerator.RulesGenerator" failonerror="true" fork="yes">
+            <classpath refid="CFGRulesGenerator.classpath"/>
+        </java>
+    </target>
     <target name="LexerGenerator">
         <java classname="cs444.cfgrulesgenerator.lexer.LexerGenerator" failonerror="true" fork="yes">
             <classpath refid="CFGRulesGenerator.classpath"/>
         </java>
     </target>
-    <target name="RulesGenerator">
-        <java classname="cs444.cfgrulesgenerator.RulesGenerator" failonerror="true" fork="yes">
+    <target name="RuleExpanderTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="cs444.cfgrulesgenerator.RuleExpanderTest" todir="${junit.output.dir}"/>
             <classpath refid="CFGRulesGenerator.classpath"/>
-        </java>
+        </junit>
+    </target>
+    <target name="RuleTest">
+      <mkdir dir="${junit.output.dir}"/>
+      <junit fork="yes" printsummary="withOutAndErr">
+        <formatter type="xml"/>
+        <test name="cs444.cfgrulesgenerator.RuleTest" todir="${junit.output.dir}"/>
+        <classpath refid="CFGRulesGenerator.classpath"/>
+      </junit>
+    </target>
+    <target name="tests">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <test name="cs444.cfgrulesgenerator.RuleTest" todir="${junit.output.dir}"/>
+            <test name="cs444.cfgrulesgenerator.RuleExpanderTest" todir="${junit.output.dir}"/>
+            <classpath refid="CFGRulesGenerator.classpath"/>
+        </junit>
+    </target>
+
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
     </target>
 </project>
