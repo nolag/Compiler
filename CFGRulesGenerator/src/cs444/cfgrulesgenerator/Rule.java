@@ -43,7 +43,7 @@ public class Rule{
 
         // no bnfExpr found
         if (fromIndex == rightHandSide.size()){
-        	throw new BNFParseException("No BNF expression found in: " + this.toString());
+            throw new BNFParseException("No BNF expression found in: " + this.toString());
         }
 
         int toIndex = fromIndex;
@@ -60,7 +60,7 @@ public class Rule{
         }
 
         if(toIndex == rightHandSide.size()){
-        	throw new BNFParseException("No closing pair for: '" + openToken + "'");
+            throw new BNFParseException("No closing pair for: '" + openToken + "'");
         }
         return new Range(fromIndex, toIndex);
     }
@@ -84,5 +84,14 @@ public class Rule{
 
     public int rightHandSideSize(){
         return this.rightHandSide.size();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+    	if (!obj.getClass().equals(Rule.class)) return false;
+
+    	Rule other = (Rule) obj;
+        // let's use toString for now
+        return this.toString().equals(other.toString());
     }
 }

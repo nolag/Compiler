@@ -19,6 +19,7 @@ public class RulesFactory implements IRulesFactory {
     private final ILexer lexer;
     private Token currentLHS = null;
     private final Queue<Rule> buffer;
+    private final RuleExpander ruleExpander = new RuleExpander();
 
     public RulesFactory(ILexer lexer){
         this.lexer = lexer;
@@ -62,7 +63,7 @@ public class RulesFactory implements IRulesFactory {
     	Rule rule;
 
         while(!(rule = buffer.remove()).isInSimpleForm()){
-            buffer.addAll(RuleExpander.expand(rule));
+            buffer.addAll(ruleExpander.expand(rule));
         }
 
     	return rule;
