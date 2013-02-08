@@ -6,13 +6,14 @@ id
 
 QualifiedIdentifier:
 
-Identifier { . Identifier }
+Identifier { dot Identifier }
 
 Literal:
 
 IntegerLiteral
 
-floating_point_literal
+// Not in Joos 1W -- https://www.student.cs.uwaterloo.ca/~cs444/joos.html
+// floating_point_literal
 
 char_literal
 
@@ -32,7 +33,7 @@ BooleanLiteral:
 
 Expression:
 
-Expression1 [AssignmentOperator Expression1]]
+Expression1 [AssignmentOperator Expression1]
 
 AssignmentOperator:
 
@@ -40,7 +41,7 @@ AssignmentOperator:
 
 Type:
 
-Identifier { . Identifier } BracketsOpt
+Identifier { dot Identifier } BracketsOpt
 
 BasicType
 
@@ -68,35 +69,37 @@ Expression3 instanceof Type
 
 Infixop:
 
-||
+dpipe
 
-&&
+dampersand
 
-|
+pipe
 
-&
+// ^ TODO: Is this not a feature?
 
-==
+ampersand
 
-!=
+eq
 
-<
+ne
 
->
+lt
 
-<=
+gt
 
->=
+le
 
-+
+ge
 
--
+plus
 
-*
+minus
 
-/
+star
 
-%
+slash
+
+pct
 
 Expression3:
 
