@@ -218,6 +218,8 @@ ParExpression:
 
 ( Expression )
 
+// Stop here, I'm doing this part - Arturo
+
 Block:
 
 { BlockStatements }
@@ -348,8 +350,6 @@ VariableDeclaratorId:
 
 Identifier BracketsOpt
 
-// Stop here, I'm doing this part - Arturo
-
 CompilationUnit:
 
 [package QualifiedIdentifier ; ] {ImportDeclaration} {TypeDeclaration}
@@ -382,11 +382,11 @@ Type { , Type}
 
 ClassBody:
 
-{ {ClassBodyDeclaration} }
+lbrace {ClassBodyDeclaration} rbrace
 
 InterfaceBody:
 
-{ {InterfaceBodyDeclaration} }
+lbrace {InterfaceBodyDeclaration} rbrace
 
 ClassBodyDeclaration:
 
