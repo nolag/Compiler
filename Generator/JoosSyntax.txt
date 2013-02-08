@@ -348,6 +348,8 @@ VariableDeclaratorId:
 
 Identifier BracketsOpt
 
+// Stop here, I'm doing this part - Arturo
+
 CompilationUnit:
 
 [package QualifiedIdentifier ; ] {ImportDeclaration} {TypeDeclaration}
