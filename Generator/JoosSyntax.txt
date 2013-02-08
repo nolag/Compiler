@@ -105,7 +105,7 @@ Expression3:
 
 PrefixOp Expression3
 
-( Expr | Type ) Expression3     // this one is odd. It's not italic in "The specs", but seems to be a BNF expr
+( Expression | Type ) Expression3     // this one is odd. It's not italic in "The specs", but seems to be a BNF expr
 
 Primary {Selector}
 
