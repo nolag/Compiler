@@ -371,7 +371,9 @@ ModifiersOpt (ClassDeclaration | InterfaceDeclaration)
 
 ClassDeclaration:
 
-class Identifier [extends Type] [implements TypeList] ClassBody
+class Identifier [extends Type] ClassBody
+
+class Identifier [extends Type] implements TypeList ClassBody
 
 InterfaceDeclaration:
 
