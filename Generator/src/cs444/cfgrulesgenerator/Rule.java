@@ -40,7 +40,12 @@ public class Rule{
 
         String lHSLexeme = leftHandSide.lexeme;
         // do not return ':'
-        result.append(lHSLexeme.subSequence(0, leftHandSide.lexeme.length() - 1));
+        int lastChar = lHSLexeme.length() - 1;
+        if (lHSLexeme.charAt(lastChar) == ':'){
+        	result.append(lHSLexeme.subSequence(0, lHSLexeme.length() - 1));
+        }else{
+        	result.append(lHSLexeme);
+        }
 
         for (Token symbol : rightHandSide) {
             result.append(" " + symbol.lexeme);
