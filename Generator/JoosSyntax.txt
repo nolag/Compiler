@@ -267,7 +267,7 @@ continue [Identifier]
 
 ;
 
-ExpressionStatement
+StatementExpression
 
 Catches:
 
@@ -478,4 +478,3 @@ FormalParameter:
 MethodBody:
 
 Block
-
