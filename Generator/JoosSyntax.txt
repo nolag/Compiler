@@ -105,13 +105,13 @@ Expression3:
 
 PrefixOp Expression3
 
-( Expr | Type ) Expression3
+( Expr | Type ) Expression3     // this one is odd. It's not italic in "The specs", but seems to be a BNF expr
 
 Primary {Selector}
 
 Primary:
 
-( Expression )
+lparen Expression rparen
 
 this [Arguments]
 
@@ -129,7 +129,7 @@ void.class
 
 IdentifierSuffix:
 
-[ (] BracketsOpt . class | Expression ])
+lbrace ( rbracket BracketsOpt . class | Expression rbracket )
 
 Arguments
 
@@ -153,7 +153,7 @@ Selector:
 
 . new InnerCreator
 
-[ Expression ]
+lbracket Expression rbracket
 
 SuperSuffix:
 
@@ -185,11 +185,11 @@ ArgumentsOpt:
 
 Arguments:
 
-( [Expression { , Expression }] )
+lparen [Expression { , Expression }] rparen
 
 BracketsOpt:
 
-{ [] }
+{ lbracket rbracket }
 
 Creator:
 
@@ -201,7 +201,7 @@ Identifier ClassCreatorRest
 
 ArrayCreatorRest:
 
-[ (] BracketsOpt ArrayInitializer | Expression ] { [ Expression ]} BracketsOpt )
+lbracket ( rbracket BracketsOpt ArrayInitializer | Expression rbracket { lbracket Expression rbracket} BracketsOpt )
 
 ClassCreatorRest:
 
@@ -209,7 +209,7 @@ Arguments [ClassBody]
 
 ArrayInitializer:
 
-{ [VariableInitializer { , VariableInitializer} [,]] }
+lbrace [VariableInitializer { , VariableInitializer} [,]] rbrace
 
 VariableInitializer:
 
@@ -219,7 +219,7 @@ Expression
 
 ParExpression:
 
-( Expression )
+lparen Expression rparen
 
 Block:
 
