@@ -3,6 +3,7 @@ package cs444.parser.symbols.ast.factories;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
+import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public abstract class ASTSymbolFactory{
 
@@ -10,8 +11,9 @@ public abstract class ASTSymbolFactory{
      *
      * @param start the start symbol to conver with all its children
      * @return the AST
+     * @throws UnsupportedException
      */
-    public ISymbol convertAll(ANonTerminal start) throws OutOfRangeException{
+    public ISymbol convertAll(ANonTerminal start) throws OutOfRangeException, UnsupportedException{
         ISymbol retVal  = convert(start);
 
         if(!ANonTerminal.class.isAssignableFrom(retVal.getClass())) return retVal;
@@ -30,6 +32,7 @@ public abstract class ASTSymbolFactory{
      * @param from the symbol to convert to the ast symbol
      * @return the ast symbol representing the symbol, or from if it is not valid for conversion
      * @throws OutOfRangeException
+     * @throws UnsupportedException
      */
-    protected abstract ISymbol convert(ANonTerminal from) throws OutOfRangeException;
+    protected abstract ISymbol convert(ANonTerminal from) throws OutOfRangeException, UnsupportedException;
 }
