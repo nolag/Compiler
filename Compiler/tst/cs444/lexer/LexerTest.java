@@ -2,6 +2,8 @@ package cs444.lexer;
 
 import org.junit.Test;
 
+import cs444.TestHelper;
+
 public class LexerTest {
     @Test
     public void testValidTraditionalComment() throws Exception {
@@ -201,5 +203,10 @@ public class LexerTest {
         TestHelper.assertTokenFor("void", Token.Type.VOID);
         TestHelper.assertTokenFor("volatile", Token.Type.VOLATILE);
         TestHelper.assertTokenFor("while", Token.Type.WHILE);
+    }
+    
+    @Test(expected = InvalidCharacterException.class)
+    public void testInvalidCharacter() throws Exception {
+    	TestHelper.scanString("some ASCII characters and \u0080");
     }
 }

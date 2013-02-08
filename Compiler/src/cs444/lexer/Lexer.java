@@ -20,6 +20,10 @@ public class Lexer implements ILexer{
         String lexeme = "";
         LexerState state = dfa.getInitialState();
         while (nextChar != -1) {
+        	
+        	if (nextChar > 127)
+        		throw new InvalidCharacterException(nextChar);
+        	
             int previewState = state.getNextState(nextChar);
             if (previewState == -1) {
                 if (state.isAccepting())
