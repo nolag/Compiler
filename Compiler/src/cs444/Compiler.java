@@ -11,7 +11,6 @@ import cs444.parser.JoosDFA;
 import cs444.parser.Parser;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
-import cs444.parser.symbols.exceptions.OutOfRangeException;
 
 public class Compiler {
 
@@ -57,7 +56,7 @@ public class Compiler {
         for(ASTSymbolFactory astSymbol : builder.getSimplifcations()){
             try {
                 astSymbol.convertAll(parseTree);
-            } catch (OutOfRangeException e) {
+            } catch (Exception e) {
                 die(e);
             }
         }
