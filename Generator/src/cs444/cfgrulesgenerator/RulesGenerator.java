@@ -22,7 +22,7 @@ public class RulesGenerator {
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(new FileReader("JoosSyntax.txt"));
+            reader = new BufferedReader(new FileReader("src/cs444/cfgrulesgenerator/JoosSyntax.txt"));
             IRulesFactory rulesFactory = new RulesFactory(new Lexer(reader));
 
             generateSyntacticGrammarClass(rulesFactory);
@@ -43,7 +43,8 @@ public class RulesGenerator {
         Writer writer = null;
 
         try{
-            writer = new FileWriter(new File("JoosSyntacticGrammar.java"));
+            String filePath = "src/cs444/generator/parser/JoosSyntacticGrammar.java";
+            writer = new FileWriter(new File(filePath));
             SyntacticGrammarClassGenerator generator = new SyntacticGrammarClassGenerator(writer, rulesFactory, "JoosSyntacticGrammar");
 
             generator.generate();
