@@ -218,11 +218,9 @@ ParExpression:
 
 ( Expression )
 
-// Stop here, I'm doing this part - Arturo
-
 Block:
 
-{ BlockStatements }
+lbrace BlockStatements rbrace
 
 BlockStatements:
 
@@ -246,7 +244,7 @@ Block
 
 if ParExpression Statement [else Statement]
 
-for ( ForInitOpt ; [Expression] ; ForUpdateOpt ) Statement
+for lparen ForInitOpt ; [Expression] ; ForUpdateOpt rparen Statement
 
 while ParExpression Statement
 
@@ -274,7 +272,7 @@ CatchClause {CatchClause}
 
 CatchClause:
 
-catch ( FormalParameter ) Block
+catch lparen FormalParameter rparen Block
 
 MoreStatementExpressions:
 
