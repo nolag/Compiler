@@ -117,7 +117,7 @@ public class Rule{
         // let's use toString for now
         return this.toString().equals(other.toString());
     }
-   
+
     // check if token is representing one of the symbols ; , = + ...
 	private boolean isALogogram(Token.Type type) {
 		return Token.typeToParse.get(type) == Parse.VALID &&

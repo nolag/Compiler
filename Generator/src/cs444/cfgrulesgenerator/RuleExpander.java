@@ -2,6 +2,8 @@ package cs444.cfgrulesgenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import cs444.cfgrulesgenerator.Rule;
 import cs444.cfgrulesgenerator.exceptions.BNFParseException;
@@ -56,46 +58,61 @@ public class RuleExpander{
     }
 
     // if N -> A {B} C then
-    // 1: N -> A N_B1 C
-    // 2: N_B1 -> N_B1 B
-    // 3: N_B1 -> epsilon
+    // 1: N -> A N_B_0 C
+    // 2: N_B_0 -> N_B_0 B
+    // 3: N_B_0 -> epsilon
     private List<Rule> expandZeroOrMoreBNFExpr(Rule rule, Range bNFExpr) {
         List<Rule> ret = new ArrayList<Rule>();
 
-        // Create new Non Terminal rule (N_B1)
-        Token newNonTerm = getNewNonTermFor(rule, bNFExpr);
+        Token nonTermSymbol = getNonTermNameForExpr(rule, bNFExpr);
 
-        // first rule: N -> A N_B1 C
+        // first rule: N -> A N_B_0 C
         List<Token> firstRuleRHS = new ArrayList<Token>();
         addSymbolsBeforeExpr(rule, bNFExpr, firstRuleRHS); // add A
-        firstRuleRHS.add(newNonTerm); // add N_B1
+        firstRuleRHS.add(nonTermSymbol); // add N_B_0
         addSymbolsAfterExpr(rule, bNFExpr, firstRuleRHS);
         ret.add(new Rule(rule.leftHandSide, firstRuleRHS));
 
-        // second rule: N_B1 -> N_B1 B
-        List<Token> secondRuleRHS = new ArrayList<Token>();
-        secondRuleRHS.add(newNonTerm);                      // add N_B1
-        for(int i = bNFExpr.from + 1; i < bNFExpr.to; i++){ // add B
-            secondRuleRHS.add(rule.getRightHandSideToken(i));
+        // check if new rule was already added
+        if (!wasRuleGeneratedFor(nonTermSymbol)){
+            generateNewRules(nonTermSymbol, rule, bNFExpr, ret);
         }
-        ret.add(new Rule(newNonTerm, secondRuleRHS));
-
-        // 3: N_B1 -> epsilon
-        List<Token> thirdRuleRHS = new ArrayList<Token>();
-        thirdRuleRHS.add(new Token(Token.Type.EPSILON, " "));
-        ret.add(new Rule(newNonTerm, thirdRuleRHS));
 
         return ret;
     }
 
-    private int counter = 0;
-    private Token getNewNonTermFor(Rule rule, Range bNFExpr){
+    private final SortedSet<String> newNonTerminals = new TreeSet<String>();
+	private void generateNewRules(Token nonTermSymbol, Rule rule,
+			Range bNFExpr, List<Rule> ret) {
+		// second rule: N_B_0 -> N_B_0 B
+        List<Token> secondRuleRHS = new ArrayList<Token>();
+        secondRuleRHS.add(nonTermSymbol);                      // add N_B_0
+        for(int i = bNFExpr.from + 1; i < bNFExpr.to; i++){ // add B
+            secondRuleRHS.add(rule.getRightHandSideToken(i));
+        }
+        Rule newRule1 = new Rule(nonTermSymbol, secondRuleRHS);
+        ret.add(newRule1);
+
+        // 3: N_B_0 -> epsilon
+        List<Token> thirdRuleRHS = new ArrayList<Token>();
+        thirdRuleRHS.add(new Token(Token.Type.EPSILON, " "));
+        Rule newRule2 = new Rule(nonTermSymbol, thirdRuleRHS);
+        ret.add(newRule2);
+
+        newNonTerminals.add(nonTermSymbol.toString());
+	}
+
+    private boolean wasRuleGeneratedFor(Token nonTermName) {
+		return this.newNonTerminals.contains(nonTermName.toString());
+	}
+
+	private Token getNonTermNameForExpr(Rule rule, Range bNFExpr){
         StringBuffer newNonTerm = new StringBuffer("N");
 
         for (int i = bNFExpr.from + 1; i < bNFExpr.to; i++){
             newNonTerm.append("_" + rule.getRightHandSideToken(i).lexeme);
         }
-        newNonTerm.append(++counter);
+        newNonTerm.append("_0");
 
         return new Token(Token.Type.NON_TERMINAL, newNonTerm.toString());
     }
