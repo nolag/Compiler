@@ -73,19 +73,19 @@ public class RuleExpanderTest extends TestHelper{
                                new Token(Token.Type.RBRACE, "}"),
                                new Token(Token.Type.NON_TERMINAL, "C"));
 
-        // N -> A N_B1 C
+        // N -> A N_B_0 C
         Rule expectedRule1 = ruleFor(new Token(Token.Type.LHS, "N:"),
                                      new Token(Token.Type.NON_TERMINAL, "A"),
-                                     new Token(Token.Type.NON_TERMINAL, "N_B1"),
+                                     new Token(Token.Type.NON_TERMINAL, "N_B_0"),
                                      new Token(Token.Type.NON_TERMINAL, "C"));
 
-        // N_B1 -> N_B1 B
-        Rule expectedRule2 = ruleFor(new Token(Token.Type.LHS, "N_B1"),
-                                     new Token(Token.Type.NON_TERMINAL, "N_B1"),
+        // N_B1 -> N_B_0 B
+        Rule expectedRule2 = ruleFor(new Token(Token.Type.LHS, "N_B_0"),
+                                     new Token(Token.Type.NON_TERMINAL, "N_B_0"),
                                      new Token(Token.Type.NON_TERMINAL, "B"));
 
-        // N_B1 -> epsilon
-        Rule expectedRule3 = ruleFor(new Token(Token.Type.LHS, "N_B1"),
+        // N_B_0 -> epsilon
+        Rule expectedRule3 = ruleFor(new Token(Token.Type.LHS, "N_B_0"),
                                      new Token(Token.Type.EPSILON, " "));
 
         List<Rule> expandedRules = new RuleExpander().expand(BNFrule);
@@ -102,17 +102,17 @@ public class RuleExpanderTest extends TestHelper{
                                new Token(Token.Type.NON_TERMINAL, "B"),
                                new Token(Token.Type.RBRACE, "}"));
 
-        // N -> N_B1
+        // N -> N_B_0
         Rule expectedRule1 = ruleFor(new Token(Token.Type.LHS, "N:"),
-                                     new Token(Token.Type.NON_TERMINAL, "N_B1"));
+                                     new Token(Token.Type.NON_TERMINAL, "N_B_0"));
 
-        // N_B1 -> N_B1 B
-        Rule expectedRule2 = ruleFor(new Token(Token.Type.LHS, "N_B1"),
-                                     new Token(Token.Type.NON_TERMINAL, "N_B1"),
+        // N_B_0 -> N_B_0 B
+        Rule expectedRule2 = ruleFor(new Token(Token.Type.LHS, "N_B_0"),
+                                     new Token(Token.Type.NON_TERMINAL, "N_B_0"),
                                      new Token(Token.Type.NON_TERMINAL, "B"));
 
-        // N_B1 -> epsilon
-        Rule expectedRule3 = ruleFor(new Token(Token.Type.LHS, "N_B1"),
+        // N_B_0 -> epsilon
+        Rule expectedRule3 = ruleFor(new Token(Token.Type.LHS, "N_B_0"),
                                      new Token(Token.Type.EPSILON, " "));
 
         List<Rule> expandedRules = new RuleExpander().expand(BNFrule);
@@ -131,25 +131,53 @@ public class RuleExpanderTest extends TestHelper{
                                new Token(Token.Type.RBRACE, "}"),
                                new Token(Token.Type.NON_TERMINAL, "C"));
 
-        // N -> N_A_B1 C
+        // N -> N_A_B_0 C
         Rule expectedRule1 = ruleFor(new Token(Token.Type.LHS, "N:"),
-                                     new Token(Token.Type.NON_TERMINAL, "N_A_B1"),
+                                     new Token(Token.Type.NON_TERMINAL, "N_A_B_0"),
                                      new Token(Token.Type.NON_TERMINAL, "C"));
 
-        // N_A_B1 -> N_A_B1 A B
-        Rule expectedRule2 = ruleFor(new Token(Token.Type.LHS, "N_A_B1"),
-                                     new Token(Token.Type.NON_TERMINAL, "N_A_B1"),
+        // N_A_B_0 -> N_A_B_0 A B
+        Rule expectedRule2 = ruleFor(new Token(Token.Type.LHS, "N_A_B_0"),
+                                     new Token(Token.Type.NON_TERMINAL, "N_A_B_0"),
                                      new Token(Token.Type.NON_TERMINAL, "A"),
                                      new Token(Token.Type.NON_TERMINAL, "B"));
 
-        // N_A_B1 -> epsilon
-        Rule expectedRule3 = ruleFor(new Token(Token.Type.LHS, "N_A_B1"),
+        // N_A_B_0 -> epsilon
+        Rule expectedRule3 = ruleFor(new Token(Token.Type.LHS, "N_A_B_0"),
                                      new Token(Token.Type.EPSILON, " "));
 
         List<Rule> expandedRules = new RuleExpander().expand(BNFrule);
         assertEquals(expectedRule1, expandedRules.get(0));
         assertEquals(expectedRule2, expandedRules.get(1));
         assertEquals(expectedRule3, expandedRules.get(2));
+    }
+
+    @Test
+    public void testBracesReuseNewRules() throws BNFParseException {
+        // N -> A {B}
+        Rule BNFrule1 = ruleFor(new Token(Token.Type.LHS, "N:"),
+                               new Token(Token.Type.NON_TERMINAL, "A"),
+                               new Token(Token.Type.LBRACE, "{"),
+                               new Token(Token.Type.NON_TERMINAL, "B"),
+                               new Token(Token.Type.RBRACE, "}"));
+
+        // M -> {B} C
+        Rule BNFrule2 = ruleFor(new Token(Token.Type.LHS, "M:"),
+                               new Token(Token.Type.LBRACE, "{"),
+                               new Token(Token.Type.NON_TERMINAL, "B"),
+                               new Token(Token.Type.RBRACE, "}"),
+                               new Token(Token.Type.NON_TERMINAL, "C"));
+
+        // The result should be:
+        // N -> A N_B_0
+        // N -> N_B_0 C
+        // N_B_0 -> N_B_0 B
+        // N_B_0 -> epsilon
+        RuleExpander expander = new RuleExpander();
+        List<Rule> expandedRules = expander.expand(BNFrule1);
+        expandedRules.addAll(expander.expand(BNFrule2));
+
+        assertEquals(4, expandedRules.size());
     }
 
     @Test

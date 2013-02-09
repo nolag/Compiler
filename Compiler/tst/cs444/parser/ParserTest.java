@@ -20,6 +20,7 @@ import cs444.parser.symbols.ast.factories.ListedSymbolFactory;
 import cs444.parser.symbols.ast.factories.OneChildFactory;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
+import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public class ParserTest {
 
@@ -39,7 +40,7 @@ public class ParserTest {
     }
 
     @Test
-    public void testGoodSequence() throws IOException, LexerException, UnexpectedTokenException, OutOfRangeException{
+    public void testGoodSequence() throws IOException, LexerException, UnexpectedTokenException, OutOfRangeException, UnsupportedException{
         List<Token> tokens = new LinkedList<Token>();
         tokens.add(new Token(Token.Type.INT, "int"));
         tokens.add(new Token(Token.Type.ID, "i"));
@@ -253,7 +254,7 @@ public class ParserTest {
     }
 
     @Test
-    public void basicNumbers() throws OutOfRangeException {
+    public void basicNumbers() throws OutOfRangeException, UnsupportedException {
         IntegerLiteralFactory fact = new IntegerLiteralFactory();
         Terminal [] children = new Terminal[1];
         children[0] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483647"));
@@ -278,7 +279,7 @@ public class ParserTest {
     }
 
     @Test(expected = OutOfRangeException.class)
-    public void numberTooSmall() throws OutOfRangeException{
+    public void numberTooSmall() throws OutOfRangeException, UnsupportedException{
         IntegerLiteralFactory fact = new IntegerLiteralFactory();
         Terminal [] children = new Terminal[2];
         children[0] = new Terminal(new Token(Token.Type.MINUS, "-"));
@@ -288,7 +289,7 @@ public class ParserTest {
     }
 
     @Test(expected = OutOfRangeException.class)
-    public void numberTooBig() throws OutOfRangeException{
+    public void numberTooBig() throws OutOfRangeException, UnsupportedException{
         IntegerLiteralFactory fact = new IntegerLiteralFactory();
         Terminal [] children = new Terminal[1];
         children[0] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483648"));

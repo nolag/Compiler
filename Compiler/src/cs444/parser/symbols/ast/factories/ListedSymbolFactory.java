@@ -11,7 +11,6 @@ public class ListedSymbolFactory extends ASTSymbolFactory{
             if(from.children.get(0).getName().equals(from.getName())) from = new ListedSymbol(from, 0);
             else if(from.children.get(1).getName().equals(from.getName())) from = new ListedSymbol(from, 1);
         }
-
         return from;
     }
 }
