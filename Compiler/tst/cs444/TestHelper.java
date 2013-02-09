@@ -17,6 +17,8 @@ public class TestHelper {
 
 		Token token = scanner.getNextToken();
 		assertToken(tokenType, string, token);
+		token = scanner.getNextToken();
+		assertToken(Token.Type.EOF, "", token);
 		assertNull(scanner.getNextToken());
 	}
 
