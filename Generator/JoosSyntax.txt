@@ -12,9 +12,6 @@ Literal:
 
 IntegerLiteral
 
-// Not in Joos 1W -- https://www.student.cs.uwaterloo.ca/~cs444/joos.html
-// floating_point_literal
-
 char_literal
 
 str_literal
@@ -63,7 +60,7 @@ Expression3 [Expression2Rest]
 
 Expression2Rest:
 
-{Infixop Expression3}
+// {Infixop Expression3}
 
 Expression3 instanceof Type
 
@@ -105,9 +102,9 @@ Expression3:
 
 PrefixOp Expression3
 
-( Expression | Type ) Expression3     // this one is odd. It's not italic in "The specs", but seems to be a BNF expr
+Type Expression3     // this one is odd. It's not italic in "The specs", but seems to be a BNF expr
 
-Primary {Selector}
+// Primary {Selector}
 
 Primary:
 
@@ -262,8 +259,6 @@ return [Expression] ;
 throw Expression ;
 
 break [Identifier]
-
-continue [Identifier]
 
 ;
 
