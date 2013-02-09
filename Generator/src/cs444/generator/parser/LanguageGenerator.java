@@ -61,7 +61,7 @@ public class LanguageGenerator {
             generator.generateLALR1Table();
             generator.generateOutput(addTo);
         } catch(Error e) {
-            System.err.println("Error performing LALR(1) construction: "+e);
+            System.err.println("Error performing construction: "+e);
             System.exit(1);
             return;
         }
