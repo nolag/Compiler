@@ -60,7 +60,7 @@ Expression3 [Expression2Rest]
 
 Expression2Rest:
 
-// {Infixop Expression3}
+// {Infixop Expression3}        // TODO: fix this rule
 
 Expression3 instanceof Type
 
@@ -102,35 +102,26 @@ Expression3:
 
 PrefixOp Expression3
 
-Type Expression3     // this one is odd. It's not italic in "The specs", but seems to be a BNF expr
+Type Expression3     // TODO: check if we actually need the whole rule
+// ( Expression | Type ) Expression3     // this one is odd. It's not italic in "The specs", but seems to be a BNF expr
 
-// Primary {Selector}
+Primary {Selector}
 
 Primary:
 
-lparen Expression rparen
-
-this [Arguments]
-
-super SuperSuffix
+// lparen Expression rparen         // TODO: fix this rule
 
 Literal
 
-new Creator
+// new Creator        // TODO: fix this rule
 
-Identifier { . Identifier }[ IdentifierSuffix]
-
-BasicType BracketsOpt .class
-
-void.class
+// Identifier { . Identifier } [ IdentifierSuffix]         // TODO: fix this rule
 
 IdentifierSuffix:
 
-lbrace ( rbracket BracketsOpt . class | Expression rbracket )
+lbracket ( Expression ) rbracket
 
 Arguments
-
-. (class | this | super Arguments | new InnerCreator)
 
 PrefixOp:
 
@@ -144,19 +135,7 @@ Selector:
 
 . Identifier [Arguments]
 
-. this
-
-. super SuperSuffix
-
-. new InnerCreator
-
 lbracket Expression rbracket
-
-SuperSuffix:
-
-Arguments
-
-. Identifier [Arguments]
 
 BasicType:
 
@@ -191,10 +170,6 @@ BracketsOpt:
 Creator:
 
 QualifiedIdentifier ( ArrayCreatorRest | ClassCreatorRest )
-
-InnerCreator:
-
-Identifier ClassCreatorRest
 
 ArrayCreatorRest:
 
@@ -257,8 +232,6 @@ synchronized ParExpression Block
 return [Expression] ;
 
 throw Expression ;
-
-break [Identifier]
 
 ;
 
@@ -402,7 +375,9 @@ void Identifier MethodDeclaratorRest
 
 Identifier ConstructorDeclaratorRest
 
-ClassOrInterfaceDeclaration
+ClassDeclaration
+
+InterfaceDeclaration
 
 MethodOrFieldDecl:
 
