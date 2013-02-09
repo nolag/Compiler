@@ -14,10 +14,13 @@ import cs444.lexer.LexerException;
 import cs444.lexer.Token;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.Terminal;
+import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
+import cs444.parser.symbols.ast.StringLiteralSymbol;
 import cs444.parser.symbols.ast.factories.IntegerLiteralFactory;
 import cs444.parser.symbols.ast.factories.ListedSymbolFactory;
 import cs444.parser.symbols.ast.factories.OneChildFactory;
+import cs444.parser.symbols.ast.factories.StringLiteralFactory;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
@@ -295,5 +298,87 @@ public class ParserTest {
         children[0] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483648"));
         NonTerminal nonTerm = new NonTerminal("numHolder", children);
         nonTerm = (NonTerminal) fact.convertAll(nonTerm);
+    }
+    
+    private static void testCharEscape(String lexeme, char expected) throws OutOfRangeException, UnsupportedException {
+    	StringLiteralFactory fact = new StringLiteralFactory();
+        Terminal[] children = new Terminal[1];
+        children[0] = new Terminal(new Token(Token.Type.CHAR_LITERAL, lexeme));
+        NonTerminal nonTerm = new NonTerminal("Holder", children);
+        nonTerm = (NonTerminal) fact.convertAll(nonTerm);
+        CharacterLiteralSymbol literal = (CharacterLiteralSymbol)nonTerm.children.get(0);
+        assertEquals(expected, literal.value);
+    }
+    
+    @Test
+    public void validCharacterLiteralWithEscape() throws OutOfRangeException, UnsupportedException {
+    	testCharEscape("\'\\b\'", '\b');
+    	testCharEscape("\'\\t\'", '\t');
+    	testCharEscape("\'\\n\'", '\n');
+    	testCharEscape("\'\\f\'", '\f');
+    	testCharEscape("\'\\r\'", '\r');
+    	testCharEscape("\'\\\"\'", '\"');
+    	testCharEscape("\'\\\'\'", '\'');
+    	testCharEscape("\'\\\\\'", '\\');
+    	testCharEscape("\'\\177\'", '\177');
+    }
+    
+    private static void testStringEscape(String lexeme, String expected) throws OutOfRangeException, UnsupportedException {
+    	StringLiteralFactory fact = new StringLiteralFactory();
+        Terminal[] children = new Terminal[1];
+        children[0] = new Terminal(new Token(Token.Type.STR_LITERAL, lexeme));
+        NonTerminal nonTerm = new NonTerminal("Holder", children);
+        nonTerm = (NonTerminal) fact.convertAll(nonTerm);
+        StringLiteralSymbol literal = (StringLiteralSymbol)nonTerm.children.get(0);
+        assertEquals(expected, literal.value);
+    }
+    
+    @Test
+    public void validStringLiteralWithEscape() throws OutOfRangeException, UnsupportedException {
+    	testStringEscape("\"Some text \\b\"", "Some text \b");
+    	testStringEscape("\"Some text \\t\"", "Some text \t");
+    	testStringEscape("\"Some text \\n\"", "Some text \n");
+    	testStringEscape("\"Some text \\f\"", "Some text \f");
+    	testStringEscape("\"Some text \\r\"", "Some text \r");
+    	testStringEscape("\"Some text \\\"\"", "Some text \"");
+    	testStringEscape("\"Some text \\\'\"", "Some text \'");
+    	testStringEscape("\"Some text \\\\\"", "Some text \\");
+    	testStringEscape("\"Some text \\177\"", "Some text \177");
+    	testStringEscape("\"Some text \\17\"", "Some text \17");
+    	testStringEscape("\"Some text \\7\"", "Some text \7");
+    	testStringEscape("\"Some text \\177 \"", "Some text \177 ");
+    	testStringEscape("\"Some text \\17 \"", "Some text \17 ");
+    	testStringEscape("\"Some text \\7 \"", "Some text \7 ");
+    }
+    
+    @Test
+    public void validCharacterLiteralWithoutEscape() throws OutOfRangeException, UnsupportedException {
+    	testCharEscape("\'b\'", 'b');
+    	testCharEscape("\'t\'", 't');
+    	testCharEscape("\'n\'", 'n');
+    	testCharEscape("\'f\'", 'f');
+    	testCharEscape("\'r\'", 'r');
+    }
+    
+    @Test
+    public void validStringLiteralWithoutEscape() throws OutOfRangeException, UnsupportedException {
+    	testStringEscape("\"Some text \\\\b\"", "Some text \\b");
+    	testStringEscape("\"Some text \\\\t\"", "Some text \\t");
+    	testStringEscape("\"Some text \\\\n\"", "Some text \\n");
+    	testStringEscape("\"Some text \\\\f\"", "Some text \\f");
+    	testStringEscape("\"Some text \\\\r\"", "Some text \\r");
+    	testStringEscape("\"Some text \\\\177\"", "Some text \\177");
+    	testStringEscape("\"Some text \\\\17\"", "Some text \\17");
+    	testStringEscape("\"Some text \\\\1\"", "Some text \\1");
+    	testStringEscape("\"Some text \\\\177 \"", "Some text \\177 ");
+    	testStringEscape("\"Some text \\\\17 \"", "Some text \\17 ");
+    	testStringEscape("\"Some text \\\\1 \"", "Some text \\1 ");
+    }
+    
+    @Test
+    public void stringLiteralWithMultipleEscapes() throws OutOfRangeException, UnsupportedException {
+    	testStringEscape("\"Some text \\\\\"\"", "Some text \\\"");
+    	testStringEscape("\"Some text \\\\\'\"", "Some text \\\'");
+    	testStringEscape("\"Some text \\\\\\\\\"", "Some text \\\\");
     }
 }
