@@ -22,13 +22,13 @@ public class RulesGenerator {
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(new FileReader("src/cs444/cfgrulesgenerator/JoosSyntax.txt"));
+            reader = new BufferedReader(new FileReader("JoosSyntax.txt"));
             IRulesFactory rulesFactory = new RulesFactory(new Lexer(reader));
 
-            generateSyntacticGrammarClass(rulesFactory);
+//            generateSyntacticGrammarClass(rulesFactory);
 
-             // for debugging
-            // generateSimpleOutput(rulesFactory);
+            // for debugging
+            generateSimpleOutput(rulesFactory);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -37,13 +37,14 @@ public class RulesGenerator {
         }
     }
 
-    private static void generateSyntacticGrammarClass(IRulesFactory rulesFactory)
+    @SuppressWarnings("unused")
+	private static void generateSyntacticGrammarClass(IRulesFactory rulesFactory)
         throws IOException{
 
         Writer writer = null;
 
         try{
-            String filePath = "src/cs444/generator/parser/JoosSyntacticGrammar.java";
+            String filePath = "JoosSyntacticGrammar.java";
             writer = new FileWriter(new File(filePath));
             SyntacticGrammarClassGenerator generator = new SyntacticGrammarClassGenerator(writer, rulesFactory, "JoosSyntacticGrammar");
 
@@ -56,7 +57,7 @@ public class RulesGenerator {
         }
     }
 
-    @SuppressWarnings("unused")
+    
     // for testing and debugging
 	private static void generateSimpleOutput(IRulesFactory rulesFactory)
         throws UnexpectedTokenException, LexerException, IOException,

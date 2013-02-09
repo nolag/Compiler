@@ -8,8 +8,7 @@ import java.io.Writer;
 import cs444.generator.lexer.dfa.DFAClassGenerator;
 import cs444.generator.lexer.grammar.JoosGrammar;
 import cs444.generator.lexer.grammar.TokenClassGenerator;
-import cs444.generator.parser.JoosSyntacticGrammar;
-import cs444.generator.parser.Language;
+import cs444.generator.parser.ParserGenerator;
 
 public class Program {
 
@@ -69,13 +68,16 @@ public class Program {
 
         try {
             writer = createFileAndWriter("../Compiler/src/cs444/parser/JoosDFA.java");
-            Language language = new JoosSyntacticGrammar(writer);
-            language.generate();
-
+            ParserGenerator.generate(writer);
         } catch (IOException e) {
+
             System.err.println("Error writing to JoosDFA.java.");
+
         } finally {
+
             tryClose(writer);
         }
+
+        System.out.println("DONE");
     }
 }

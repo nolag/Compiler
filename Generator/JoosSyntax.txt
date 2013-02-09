@@ -247,7 +247,7 @@ Block
 
 if ParExpression Statement [else Statement]
 
-for lparen ForInitOpt ; [Expression] ; ForUpdateOpt rparen Statement
+for lparen ForInit ; [Expression] ; ForUpdate rparen Statement
 
 while ParExpression Statement
 
