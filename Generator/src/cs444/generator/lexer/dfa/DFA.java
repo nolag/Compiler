@@ -16,7 +16,7 @@ public class DFA {
     
     public DFA(NFA source) {
         
-        System.out.println("Building DFA");
+        // System.out.println("Building DFA");
         
         states = new ArrayList<DFAState>();
         statesToResolve = new LinkedList<DFAState>();
@@ -40,13 +40,13 @@ public class DFA {
         states.add(state);
         statesToResolve.add(state);
         
-        System.out.println("Creating DFA state " + state.toString());
+        // System.out.println("Creating DFA state " + state.toString());
         return state;
     }
     
     private void resolveState(DFAState state) {
         
-        System.out.println("Resolving state " + state.toString());
+        // System.out.println("Resolving state " + state.toString());
 
         // for all ascii characters from 0-127 inclusive        
         NFAStateSet[] transitions = new NFAStateSet[128];
@@ -75,7 +75,7 @@ public class DFA {
                 DFAState stateToConnect = findOrCreateState(transitions[ch]);
                 state.addTransition(ch, stateToConnect);
                 
-                System.out.println("This state has outgoing edges to " + stateToConnect.toString());
+                // System.out.println("This state has outgoing edges to " + stateToConnect.toString());
             }
         }
     }
