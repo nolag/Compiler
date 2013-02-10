@@ -200,8 +200,6 @@ BlockStatement:
 
 LocalVariableDeclarationStatement
 
-ClassOrInterfaceDeclaration
-
 Statement
 
 LocalVariableDeclarationStatement:
@@ -239,6 +237,10 @@ StatementExpression MoreStatementExpressions
 ForUpdate:
 
 StatementExpression MoreStatementExpressions
+
+Modifiers:
+
+Modifiers Modifier
 
 ModifiersOpt:
 
@@ -310,13 +312,19 @@ import Identifier { . Identifier } [ . * ] ;
 
 TypeDeclaration:
 
-ClassOrInterfaceDeclaration
+TypeDeclarationWithModifiers
+
+TypeDeclarationWithoutModifiers
 
 ;
 
-ClassOrInterfaceDeclaration:
+TypeDeclarationWithModifiers:
 
-ModifiersOpt (ClassDeclaration | InterfaceDeclaration)
+Modifiers TypeDeclarationWithoutModifiers
+
+TypeDeclarationWithoutModifiers:
+
+(ClassDeclaration | InterfaceDeclaration)
 
 ClassDeclaration:
 
@@ -334,11 +342,13 @@ Type { , Type}
 
 ClassBody:
 
-lbrace {ClassBodyDeclaration} rbrace
+// TODO: fix this rule.
+; // lbrace {ClassBodyDeclaration} rbrace
 
 InterfaceBody:
 
-lbrace {InterfaceBodyDeclaration} rbrace
+// TODO: fix this rule.
+; // lbrace {InterfaceBodyDeclaration} rbrace
 
 ClassBodyDeclaration:
 
@@ -379,8 +389,6 @@ InterfaceMemberDecl:
 InterfaceMethodOrFieldDecl
 
 void Identifier VoidInterfaceMethodDeclaratorRest
-
-ClassOrInterfaceDeclaration
 
 InterfaceMethodOrFieldDecl:
 
