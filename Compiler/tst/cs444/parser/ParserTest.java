@@ -15,12 +15,13 @@ import cs444.lexer.ILexer;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.lexer.Token;
-import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
+import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 import cs444.parser.symbols.ast.factories.IntegerLiteralFactory;
 import cs444.parser.symbols.ast.factories.ListedSymbolFactory;
 import cs444.parser.symbols.ast.factories.OneChildFactory;
@@ -387,13 +388,17 @@ public class ParserTest {
     }
 
     @Test
-    public void testEmptyClass() throws IOException, LexerException, UnexpectedTokenException{
+    public void testEmptyClass() throws IOException, LexerException, UnexpectedTokenException, OutOfRangeException, UnsupportedException{
         Parser parser = new Parser(new JoosDFA());
-        //Reader reader = new FileReader("CompleteCompUnit.java");
-        Reader reader = new FileReader("EmptyPackage.java");
+        Reader reader = new FileReader("CompleteCompUnit.java");
         Lexer lexer = new Lexer(reader);
-        ISymbol start = parser.parse(lexer);
-        start.getName();
+        ANonTerminal start = parser.parse(lexer);
+        IASTBuilder builder = new JoosASTBuilder();
+
+        for(ASTSymbolFactory factory : builder.getSimplifcations()){
+            start = (ANonTerminal) factory.convertAll(start);
+        }
+
         assertEquals("TRUE", "TRUE");
     }
 }

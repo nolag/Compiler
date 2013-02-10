@@ -1,12 +1,8 @@
 // you can use comments
 
-Identifier:
-
-id
-
 QualifiedIdentifier:
 
-Identifier { dot Identifier }
+id { dot id }
 
 Literal:
 
@@ -38,7 +34,7 @@ AssignmentOperator:
 
 Type:
 
-Identifier { dot Identifier } BracketsOpt
+id { dot id } BracketsOpt
 
 BasicType
 
@@ -116,7 +112,7 @@ Literal
 
 // new Creator        // TODO: fix this rule
 
-// Identifier { . Identifier } [ IdentifierSuffix]         // TODO: fix this rule
+// id { . id } [ IdentifierSuffix]         // TODO: fix this rule
 
 IdentifierSuffix:
 
@@ -134,7 +130,7 @@ PrefixOp:
 
 Selector:
 
-. Identifier [Arguments]
+. id [Arguments]
 
 lbracket Expression rbracket
 
@@ -238,10 +234,6 @@ ForUpdate:
 
 StatementExpression MoreStatementExpressions
 
-ModifiersOpt:
-
-{ Modifier }
-
 Modifier:
 
 public
@@ -280,11 +272,11 @@ ConstantDeclaratorRest { , ConstantDeclarator }
 
 VariableDeclarator:
 
-Identifier VariableDeclaratorRest
+id VariableDeclaratorRest
 
 ConstantDeclarator:
 
-Identifier ConstantDeclaratorRest
+id ConstantDeclaratorRest
 
 VariableDeclaratorRest:
 
@@ -296,7 +288,7 @@ BracketsOpt = VariableInitializer
 
 VariableDeclaratorId:
 
-Identifier BracketsOpt
+id BracketsOpt
 
 CompilationUnit:
 
@@ -304,7 +296,7 @@ CompilationUnit:
 
 ImportDeclaration:
 
-import Identifier { . Identifier } [ . * ] ;
+import id { . id } [ . * ] ;
 
 TypeDeclaration:
 
@@ -314,13 +306,13 @@ TypeDeclaration:
 
 ClassDeclaration:
 
-class Identifier [extends Type] ClassBody
+class id [extends Type] ClassBody
 
-class Identifier [extends Type] implements TypeList ClassBody
+class id [extends Type] implements TypeList ClassBody
 
 InterfaceDeclaration:
 
-interface Identifier [extends TypeList] InterfaceBody
+interface id [extends TypeList] InterfaceBody
 
 TypeList:
 
@@ -344,13 +336,13 @@ MemberDecl:
 
 MethodOrFieldDecl
 
-// void Identifier MethodDeclaratorRest // TODO: fix this rule.
+// void id MethodDeclaratorRest // TODO: fix this rule.
 
-// Identifier ConstructorDeclaratorRest // TODO: fix this rule.
+// id ConstructorDeclaratorRest // TODO: fix this rule.
 
 MethodOrFieldDecl:
 
-Type Identifier MethodOrFieldRest
+Type id MethodOrFieldRest
 
 MethodOrFieldRest:
 
@@ -362,17 +354,17 @@ InterfaceBodyDeclaration:
 
 ;
 
-// [ModifiersOpt] InterfaceMemberDecl  // TODO: fix this rule
+// {Modifier} InterfaceMemberDecl  // TODO: fix this rule
 
 InterfaceMemberDecl:
 
 InterfaceMethodOrFieldDecl
 
-// void Identifier VoidInterfaceMethodDeclaratorRest
+// void id VoidInterfaceMethodDeclaratorRest
 
 InterfaceMethodOrFieldDecl:
 
-Type Identifier InterfaceMethodOrFieldRest
+Type id InterfaceMethodOrFieldRest
 
 InterfaceMethodOrFieldRest:
 
