@@ -238,10 +238,6 @@ ForUpdate:
 
 StatementExpression MoreStatementExpressions
 
-Modifiers:
-
-Modifiers Modifier
-
 ModifiersOpt:
 
 { Modifier }
@@ -312,19 +308,9 @@ import Identifier { . Identifier } [ . * ] ;
 
 TypeDeclaration:
 
-TypeDeclarationWithModifiers
-
-TypeDeclarationWithoutModifiers
+{Modifier} (ClassDeclaration | InterfaceDeclaration)
 
 ;
-
-TypeDeclarationWithModifiers:
-
-Modifiers TypeDeclarationWithoutModifiers
-
-TypeDeclarationWithoutModifiers:
-
-(ClassDeclaration | InterfaceDeclaration)
 
 ClassDeclaration:
 
@@ -350,7 +336,7 @@ lbrace {InterfaceBodyDeclaration} rbrace
 
 ClassBodyDeclaration:
 
-[Modifiers] MemberDecl
+{Modifier} MemberDecl
 
 MemberDecl:
 

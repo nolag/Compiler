@@ -2,7 +2,9 @@ package cs444.parser;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,8 +12,10 @@ import java.util.List;
 import org.junit.Test;
 
 import cs444.lexer.ILexer;
+import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.lexer.Token;
+import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
@@ -299,7 +303,7 @@ public class ParserTest {
         NonTerminal nonTerm = new NonTerminal("numHolder", children);
         nonTerm = (NonTerminal) fact.convertAll(nonTerm);
     }
-    
+
     private static void testCharEscape(String lexeme, char expected) throws OutOfRangeException, UnsupportedException {
     	StringLiteralFactory fact = new StringLiteralFactory();
         Terminal[] children = new Terminal[1];
@@ -309,7 +313,7 @@ public class ParserTest {
         CharacterLiteralSymbol literal = (CharacterLiteralSymbol)nonTerm.children.get(0);
         assertEquals(expected, literal.value);
     }
-    
+
     @Test
     public void validCharacterLiteralWithEscape() throws OutOfRangeException, UnsupportedException {
     	testCharEscape("\'\\b\'", '\b');
@@ -322,7 +326,7 @@ public class ParserTest {
     	testCharEscape("\'\\\\\'", '\\');
     	testCharEscape("\'\\177\'", '\177');
     }
-    
+
     private static void testStringEscape(String lexeme, String expected) throws OutOfRangeException, UnsupportedException {
     	StringLiteralFactory fact = new StringLiteralFactory();
         Terminal[] children = new Terminal[1];
@@ -332,7 +336,7 @@ public class ParserTest {
         StringLiteralSymbol literal = (StringLiteralSymbol)nonTerm.children.get(0);
         assertEquals(expected, literal.value);
     }
-    
+
     @Test
     public void validStringLiteralWithEscape() throws OutOfRangeException, UnsupportedException {
     	testStringEscape("\"Some text \\b\"", "Some text \b");
@@ -350,7 +354,7 @@ public class ParserTest {
     	testStringEscape("\"Some text \\17 \"", "Some text \17 ");
     	testStringEscape("\"Some text \\7 \"", "Some text \7 ");
     }
-    
+
     @Test
     public void validCharacterLiteralWithoutEscape() throws OutOfRangeException, UnsupportedException {
     	testCharEscape("\'b\'", 'b');
@@ -359,7 +363,7 @@ public class ParserTest {
     	testCharEscape("\'f\'", 'f');
     	testCharEscape("\'r\'", 'r');
     }
-    
+
     @Test
     public void validStringLiteralWithoutEscape() throws OutOfRangeException, UnsupportedException {
     	testStringEscape("\"Some text \\\\b\"", "Some text \\b");
@@ -374,11 +378,22 @@ public class ParserTest {
     	testStringEscape("\"Some text \\\\17 \"", "Some text \\17 ");
     	testStringEscape("\"Some text \\\\1 \"", "Some text \\1 ");
     }
-    
+
     @Test
     public void stringLiteralWithMultipleEscapes() throws OutOfRangeException, UnsupportedException {
     	testStringEscape("\"Some text \\\\\"\"", "Some text \\\"");
     	testStringEscape("\"Some text \\\\\'\"", "Some text \\\'");
     	testStringEscape("\"Some text \\\\\\\\\"", "Some text \\\\");
+    }
+
+    @Test
+    public void testEmptyClass() throws IOException, LexerException, UnexpectedTokenException{
+        Parser parser = new Parser(new JoosDFA());
+        //Reader reader = new FileReader("CompleteCompUnit.java");
+        Reader reader = new FileReader("EmptyPackage.java");
+        Lexer lexer = new Lexer(reader);
+        ISymbol start = parser.parse(lexer);
+        start.getName();
+        assertEquals("TRUE", "TRUE");
     }
 }
