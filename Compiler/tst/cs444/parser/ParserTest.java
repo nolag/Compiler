@@ -1,6 +1,7 @@
 package cs444.parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -16,10 +17,12 @@ import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.lexer.Token;
 import cs444.parser.symbols.ANonTerminal;
+import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
+import cs444.parser.symbols.ast.QualifiedIdSymbol;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 import cs444.parser.symbols.ast.factories.IntegerLiteralFactory;
@@ -399,6 +402,18 @@ public class ParserTest {
             start = (ANonTerminal) factory.convertAll(start);
         }
 
-        assertEquals("TRUE", "TRUE");
+        assertEquals(3, start.children.size());
+
+        assertTrue(NonTerminal.class.isInstance(start));
+        assertTrue(Terminal.class.isInstance(start.children.get(0)));
+
+        ISymbol qid = start.children.get(1);
+
+        assertTrue(QualifiedIdSymbol.class.isInstance(qid));
+
+        QualifiedIdSymbol fullName = (QualifiedIdSymbol) qid;
+
+
+        assertTrue(fullName.fullName.equals("my.pkg.lol.simple"));
     }
 }

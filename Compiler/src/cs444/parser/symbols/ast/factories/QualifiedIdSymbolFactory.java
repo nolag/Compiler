@@ -11,9 +11,9 @@ public class QualifiedIdSymbolFactory extends ASTSymbolFactory{
 
     @Override
     protected ANonTerminal convert(ANonTerminal from) throws OutOfRangeException, UnsupportedException {
-        if(from.rule() != "QUALIFIEDIDENTIFIER") return from;
+        if(!from.getName().toUpperCase().equals("QUALIFIEDIDENTIFIER")) return from;
         Terminal first = (Terminal)from.firstOrDefault("ID");
-        ListedSymbol rest = (ListedSymbol) from.firstOrDefault("N_dot_Identifier_0");
+        ListedSymbol rest = (ListedSymbol) from.firstOrDefault("N_dot_Id_0");
 
         return new QualifiedIdSymbol(first, rest);
     }

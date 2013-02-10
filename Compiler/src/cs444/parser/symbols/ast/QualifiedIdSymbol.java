@@ -13,10 +13,12 @@ public class QualifiedIdSymbol extends ANonTerminal{
 
         StringBuilder sb = new StringBuilder(idOne.token.lexeme);
 
-        for(ISymbol symbol : rest.children){
-            Terminal part = (Terminal) symbol;
-            children.add(symbol);
-            sb.append("." + part.token.lexeme);
+        if(rest != null){
+            for(ISymbol symbol : rest.children){
+                Terminal part = (Terminal) symbol;
+                children.add(symbol);
+                sb.append("." + part.token.lexeme);
+            }
         }
 
         fullName = sb.toString();
