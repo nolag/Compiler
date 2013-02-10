@@ -110,7 +110,7 @@ Primary {Selector}
 
 Primary:
 
-lparen Expression rparen
+ParExpression
 
 Literal
 
