@@ -342,31 +342,25 @@ Type { , Type}
 
 ClassBody:
 
-// TODO: fix this rule.
-; // lbrace {ClassBodyDeclaration} rbrace
+lbrace {ClassBodyDeclaration} rbrace
 
 InterfaceBody:
 
-// TODO: fix this rule.
-; // lbrace {InterfaceBodyDeclaration} rbrace
+lbrace {InterfaceBodyDeclaration} rbrace
 
 ClassBodyDeclaration:
 
-;
-
-ModifiersOpt MemberDecl
+[Modifiers] MemberDecl
 
 MemberDecl:
 
+;
+
 MethodOrFieldDecl
 
-void Identifier MethodDeclaratorRest
+// void Identifier MethodDeclaratorRest // TODO: fix this rule.
 
-Identifier ConstructorDeclaratorRest
-
-ClassDeclaration
-
-InterfaceDeclaration
+// Identifier ConstructorDeclaratorRest // TODO: fix this rule.
 
 MethodOrFieldDecl:
 
@@ -376,19 +370,19 @@ MethodOrFieldRest:
 
 VariableDeclaratorRest
 
-MethodDeclaratorRest
+// MethodDeclaratorRest // TODO: fix this rule
 
 InterfaceBodyDeclaration:
 
 ;
 
-ModifiersOpt InterfaceMemberDecl
+// [ModifiersOpt] InterfaceMemberDecl  // TODO: fix this rule
 
 InterfaceMemberDecl:
 
 InterfaceMethodOrFieldDecl
 
-void Identifier VoidInterfaceMethodDeclaratorRest
+// void Identifier VoidInterfaceMethodDeclaratorRest
 
 InterfaceMethodOrFieldDecl:
 
