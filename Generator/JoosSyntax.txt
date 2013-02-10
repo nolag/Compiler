@@ -62,7 +62,8 @@ Expression2Rest:
 
 // {Infixop Expression3}        // TODO: fix this rule
 
-Expression3 instanceof Type
+// Expression3 instanceof Type   // I think Expression3 should not be here
+instanceof Type
 
 Infixop:
 
@@ -109,7 +110,7 @@ Primary {Selector}
 
 Primary:
 
-// lparen Expression rparen         // TODO: fix this rule
+lparen Expression rparen
 
 Literal
 
