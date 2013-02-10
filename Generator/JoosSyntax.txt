@@ -220,25 +220,11 @@ while ParExpression Statement
 
 do Statement while ParExpression ;
 
-try Block ( Catches | [Catches] finally Block )
-
-synchronized ParExpression Block
-
 return [Expression] ;
-
-throw Expression ;
 
 ;
 
 StatementExpression
-
-Catches:
-
-CatchClause {CatchClause}
-
-CatchClause:
-
-catch lparen FormalParameter rparen Block
 
 MoreStatementExpressions:
 
@@ -357,8 +343,6 @@ lbrace {InterfaceBodyDeclaration} rbrace
 ClassBodyDeclaration:
 
 ;
-
-[static] Block
 
 ModifiersOpt MemberDecl
 
