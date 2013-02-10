@@ -402,23 +402,23 @@ InterfaceMethodDeclaratorRest
 
 MethodDeclaratorRest:
 
-FormalParameters BracketsOpt [throws QualifiedIdentifierList] (MethodBody | ; )
+FormalParameters BracketsOpt (MethodBody | ; )
 
 VoidMethodDeclaratorRest:
 
-FormalParameters [throws QualifiedIdentifierList] ( MethodBody | ; )
+FormalParameters ( MethodBody | ; )
 
 InterfaceMethodDeclaratorRest:
 
-FormalParameters BracketsOpt [throws QualifiedIdentifierList] ;
+FormalParameters BracketsOpt ;
 
 VoidInterfaceMethodDeclaratorRest:
 
-FormalParameters [throws QualifiedIdentifierList] ;
+FormalParameters ;
 
 ConstructorDeclaratorRest:
 
-FormalParameters [throws QualifiedIdentifierList] MethodBody
+FormalParameters MethodBody
 
 QualifiedIdentifierList:
 
