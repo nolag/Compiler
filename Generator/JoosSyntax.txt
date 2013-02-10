@@ -174,19 +174,13 @@ QualifiedIdentifier ( ArrayCreatorRest | ClassCreatorRest )
 
 ArrayCreatorRest:
 
-lbracket ( rbracket BracketsOpt ArrayInitializer | Expression rbracket { lbracket Expression rbracket} BracketsOpt )
+lbracket Expression rbracket
 
 ClassCreatorRest:
 
 Arguments [ClassBody]
 
-ArrayInitializer:
-
-lbrace [VariableInitializer { , VariableInitializer} [,]] rbrace
-
 VariableInitializer:
-
-ArrayInitializer
 
 Expression
 
