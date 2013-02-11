@@ -11,7 +11,7 @@ public class InterfaceSymbol extends AInterfaceOrClass{
         super("InterfaceDeclaration");
         this.interfaceName = interfaceName;
         this.supers = supers;
-        children.add(body);
+        if(null != body) children.add(body);
     }
 
     @Override

@@ -10,7 +10,7 @@ public class TypeSymbol implements ISymbol{
 
     public TypeSymbol(String type, int numArrays) throws UnsupportedException{
         this.type = type;
-        this.isArray = numArrays == 0;
+        this.isArray = numArrays != 0;
         if(numArrays > 1) throw new UnsupportedException("multi dimentional arrays");
     }
 

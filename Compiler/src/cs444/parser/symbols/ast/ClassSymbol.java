@@ -14,7 +14,7 @@ public class ClassSymbol extends AInterfaceOrClass{
         this.className = className;
         this.superClass = superClass;
         this.impls = impls;
-        children.add(body);
+        if(null != body) children.add(body);
     }
 
     @Override

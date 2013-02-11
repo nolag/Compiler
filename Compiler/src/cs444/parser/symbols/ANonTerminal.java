@@ -39,7 +39,7 @@ public abstract class ANonTerminal implements ISymbol{
 
     public ISymbol firstOrDefault(String name){
         for(ISymbol child : children){
-            if(child.getName().equals(name)) return child;
+            if(child.getName().equalsIgnoreCase(name)) return child;
         }
         return null;
     }

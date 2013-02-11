@@ -10,10 +10,10 @@ public class TypeSymbolFactory extends ASTSymbolFactory{
 
     @Override
     protected ISymbol convert(ANonTerminal from) throws UnsupportedException {
-        if(from.name != "Type") return from;
-        Terminal first = (Terminal)from.firstOrDefault("Identifier");
+        if(!from.name.equalsIgnoreCase("Type")) return from;
+        Terminal first = (Terminal)from.firstOrDefault("Id");
         if(first == null) return from.firstOrDefault("BasicType");
-        ANonTerminal rest = (ANonTerminal)from.firstOrDefault("N_dot_Identifier_0");
+        ANonTerminal rest = (ANonTerminal)from.firstOrDefault("N_dot_Id_0");
 
         String fullName = first.token.lexeme;
 
