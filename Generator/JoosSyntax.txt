@@ -238,10 +238,6 @@ ForUpdate:
 
 StatementExpression MoreStatementExpressions
 
-ModifiersOpt:
-
-{ Modifier }
-
 Modifier:
 
 public
@@ -362,13 +358,13 @@ InterfaceBodyDeclaration:
 
 ;
 
-// [ModifiersOpt] InterfaceMemberDecl  // TODO: fix this rule
+{Modifier} InterfaceMemberDecl
 
 InterfaceMemberDecl:
 
 InterfaceMethodOrFieldDecl
 
-// void Identifier VoidInterfaceMethodDeclaratorRest // TODO: fix this
+void Identifier VoidInterfaceMethodDeclaratorRest
 
 InterfaceMethodOrFieldDecl:
 
