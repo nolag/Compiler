@@ -12,12 +12,15 @@ public class StringLiteralFactory extends ASTSymbolFactory {
 
 	@Override
 	protected ISymbol convert(ANonTerminal from) throws OutOfRangeException {
-		
+	    //TODO change when we know the rule
+
+	    if(!from.getName().equalsIgnoreCase("Holder")) return from;
+
 		for (int i = 0; i < from.children.size(); i++) {
-			
+
 			ISymbol symbol = from.children.get(i);
 			String name = symbol.getName();
-			
+
 			if (name == Token.Type.CHAR_LITERAL.toString()) {
 				from.children.remove(i);
 				from.children.add(i, new CharacterLiteralSymbol((Terminal)symbol));
@@ -27,7 +30,7 @@ public class StringLiteralFactory extends ASTSymbolFactory {
 				from.children.add(i, new StringLiteralSymbol((Terminal)symbol));
 			}
 		}
-		
+
 		return from;
 	}
 }

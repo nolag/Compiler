@@ -20,7 +20,9 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.Terminal;
+import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
+import cs444.parser.symbols.ast.ClassSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.QualifiedIdSymbol;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
@@ -31,7 +33,6 @@ import cs444.parser.symbols.ast.factories.OneChildFactory;
 import cs444.parser.symbols.ast.factories.StringLiteralFactory;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
-import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public class ParserTest {
 
@@ -51,7 +52,7 @@ public class ParserTest {
     }
 
     @Test
-    public void testGoodSequence() throws IOException, LexerException, UnexpectedTokenException, OutOfRangeException, UnsupportedException{
+    public void testGoodSequence() throws Exception{
         List<Token> tokens = new LinkedList<Token>();
         tokens.add(new Token(Token.Type.INT, "int"));
         tokens.add(new Token(Token.Type.ID, "i"));
@@ -207,7 +208,7 @@ public class ParserTest {
     }
 
     @Test(expected = UnexpectedTokenException.class)
-    public void testBadSequence() throws IOException, LexerException, UnexpectedTokenException{
+    public void testBadSequence() throws Exception{
         List<Token> tokens = new LinkedList<Token>();
         tokens.add(new Token(Token.Type.INT, "int"));
         tokens.add(new Token(Token.Type.ID, "i"));
@@ -265,7 +266,7 @@ public class ParserTest {
     }
 
     @Test
-    public void basicNumbers() throws OutOfRangeException, UnsupportedException {
+    public void basicNumbers() throws Exception {
         IntegerLiteralFactory fact = new IntegerLiteralFactory();
         Terminal [] children = new Terminal[1];
         children[0] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483647"));
@@ -290,7 +291,7 @@ public class ParserTest {
     }
 
     @Test(expected = OutOfRangeException.class)
-    public void numberTooSmall() throws OutOfRangeException, UnsupportedException{
+    public void numberTooSmall() throws Exception{
         IntegerLiteralFactory fact = new IntegerLiteralFactory();
         Terminal [] children = new Terminal[2];
         children[0] = new Terminal(new Token(Token.Type.MINUS, "-"));
@@ -300,7 +301,7 @@ public class ParserTest {
     }
 
     @Test(expected = OutOfRangeException.class)
-    public void numberTooBig() throws OutOfRangeException, UnsupportedException{
+    public void numberTooBig() throws Exception{
         IntegerLiteralFactory fact = new IntegerLiteralFactory();
         Terminal [] children = new Terminal[1];
         children[0] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483648"));
@@ -308,7 +309,7 @@ public class ParserTest {
         nonTerm = (NonTerminal) fact.convertAll(nonTerm);
     }
 
-    private static void testCharEscape(String lexeme, char expected) throws OutOfRangeException, UnsupportedException {
+    private static void testCharEscape(String lexeme, char expected) throws Exception {
     	StringLiteralFactory fact = new StringLiteralFactory();
         Terminal[] children = new Terminal[1];
         children[0] = new Terminal(new Token(Token.Type.CHAR_LITERAL, lexeme));
@@ -319,7 +320,7 @@ public class ParserTest {
     }
 
     @Test
-    public void validCharacterLiteralWithEscape() throws OutOfRangeException, UnsupportedException {
+    public void validCharacterLiteralWithEscape() throws Exception {
     	testCharEscape("\'\\b\'", '\b');
     	testCharEscape("\'\\t\'", '\t');
     	testCharEscape("\'\\n\'", '\n');
@@ -331,7 +332,7 @@ public class ParserTest {
     	testCharEscape("\'\\177\'", '\177');
     }
 
-    private static void testStringEscape(String lexeme, String expected) throws OutOfRangeException, UnsupportedException {
+    private static void testStringEscape(String lexeme, String expected) throws Exception {
     	StringLiteralFactory fact = new StringLiteralFactory();
         Terminal[] children = new Terminal[1];
         children[0] = new Terminal(new Token(Token.Type.STR_LITERAL, lexeme));
@@ -342,7 +343,7 @@ public class ParserTest {
     }
 
     @Test
-    public void validStringLiteralWithEscape() throws OutOfRangeException, UnsupportedException {
+    public void validStringLiteralWithEscape() throws Exception {
     	testStringEscape("\"Some text \\b\"", "Some text \b");
     	testStringEscape("\"Some text \\t\"", "Some text \t");
     	testStringEscape("\"Some text \\n\"", "Some text \n");
@@ -360,7 +361,7 @@ public class ParserTest {
     }
 
     @Test
-    public void validCharacterLiteralWithoutEscape() throws OutOfRangeException, UnsupportedException {
+    public void validCharacterLiteralWithoutEscape() throws Exception {
     	testCharEscape("\'b\'", 'b');
     	testCharEscape("\'t\'", 't');
     	testCharEscape("\'n\'", 'n');
@@ -369,7 +370,7 @@ public class ParserTest {
     }
 
     @Test
-    public void validStringLiteralWithoutEscape() throws OutOfRangeException, UnsupportedException {
+    public void validStringLiteralWithoutEscape() throws Exception {
     	testStringEscape("\"Some text \\\\b\"", "Some text \\b");
     	testStringEscape("\"Some text \\\\t\"", "Some text \\t");
     	testStringEscape("\"Some text \\\\n\"", "Some text \\n");
@@ -384,14 +385,14 @@ public class ParserTest {
     }
 
     @Test
-    public void stringLiteralWithMultipleEscapes() throws OutOfRangeException, UnsupportedException {
+    public void stringLiteralWithMultipleEscapes() throws Exception {
     	testStringEscape("\"Some text \\\\\"\"", "Some text \\\"");
     	testStringEscape("\"Some text \\\\\'\"", "Some text \\\'");
     	testStringEscape("\"Some text \\\\\\\\\"", "Some text \\\\");
     }
 
     @Test
-    public void testEmptyClass() throws IOException, LexerException, UnexpectedTokenException, OutOfRangeException, UnsupportedException{
+    public void testEmptyClass() throws Exception{
         Parser parser = new Parser(new JoosDFA());
         Reader reader = new FileReader("CompleteCompUnit.java");
         Lexer lexer = new Lexer(reader);
@@ -410,10 +411,14 @@ public class ParserTest {
         ISymbol qid = start.children.get(1);
 
         assertTrue(QualifiedIdSymbol.class.isInstance(qid));
-
         QualifiedIdSymbol fullName = (QualifiedIdSymbol) qid;
+        assertEquals("my.pkg.lol.simple", fullName.fullName);
 
 
-        assertTrue(fullName.fullName.equals("my.pkg.lol.simple"));
+        ISymbol classInterface = start.children.get(2);
+        assertTrue(ClassSymbol.class.isInstance(classInterface));
+        ClassSymbol classSymbol = (ClassSymbol) classInterface;
+        assertEquals("SimpleCompUnit", classSymbol.className);
+        assertTrue(classSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC);
     }
 }

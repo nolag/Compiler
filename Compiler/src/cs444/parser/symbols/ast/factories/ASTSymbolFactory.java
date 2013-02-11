@@ -2,6 +2,7 @@ package cs444.parser.symbols.ast.factories;
 
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
@@ -12,8 +13,9 @@ public abstract class ASTSymbolFactory{
      * @param start the start symbol to conver with all its children
      * @return the AST
      * @throws UnsupportedException
+     * @throws IllegalModifierException
      */
-    public ISymbol convertAll(ANonTerminal start) throws OutOfRangeException, UnsupportedException{
+    public ISymbol convertAll(ANonTerminal start) throws OutOfRangeException, UnsupportedException, IllegalModifierException{
         ISymbol retVal  = convert(start);
 
         if(!ANonTerminal.class.isAssignableFrom(retVal.getClass())) return retVal;
@@ -33,6 +35,7 @@ public abstract class ASTSymbolFactory{
      * @return the ast symbol representing the symbol, or from if it is not valid for conversion
      * @throws OutOfRangeException
      * @throws UnsupportedException
+     * @throws IllegalModifierException
      */
-    protected abstract ISymbol convert(ANonTerminal from) throws OutOfRangeException, UnsupportedException;
+    protected abstract ISymbol convert(ANonTerminal from) throws OutOfRangeException, UnsupportedException, IllegalModifierException;
 }
