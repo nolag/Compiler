@@ -1,8 +1,8 @@
 package cs444;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 
 import cs444.lexer.Lexer;
 import cs444.parser.IASTBuilder;
@@ -25,12 +25,12 @@ public class Compiler {
      */
     public static void main(String[] args){
 
-        BufferedReader reader = null;
+        Reader reader = null;
         NonTerminal parseTree = null;
 
         try {
 
-            reader = new BufferedReader(new FileReader(args[0]));
+            reader = new FileReader(args[0]);
             Lexer lexer = new Lexer(reader);
             Parser parser = new Parser(new JoosDFA());
 

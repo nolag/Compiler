@@ -1,7 +1,5 @@
 package cs444.integration.parser;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -22,15 +20,7 @@ public class JoosRulesTest {
     public void testParseEmptyPackage() throws IOException,
                                             LexerException,
                                             UnexpectedTokenException {
-        ISymbol parseTree = parseTreeForFile("EmptyPackage");
-
-        String expected =  "COMPILATIONUNIT -> PACKAGEDECLARATION \n" +
-            "PACKAGEDECLARATION -> PACKAGE PACKAGENAME \n" +
-            "PACKAGE -> package\n" +
-            "PACKAGENAME -> ID \n" +
-            "ID -> mypackage";
-
-        assertEquals(expected, parseTree.rule());
+        parseTreeForFile("EmptyPackage");
     }
 
     @Test

@@ -1,19 +1,12 @@
 // you can use comments
 
-Identifier:
-
-id
-
 QualifiedIdentifier:
 
-Identifier { dot Identifier }
+id { dot id }
 
 Literal:
 
 IntegerLiteral
-
-// Not in Joos 1W -- https://www.student.cs.uwaterloo.ca/~cs444/joos.html
-// floating_point_literal
 
 char_literal
 
@@ -33,7 +26,7 @@ BooleanLiteral:
 
 Expression:
 
-Expression1 [AssignmentOperator Expression1]
+pipe // Expression1 [AssignmentOperator Expression1]  // TODO: fix this
 
 AssignmentOperator:
 
@@ -41,7 +34,7 @@ AssignmentOperator:
 
 Type:
 
-Identifier { dot Identifier } BracketsOpt
+id { dot id } BracketsOpt
 
 BasicType
 
@@ -63,9 +56,10 @@ Expression3 [Expression2Rest]
 
 Expression2Rest:
 
-{Infixop Expression3}
+// {Infixop Expression3}        // TODO: fix this rule
 
-Expression3 instanceof Type
+// Expression3 instanceof Type   // I think Expression3 should not be here
+instanceof Type
 
 Infixop:
 
@@ -105,35 +99,26 @@ Expression3:
 
 PrefixOp Expression3
 
-( Expression | Type ) Expression3     // this one is odd. It's not italic in "The specs", but seems to be a BNF expr
+Type Expression3     // TODO: check if we actually need the whole rule
+// ( Expression | Type ) Expression3     // this one is odd. It's not italic in "The specs", but seems to be a BNF expr
 
 Primary {Selector}
 
 Primary:
 
-lparen Expression rparen
-
-this [Arguments]
-
-super SuperSuffix
+ParExpression
 
 Literal
 
-new Creator
+// new Creator        // TODO: fix this rule
 
-Identifier { . Identifier }[ IdentifierSuffix]
-
-BasicType BracketsOpt .class
-
-void.class
+// id { . id } [ IdentifierSuffix]         // TODO: fix this rule
 
 IdentifierSuffix:
 
-lbrace ( rbracket BracketsOpt . class | Expression rbracket )
+lbracket ( Expression ) rbracket
 
 Arguments
-
-. (class | this | super Arguments | new InnerCreator)
 
 PrefixOp:
 
@@ -145,21 +130,9 @@ PrefixOp:
 
 Selector:
 
-. Identifier [Arguments]
-
-. this
-
-. super SuperSuffix
-
-. new InnerCreator
+. id [Arguments]
 
 lbracket Expression rbracket
-
-SuperSuffix:
-
-Arguments
-
-. Identifier [Arguments]
 
 BasicType:
 
@@ -189,31 +162,21 @@ lparen [Expression { , Expression }] rparen
 
 BracketsOpt:
 
-{ lbracket rbracket }
+[ lbracket rbracket ]   // O or 1 because Joos doesnt support multi array
 
 Creator:
 
 QualifiedIdentifier ( ArrayCreatorRest | ClassCreatorRest )
 
-InnerCreator:
-
-Identifier ClassCreatorRest
-
 ArrayCreatorRest:
 
-lbracket ( rbracket BracketsOpt ArrayInitializer | Expression rbracket { lbracket Expression rbracket} BracketsOpt )
+lbracket Expression rbracket
 
 ClassCreatorRest:
 
 Arguments [ClassBody]
 
-ArrayInitializer:
-
-lbrace [VariableInitializer { , VariableInitializer} [,]] rbrace
-
 VariableInitializer:
-
-ArrayInitializer
 
 Expression
 
@@ -233,8 +196,6 @@ BlockStatement:
 
 LocalVariableDeclarationStatement
 
-ClassOrInterfaceDeclaration
-
 Statement
 
 LocalVariableDeclarationStatement:
@@ -245,7 +206,7 @@ Statement:
 
 Block
 
-if ParExpression Statement [else Statement]
+// if ParExpression Statement [else Statement] // TODO: fix this
 
 for lparen ForInit ; [Expression] ; ForUpdate rparen Statement
 
@@ -253,29 +214,11 @@ while ParExpression Statement
 
 do Statement while ParExpression ;
 
-try Block ( Catches | [Catches] finally Block )
-
-synchronized ParExpression Block
-
 return [Expression] ;
-
-throw Expression ;
-
-break [Identifier]
-
-continue [Identifier]
 
 ;
 
 StatementExpression
-
-Catches:
-
-CatchClause {CatchClause}
-
-CatchClause:
-
-catch lparen FormalParameter rparen Block
 
 MoreStatementExpressions:
 
@@ -290,10 +233,6 @@ StatementExpression MoreStatementExpressions
 ForUpdate:
 
 StatementExpression MoreStatementExpressions
-
-ModifiersOpt:
-
-{ Modifier }
 
 Modifier:
 
@@ -333,15 +272,15 @@ ConstantDeclaratorRest { , ConstantDeclarator }
 
 VariableDeclarator:
 
-Identifier VariableDeclaratorRest
+id VariableDeclaratorRest
 
 ConstantDeclarator:
 
-Identifier ConstantDeclaratorRest
+id ConstantDeclaratorRest
 
 VariableDeclaratorRest:
 
-BracketsOpt [= VariableInitializer]
+[= VariableInitializer]
 
 ConstantDeclaratorRest:
 
@@ -349,7 +288,7 @@ BracketsOpt = VariableInitializer
 
 VariableDeclaratorId:
 
-Identifier BracketsOpt
+id BracketsOpt
 
 CompilationUnit:
 
@@ -357,27 +296,23 @@ CompilationUnit:
 
 ImportDeclaration:
 
-import Identifier { . Identifier } [ . * ] ;
+import id { . id } [ . * ] ;
 
 TypeDeclaration:
 
-ClassOrInterfaceDeclaration
+{Modifier} (ClassDeclaration | InterfaceDeclaration)
 
 ;
 
-ClassOrInterfaceDeclaration:
-
-ModifiersOpt (ClassDeclaration | InterfaceDeclaration)
-
 ClassDeclaration:
 
-class Identifier [extends Type] ClassBody
+class id [extends Type] ClassBody
 
-class Identifier [extends Type] implements TypeList ClassBody
+class id [extends Type] implements TypeList ClassBody
 
 InterfaceDeclaration:
 
-interface Identifier [extends TypeList] InterfaceBody
+interface id [extends TypeList] InterfaceBody
 
 TypeList:
 
@@ -393,49 +328,43 @@ lbrace {InterfaceBodyDeclaration} rbrace
 
 ClassBodyDeclaration:
 
-;
-
-[static] Block
-
-ModifiersOpt MemberDecl
+{Modifier} MemberDecl
 
 MemberDecl:
 
-MethodOrFieldDecl
+;
 
-void Identifier MethodDeclaratorRest
+( MethodDecl | FieldDecl )
 
-Identifier ConstructorDeclaratorRest
+MethodDecl:
 
-ClassOrInterfaceDeclaration
+(BasicType | QualifiedIdentifier) BracketsOpt MethodDeclaratorRest MethodBody
 
-MethodOrFieldDecl:
+void MethodDeclaratorRest
 
-Type Identifier MethodOrFieldRest
+id ConstructorDeclaratorRest
 
-MethodOrFieldRest:
+FieldDecl:
 
-VariableDeclaratorRest
+BasicType BracketsOpt id VariableDeclaratorRest ;
 
-MethodDeclaratorRest
+QualifiedIdentifier BracketsOpt id VariableDeclaratorRest ;
 
 InterfaceBodyDeclaration:
 
 ;
 
-ModifiersOpt InterfaceMemberDecl
+{Modifier} InterfaceMemberDecl
 
 InterfaceMemberDecl:
 
 InterfaceMethodOrFieldDecl
 
-void Identifier VoidInterfaceMethodDeclaratorRest
-
-ClassOrInterfaceDeclaration
+void id VoidInterfaceMethodDeclaratorRest
 
 InterfaceMethodOrFieldDecl:
 
-Type Identifier InterfaceMethodOrFieldRest
+Type id InterfaceMethodOrFieldRest
 
 InterfaceMethodOrFieldRest:
 
@@ -445,23 +374,23 @@ InterfaceMethodDeclaratorRest
 
 MethodDeclaratorRest:
 
-FormalParameters BracketsOpt [throws QualifiedIdentifierList] (MethodBody | ; )
+id lparen FormalParameters rparen
 
 VoidMethodDeclaratorRest:
 
-FormalParameters [throws QualifiedIdentifierList] ( MethodBody | ; )
+FormalParameters ( MethodBody | ; )
 
 InterfaceMethodDeclaratorRest:
 
-FormalParameters BracketsOpt [throws QualifiedIdentifierList] ;
+FormalParameters BracketsOpt ;
 
 VoidInterfaceMethodDeclaratorRest:
 
-FormalParameters [throws QualifiedIdentifierList] ;
+FormalParameters ;
 
 ConstructorDeclaratorRest:
 
-FormalParameters [throws QualifiedIdentifierList] MethodBody
+FormalParameters MethodBody
 
 QualifiedIdentifierList:
 
@@ -469,12 +398,14 @@ QualifiedIdentifier { , QualifiedIdentifier}
 
 FormalParameters:
 
-( [FormalParameter { , FormalParameter}] )
+lparen [FormalParameter { , FormalParameter}] rparen
 
 FormalParameter:
 
 [final] Type VariableDeclaratorId
 
 MethodBody:
+
+;
 
 Block

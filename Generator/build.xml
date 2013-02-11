@@ -56,7 +56,7 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
-    <target name="LexerGenerator">
+    <target name="Program">
         <java classname="cs444.generator.Program" failonerror="true" fork="yes">
             <classpath refid="Generator.classpath"/>
         </java>
