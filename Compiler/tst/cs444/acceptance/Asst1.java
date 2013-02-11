@@ -21,6 +21,9 @@ public class Asst1 {
         for (File file : folder.listFiles()) {
             String fileName = file.getName();
 
+            // Use this line to test a single file
+            //if (!fileName.equals("StaticMethodDeclaration.java")) continue;
+
             if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
                 if (compileFile(path + fileName) == 0) {
                     System.out.print(".");

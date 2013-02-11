@@ -374,7 +374,7 @@ InterfaceMethodDeclaratorRest
 
 MethodDeclaratorRest:
 
-id lparen FormalParameters rparen
+id FormalParameters
 
 VoidMethodDeclaratorRest:
 
