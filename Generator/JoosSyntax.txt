@@ -166,7 +166,7 @@ lparen [Expression { , Expression }] rparen
 
 BracketsOpt:
 
-{ lbracket rbracket }
+[ lbracket rbracket ]   // O or 1 because Joos doesnt support multi array
 
 Creator:
 
@@ -288,7 +288,7 @@ Identifier ConstantDeclaratorRest
 
 VariableDeclaratorRest:
 
-BracketsOpt [= VariableInitializer]
+[= VariableInitializer]
 
 ConstantDeclaratorRest:
 
@@ -342,21 +342,21 @@ MemberDecl:
 
 ;
 
-MethodOrFieldDecl
+( MethodDecl | FieldDecl )
 
-// void Identifier MethodDeclaratorRest // TODO: fix this rule.
+MethodDecl:
 
-// Identifier ConstructorDeclaratorRest // TODO: fix this rule.
+(BasicType | QualifiedIdentifier) BracketsOpt MethodDeclaratorRest MethodBody
 
-MethodOrFieldDecl:
+void MethodDeclaratorRest
 
-Type Identifier MethodOrFieldRest
+Identifier ConstructorDeclaratorRest
 
-MethodOrFieldRest:
+FieldDecl:
 
-VariableDeclaratorRest
+BasicType BracketsOpt Identifier VariableDeclaratorRest ;
 
-// MethodDeclaratorRest // TODO: fix this rule
+QualifiedIdentifier BracketsOpt Identifier VariableDeclaratorRest ;
 
 InterfaceBodyDeclaration:
 
@@ -368,7 +368,7 @@ InterfaceMemberDecl:
 
 InterfaceMethodOrFieldDecl
 
-// void Identifier VoidInterfaceMethodDeclaratorRest
+// void Identifier VoidInterfaceMethodDeclaratorRest // TODO: fix this
 
 InterfaceMethodOrFieldDecl:
 
@@ -382,7 +382,7 @@ InterfaceMethodDeclaratorRest
 
 MethodDeclaratorRest:
 
-FormalParameters BracketsOpt (MethodBody | ; )
+Identifier lparen FormalParameters rparen
 
 VoidMethodDeclaratorRest:
 
@@ -406,7 +406,7 @@ QualifiedIdentifier { , QualifiedIdentifier}
 
 FormalParameters:
 
-( [FormalParameter { , FormalParameter}] )
+lparen [FormalParameter { , FormalParameter}] rparen
 
 FormalParameter:
 
@@ -414,4 +414,6 @@ FormalParameter:
 
 MethodBody:
 
-Block
+;
+
+// Block // TODO: fix this
