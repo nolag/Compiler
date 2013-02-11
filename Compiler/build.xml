@@ -57,6 +57,7 @@
             <test name="cs444.lexer.LexerMultipleTokensTest" todir="${junit.output.dir}"/>
             <test name="cs444.parser.ParserTest" todir="${junit.output.dir}"/>
             <test name="cs444.integration.parser.JoosRulesTest" todir="${junit.output.dir}"/>
+            <test name="cs444.acceptance.Asst1" todir="${junit.output.dir}"/>
             <classpath refid="Compiler.classpath"/>
         </junit>
     </target>
@@ -65,6 +66,13 @@
       <junit fork="yes" printsummary="withOutAndErr">
         <test name="cs444.integration.parser.JoosRulesTest" todir="${junit.output.dir}"/>
         <formatter type="plain" usefile="false" />
+        <classpath refid="Compiler.classpath"/>
+      </junit>
+    </target>
+
+    <target name="acceptance-tests">
+      <junit fork="yes" printsummary="withOutAndErr">
+        <test name="cs444.acceptance.Asst1"/>
         <classpath refid="Compiler.classpath"/>
       </junit>
     </target>
