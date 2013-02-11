@@ -38,4 +38,4 @@ TEST*Test.xml
 #Auto generated file
 Compiler/src/cs444/lexer/JoosDFA.java
 Compiler/src/cs444/lexer/Token.java
-Compiler/src/cs444/parser/JoosDFA.java
+Compiler/JoosRules.txt

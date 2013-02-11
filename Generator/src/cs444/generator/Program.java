@@ -67,11 +67,11 @@ public class Program {
         }
 
         try {
-            writer = createFileAndWriter("../Compiler/src/cs444/parser/JoosDFA.java");
+            writer = createFileAndWriter("../Compiler/JoosRules.txt");
             ParserGenerator.generate(writer);
         } catch (IOException e) {
 
-            System.err.println("Error writing to JoosDFA.java.");
+            System.err.println("Error writing to JoosRules.txt.");
 
         } finally {
 

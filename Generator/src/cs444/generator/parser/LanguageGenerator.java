@@ -633,26 +633,16 @@ class Generator {
                 stateMap.put(state, i++);
             }
         }
-
-        Set<Integer> createdStates = new HashSet<Integer>();
-
         for(Map.Entry<Pair<State,String>,Action> e : table.entrySet()) {
 
             Pair<State,String> p = e.getKey();
 
             int map = stateMap.get(p.getO1());
 
-            String state = "state" + map;
-
-            if(!createdStates.contains(map)){
-                addTo.add("Map<String, SymbolState> " + state + " = new HashMap<String, SymbolState>();");
-                createdStates.add(map);
-                addTo.add("rules.put(" + map + ", " + state + ");");
-            }
 
             String name = p.getO2();
 
-            String line = state + ".put(\"" + name + "\", new SymbolState(";
+            String line = map + " " + name + " ";
 
             Action a = e.getValue();
             if(a instanceof ShiftAction) {
@@ -660,10 +650,10 @@ class Generator {
                 line += stateMap.get(sa.nextState);
             } else if(a instanceof ReduceAction) {
                 ReduceAction ra = (ReduceAction)a;
-                line += ra.rule.lhs +  ",  " + ra.rule.rhs.length;
+                line += ra.rule.lhs +  " " + ra.rule.rhs.length;
             } else throw new Error("Internal error: unknown action");
 
-            addTo.add(line + "));");
+            addTo.add(line);
         }
     }
 }

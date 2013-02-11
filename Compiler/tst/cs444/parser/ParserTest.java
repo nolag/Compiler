@@ -3,6 +3,7 @@ package cs444.parser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -36,7 +37,11 @@ import cs444.parser.symbols.exceptions.UnexpectedTokenException;
 
 public class ParserTest {
 
-    private final Parser parser = new Parser(new TestRule());
+    private final Parser parser;
+
+    public ParserTest() throws IOException{
+        parser = new Parser(new TestRule());
+    }
 
     private static class MockLexer implements ILexer{
 
@@ -393,7 +398,7 @@ public class ParserTest {
 
     @Test
     public void testEmptyClass() throws Exception{
-        Parser parser = new Parser(new JoosDFA());
+        Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
         Reader reader = new FileReader("CompleteCompUnit.java");
         Lexer lexer = new Lexer(reader);
         ANonTerminal start = parser.parse(lexer);

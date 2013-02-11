@@ -20,7 +20,7 @@ public class Parser {
     private final Stack<ISymbol> symbolStack = new Stack<ISymbol>();
     private final Stack<Integer> stateStack = new Stack<Integer>();
 
-    public Parser(IParserRule rule){
+    public Parser(IParserRule rule) throws IOException{
         states = rule.getRules();
     }
 

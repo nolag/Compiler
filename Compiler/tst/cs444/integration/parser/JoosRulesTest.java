@@ -1,6 +1,7 @@
 package cs444.integration.parser;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -9,8 +10,8 @@ import org.junit.Test;
 
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
-import cs444.parser.JoosDFA;
 import cs444.parser.Parser;
+import cs444.parser.TextReadingRules;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
 
@@ -70,7 +71,7 @@ public class JoosRulesTest {
 
     private void parseTreeFor(String code) throws IOException, LexerException,
                                                   UnexpectedTokenException {
-        Parser parser = new Parser(new JoosDFA());
+        Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
         parser.parse(new Lexer(new StringReader(code)));
     }
 
@@ -80,7 +81,7 @@ public class JoosRulesTest {
         String filePath =  fileName + ".java";
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         Lexer lexer = new Lexer(reader);
-        Parser parser = new Parser(new JoosDFA());
+        Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
 
         return parser.parse(lexer);
     }
