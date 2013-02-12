@@ -26,11 +26,7 @@ BooleanLiteral:
 
 Expression:
 
-Literal // Expression1 [AssignmentOperator Expression1]  // TODO: fix this
-
-AssignmentOperator:
-
-=
+Expression1 [ = Expression]
 
 Type:
 
@@ -42,13 +38,13 @@ StatementExpression:
 
 Expression
 
-ConstantExpression:
+// ConstantExpression: // TODO: unused
 
-Expression
+// Expression
 
 Expression1:
 
-Expression2
+Primary //Expression2 // TODO: finish this
 
 Expression2:
 
@@ -112,7 +108,7 @@ Literal
 
 // new Creator        // TODO: fix this rule
 
-// id { . id } [ IdentifierSuffix]         // TODO: fix this rule
+id { . id } [ IdentifierSuffix ]
 
 IdentifierSuffix:
 
@@ -234,7 +230,7 @@ return [Expression] ;
 
 ;
 
-StatementExpression
+StatementExpression ;
 
 ForLoopHeader:
 
