@@ -364,7 +364,7 @@ MethodDecl:
 
 (BasicType | QualifiedIdentifier) BracketsOpt MethodDeclaratorRest MethodBody
 
-void MethodDeclaratorRest
+void MethodDeclaratorRest MethodBody
 
 id ConstructorDeclaratorRest
 
