@@ -31,7 +31,7 @@ public class Compiler {
 
         try {
 
-            reader = new FileReader(/*args[0]*/ "JoosPrograms/SyntacticallyValidPrograms/Implements.java");
+            reader = new FileReader(args[0]);
             Lexer lexer = new Lexer(reader);
             Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
 
