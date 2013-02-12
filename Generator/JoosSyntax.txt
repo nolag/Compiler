@@ -64,6 +64,8 @@ Expression5:
 
 Expression6:
 
+Expression6 instanceof Type
+
 [Expression6 (< | > | <= | >=)] Expression7
 
 Expression7:
@@ -73,9 +75,6 @@ Primary // TODO: finish this
 // Expression2Rest:
 
 // {Infixop Expression3}        // TODO: fix this rule
-
-// Expression3 instanceof Type   // I think Expression3 should not be here
-instanceof Type
 
 Infixop:
 
