@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import cs444.Compiler;
+
 public class Asst1 {
 
     @Test
@@ -52,10 +54,8 @@ public class Asst1 {
 
     private int compileFile(String filePath) throws IOException,
                                                     InterruptedException {
-        Runtime rt = Runtime.getRuntime();
-        Process process = rt.exec("java -cp bin cs444.Compiler " + filePath);
-
-        int processId = process.waitFor();
-        return processId;
+        String[] files = new String[1];
+        files[0] = filePath;
+        return Compiler.compile(files);
     }
 }

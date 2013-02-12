@@ -15,10 +15,7 @@ import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 
 public class Compiler {
 
-    private static void die(Exception e){
-        e.printStackTrace();
-        System.exit(42);
-    }
+    private static final int COMPILER_ERROR_CODE = 42;
 
     /**
      * @param args
@@ -26,12 +23,16 @@ public class Compiler {
      */
     public static void main(String[] args){
 
+        System.exit(compile(args));
+    }
+
+    public static int compile(String[] files) {
         Reader reader = null;
         NonTerminal parseTree = null;
 
         try {
 
-            reader = new FileReader(args[0]);
+            reader = new FileReader(files[0]);
             Lexer lexer = new Lexer(reader);
             Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
 
@@ -40,14 +41,16 @@ public class Compiler {
             System.out.println(parseTree.rule());
 
         } catch (Exception e) {
-            die(e);
+            e.printStackTrace();
+            return COMPILER_ERROR_CODE;
         } finally {
 
             if (null != reader){
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    die(e);
+                    e.printStackTrace();
+                    return COMPILER_ERROR_CODE;
                 }
             }
         }
@@ -58,8 +61,10 @@ public class Compiler {
             try {
                 astSymbol.convertAll(parseTree);
             } catch (Exception e) {
-                die(e);
+                e.printStackTrace();
+                return COMPILER_ERROR_CODE;
             }
         }
+        return 0;
     }
 }
