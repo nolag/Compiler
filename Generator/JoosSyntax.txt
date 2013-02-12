@@ -60,15 +60,27 @@ Expression4:
 
 Expression5:
 
-[Expression5 (== | !=)] Expression6
+[Expression5 ( == | != )] Expression6
 
 Expression6:
 
 Expression6 instanceof Type
 
-[Expression6 (< | > | <= | >=)] Expression7
+[Expression6 ( < | > | <= | >= )] Expression7
 
 Expression7:
+
+[Expression7 ( + | - )] Expression8
+
+Expression8:
+
+[Expression8 ( * | / | % )] Expression9
+
+Expression9:
+
+[( - | + )] Expression10
+
+Expression10:
 
 Primary // TODO: finish this
 
