@@ -44,13 +44,21 @@ Expression
 
 Expression1:
 
-Primary //Expression2 // TODO: finish this
+Expression1 dpipe Expression2
+
+Expression2
 
 Expression2:
 
-Expression3 [Expression2Rest]
+Expression2 dampersand Expression3
 
-Expression2Rest:
+Expression3
+
+Expression3:
+
+Primary // TODO: finish this
+
+// Expression2Rest:
 
 // {Infixop Expression3}        // TODO: fix this rule
 
@@ -91,11 +99,7 @@ slash
 
 pct
 
-Expression3:
-
-PrefixOp Expression3
-
-Type Expression3     // TODO: check if we actually need the whole rule
+// TODO: investigate this rule. It is from original version of Syntax
 // ( Expression | Type ) Expression3     // this one is odd. It's not italic in "The specs", but seems to be a BNF expr
 
 Primary {Selector}
