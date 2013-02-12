@@ -4,14 +4,12 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
 
-public class ClassSymbol extends AInterfaceOrClass{
-    public final String className;
+public class ClassSymbol extends AInterfaceOrClassSymbol{
     public final String superClass;
     public final Iterable<String> impls;
 
     public ClassSymbol(String className, String superClass, Iterable<String> impls, ANonTerminal body) {
-        super("ClassDeclaration");
-        this.className = className;
+        super("ClassDeclaration", className);
         this.superClass = superClass;
         this.impls = impls;
         if(null != body) children.add(body);

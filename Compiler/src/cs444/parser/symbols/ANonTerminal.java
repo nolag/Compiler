@@ -37,10 +37,14 @@ public abstract class ANonTerminal implements ISymbol{
         return rule.toString();
     }
 
-    public ISymbol firstOrDefault(String name){
+    public ISymbol firstOrDefault(String ... names){
         for(ISymbol child : children){
-            if(child.getName().equalsIgnoreCase(name)) return child;
+            for(String name : names){
+                if(child.getName().equalsIgnoreCase(name)) return child;
+            }
         }
         return null;
     }
+
+    public abstract boolean isCollapsable();
 }

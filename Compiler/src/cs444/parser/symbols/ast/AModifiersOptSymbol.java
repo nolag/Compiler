@@ -19,8 +19,11 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
     public static enum ProtectionLevel{PUBLIC, PROTECTED, PRIVATE, NOT_VALID};
     public static enum ImplementationLevel { ABSTRACT, FINAL, NORMAL };
 
-    protected AModifiersOptSymbol(String name) {
+    public final String dclName;
+
+    protected AModifiersOptSymbol(String name, String dclName) {
         super(name);
+        this.dclName = dclName;
     }
 
     public ProtectionLevel getProtectionLevel(){

@@ -27,4 +27,9 @@ public class QualifiedIdSymbol extends ANonTerminal{
         fullName = sb.toString();
     }
 
+    @Override
+    public boolean isCollapsable() {
+        return false;
+    }
+
 }

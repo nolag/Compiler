@@ -419,7 +419,34 @@ public class ParserTest {
         ISymbol classInterface = start.children.get(1);
         assertTrue(ClassSymbol.class.isInstance(classInterface));
         ClassSymbol classSymbol = (ClassSymbol) classInterface;
-        assertEquals("SimpleCompUnit", classSymbol.className);
+        assertEquals("CompleteCompUnit", classSymbol.dclName);
         assertTrue(classSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC);
     }
+
+    /*@Test
+    public void testSmallClass() throws Exception{
+        Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
+        Reader reader = new FileReader("CompWithMethods.java");
+        Lexer lexer = new Lexer(reader);
+        ANonTerminal start = parser.parse(lexer);
+        IASTBuilder builder = new JoosASTBuilder();
+
+        for(ASTSymbolFactory factory : builder.getSimplifcations()){
+            start = (ANonTerminal) factory.convertAll(start);
+        }
+
+        assertEquals(2, start.children.size());
+
+        assertTrue(NonTerminal.class.isInstance(start));
+
+        QualifiedIdSymbol qid = (QualifiedIdSymbol)start.children.get(0);
+        assertEquals("my.pkg.lol.simple", qid.fullName);
+        assertEquals(QualifiedIdSymbol.Type.PACKAGE, qid.type);
+
+        ISymbol classInterface = start.children.get(1);
+        assertTrue(ClassSymbol.class.isInstance(classInterface));
+        ClassSymbol classSymbol = (ClassSymbol) classInterface;
+        assertEquals("SimpleCompUnit", classSymbol.className);
+        assertTrue(classSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC);
+    }*/
 }

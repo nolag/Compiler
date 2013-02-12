@@ -10,7 +10,7 @@ import cs444.parser.IASTBuilder;
 import cs444.parser.JoosASTBuilder;
 import cs444.parser.Parser;
 import cs444.parser.TextReadingRules;
-import cs444.parser.symbols.NonTerminal;
+import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 
 public class Compiler {
@@ -28,43 +28,42 @@ public class Compiler {
 
     public static int compile(String[] files) {
         Reader reader = null;
-        NonTerminal parseTree = null;
+        ANonTerminal parseTree = null;
 
         try {
+            for(String fileName : files){
+                File file = new File(fileName);
+                reader = new FileReader(fileName);
+                Lexer lexer = new Lexer(reader);
+                Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
 
-            reader = new FileReader(files[0]);
-            Lexer lexer = new Lexer(reader);
-            Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
+                parseTree = parser.parse(lexer);
 
-            parseTree = parser.parse(lexer);
+                IASTBuilder builder = new JoosASTBuilder();
 
-            System.out.println(parseTree.rule());
+                for(ASTSymbolFactory astSymbol : builder.getSimplifcations()){
 
-        } catch (Exception e) {
+                    parseTree = (ANonTerminal)astSymbol.convertAll(parseTree);
+                }
+
+                if(!builder.isValidFileName(file.getName(), parseTree)){
+                    System.err.print("Invalid file name" + fileName);
+                    return COMPILER_ERROR_CODE;
+                }
+            }
+        }catch(Exception e){
             e.printStackTrace();
             return COMPILER_ERROR_CODE;
-        } finally {
-
-            if (null != reader){
+        }finally{
+            if(reader != null){
                 try {
                     reader.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return COMPILER_ERROR_CODE;
                 }
             }
         }
 
-        IASTBuilder builder = new JoosASTBuilder();
-
-        for(ASTSymbolFactory astSymbol : builder.getSimplifcations()){
-            try {
-                astSymbol.convertAll(parseTree);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return COMPILER_ERROR_CODE;
-            }
-        }
         return 0;
     }
 }

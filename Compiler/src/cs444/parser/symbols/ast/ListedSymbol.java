@@ -26,4 +26,9 @@ public class ListedSymbol extends ANonTerminal{
         if(child == 1) children.add(symbol);
         else children.add(0, symbol);
     }
+
+    @Override
+    public boolean isCollapsable() {
+        return true;
+    }
 }

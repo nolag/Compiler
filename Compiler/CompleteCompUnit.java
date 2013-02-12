@@ -1,4 +1,4 @@
 package my.pkg.lol.simple;
 
 
-public class SimpleCompUnit { ; }
+public class CompleteCompUnit { ; }

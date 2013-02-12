@@ -7,7 +7,7 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.Terminal;
-import cs444.parser.symbols.ast.AInterfaceOrClass;
+import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.ClassSymbol;
 import cs444.parser.symbols.ast.InterfaceSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
@@ -46,7 +46,7 @@ public class ClassInterfaceFactory extends ASTSymbolFactory{
             isInterface = true;
         }
 
-        AInterfaceOrClass classInterface = null;
+        AInterfaceOrClassSymbol classInterface = null;
         String classOrInterfaceName = ((Terminal)declaration.firstOrDefault("Id")).token.lexeme;
         ANonTerminal interfaces =(ANonTerminal) declaration.firstOrDefault("TypeList");
         ANonTerminal body =(ANonTerminal) declaration.firstOrDefault(bodyName);

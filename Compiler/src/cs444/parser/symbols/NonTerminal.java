@@ -10,4 +10,9 @@ public class NonTerminal extends ANonTerminal{
     	    if(!child.empty()) this.children.add(child);
     	}
     }
+
+    @Override
+    public boolean isCollapsable() {
+        return true;
+    }
 }

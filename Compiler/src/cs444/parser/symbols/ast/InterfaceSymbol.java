@@ -3,13 +3,11 @@ package cs444.parser.symbols.ast;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
-public class InterfaceSymbol extends AInterfaceOrClass{
-    public final String interfaceName;
+public class InterfaceSymbol extends AInterfaceOrClassSymbol{
     public final Iterable<String> supers;
 
     public InterfaceSymbol(String interfaceName, Iterable<String> supers, ANonTerminal body) {
-        super("InterfaceDeclaration");
-        this.interfaceName = interfaceName;
+        super("InterfaceDeclaration", interfaceName);
         this.supers = supers;
         if(null != body) children.add(body);
     }

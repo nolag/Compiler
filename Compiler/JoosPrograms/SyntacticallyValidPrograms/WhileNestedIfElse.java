@@ -1,5 +1,5 @@
-public class ForNestedIfElse {
-    public ForNestedIfElse() {}
+public class WhileNestedIfElse {
+    public WhileNestedIfElse() {}
     public int m() {
         while(false) if (true) return 0;
         while(false) if (true) return 0; else return 1;
