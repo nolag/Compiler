@@ -64,6 +64,10 @@ Expression5:
 
 Expression6:
 
+[Expression6 (< | > | <= | >=)] Expression7
+
+Expression7:
+
 Primary // TODO: finish this
 
 // Expression2Rest:
