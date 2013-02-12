@@ -408,19 +408,15 @@ public class ParserTest {
             start = (ANonTerminal) factory.convertAll(start);
         }
 
-        assertEquals(3, start.children.size());
+        assertEquals(2, start.children.size());
 
         assertTrue(NonTerminal.class.isInstance(start));
-        assertTrue(Terminal.class.isInstance(start.children.get(0)));
 
-        ISymbol qid = start.children.get(1);
+        QualifiedIdSymbol qid = (QualifiedIdSymbol)start.children.get(0);
+        assertEquals("my.pkg.lol.simple", qid.fullName);
+        assertEquals(QualifiedIdSymbol.Type.PACKAGE, qid.type);
 
-        assertTrue(QualifiedIdSymbol.class.isInstance(qid));
-        QualifiedIdSymbol fullName = (QualifiedIdSymbol) qid;
-        assertEquals("my.pkg.lol.simple", fullName.fullName);
-
-
-        ISymbol classInterface = start.children.get(2);
+        ISymbol classInterface = start.children.get(1);
         assertTrue(ClassSymbol.class.isInstance(classInterface));
         ClassSymbol classSymbol = (ClassSymbol) classInterface;
         assertEquals("SimpleCompUnit", classSymbol.className);

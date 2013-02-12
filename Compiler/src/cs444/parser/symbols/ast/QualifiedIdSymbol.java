@@ -5,7 +5,10 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.Terminal;
 
 public class QualifiedIdSymbol extends ANonTerminal{
+    public static enum Type { ID_SYMBOL, PACKAGE, IMPORT };
+
     public final String fullName;
+    public Type type = Type.ID_SYMBOL;
 
     public QualifiedIdSymbol(Terminal idOne, ListedSymbol rest) {
         super("QualifiedId");

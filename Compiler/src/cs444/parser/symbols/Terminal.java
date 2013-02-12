@@ -15,10 +15,6 @@ public class Terminal implements ISymbol{
         this.token = token;
     }
 
-    public String getType() {
-        return token.type.name();
-    }
-
 	public String rule() {
 		return token.type.toString() + " -> " + token.lexeme;
 	}
@@ -32,7 +28,6 @@ public class Terminal implements ISymbol{
         return Token.typeToParse.get(token.type) != Token.Parse.VALID;
     }
 
-    @Override
     public Iterable<ISymbol> getChildren() {
         return nochildren;
     }
