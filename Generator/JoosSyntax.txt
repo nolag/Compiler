@@ -204,13 +204,29 @@ LocalVariableDeclarationStatement:
 
 Statement:
 
+OpenStatement
+
+ClosedStatement
+
+OpenStatement:
+
+if ParExpression Statement
+
+if ParExpression ClosedStatement else OpenStatement
+
+ForLoopHeader OpenStatement
+
+WhileLoopHeader OpenStatement
+
+ClosedStatement:
+
 Block
 
-// if ParExpression Statement [else Statement] // TODO: fix this
+if ParExpression ClosedStatement else ClosedStatement
 
-for lparen ForInit ; [Expression] ; ForUpdate rparen Statement
+ForLoopHeader ClosedStatement
 
-while ParExpression Statement
+WhileLoopHeader ClosedStatement
 
 do Statement while ParExpression ;
 
@@ -219,6 +235,14 @@ return [Expression] ;
 ;
 
 StatementExpression
+
+ForLoopHeader:
+
+for lparen [ForInit] ; [Expression] ; [ForUpdate] rparen
+
+WhileLoopHeader:
+
+while ParExpression
 
 MoreStatementExpressions:
 
