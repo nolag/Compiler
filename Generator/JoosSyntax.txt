@@ -24,10 +24,6 @@ BooleanLiteral:
 
 (true | false)
 
-Expression:
-
-Expression1 [ = Expression]
-
 Type:
 
 id { dot id } BracketsOpt
@@ -42,19 +38,31 @@ Expression
 
 // Expression
 
+Expression:
+
+Expression1 [ = Expression]
+
 Expression1:
 
-Expression1 dpipe Expression2
-
-Expression2
+[Expression1 dpipe] Expression2
 
 Expression2:
 
-Expression2 dampersand Expression3
-
-Expression3
+[Expression2 dampersand] Expression3
 
 Expression3:
+
+[Expression3 pipe] Expression4
+
+Expression4:
+
+[Expression4 &] Expression5
+
+Expression5:
+
+[Expression5 (== | !=)] Expression6
+
+Expression6:
 
 Primary // TODO: finish this
 
