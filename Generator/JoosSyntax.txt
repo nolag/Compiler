@@ -34,10 +34,6 @@ StatementExpression:
 
 Expression
 
-// ConstantExpression: // TODO: unused
-
-// Expression
-
 Expression:
 
 Expression1 [ = Expression]
@@ -102,10 +98,9 @@ lbracket Expression rbracket
 
 Arguments
 
-
 CastExpression:
 
-lparen Type rparen Expression // TODO: fix this
+lparen Type rparen Expression
 
 // Selector:
 
@@ -133,10 +128,6 @@ float
 double
 
 boolean
-
-ArgumentsOpt:
-
-[ Arguments ]
 
 Arguments:
 
@@ -182,7 +173,7 @@ Statement
 
 LocalVariableDeclarationStatement:
 
-[final] Type VariableDeclarators ;
+Type VariableDeclarators ;
 
 Statement:
 
@@ -234,7 +225,7 @@ ForInit:
 
 StatementExpression MoreStatementExpressions
 
-[final] Type VariableDeclarators
+Type VariableDeclarators
 
 ForUpdate:
 
@@ -397,10 +388,6 @@ FormalParameters ;
 ConstructorDeclaratorRest:
 
 FormalParameters MethodBody
-
-QualifiedIdentifierList:
-
-QualifiedIdentifier { , QualifiedIdentifier}
 
 FormalParameters:
 
