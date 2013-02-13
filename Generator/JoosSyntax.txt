@@ -1,175 +1,308 @@
-// you can use comments
-
-QualifiedIdentifier:
-
-id { dot id }
+// From http://www.dai-arc.polito.it/dai-arc/manual/tools/jcat/main/node224.html#javasyntacticgrammar
 
 Literal:
 
-IntegerLiteral
+decimal_integer_literal
+
+(true | false)
 
 char_literal
 
 str_literal
 
-BooleanLiteral
-
 null
-
-IntegerLiteral:
-
-decimal_integer_literal
-
-BooleanLiteral:
-
-(true | false)
 
 Type:
 
-id { dot id } BracketsOpt
+PrimitiveType
 
-BasicType BracketsOpt
+ReferenceType
 
-StatementExpression:
+PrimitiveType:
 
-Expression
-
-Expression:
-
-Expression1 [ = Expression]
-
-Expression1:
-
-[Expression1 dpipe] Expression2
-
-Expression2:
-
-[Expression2 dampersand] Expression3
-
-Expression3:
-
-[Expression3 pipe] Expression4
-
-Expression4:
-
-[Expression4 &] Expression5
-
-Expression5:
-
-[Expression5 ( == | != )] Expression6
-
-Expression6:
-
-Expression6 instanceof Type
-
-[Expression6 ( < | > | <= | >= )] Expression7
-
-Expression7:
-
-[Expression7 ( + | - )] Expression8
-
-Expression8:
-
-[Expression8 ( * | / | % )] Expression9
-
-Expression9:
-
-( - | + | ! ) Expression9
-
-// lparen Type rparen Expression9  // TODO: fix this. "id { . id } [ IdentifierSuffix ]" in Primary is breaking this rule
-
-new Creator
-
-Expression10
-
-Expression10:
-
-// [Expression10 .] Primary Arguments // TODO: fix this. NOTE: do not use
-Primary
-// [Expression10 .] Primary           // TODO: fix this
-
-Primary:
-
-ParExpression
-
-Literal
-
-this
-
-id { . id } [ IdentifierSuffix ]
-
-IdentifierSuffix:
-
-lbracket Expression rbracket
-
-Arguments
-
-// Selector:  // TODO: unused?
-
-// . this
-
-// . id [Arguments]
-
-// ^ TODO: Is this not a feature?
-
-// TODO: investigate this rule. It is from original version of Syntax
-// ( Expression | Type ) Expression3     // this one is odd. It's not italic in "The specs", but seems to be a BNF expr
-
-BasicType:
-
-byte
-
-short
-
-char
-
-int
-
-long
-
-float
-
-double
+NumericType
 
 boolean
 
-Arguments:
+NumericType:
 
-lparen [Expression { , Expression }] rparen
+IntegralType
 
-BracketsOpt:
+IntegralType:
 
-[ lbracket rbracket ]   // O or 1 because Joos doesnt support multi array
+(byte | short | int | long | char)
 
-Creator:
+ReferenceType:
 
-QualifiedIdentifier ( ArrayCreatorRest | ClassCreatorRest )
+ClassOrInterfaceType
 
-BasicType ArrayCreatorRest
+ArrayType
 
-ArrayCreatorRest:
+ClassOrInterfaceType:
 
-lbracket Expression rbracket
+Name
 
-ClassCreatorRest:
+ClassType:
 
-Arguments [ClassBody]
+ClassOrInterfaceType
+
+InterfaceType:
+
+ClassOrInterfaceType
+
+ArrayType:
+
+PrimitiveType lbracket rbracket
+
+Name lbracket rbracket
+
+Name:
+
+SimpleName
+
+QualifiedName
+
+SimpleName:
+
+id
+
+QualifiedName:
+
+Name . id
+
+CompilationUnit:
+
+[PackageDeclaration] [ImportDeclarations] [TypeDeclarations]
+
+ImportDeclarations:
+
+ImportDeclaration
+
+ImportDeclarations ImportDeclaration
+
+TypeDeclarations:
+
+TypeDeclaration
+
+TypeDeclarations TypeDeclaration
+
+PackageDeclaration:
+
+package Name ;
+
+ImportDeclaration:
+
+SingleTypeImportDeclaration
+
+TypeImportOnDemandDeclaration
+
+SingleTypeImportDeclaration:
+
+import Name ;
+
+TypeImportOnDemandDeclaration:
+
+import Name . * ;
+
+TypeDeclaration:
+
+ClassDeclaration
+
+InterfaceDeclaration
+
+;
+
+Modifiers:
+
+Modifier
+
+Modifiers Modifier
+
+Modifier:
+
+(public | protected | private)
+
+static
+
+(abstract | final | native | synchronized | transient | volatile)
+
+ClassDeclaration:
+
+[Modifiers] class id [NTSuper] [Interfaces] ClassBody
+
+NTSuper:
+
+extends ClassType
+
+Interfaces:
+
+implements InterfaceTypeList
+
+InterfaceTypeList:
+
+InterfaceType
+
+InterfaceTypeList , InterfaceType
+
+ClassBody:
+
+lbrace [ClassBodyDeclarations] rbrace
+
+ClassBodyDeclarations:
+
+ClassBodyDeclaration
+
+ClassBodyDeclarations ClassBodyDeclaration
+
+ClassBodyDeclaration:
+
+ClassMemberDeclaration
+
+ConstructorDeclaration
+
+ClassMemberDeclaration:
+
+FieldDeclaration
+
+MethodDeclaration
+
+FieldDeclaration:
+
+[Modifiers] Type VariableDeclarators ;
+
+VariableDeclarators:
+
+VariableDeclarator
+
+VariableDeclarators , VariableDeclarator
+
+VariableDeclarator:
+
+VariableDeclaratorId
+
+VariableDeclaratorId = VariableInitializer
+
+VariableDeclaratorId:
+
+id
+
+VariableDeclaratorId lbracket rbracket
 
 VariableInitializer:
 
 Expression
 
-ParExpression:
+ArrayInitializer
 
-lparen Expression rparen
+MethodDeclaration:
+
+MethodHeader MethodBody
+
+MethodHeader:
+
+[Modifiers] Type MethodDeclarator
+
+[Modifiers] void MethodDeclarator
+
+MethodDeclarator:
+
+id lparen [FormalParameterList] rparen
+
+MethodDeclarator lbracket rbracket
+
+FormalParameterList:
+
+FormalParameter
+
+FormalParameterList , FormalParameter
+
+FormalParameter:
+
+Type VariableDeclaratorId
+
+ClassTypeList:
+
+ClassType
+
+ClassTypeList , ClassType
+
+MethodBody:
+
+Block
+
+;
+
+ConstructorDeclaration:
+
+[Modifiers] ConstructorDeclarator ConstructorBody
+
+ConstructorDeclarator:
+
+SimpleName lparen [FormalParameterList] rparen
+
+ConstructorBody:
+
+lbrace [ExplicitConstructorInvocation] [BlockStatements] rbrace
+
+ExplicitConstructorInvocation:
+
+this lparen [ArgumentList] rparen ;
+
+super lparen [ArgumentList] rparen ;
+
+InterfaceDeclaration:
+
+[Modifiers] interface id [ExtendsInterfaces] InterfaceBody
+
+ExtendsInterfaces:
+
+extends InterfaceType
+
+ExtendsInterfaces , InterfaceType
+
+InterfaceBody:
+
+lbrace [InterfaceMemberDeclarations] rbrace
+
+InterfaceMemberDeclarations:
+
+InterfaceMemberDeclaration
+
+InterfaceMemberDeclarations InterfaceMemberDeclaration
+
+InterfaceMemberDeclaration:
+
+ConstantDeclaration
+
+AbstractMethodDeclaration
+
+ConstantDeclaration:
+
+FieldDeclaration
+
+AbstractMethodDeclaration:
+
+MethodHeader ;
+
+ArrayInitializer:
+
+lbrace [VariableInitializers] [ , ] rbrace
+
+VariableInitializers:
+
+VariableInitializer
+
+VariableInitializers , VariableInitializer
 
 Block:
 
-lbrace BlockStatements rbrace
+lbrace [BlockStatements] rbrace
 
 BlockStatements:
 
-{ BlockStatement }
+BlockStatement
+
+BlockStatements BlockStatement
 
 BlockStatement:
 
@@ -179,232 +312,296 @@ Statement
 
 LocalVariableDeclarationStatement:
 
-Type VariableDeclarators ;
+LocalVariableDeclaration ;
 
-Statement:
-
-OpenStatement
-
-ClosedStatement
-
-OpenStatement:
-
-if ParExpression Statement
-
-if ParExpression ClosedStatement else OpenStatement
-
-ForLoopHeader OpenStatement
-
-WhileLoopHeader OpenStatement
-
-ClosedStatement:
-
-Block
-
-if ParExpression ClosedStatement else ClosedStatement
-
-ForLoopHeader ClosedStatement
-
-WhileLoopHeader ClosedStatement
-
-do Statement while ParExpression ;
-
-return [Expression] ;
-
-;
-
-StatementExpression ;
-
-ForLoopHeader:
-
-for lparen [ForInit] ; [Expression] ; [ForUpdate] rparen
-
-WhileLoopHeader:
-
-while ParExpression
-
-MoreStatementExpressions:
-
-{ , StatementExpression }
-
-ForInit:
-
-StatementExpression MoreStatementExpressions
+LocalVariableDeclaration:
 
 Type VariableDeclarators
 
-ForUpdate:
+Statement:
 
-StatementExpression MoreStatementExpressions
+StatementWithoutTrailingSubstatement
 
-Modifier:
+IfThenStatement
 
-public
+IfThenElseStatement
 
-protected
+WhileStatement
 
-private
+ForStatement
 
-static
+StatementNoShortIf:
 
-abstract
+StatementWithoutTrailingSubstatement
 
-final
+IfThenElseStatementNoShortIf
 
-native
+WhileStatementNoShortIf
 
-synchronized
+ForStatementNoShortIf
 
-transient
-
-volatile
-
-strictfp
-
-VariableDeclarators:
-
-VariableDeclarator { , VariableDeclarator }
-
-VariableDeclaratorsRest:
-
-VariableDeclaratorRest { , VariableDeclarator }
-
-ConstantDeclaratorsRest:
-
-ConstantDeclaratorRest { , ConstantDeclarator }
-
-VariableDeclarator:
-
-id VariableDeclaratorRest
-
-ConstantDeclarator:
-
-id ConstantDeclaratorRest
-
-VariableDeclaratorRest:
-
-[= VariableInitializer]
-
-ConstantDeclaratorRest:
-
-BracketsOpt = VariableInitializer
-
-VariableDeclaratorId:
-
-id BracketsOpt
-
-CompilationUnit:
-
-[package QualifiedIdentifier ; ] {ImportDeclaration} {TypeDeclaration}
-
-ImportDeclaration:
-
-import id { . id } [ . * ] ;
-
-TypeDeclaration:
-
-{Modifier} (ClassDeclaration | InterfaceDeclaration)
-
-;
-
-ClassDeclaration:
-
-class id [extends Type] ClassBody
-
-class id [extends Type] implements TypeList ClassBody
-
-InterfaceDeclaration:
-
-interface id [extends TypeList] InterfaceBody
-
-TypeList:
-
-Type { , Type}
-
-ClassBody:
-
-lbrace {ClassBodyDeclaration} rbrace
-
-InterfaceBody:
-
-lbrace {InterfaceBodyDeclaration} rbrace
-
-ClassBodyDeclaration:
-
-{Modifier} MemberDecl
-
-MemberDecl:
-
-;
-
-( MethodDecl | FieldDecl )
-
-MethodDecl:
-
-(BasicType | QualifiedIdentifier) BracketsOpt MethodDeclaratorRest MethodBody
-
-void MethodDeclaratorRest MethodBody
-
-id ConstructorDeclaratorRest
-
-FieldDecl:
-
-BasicType BracketsOpt id VariableDeclaratorRest ;
-
-QualifiedIdentifier BracketsOpt id VariableDeclaratorRest ;
-
-InterfaceBodyDeclaration:
-
-;
-
-{Modifier} InterfaceMemberDecl
-
-InterfaceMemberDecl:
-
-InterfaceMethodOrFieldDecl
-
-void id VoidInterfaceMethodDeclaratorRest
-
-InterfaceMethodOrFieldDecl:
-
-Type id InterfaceMethodOrFieldRest
-
-InterfaceMethodOrFieldRest:
-
-ConstantDeclaratorsRest ;
-
-InterfaceMethodDeclaratorRest
-
-MethodDeclaratorRest:
-
-id FormalParameters
-
-VoidMethodDeclaratorRest:
-
-FormalParameters ( MethodBody | ; )
-
-InterfaceMethodDeclaratorRest:
-
-FormalParameters BracketsOpt ;
-
-VoidInterfaceMethodDeclaratorRest:
-
-FormalParameters ;
-
-ConstructorDeclaratorRest:
-
-FormalParameters MethodBody
-
-FormalParameters:
-
-lparen [FormalParameter { , FormalParameter}] rparen
-
-FormalParameter:
-
-[final] Type VariableDeclaratorId
-
-MethodBody:
-
-;
+StatementWithoutTrailingSubstatement:
 
 Block
+
+EmptyStatement
+
+ExpressionStatement
+
+ReturnStatement
+
+EmptyStatement:
+
+;
+
+ExpressionStatement:
+
+StatementExpression ;
+
+StatementExpression:
+
+Assignment
+
+MethodInvocation
+
+ClassInstanceCreationExpression
+
+IfThenStatement:
+
+if lparen Expression rparen Statement
+
+IfThenElseStatement:
+
+if lparen Expression rparen StatementNoShortIf else Statement
+
+IfThenElseStatementNoShortIf:
+
+if lparen Expression rparen StatementNoShortIf else StatementNoShortIf
+
+WhileStatement:
+
+while lparen Expression rparen Statement
+
+WhileStatementNoShortIf:
+
+while lparen Expression rparen StatementNoShortIf
+
+ForStatement:
+
+for lparen [ForInit] ; [Expression] ; [ForUpdate] rparen Statement
+
+ForStatementNoShortIf:
+
+for lparen [ForInit] ; [Expression] ; [ForUpdate] rparen StatementNoShortIf
+
+ForInit:
+
+StatementExpression
+
+LocalVariableDeclaration
+
+ForUpdate:
+
+StatementExpression
+
+ReturnStatement:
+
+return [Expression] ;
+
+Primary:
+
+PrimaryNoNewArray
+
+ArrayCreationExpression
+
+PrimaryNoNewArray:
+
+Literal
+
+this
+
+lparen Expression rparen
+
+ClassInstanceCreationExpression
+
+FieldAccess
+
+MethodInvocation
+
+ArrayAccess
+
+ClassInstanceCreationExpression:
+
+new ClassType lparen [ArgumentList] rparen
+
+ArgumentList:
+
+Expression
+
+ArgumentList , Expression
+
+ArrayCreationExpression:
+
+new PrimitiveType DimExprs [Dims]
+
+new ClassOrInterfaceType DimExprs [Dims]
+
+DimExprs:
+
+DimExpr
+
+DimExprs DimExpr
+
+DimExpr:
+
+lbracket Expression rbracket
+
+Dims:
+
+lbracket rbracket
+
+Dims lbracket rbracket
+
+FieldAccess:
+
+Primary . id
+
+super . id
+
+MethodInvocation:
+
+Name lparen [ArgumentList] rparen
+
+Primary . id lparen [ArgumentList] rparen
+
+super . id lparen [ArgumentList] rparen
+
+ArrayAccess:
+
+Name lbracket Expression rbracket
+
+PrimaryNoNewArray lbracket Expression rbracket
+
+PostfixExpression:
+
+Primary
+
+Name
+
+UnaryExpression:
+
++ UnaryExpression
+
+- UnaryExpression
+
+UnaryExpressionNotPlusMinus
+
+UnaryExpressionNotPlusMinus:
+
+PostfixExpression
+
+! UnaryExpression
+
+CastExpression
+
+CastExpression:
+
+lparen PrimitiveType [Dims] rparen UnaryExpression
+
+lparen Expression rparen UnaryExpressionNotPlusMinus
+
+lparen Name Dims rparen UnaryExpressionNotPlusMinus
+
+MultiplicativeExpression:
+
+UnaryExpression
+
+MultiplicativeExpression * UnaryExpression
+
+MultiplicativeExpression / UnaryExpression
+
+MultiplicativeExpression % UnaryExpression
+
+AdditiveExpression:
+
+MultiplicativeExpression
+
+AdditiveExpression + MultiplicativeExpression
+
+AdditiveExpression - MultiplicativeExpression
+
+RelationalExpression:
+
+AdditiveExpression
+
+RelationalExpression < AdditiveExpression
+
+RelationalExpression > AdditiveExpression
+
+RelationalExpression <= AdditiveExpression
+
+RelationalExpression >= AdditiveExpression
+
+RelationalExpression instanceof ReferenceType
+
+EqualityExpression:
+
+RelationalExpression
+
+EqualityExpression == RelationalExpression
+
+EqualityExpression != RelationalExpression
+
+AndExpression:
+
+EqualityExpression
+
+AndExpression & EqualityExpression
+
+InclusiveOrExpression:
+
+AndExpression
+
+InclusiveOrExpression pipe AndExpression
+
+ConditionalAndExpression:
+
+InclusiveOrExpression
+
+ConditionalAndExpression && InclusiveOrExpression
+
+ConditionalOrExpression:
+
+ConditionalAndExpression
+
+ConditionalOrExpression dpipe ConditionalAndExpression
+
+AssignmentExpression:
+
+ConditionalOrExpression
+
+Assignment
+
+Assignment:
+
+LeftHandSide AssignmentOperator AssignmentExpression
+
+LeftHandSide:
+
+Name
+
+FieldAccess
+
+ArrayAccess
+
+AssignmentOperator:
+
+=
+
+Expression:
+
+AssignmentExpression
+
+ConstantExpression:
+
+Expression
