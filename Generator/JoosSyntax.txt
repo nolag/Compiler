@@ -74,21 +74,27 @@ Expression8:
 
 Expression9:
 
-[( - | + | ! )] Primary
+( - | + | ! ) Expression9
 
-// Primary {Selector}   // TODO: fix this
+// lparen Type rparen Expression9  // TODO: fix this. BracketsOpt in Type is breaking rules
+
+new Creator
+
+Expression10
+
+Expression10:
+
+// [Expression10 .] Primary Arguments // TODO: fix this. NOTE: do not use
+Primary
+// [Expression10 .] Primary           // TODO: fix this
 
 Primary:
 
 ParExpression
 
-// CastExpression // TODO: fix this
-
 Literal
 
 this
-
-new Creator
 
 id { . id } [ IdentifierSuffix ]
 
@@ -98,11 +104,7 @@ lbracket Expression rbracket
 
 Arguments
 
-CastExpression:
-
-lparen Type rparen Expression
-
-// Selector:
+// Selector:  // TODO: unused?
 
 // . this
 
