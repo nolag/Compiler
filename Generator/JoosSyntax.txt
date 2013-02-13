@@ -76,7 +76,7 @@ Expression9:
 
 ( - | + | ! ) Expression9
 
-// lparen Type rparen Expression9  // TODO: fix this. BracketsOpt in Type is breaking rules
+// lparen Type rparen Expression9  // TODO: fix this. "id { . id } [ IdentifierSuffix ]" in Primary is breaking this rule
 
 new Creator
 
