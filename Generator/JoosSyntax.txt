@@ -50,11 +50,9 @@ ClassOrInterfaceType
 
 ArrayType:
 
-PrimitiveType lbrace rbrace
+PrimitiveType lbracket rbracket
 
-Name lbrace rbrace
-
-ArrayType lbrace rbrace
+Name lbracket rbracket
 
 Name:
 
