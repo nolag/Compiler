@@ -86,7 +86,7 @@ ParExpression
 
 Literal
 
-this  // TODO: not sure if we support this.field
+this
 
 new Creator
 
@@ -103,6 +103,8 @@ CastExpression:
 lparen Type rparen Expression
 
 // Selector:
+
+// . this
 
 // . id [Arguments]
 
