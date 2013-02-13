@@ -10,7 +10,7 @@ public class InterfaceSymbol extends AInterfaceOrClassSymbol{
     public InterfaceSymbol(String interfaceName, Iterable<String> supers, ANonTerminal body, ANonTerminal from)
             throws IllegalModifierException, UnsupportedException {
 
-        super("InterfaceDeclaration", interfaceName, from);
+        super("InterfaceDeclaration", interfaceName, from, interfaceName);
         this.supers = supers;
         if(null != body) children.add(body);
     }

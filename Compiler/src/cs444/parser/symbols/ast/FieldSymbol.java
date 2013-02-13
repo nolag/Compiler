@@ -6,8 +6,8 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public class FieldSymbol extends AModifiersOptSymbol{
 
-    public FieldSymbol(String dclName, ANonTerminal from) throws IllegalModifierException, UnsupportedException {
-        super("FieldDecl", dclName, from);
+    public FieldSymbol(String dclName, ANonTerminal from, String type) throws IllegalModifierException, UnsupportedException {
+        super("FieldDecl", dclName, from, type);
     }
 
     @Override
@@ -18,6 +18,7 @@ public class FieldSymbol extends AModifiersOptSymbol{
         ProtectionLevel protectionLevel = getProtectionLevel();
         if(protectionLevel == ProtectionLevel.PRIVATE)throw new UnsupportedException("private fields are not supported on fields");
         if(protectionLevel == ProtectionLevel.NOT_VALID) throw new  UnsupportedException("package private fields are not supported on fields");
+        if("void".equals(type)) throw new  UnsupportedException("void fields");
     }
 
     @Override

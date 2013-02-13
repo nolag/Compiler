@@ -1,6 +1,7 @@
 package cs444.parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -19,12 +20,14 @@ import cs444.lexer.LexerException;
 import cs444.lexer.Token;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.ClassSymbol;
+import cs444.parser.symbols.ast.FieldSymbol;
 import cs444.parser.symbols.ast.IdSymbol;
 import cs444.parser.symbols.ast.IdSymbol.Type;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
@@ -137,7 +140,7 @@ public class ParserTest {
                 "ID -> yy";
         assertEquals(expected, start.rule());
         ListedSymbolFactory listRed = new ListedSymbolFactory();
-        start = (NonTerminal)listRed.convertAll(start);
+        start = (JoosNonTerminal)listRed.convertAll(start);
         expected =  "DCLS_BECOMES -> DCLS ASSIGNS \n" +
                 "DCLS -> DCL DCL DCL \n" +
                 "DCL -> INT ID EQ ID_NUM \n" +
@@ -179,7 +182,7 @@ public class ParserTest {
         assertEquals(expected, start.rule());
 
         OneChildFactory childFact = new OneChildFactory();
-        start = (NonTerminal)childFact.convertAll(start);
+        start = (JoosNonTerminal)childFact.convertAll(start);
         expected =  "DCLS_BECOMES -> DCLS ASSIGNS \n" +
                 "DCLS -> DCL DCL DCL \n" +
                 "DCL -> INT ID EQ DECIMAL_INTEGER_LITERAL \n" +
@@ -278,8 +281,8 @@ public class ParserTest {
         IntegerLiteralFactory fact = new IntegerLiteralFactory();
         Terminal [] children = new Terminal[1];
         children[0] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483647"));
-        NonTerminal nonTerm = new NonTerminal("numHolder", children);
-        nonTerm = (NonTerminal) fact.convertAll(nonTerm);
+        JoosNonTerminal nonTerm = new JoosNonTerminal("numHolder", children);
+        nonTerm = (JoosNonTerminal) fact.convertAll(nonTerm);
 
         assertEquals(1, nonTerm.children.size());
 
@@ -289,8 +292,8 @@ public class ParserTest {
         children = new Terminal[2];
         children[0] = new Terminal(new Token(Token.Type.MINUS, "-"));
         children[1] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483648"));
-        nonTerm = new NonTerminal("numHolder", children);
-        nonTerm = (NonTerminal) fact.convertAll(nonTerm);
+        nonTerm = new JoosNonTerminal("numHolder", children);
+        nonTerm = (JoosNonTerminal) fact.convertAll(nonTerm);
 
         assertEquals(1, nonTerm.children.size());
 
@@ -304,8 +307,8 @@ public class ParserTest {
         Terminal [] children = new Terminal[2];
         children[0] = new Terminal(new Token(Token.Type.MINUS, "-"));
         children[1] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483649"));
-        NonTerminal nonTerm = new NonTerminal("numHolder", children);
-        nonTerm = (NonTerminal) fact.convertAll(nonTerm);
+        JoosNonTerminal nonTerm = new JoosNonTerminal("numHolder", children);
+        nonTerm = (JoosNonTerminal) fact.convertAll(nonTerm);
     }
 
     @Test(expected = OutOfRangeException.class)
@@ -313,16 +316,16 @@ public class ParserTest {
         IntegerLiteralFactory fact = new IntegerLiteralFactory();
         Terminal [] children = new Terminal[1];
         children[0] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483648"));
-        NonTerminal nonTerm = new NonTerminal("numHolder", children);
-        nonTerm = (NonTerminal) fact.convertAll(nonTerm);
+        JoosNonTerminal nonTerm = new JoosNonTerminal("numHolder", children);
+        nonTerm = (JoosNonTerminal) fact.convertAll(nonTerm);
     }
 
     private static void testCharEscape(String lexeme, char expected) throws Exception {
     	StringLiteralFactory fact = new StringLiteralFactory();
         Terminal[] children = new Terminal[1];
         children[0] = new Terminal(new Token(Token.Type.CHAR_LITERAL, lexeme));
-        NonTerminal nonTerm = new NonTerminal("Holder", children);
-        nonTerm = (NonTerminal) fact.convertAll(nonTerm);
+        JoosNonTerminal nonTerm = new JoosNonTerminal("Holder", children);
+        nonTerm = (JoosNonTerminal) fact.convertAll(nonTerm);
         CharacterLiteralSymbol literal = (CharacterLiteralSymbol)nonTerm.children.get(0);
         assertEquals(expected, literal.value);
     }
@@ -344,8 +347,8 @@ public class ParserTest {
     	StringLiteralFactory fact = new StringLiteralFactory();
         Terminal[] children = new Terminal[1];
         children[0] = new Terminal(new Token(Token.Type.STR_LITERAL, lexeme));
-        NonTerminal nonTerm = new NonTerminal("Holder", children);
-        nonTerm = (NonTerminal) fact.convertAll(nonTerm);
+        JoosNonTerminal nonTerm = new JoosNonTerminal("Holder", children);
+        nonTerm = (JoosNonTerminal) fact.convertAll(nonTerm);
         StringLiteralSymbol literal = (StringLiteralSymbol)nonTerm.children.get(0);
         assertEquals(expected, literal.value);
     }
@@ -413,7 +416,7 @@ public class ParserTest {
 
         assertEquals(2, start.children.size());
 
-        assertTrue(NonTerminal.class.isInstance(start));
+        assertTrue(JoosNonTerminal.class.isInstance(start));
 
         IdSymbol id = (IdSymbol)start.children.get(0);
         assertEquals("my.pkg.lol.simple", id.fullName);
@@ -441,7 +444,7 @@ public class ParserTest {
 
         assertEquals(3, start.children.size());
 
-        assertTrue(NonTerminal.class.isInstance(start));
+        assertTrue(JoosNonTerminal.class.isInstance(start));
 
         IdSymbol id = (IdSymbol)start.children.get(0);
         assertEquals("my.pkg.lol.simple", id.fullName);
@@ -464,5 +467,22 @@ public class ParserTest {
         assertEquals("CompWithMethods", classSymbol.dclName);
         assertTrue(classSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC);
         assertTrue(classSymbol.getImplementationLevel() == ImplementationLevel.ABSTRACT);
+
+        Iterator<FieldSymbol> fields = classSymbol.getFields().iterator();
+        String [] fieldNames = new String [] { "a", "b", "c", "d" };
+        ProtectionLevel [] fieldProtections = new ProtectionLevel [] {
+                ProtectionLevel.PUBLIC, ProtectionLevel.PUBLIC, ProtectionLevel.PUBLIC, ProtectionLevel.PROTECTED};
+
+        boolean [] isStatics = { true, false, false, false };
+
+        for(int i = 0; i < 4; i++){
+            FieldSymbol field = fields.next();
+            assertEquals(fieldNames[i], field.dclName);
+            assertEquals(fieldProtections[i], field.getProtectionLevel());
+            assertEquals(isStatics[i], field.isStatic());
+            assertFalse(field.isNative());
+        }
+
+        if(fields.hasNext()) assertTrue(false);
     }
 }

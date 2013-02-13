@@ -13,7 +13,7 @@ public class ClassSymbol extends AInterfaceOrClassSymbol{
     public ClassSymbol(String className, String superClass, Iterable<String> impls, ANonTerminal body, ANonTerminal from)
             throws IllegalModifierException, UnsupportedException {
 
-        super("ClassDeclaration", className, from);
+        super("ClassDeclaration", className, from, className);
         this.superClass = superClass;
         this.impls = impls;
         if(null != body){

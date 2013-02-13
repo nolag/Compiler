@@ -6,15 +6,15 @@ import your.pkg.lol.*;
 public abstract class CompWithMethods { 
     public static int a = 10;
     public int b = 100;
-    public boolean d = false;
+    public boolean c = false;
     
-    protected my.pkg.lol.X X; 
+    protected my.pkg.lol.X d; 
     
-    final double getValue(){
+    public final double getValue(){
         return 120;
     }
     
-    static boolean valueReturn(){
+    private static boolean valueReturn(){
         return true;
     }
     

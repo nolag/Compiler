@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cs444.parser.symbols.SymbolState;
+import cs444.parser.symbols.factories.JoosNonTerminalFactory;
 import cs444.parser.symbols.factories.NonTerminalFactory;
 
 public class TextReadingRules implements IParserRule{
@@ -37,7 +38,7 @@ public class TextReadingRules implements IParserRule{
             SymbolState symbolState;
             switch(split.length){
             case 1:
-                factories.put(line, new NonTerminalFactory(line));
+                factories.put(line, new JoosNonTerminalFactory(line));
                 break;
             case 3:
                 symbolState = new SymbolState(Integer.parseInt(split[2]));

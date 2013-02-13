@@ -5,18 +5,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cs444.parser.symbols.SymbolState;
-import cs444.parser.symbols.factories.NonTerminalFactory;
+import cs444.parser.symbols.factories.JoosNonTerminalFactory;
 public class TestRule implements IParserRule{
     public Map<Integer, Map<String, SymbolState>> getRules() {
 
         Map<Integer, Map<String, SymbolState>> rules = new HashMap<Integer, Map<String, SymbolState>>();
-        NonTerminalFactory ID_NUM = new NonTerminalFactory("ID_NUM");
-        NonTerminalFactory S = new NonTerminalFactory("S");
-        NonTerminalFactory DCL = new NonTerminalFactory("DCL");
-        NonTerminalFactory DCLS = new NonTerminalFactory("DCLS");
-        NonTerminalFactory ASSIGNS = new NonTerminalFactory("ASSIGNS");
-        NonTerminalFactory DCLS_BECOMES = new NonTerminalFactory("DCLS_BECOMES");
-        NonTerminalFactory ASSIGN = new NonTerminalFactory("ASSIGN");
+        JoosNonTerminalFactory ID_NUM = new JoosNonTerminalFactory("ID_NUM");
+        JoosNonTerminalFactory S = new JoosNonTerminalFactory("S");
+        JoosNonTerminalFactory DCL = new JoosNonTerminalFactory("DCL");
+        JoosNonTerminalFactory DCLS = new JoosNonTerminalFactory("DCLS");
+        JoosNonTerminalFactory ASSIGNS = new JoosNonTerminalFactory("ASSIGNS");
+        JoosNonTerminalFactory DCLS_BECOMES = new JoosNonTerminalFactory("DCLS_BECOMES");
+        JoosNonTerminalFactory ASSIGN = new JoosNonTerminalFactory("ASSIGN");
 
         Map<String, SymbolState> state18 = new HashMap<String, SymbolState>();
         rules.put(18, state18);

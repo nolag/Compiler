@@ -25,10 +25,14 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
     public static enum ImplementationLevel { ABSTRACT, FINAL, NORMAL };
 
     public final String dclName;
+    public final String type;
 
-    protected AModifiersOptSymbol(String name, String dclName, ANonTerminal from) throws IllegalModifierException, UnsupportedException {
+    protected AModifiersOptSymbol(String name, String dclName, ANonTerminal from, String type)
+            throws IllegalModifierException, UnsupportedException {
+
         super(name);
         this.dclName = dclName;
+        this.type = type;
 
         List<Terminal> modifiers = new LinkedList<Terminal>();
 
@@ -36,8 +40,12 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
 
         if(modiferChild != null){
             for(ISymbol child : modiferChild.getChildren()){
-                NonTerminal modifierTerm = (NonTerminal)child;
-                modifiers.add((Terminal)modifierTerm.children.get(0));
+                if(ANonTerminal.class.isInstance(child)){
+                    NonTerminal modifierTerm = (NonTerminal)child;
+                    modifiers.add((Terminal)modifierTerm.children.get(0));
+                }else{
+                    modifiers.add((Terminal)child);
+                }
             }
         }
 
