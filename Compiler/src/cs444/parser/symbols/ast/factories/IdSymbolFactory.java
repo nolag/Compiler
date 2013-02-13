@@ -4,7 +4,6 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.ast.IdSymbol;
 import cs444.parser.symbols.ast.IdSymbol.Type;
-import cs444.parser.symbols.ast.ListedSymbol;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
@@ -25,7 +24,7 @@ public class IdSymbolFactory extends ASTSymbolFactory{
             return new IdSymbol((Terminal)from.children.get(0));
         }
 
-        ListedSymbol rest = (ListedSymbol) from.firstOrDefault("N_dot_Id_0");
+        ANonTerminal rest = (ANonTerminal) from.firstOrDefault("N_dot_Id_0");
 
         IdSymbol id = new IdSymbol(first, rest);
 

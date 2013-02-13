@@ -1,4 +1,4 @@
 public class Extends extends java.lang.Thread {
-  int y;
+  public int y;
   public Extends() {}
 }

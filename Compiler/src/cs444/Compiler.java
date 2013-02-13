@@ -22,7 +22,6 @@ public class Compiler {
      * @throws Exception
      */
     public static void main(String[] args){
-
         System.exit(compile(args));
     }
 

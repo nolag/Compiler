@@ -12,7 +12,7 @@ public class IdSymbol extends ANonTerminal{
     public final String fullName;
     public Type type = Type.ID_SYMBOL;
 
-    public IdSymbol(Terminal idOne, ListedSymbol rest) {
+    public IdSymbol(Terminal idOne, ANonTerminal rest) {
         super(NAME);
         children.add(idOne);
 
