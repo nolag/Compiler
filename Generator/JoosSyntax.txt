@@ -28,7 +28,7 @@ Type:
 
 id { dot id } BracketsOpt
 
-BasicType
+BasicType BracketsOpt
 
 StatementExpression:
 
@@ -140,6 +140,8 @@ BracketsOpt:
 Creator:
 
 QualifiedIdentifier ( ArrayCreatorRest | ClassCreatorRest )
+
+BasicType ArrayCreatorRest
 
 ArrayCreatorRest:
 
