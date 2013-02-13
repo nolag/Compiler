@@ -5,16 +5,16 @@ import java.util.List;
 
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
-import cs444.parser.symbols.ast.QualifiedIdSymbol;
-import cs444.parser.symbols.ast.QualifiedIdSymbol.Type;
+import cs444.parser.symbols.ast.IdSymbol;
+import cs444.parser.symbols.ast.IdSymbol.Type;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
-public class PackageImportFactory extends ASTSymbolFactory{
+public class PackageFactory extends ASTSymbolFactory{
 
     private void convertNext(ANonTerminal from, List<Integer> remove, int on, Type type){
-        QualifiedIdSymbol qid = (QualifiedIdSymbol)from.children.get(on + 1);
+        IdSymbol qid = (IdSymbol)from.children.get(on + 1);
         qid.type = type;
         remove.add(on);
     }
@@ -29,8 +29,6 @@ public class PackageImportFactory extends ASTSymbolFactory{
         for(int i = 0; i < from.children.size() - 1; i++){
             if(from.children.get(i).getName().equalsIgnoreCase("PACKAGE")){
                 convertNext(from, remove, i, Type.PACKAGE);
-            }else if(from.children.get(i).getName().equalsIgnoreCase("IMPORT")){
-                convertNext(from, remove, i, Type.IMPORT);
             }
         }
 

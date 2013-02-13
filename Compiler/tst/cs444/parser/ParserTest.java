@@ -21,11 +21,14 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.Terminal;
+import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.ClassSymbol;
+import cs444.parser.symbols.ast.IdSymbol;
+import cs444.parser.symbols.ast.IdSymbol.Type;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
-import cs444.parser.symbols.ast.QualifiedIdSymbol;
+import cs444.parser.symbols.ast.ListedSymbol;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 import cs444.parser.symbols.ast.factories.IntegerLiteralFactory;
@@ -412,18 +415,19 @@ public class ParserTest {
 
         assertTrue(NonTerminal.class.isInstance(start));
 
-        QualifiedIdSymbol qid = (QualifiedIdSymbol)start.children.get(0);
-        assertEquals("my.pkg.lol.simple", qid.fullName);
-        assertEquals(QualifiedIdSymbol.Type.PACKAGE, qid.type);
+        IdSymbol id = (IdSymbol)start.children.get(0);
+        assertEquals("my.pkg.lol.simple", id.fullName);
+        assertEquals(IdSymbol.Type.PACKAGE, id.type);
 
         ISymbol classInterface = start.children.get(1);
         assertTrue(ClassSymbol.class.isInstance(classInterface));
         ClassSymbol classSymbol = (ClassSymbol) classInterface;
         assertEquals("CompleteCompUnit", classSymbol.dclName);
         assertTrue(classSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC);
+        assertTrue(classSymbol.getImplementationLevel() == ImplementationLevel.NORMAL);
     }
 
-    /*@Test
+    @Test
     public void testSmallClass() throws Exception{
         Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
         Reader reader = new FileReader("CompWithMethods.java");
@@ -435,18 +439,30 @@ public class ParserTest {
             start = (ANonTerminal) factory.convertAll(start);
         }
 
-        assertEquals(2, start.children.size());
+        assertEquals(3, start.children.size());
 
         assertTrue(NonTerminal.class.isInstance(start));
 
-        QualifiedIdSymbol qid = (QualifiedIdSymbol)start.children.get(0);
-        assertEquals("my.pkg.lol.simple", qid.fullName);
-        assertEquals(QualifiedIdSymbol.Type.PACKAGE, qid.type);
+        IdSymbol id = (IdSymbol)start.children.get(0);
+        assertEquals("my.pkg.lol.simple", id.fullName);
+        assertEquals(Type.PACKAGE, id.type);
 
-        ISymbol classInterface = start.children.get(1);
+        ListedSymbol list = (ListedSymbol) start.children.get(1);
+
+        String [] names = {"my.pkg.lol.X", "your.pkg.lol"};
+        Type [] types = {Type.IMPORT, Type.STAR_IMPORT };
+
+        for(int i = 0; i < list.children.size(); i++){
+            id = (IdSymbol) list.children.get(i);
+            assertEquals(names[i], id.fullName);
+            assertEquals(types[i], id.type);
+        }
+
+        ISymbol classInterface = start.children.get(2);
         assertTrue(ClassSymbol.class.isInstance(classInterface));
         ClassSymbol classSymbol = (ClassSymbol) classInterface;
-        assertEquals("SimpleCompUnit", classSymbol.className);
+        assertEquals("CompWithMethods", classSymbol.dclName);
         assertTrue(classSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC);
-    }*/
+        assertTrue(classSymbol.getImplementationLevel() == ImplementationLevel.ABSTRACT);
+    }
 }

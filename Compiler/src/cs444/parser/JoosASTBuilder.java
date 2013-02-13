@@ -7,17 +7,20 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 import cs444.parser.symbols.ast.factories.ClassInterfaceFactory;
+import cs444.parser.symbols.ast.factories.FieldSymbolFactory;
 import cs444.parser.symbols.ast.factories.IntegerLiteralFactory;
 import cs444.parser.symbols.ast.factories.ListedSymbolFactory;
 import cs444.parser.symbols.ast.factories.OneChildFactory;
-import cs444.parser.symbols.ast.factories.PackageImportFactory;
-import cs444.parser.symbols.ast.factories.QualifiedIdSymbolFactory;
+import cs444.parser.symbols.ast.factories.PackageFactory;
+import cs444.parser.symbols.ast.factories.IdSymbolFactory;
 import cs444.parser.symbols.ast.factories.StringLiteralFactory;
 import cs444.parser.symbols.ast.factories.TypeSymbolFactory;
 
 public class JoosASTBuilder implements IASTBuilder{
     private static final Iterable<ASTSymbolFactory> simplifications = Arrays.asList(new ASTSymbolFactory [] {
-            new ListedSymbolFactory(), new TypeSymbolFactory(), new QualifiedIdSymbolFactory(), new PackageImportFactory(), new ClassInterfaceFactory(), new IntegerLiteralFactory(), new StringLiteralFactory(), new OneChildFactory()});
+            new ListedSymbolFactory(), new TypeSymbolFactory(), new IdSymbolFactory(), new PackageFactory(),
+            new ClassInterfaceFactory(),  new OneChildFactory(), new FieldSymbolFactory(),
+            new IntegerLiteralFactory(), new StringLiteralFactory()});
 
     public Iterable<ASTSymbolFactory> getSimplifcations() {
         return simplifications;

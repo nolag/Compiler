@@ -1,6 +1,11 @@
 package cs444.parser.symbols.ast;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import cs444.parser.symbols.ANonTerminal;
+import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
@@ -21,9 +26,25 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
 
     public final String dclName;
 
-    protected AModifiersOptSymbol(String name, String dclName) {
+    protected AModifiersOptSymbol(String name, String dclName, ANonTerminal from) throws IllegalModifierException, UnsupportedException {
         super(name);
         this.dclName = dclName;
+
+        List<Terminal> modifiers = new LinkedList<Terminal>();
+
+        ANonTerminal modiferChild = (ANonTerminal)from.firstOrDefault("N_Modifier_0");
+
+        if(modiferChild != null){
+            for(ISymbol child : modiferChild.getChildren()){
+                NonTerminal modifierTerm = (NonTerminal)child;
+                modifiers.add((Terminal)modifierTerm.children.get(0));
+            }
+        }
+
+        for(Terminal modifer : modifiers) giveModifier(modifer);
+
+        validate();
+
     }
 
     public ProtectionLevel getProtectionLevel(){
@@ -57,7 +78,7 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
         }
     }
 
-    public void giveModifier(Terminal t) throws IllegalModifierException{
+    private void giveModifier(Terminal t) throws IllegalModifierException{
         switch(t.token.type){
         case PRIVATE:
             if(hasAbstract) throw new IllegalModifierException("private", "abstract");

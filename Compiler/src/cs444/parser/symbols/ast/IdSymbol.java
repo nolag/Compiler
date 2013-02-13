@@ -4,14 +4,16 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.Terminal;
 
-public class QualifiedIdSymbol extends ANonTerminal{
-    public static enum Type { ID_SYMBOL, PACKAGE, IMPORT };
+public class IdSymbol extends ANonTerminal{
+    public static enum Type { ID_SYMBOL, PACKAGE, IMPORT, STAR_IMPORT };
+
+    private static final String NAME = "Id";
 
     public final String fullName;
     public Type type = Type.ID_SYMBOL;
 
-    public QualifiedIdSymbol(Terminal idOne, ListedSymbol rest) {
-        super("QualifiedId");
+    public IdSymbol(Terminal idOne, ListedSymbol rest) {
+        super(NAME);
         children.add(idOne);
 
         StringBuilder sb = new StringBuilder(idOne.token.lexeme);
@@ -25,6 +27,11 @@ public class QualifiedIdSymbol extends ANonTerminal{
         }
 
         fullName = sb.toString();
+    }
+
+    public IdSymbol(Terminal basicType) {
+        super(NAME);
+        fullName = basicType.token.lexeme;
     }
 
     @Override

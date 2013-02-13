@@ -1,13 +1,16 @@
 package cs444.parser.symbols.ast;
 
 import cs444.parser.symbols.ANonTerminal;
+import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public class InterfaceSymbol extends AInterfaceOrClassSymbol{
     public final Iterable<String> supers;
 
-    public InterfaceSymbol(String interfaceName, Iterable<String> supers, ANonTerminal body) {
-        super("InterfaceDeclaration", interfaceName);
+    public InterfaceSymbol(String interfaceName, Iterable<String> supers, ANonTerminal body, ANonTerminal from)
+            throws IllegalModifierException, UnsupportedException {
+
+        super("InterfaceDeclaration", interfaceName, from);
         this.supers = supers;
         if(null != body) children.add(body);
     }

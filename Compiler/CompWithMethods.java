@@ -1,19 +1,26 @@
 package my.pkg.lol.simple;
 
 import my.pkg.lol.X;
+import your.pkg.lol.*;
 
 public abstract class CompWithMethods { 
-    double a = 10;
-    private int b = 100;
+    public static int a = 10;
+    public int b = 100;
     public boolean d = false;
     
-    double getValue(){
-        return a;
+    protected my.pkg.lol.X X; 
+    
+    final double getValue(){
+        return 120;
     }
     
-    boolean isSame(boolean value){
-        return d == value;
+    static boolean valueReturn(){
+        return true;
     }
     
-    public abstract void doStuff();
+    public boolean hasVal(){
+        return true;
+    }
+    
+    public abstract void doStuff(int x, int y);
 }

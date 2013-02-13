@@ -18,7 +18,7 @@ public abstract class ASTSymbolFactory{
     public ISymbol convertAll(ANonTerminal start) throws OutOfRangeException, UnsupportedException, IllegalModifierException{
         ISymbol retVal  = convert(start);
 
-        if(!ANonTerminal.class.isAssignableFrom(retVal.getClass())) return retVal;
+        if(!ANonTerminal.class.isInstance(retVal)) return retVal;
         start = (ANonTerminal) retVal;
         int numChildren = start.children.size();
         for(int i = 0; i < numChildren; i++){

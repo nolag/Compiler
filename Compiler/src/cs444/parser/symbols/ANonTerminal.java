@@ -46,5 +46,15 @@ public abstract class ANonTerminal implements ISymbol{
         return null;
     }
 
+    public List<ISymbol> getAll(String ... names){
+        List<ISymbol> validChildren = new LinkedList<ISymbol>();
+        for(ISymbol child : children){
+            for(String name : names){
+                if(child.getName().equalsIgnoreCase(name)) validChildren.add(child);
+            }
+        }
+        return validChildren;
+    }
+
     public abstract boolean isCollapsable();
 }

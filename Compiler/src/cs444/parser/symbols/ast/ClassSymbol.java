@@ -1,6 +1,8 @@
 package cs444.parser.symbols.ast;
 
 import cs444.parser.symbols.ANonTerminal;
+import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
 
@@ -8,11 +10,16 @@ public class ClassSymbol extends AInterfaceOrClassSymbol{
     public final String superClass;
     public final Iterable<String> impls;
 
-    public ClassSymbol(String className, String superClass, Iterable<String> impls, ANonTerminal body) {
-        super("ClassDeclaration", className);
+    public ClassSymbol(String className, String superClass, Iterable<String> impls, ANonTerminal body, ANonTerminal from)
+            throws IllegalModifierException, UnsupportedException {
+
+        super("ClassDeclaration", className, from);
         this.superClass = superClass;
         this.impls = impls;
-        if(null != body) children.add(body);
+        if(null != body){
+            ANonTerminal bodyDcls = (ANonTerminal)body.firstOrDefault("N_CLASSBODYDECLARATION_0");
+            for(ISymbol child : bodyDcls.children) children.add(child);
+        }
     }
 
     @Override
