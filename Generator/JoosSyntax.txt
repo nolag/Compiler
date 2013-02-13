@@ -1,3 +1,5 @@
+// From http://www.dai-arc.polito.it/dai-arc/manual/tools/jcat/main/node224.html#javasyntacticgrammar
+
 Literal:
 
 decimal_integer_literal
