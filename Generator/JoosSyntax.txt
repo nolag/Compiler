@@ -84,13 +84,15 @@ Expression9:
 
 Primary:
 
-// lparen Type rparen Expression // TODO: fix this
-
 ParExpression
+
+// CastExpression // TODO: fix this
 
 Literal
 
-// new Creator        // TODO: fix this rule
+this  // TODO: not sure if we support this.field
+
+new Creator
 
 id { . id } [ IdentifierSuffix ]
 
@@ -100,9 +102,14 @@ lbracket Expression rbracket
 
 Arguments
 
-Selector:
 
-. id [Arguments]
+CastExpression:
+
+lparen Type rparen Expression // TODO: fix this
+
+// Selector:
+
+// . id [Arguments]
 
 // ^ TODO: Is this not a feature?
 
