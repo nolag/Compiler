@@ -24,81 +24,69 @@ BooleanLiteral:
 
 (true | false)
 
-Expression:
-
-Expression1 [ = Expression]
-
 Type:
 
 id { dot id } BracketsOpt
 
-BasicType
+BasicType BracketsOpt
 
 StatementExpression:
 
 Expression
 
-// ConstantExpression: // TODO: unused
+Expression:
 
-// Expression
+Expression1 [ = Expression]
 
 Expression1:
 
-Primary //Expression2 // TODO: finish this
+[Expression1 dpipe] Expression2
 
 Expression2:
 
-Expression3 [Expression2Rest]
-
-Expression2Rest:
-
-// {Infixop Expression3}        // TODO: fix this rule
-
-// Expression3 instanceof Type   // I think Expression3 should not be here
-instanceof Type
-
-Infixop:
-
-dpipe
-
-dampersand
-
-pipe
-
-// ^ TODO: Is this not a feature?
-
-ampersand
-
-eq
-
-ne
-
-lt
-
-gt
-
-le
-
-ge
-
-plus
-
-minus
-
-star
-
-slash
-
-pct
+[Expression2 dampersand] Expression3
 
 Expression3:
 
-PrefixOp Expression3
+[Expression3 pipe] Expression4
 
-Type Expression3     // TODO: check if we actually need the whole rule
-// ( Expression | Type ) Expression3     // this one is odd. It's not italic in "The specs", but seems to be a BNF expr
+Expression4:
 
-Primary {Selector}
+[Expression4 &] Expression5
+
+Expression5:
+
+[Expression5 ( == | != )] Expression6
+
+Expression6:
+
+Expression6 instanceof Type
+
+[Expression6 ( < | > | <= | >= )] Expression7
+
+Expression7:
+
+[Expression7 ( + | - )] Expression8
+
+Expression8:
+
+[Expression8 ( * | / | % )] Expression9
+
+Expression9:
+
+( - | + | ! ) Expression9
+
+// lparen Type rparen Expression9  // TODO: fix this. BracketsOpt in Type is breaking rules
+
+new Creator
+
+Expression10
+
+Expression10:
+
+// [Expression10 .] Primary Arguments // TODO: fix this. NOTE: do not use
+Primary
+// [Expression10 .] Primary           // TODO: fix this
 
 Primary:
 
@@ -106,29 +94,26 @@ ParExpression
 
 Literal
 
-// new Creator        // TODO: fix this rule
+this
 
 id { . id } [ IdentifierSuffix ]
 
 IdentifierSuffix:
 
-lbracket ( Expression ) rbracket
+lbracket Expression rbracket
 
 Arguments
 
-PrefixOp:
+// Selector:  // TODO: unused?
 
-!
+// . this
 
-+
+// . id [Arguments]
 
--
+// ^ TODO: Is this not a feature?
 
-Selector:
-
-. id [Arguments]
-
-lbracket Expression rbracket
+// TODO: investigate this rule. It is from original version of Syntax
+// ( Expression | Type ) Expression3     // this one is odd. It's not italic in "The specs", but seems to be a BNF expr
 
 BasicType:
 
@@ -148,10 +133,6 @@ double
 
 boolean
 
-ArgumentsOpt:
-
-[ Arguments ]
-
 Arguments:
 
 lparen [Expression { , Expression }] rparen
@@ -163,6 +144,8 @@ BracketsOpt:
 Creator:
 
 QualifiedIdentifier ( ArrayCreatorRest | ClassCreatorRest )
+
+BasicType ArrayCreatorRest
 
 ArrayCreatorRest:
 
@@ -196,7 +179,7 @@ Statement
 
 LocalVariableDeclarationStatement:
 
-[final] Type VariableDeclarators ;
+Type VariableDeclarators ;
 
 Statement:
 
@@ -248,7 +231,7 @@ ForInit:
 
 StatementExpression MoreStatementExpressions
 
-[final] Type VariableDeclarators
+Type VariableDeclarators
 
 ForUpdate:
 
@@ -411,10 +394,6 @@ FormalParameters ;
 ConstructorDeclaratorRest:
 
 FormalParameters MethodBody
-
-QualifiedIdentifierList:
-
-QualifiedIdentifier { , QualifiedIdentifier}
 
 FormalParameters:
 

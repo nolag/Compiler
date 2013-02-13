@@ -19,6 +19,7 @@ public class Asst1 {
         File folder = new File(path);
 
         int totalTests = 0;
+        int filesSkipped = 0;
         List<String> failFiles = new ArrayList<String>();
         for (File file : folder.listFiles()) {
             String fileName = file.getName();
@@ -34,16 +35,20 @@ public class Asst1 {
                     failFiles.add(fileName);
                 }
                 totalTests++;
+            }else{
+                System.out.print("*"); // skip file
+                filesSkipped++;
             }
         }
 
-        printSummary(totalTests, failFiles);
+        printSummary(totalTests, filesSkipped, failFiles);
         int failures = failFiles.size();
         assertEquals("Compiler failed compiling " + failures + " files!", 0, failures);
     }
 
-    private void printSummary(int totalTests, List<String> failFiles) {
+    private void printSummary(int totalTests, int filesSkipped, List<String> failFiles) {
         System.out.println("\nNumber of tests: " + totalTests);
+        if(filesSkipped > 0) System.out.println("Number of files skipped: " + filesSkipped);
         if (failFiles.size() != 0){
             System.out.println("Compailer failed compiling these files: ");
             for (String fileName: failFiles) {
