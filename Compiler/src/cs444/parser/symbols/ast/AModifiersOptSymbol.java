@@ -5,7 +5,6 @@ import java.util.List;
 
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
-import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
@@ -36,17 +35,10 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
 
         List<Terminal> modifiers = new LinkedList<Terminal>();
 
-        ANonTerminal modiferChild = (ANonTerminal)from.firstOrDefault("N_Modifier_0");
+        ANonTerminal modiferChild = (ANonTerminal)from.firstOrDefault("Modifiers");
 
         if(modiferChild != null){
-            for(ISymbol child : modiferChild.getChildren()){
-                if(ANonTerminal.class.isInstance(child)){
-                    NonTerminal modifierTerm = (NonTerminal)child;
-                    modifiers.add((Terminal)modifierTerm.children.get(0));
-                }else{
-                    modifiers.add((Terminal)child);
-                }
-            }
+            for(ISymbol child : modiferChild.getChildren()) modifiers.add((Terminal)child);
         }
 
         for(Terminal modifer : modifiers) giveModifier(modifer);
@@ -87,40 +79,36 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
     }
 
     private void giveModifier(Terminal t) throws IllegalModifierException{
-        switch(t.token.type){
-        case PRIVATE:
+        String name = t.getName();
+        if(name.equals("PRIVATE")){
             if(hasAbstract) throw new IllegalModifierException("private", "abstract");
             checkVisiblilty("private");
             hasPrivate = true;
             throw new IllegalModifierException("private");
-        case PUBLIC:
+        }else if(name.equals("PUBLIC")){
             checkVisiblilty("public");
             hasPublic = true;
-            break;
-        case PROTECTED:
+        }else if(name.equals("PROTECTED")){
             checkVisiblilty("protected");
             hasProtected = true;
-            break;
-        case STATIC:
+        }else if(name.equals("STATIC")){
             if(hasStatic)throw new IllegalModifierException("static", "static");
             if(hasAbstract)throw new IllegalModifierException("static", "abstract");
             hasStatic = true;
-            break;
-        case FINAL:
+        }else if(name.equals("FINAL")){
             if(hasFinal)throw new IllegalModifierException("final", "final");
             if(hasAbstract)throw new IllegalModifierException("final", "abstract");
             hasFinal = true;
-            break;
-        case ABSTRACT:
+        }else if(name.equals("ABSTRACT")){
             if(hasFinal)throw new IllegalModifierException("abstract", "final");
             if(hasAbstract)throw new IllegalModifierException("abstract", "abstract");
             if(hasStatic)throw new IllegalModifierException("abstract", "static");
             hasAbstract = true;
-            break;
-        case NATIVE:
+        }else if(name.equals("NATIVE")){
             if(hasNative) throw new IllegalModifierException("native", "native");
-        default:
-            throw new IllegalModifierException(t.token.type.toString());
+            hasNative = true;
+        }else{
+            throw new IllegalModifierException(name);
         }
     }
 

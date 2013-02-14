@@ -1,6 +1,5 @@
 package cs444.parser.symbols.ast;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import cs444.parser.symbols.ANonTerminal;
@@ -10,10 +9,14 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
 
-    protected AInterfaceOrClassSymbol(String ruleName, String dclName, ANonTerminal from, String type)
+    final Iterable<String> impls;
+
+    protected AInterfaceOrClassSymbol(String ruleName, String dclName, ANonTerminal from, Iterable<String> impls, List<ISymbol> body)
             throws IllegalModifierException, UnsupportedException {
 
-        super(ruleName, dclName, from, type);
+        super(ruleName, dclName, from, null);
+        this.impls = impls;
+        children.addAll(body);
     }
 
     @Override
@@ -23,7 +26,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
 
     public abstract boolean isClass();
 
-    public Iterable<FieldSymbol> getFields(){
+    /*public Iterable<FieldSymbol> getFields(){
         List<FieldSymbol> fieldSymbols = new LinkedList<FieldSymbol>();
 
         for(ISymbol child : children){
@@ -31,5 +34,5 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         }
 
         return fieldSymbols;
-    }
+    }*/
 }

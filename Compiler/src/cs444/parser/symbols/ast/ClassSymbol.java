@@ -1,25 +1,20 @@
 package cs444.parser.symbols.ast;
 
+import java.util.List;
+
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
-
 public class ClassSymbol extends AInterfaceOrClassSymbol{
-    public final String superClass;
-    public final Iterable<String> impls;
+    final String superName;
 
-    public ClassSymbol(String className, String superClass, Iterable<String> impls, ANonTerminal body, ANonTerminal from)
+    public ClassSymbol(String className, ANonTerminal from, Iterable<String> impls, List<ISymbol> body, String superName)
             throws IllegalModifierException, UnsupportedException {
+        super("ClassDcl", className, from, impls, body);
 
-        super("ClassDeclaration", className, from, className);
-        this.superClass = superClass;
-        this.impls = impls;
-        if(null != body){
-            ANonTerminal bodyDcls = (ANonTerminal)body.firstOrDefault("N_CLASSBODYDECLARATION_0");
-            for(ISymbol child : bodyDcls.children) children.add(child);
-        }
+        this.superName = superName;
     }
 
     @Override

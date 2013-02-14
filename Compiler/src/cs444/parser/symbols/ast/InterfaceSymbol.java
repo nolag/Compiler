@@ -1,18 +1,18 @@
 package cs444.parser.symbols.ast;
 
+import java.util.List;
+
 import cs444.parser.symbols.ANonTerminal;
+import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public class InterfaceSymbol extends AInterfaceOrClassSymbol{
-    public final Iterable<String> supers;
 
-    public InterfaceSymbol(String interfaceName, Iterable<String> supers, ANonTerminal body, ANonTerminal from)
+    public InterfaceSymbol(String interfaceName, ANonTerminal from, Iterable<String> impls, List<ISymbol> body)
             throws IllegalModifierException, UnsupportedException {
 
-        super("InterfaceDeclaration", interfaceName, from, interfaceName);
-        this.supers = supers;
-        if(null != body) children.add(body);
+        super("InterfaceDeclaration", interfaceName, from, impls, body);
     }
 
     @Override

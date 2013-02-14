@@ -15,17 +15,18 @@ public abstract class ASTSymbolFactory{
      * @throws UnsupportedException
      * @throws IllegalModifierException
      */
-    public ISymbol convertAll(ANonTerminal start) throws OutOfRangeException, UnsupportedException, IllegalModifierException{
+    public ISymbol convertAll(ISymbol start) throws OutOfRangeException, UnsupportedException, IllegalModifierException{
         ISymbol retVal  = convert(start);
-
         if(!ANonTerminal.class.isInstance(retVal)) return retVal;
-        start = (ANonTerminal) retVal;
-        int numChildren = start.children.size();
+
+        ANonTerminal nonTerm = (ANonTerminal) retVal;
+
+        int numChildren = nonTerm.children.size();
         for(int i = 0; i < numChildren; i++){
-            if(!ANonTerminal.class.isInstance(start.children.get(i))) continue;
-            ANonTerminal child = (ANonTerminal) start.children.remove(i);
-            start.children.add(i, convertAll(child));
+            ISymbol child = nonTerm.children.remove(i);
+            nonTerm.children.add(i, convertAll(child));
         }
+
         return retVal;
     }
 
@@ -37,5 +38,5 @@ public abstract class ASTSymbolFactory{
      * @throws UnsupportedException
      * @throws IllegalModifierException
      */
-    protected abstract ISymbol convert(ANonTerminal from) throws OutOfRangeException, UnsupportedException, IllegalModifierException;
+    protected abstract ISymbol convert(ISymbol from) throws OutOfRangeException, UnsupportedException, IllegalModifierException;
 }

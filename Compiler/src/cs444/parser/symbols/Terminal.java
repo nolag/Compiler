@@ -1,34 +1,17 @@
 package cs444.parser.symbols;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import cs444.lexer.Token;
+import cs444.lexer.Token.Parse;
 
-public class Terminal implements ISymbol{
-
-    public final Token token;
-
-    public static final List<ISymbol> nochildren = new LinkedList<ISymbol>();
+public class Terminal extends ATerminal{
+    private final boolean empty;
 
     public Terminal(Token token){
-        this.token = token;
+        super(token.type.toString(), token.lexeme);
+        empty = Token.typeToParse.get(token.type) != Parse.VALID;
     }
-
-	public String rule() {
-		return token.type.toString() + " -> " + token.lexeme;
-	}
-
-	public String getName() {
-	    if(Token.typeToParse.get(token.type) != Token.Parse.VALID) return "";
-		return token.type.toString();
-	}
 
     public boolean empty() {
-        return Token.typeToParse.get(token.type) != Token.Parse.VALID;
-    }
-
-    public Iterable<ISymbol> getChildren() {
-        return nochildren;
+        return empty;
     }
 }

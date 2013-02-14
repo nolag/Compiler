@@ -1,21 +1,16 @@
 package cs444.parser.symbols.ast;
 
-import java.util.Collections;
+import cs444.parser.symbols.ATerminal;
 
-import cs444.parser.symbols.ISymbol;
-import cs444.parser.symbols.Terminal;
+public class StringLiteralSymbol extends ATerminal {
 
-public class StringLiteralSymbol implements ISymbol {
-
-	private final Terminal terminal;
 	public final String value;
-	
-	public StringLiteralSymbol(Terminal terminal) {
-		this.terminal = terminal;
-		
-		String lexeme = terminal.token.lexeme;
+
+	public StringLiteralSymbol(ATerminal terminal) {
+		super("StringLiteral", terminal.lexeme);
+
 		StringBuilder builder = new StringBuilder();
-		
+
 		int idx = 1;
 		while (idx < lexeme.length() - 1) {
 			char ch = lexeme.charAt(idx);
@@ -40,28 +35,12 @@ public class StringLiteralSymbol implements ISymbol {
 				}
 			}
 		}
-		
-		this.value = builder.toString();
-	}
-	
-	@Override
-	public String rule() {
-		return terminal.rule();
-	}
 
-	@Override
-	public String getName() {
-		return terminal.getName();
+		this.value = builder.toString();
 	}
 
 	@Override
 	public boolean empty() {
-		return terminal.empty();
+		return false;
 	}
-
-	@Override
-	public Iterable<ISymbol> getChildren() {
-		return Collections.emptyList();
-	}
-
 }

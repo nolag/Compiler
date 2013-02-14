@@ -20,11 +20,12 @@ public class ListedSymbol extends ANonTerminal{
             else children.add(0, from.children.get(1));
 
             symbol = from.children.get(child);
-            if(symbol.getClass().isAssignableFrom(ANonTerminal.class)) break;
-            from = (NonTerminal) symbol;
+            if(ANonTerminal.class.isInstance(symbol)) from = (NonTerminal) symbol;
+            else{
+                children.add(symbol);
+                break;
+            }
         }
-        if(child == 1) children.add(symbol);
-        else children.add(0, symbol);
     }
 
     @Override

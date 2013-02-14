@@ -1,14 +1,13 @@
 package cs444.parser.symbols;
 
 
-
 public interface ISymbol {
 
     /**
      *
      * @return the rule or token that is represented by this ISymbol
      */
-    String rule();
+    String getRule();
 
     /**
      *
@@ -21,11 +20,4 @@ public interface ISymbol {
      * @return if the rule becomes empty so that it can be known if it should be added to a tree
      */
     boolean empty();
-
-    /**
-     *
-     * @return children of the ISymbol
-     */
-    Iterable<ISymbol> getChildren();
-
 }

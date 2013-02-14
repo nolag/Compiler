@@ -24,7 +24,6 @@ public class Parser {
         states = rule.getRules();
     }
 
-    //TODO make this return a tree
     public NonTerminal parse(ILexer lexer) throws IOException, LexerException, UnexpectedTokenException{
         Token token;
         stateStack.push(0);
@@ -33,7 +32,7 @@ public class Parser {
         while((token = lexer.getNextToken()) != null){
             if(Token.typeToParse.get(token.type) == Parse.IGNORE) continue;
             Terminal terminal = new Terminal(token);
-            SymbolState symbolState = nextStates.get(terminal.token.type.toString());
+            SymbolState symbolState = nextStates.get(terminal.getName());
 
             if(symbolState == null) throw new UnexpectedTokenException(token, nextStates.keySet() );
 
@@ -53,7 +52,7 @@ public class Parser {
                 symbolStack.push(nonTerminal);
                 stateStack.push(symbolState.to);
                 nextStates = states.get(symbolState.to);
-                symbolState = nextStates.get(terminal.token.type.toString());
+                symbolState = nextStates.get(terminal.getName());
                 if(symbolState == null) throw new UnexpectedTokenException(token, nextStates.keySet() );
             }
 

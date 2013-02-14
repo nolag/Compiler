@@ -7,7 +7,11 @@ public class JoosNonTerminal extends NonTerminal{
     public static final Set<String> noCollapse = new HashSet<String>();
 
     static{
-        noCollapse.add("N_MODIFIER_0");
+        noCollapse.add("MODIFIERS");
+        noCollapse.add("NAME");
+        noCollapse.add("INTERFACETYPE");
+        noCollapse.add("CLASSTYPE");
+        noCollapse.add("TYPEDECLARATION");
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {

@@ -34,21 +34,18 @@ IntegralType:
 
 ReferenceType:
 
-ClassOrInterfaceType
+Name
 
 ArrayType
 
-ClassOrInterfaceType:
-
-Name
 
 ClassType:
 
-ClassOrInterfaceType
+Name
 
 InterfaceType:
 
-ClassOrInterfaceType
+Name
 
 ArrayType:
 
@@ -60,15 +57,11 @@ Name:
 
 SimpleName
 
-QualifiedName
+Name . id
 
 SimpleName:
 
 id
-
-QualifiedName:
-
-Name . id
 
 CompilationUnit:
 
@@ -92,15 +85,7 @@ package Name ;
 
 ImportDeclaration:
 
-SingleTypeImportDeclaration
-
-TypeImportOnDemandDeclaration
-
-SingleTypeImportDeclaration:
-
 import Name ;
-
-TypeImportOnDemandDeclaration:
 
 import Name . * ;
 
@@ -128,15 +113,7 @@ static
 
 ClassDeclaration:
 
-[Modifiers] class id [NTSuper] [Interfaces] ClassBody
-
-NTSuper:
-
-extends ClassType
-
-Interfaces:
-
-implements InterfaceTypeList
+[Modifiers] class id [extends ClassType] [implements InterfaceTypeList] ClassBody
 
 InterfaceTypeList:
 
@@ -250,13 +227,7 @@ super lparen [ArgumentList] rparen ;
 
 InterfaceDeclaration:
 
-[Modifiers] interface id [ExtendsInterfaces] InterfaceBody
-
-ExtendsInterfaces:
-
-extends InterfaceType
-
-ExtendsInterfaces , InterfaceType
+[Modifiers] interface id [extends InterfaceTypeList] InterfaceBody
 
 InterfaceBody:
 
@@ -438,7 +409,7 @@ ArrayCreationExpression:
 
 new PrimitiveType DimExprs [Dims]
 
-new ClassOrInterfaceType DimExprs [Dims]
+new Name DimExprs [Dims]
 
 DimExprs:
 

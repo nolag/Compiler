@@ -11,7 +11,7 @@ public abstract class ANonTerminal implements ISymbol{
         this.name = name;
     }
 
-    public Iterable<ISymbol> getChildren() {
+    public List<ISymbol> getChildren() {
         return children;
     }
 
@@ -23,7 +23,7 @@ public abstract class ANonTerminal implements ISymbol{
         return children.isEmpty();
     }
 
-    public String rule() {
+    public String getRule() {
         StringBuilder rule = new StringBuilder(name).append(" -> ");
 
         for(ISymbol child : children){
@@ -31,7 +31,7 @@ public abstract class ANonTerminal implements ISymbol{
         }
 
         for(ISymbol child : children){
-            rule.append("\n").append(child.rule());
+            rule.append("\n").append(child.getRule());
         }
 
         return rule.toString();
@@ -46,7 +46,7 @@ public abstract class ANonTerminal implements ISymbol{
         return null;
     }
 
-    public List<ISymbol> getAll(String ... names){
+    public Iterable<ISymbol> getAll(String ... names){
         List<ISymbol> validChildren = new LinkedList<ISymbol>();
         for(ISymbol child : children){
             for(String name : names){

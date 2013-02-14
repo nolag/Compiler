@@ -4,13 +4,13 @@ import my.pkg.lol.X;
 import your.pkg.lol.*;
 
 public abstract class CompWithMethods { 
-    public static int a = 10;
+    public static int a = - -10;
     public int b = 100;
     public boolean c = false;
     
     protected my.pkg.lol.X d; 
     
-    public final double getValue(){
+    public final a getValue(){
         return 120;
     }
     
