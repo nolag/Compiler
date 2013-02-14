@@ -192,8 +192,6 @@ VariableInitializer:
 
 Expression
 
-ArrayInitializer
-
 MethodDeclaration:
 
 MethodHeader MethodBody
@@ -283,10 +281,6 @@ FieldDeclaration
 AbstractMethodDeclaration:
 
 MethodHeader ;
-
-ArrayInitializer:
-
-lbrace [VariableInitializers] [ , ] rbrace
 
 VariableInitializers:
 

@@ -22,10 +22,10 @@ public class Compiler {
      * @throws Exception
      */
     public static void main(String[] args){
-        System.exit(compile(args));
+        System.exit(compile(args, true));
     }
 
-    public static int compile(String[] files) {
+    public static int compile(String[] files, boolean printErrors) {
         Reader reader = null;
         ANonTerminal parseTree = null;
 
@@ -51,14 +51,14 @@ public class Compiler {
                 }
             }
         }catch(Exception e){
-            e.printStackTrace();
+            if (printErrors) e.printStackTrace();
             return COMPILER_ERROR_CODE;
         }finally{
             if(reader != null){
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                	if (printErrors) e.printStackTrace();
                 }
             }
         }
