@@ -4,12 +4,12 @@ package cs444.parser.symbols;
 public abstract class ATerminal implements ISymbol{
     private final String rule;
     private final String name;
-    public final String lexeme;
+    public final String value;
 
-    protected ATerminal(String name, String lexeme){
-        rule = name + " -> " + lexeme;
+    protected ATerminal(String name, String value){
+        rule = name + " -> " + value;
         this.name = name;
-        this.lexeme = lexeme;
+        this.value = value;
     }
 
     public String getName(){

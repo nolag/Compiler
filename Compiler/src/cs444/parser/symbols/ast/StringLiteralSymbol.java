@@ -4,27 +4,27 @@ import cs444.parser.symbols.ATerminal;
 
 public class StringLiteralSymbol extends ATerminal {
 
-	public final String value;
+	public final String strValue;
 
 	public StringLiteralSymbol(ATerminal terminal) {
-		super("StringLiteral", terminal.lexeme);
+		super("StringLiteral", terminal.value);
 
 		StringBuilder builder = new StringBuilder();
 
 		int idx = 1;
-		while (idx < lexeme.length() - 1) {
-			char ch = lexeme.charAt(idx);
+		while (idx < value.length() - 1) {
+			char ch = value.charAt(idx);
 			if (ch != '\\') {
 				builder.append(ch);
 				idx++;
 			} else {
 				idx++;
-				char escapeChar = lexeme.charAt(idx);
+				char escapeChar = value.charAt(idx);
 				if (Character.isDigit(escapeChar)) {
 					String str = "";
 					int offset = 0;
-					while (Character.isDigit(lexeme.charAt(idx + offset))) {
-						str += lexeme.charAt(idx + offset);
+					while (Character.isDigit(value.charAt(idx + offset))) {
+						str += value.charAt(idx + offset);
 						offset++;
 					}
 					builder.append(StringEscapeUtils.octalEscape(str));
@@ -36,7 +36,7 @@ public class StringLiteralSymbol extends ATerminal {
 			}
 		}
 
-		this.value = builder.toString();
+		this.strValue = builder.toString();
 	}
 
 	@Override

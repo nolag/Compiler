@@ -151,7 +151,7 @@ VariableDeclarators:
 
 VariableDeclarator
 
-VariableDeclarators , VariableDeclarator
+//VariableDeclarators , VariableDeclarator
 
 VariableDeclarator:
 
@@ -163,7 +163,10 @@ VariableDeclaratorId:
 
 id
 
-VariableDeclaratorId lbracket rbracket
+//No multi dim arrays
+//VariableDeclaratorId lbracket rbracket
+
+id lbracket rbracket
 
 VariableInitializer:
 

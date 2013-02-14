@@ -10,7 +10,7 @@ public abstract class CompWithMethods {
     
     protected my.pkg.lol.X d; 
     
-    public final a getValue(){
+    public final int getValue(){
         return 120;
     }
     

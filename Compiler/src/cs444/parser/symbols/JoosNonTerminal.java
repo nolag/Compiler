@@ -12,6 +12,10 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add("INTERFACETYPE");
         noCollapse.add("CLASSTYPE");
         noCollapse.add("TYPEDECLARATION");
+        noCollapse.add("TYPE");
+        noCollapse.add("ARRAYTYPE");
+        noCollapse.add("VARIABLEINITIALIZER");
+        noCollapse.add("VARIABLEDECLARATOR");
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {

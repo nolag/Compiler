@@ -24,9 +24,9 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
     public static enum ImplementationLevel { ABSTRACT, FINAL, NORMAL };
 
     public final String dclName;
-    public final String type;
+    public TypeSymbol type;
 
-    protected AModifiersOptSymbol(String name, String dclName, ANonTerminal from, String type)
+    protected AModifiersOptSymbol(String name, String dclName, ANonTerminal from, TypeSymbol type)
             throws IllegalModifierException, UnsupportedException {
 
         super(name);

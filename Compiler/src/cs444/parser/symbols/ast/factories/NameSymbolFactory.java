@@ -14,7 +14,7 @@ public class NameSymbolFactory extends ASTSymbolFactory{
 
         if(from.getName().equals(Token.Type.ID.toString())){
             ATerminal terminal = (ATerminal) from;
-            return new NameSymbol(terminal.lexeme, Type.ID_SYMBOL);
+            return new NameSymbol(terminal.value, Type.ID_SYMBOL);
         }
 
         if(!ANonTerminal.class.isInstance(from)) return from;
@@ -33,7 +33,7 @@ public class NameSymbolFactory extends ASTSymbolFactory{
 
         if(nonTerm.name.equalsIgnoreCase("SimpleName")){
             ATerminal id = (ATerminal)nonTerm.firstOrDefault("Id");
-            return new NameSymbol(id.lexeme, type);
+            return new NameSymbol(id.value, type);
         }
 
         if(!nonTerm.name.equalsIgnoreCase("Name")) return nonTerm;
@@ -41,7 +41,7 @@ public class NameSymbolFactory extends ASTSymbolFactory{
         StringBuilder sb = new StringBuilder();
         for(ISymbol symbol : nonTerm.getAll("Id")){
             ATerminal child = (ATerminal) symbol;
-            sb.append(child.lexeme).append(".");
+            sb.append(child.value).append(".");
         }
 
         return new NameSymbol(sb.substring(0, sb.length() - 1), type);

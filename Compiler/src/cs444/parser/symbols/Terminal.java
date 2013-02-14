@@ -3,7 +3,7 @@ package cs444.parser.symbols;
 import cs444.lexer.Token;
 import cs444.lexer.Token.Parse;
 
-public class Terminal extends ATerminal{
+public final class Terminal extends ATerminal{
     private final boolean empty;
 
     public Terminal(Token token){

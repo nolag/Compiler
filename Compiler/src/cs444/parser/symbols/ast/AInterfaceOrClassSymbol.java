@@ -1,5 +1,6 @@
 package cs444.parser.symbols.ast;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import cs444.parser.symbols.ANonTerminal;
@@ -26,7 +27,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
 
     public abstract boolean isClass();
 
-    /*public Iterable<FieldSymbol> getFields(){
+    public Iterable<FieldSymbol> getFields(){
         List<FieldSymbol> fieldSymbols = new LinkedList<FieldSymbol>();
 
         for(ISymbol child : children){
@@ -34,5 +35,5 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         }
 
         return fieldSymbols;
-    }*/
+    }
 }

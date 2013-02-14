@@ -27,17 +27,17 @@ public class ClassInterfaceFactory extends ASTSymbolFactory{
         boolean isInterface;
 
         if(declaration != null){
-            bodyName = "ClassBody";
+            bodyName = "ClassBodyDeclarations";
             isInterface = false;
         }else{
             declaration = (ANonTerminal)nonTerm.firstOrDefault("InterfaceDeclaration");
-            bodyName = "InterfaceBody";
+            bodyName = "InterfaceMemberDeclarations";
             isInterface = true;
         }
 
         AInterfaceOrClassSymbol classInterface = null;
 
-        String classOrInterfaceName = ((ATerminal)declaration.firstOrDefault("Name")).lexeme;
+        String classOrInterfaceName = ((ATerminal)declaration.firstOrDefault("Name")).value;
         ANonTerminal interfaces =(ANonTerminal) declaration.firstOrDefault("InterfaceTypeList");
         ANonTerminal body =(ANonTerminal) declaration.firstOrDefault(bodyName);
 
@@ -47,7 +47,7 @@ public class ClassInterfaceFactory extends ASTSymbolFactory{
             try{
                 for(ISymbol child : interfaces.children){
                     NameSymbol nameSymbol = (NameSymbol) child;
-                    interfaceNames.add(nameSymbol.lexeme);
+                    interfaceNames.add(nameSymbol.value);
                 }
             }catch (ClassCastException e){
                 throw new UnsupportedException("extend or implement basic types");
@@ -63,7 +63,7 @@ public class ClassInterfaceFactory extends ASTSymbolFactory{
             ANonTerminal superName = (ANonTerminal)declaration.firstOrDefault("ClassName");
             String superType = null;
             if(superName != null){
-                superType = ((NameSymbol) superName.firstOrDefault("Name")).lexeme;
+                superType = ((NameSymbol) superName.firstOrDefault("Name")).value;
             }
             classInterface = new ClassSymbol(classOrInterfaceName, declaration, interfaceNames, children, superType);
         }

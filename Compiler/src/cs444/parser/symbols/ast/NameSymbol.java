@@ -7,8 +7,8 @@ public class NameSymbol extends ATerminal{
 
     public final Type type;
 
-    public NameSymbol(String lexeme, Type type) {
-        super("Name", lexeme);
+    public NameSymbol(String value, Type type) {
+        super("Name", value);
         this.type = type;
     }
 
