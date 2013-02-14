@@ -3,7 +3,6 @@ package cs444.parser;
 import java.util.Arrays;
 
 import cs444.parser.symbols.ANonTerminal;
-import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 import cs444.parser.symbols.ast.factories.ClassInterfaceFactory;
@@ -32,8 +31,6 @@ public class JoosASTBuilder implements IASTBuilder{
         if(AInterfaceOrClassSymbol.class.isInstance(start)){
             publicClassInterface = (AInterfaceOrClassSymbol) start;
         }else{
-            ISymbol tmp = start.firstOrDefault("N_TYPEDECLARATION_0");
-            if(tmp != null) start = (ANonTerminal) tmp;
             publicClassInterface =
                 (AInterfaceOrClassSymbol) start.firstOrDefault("ClassDeclaration", "InterfaceDeclaration");
         }

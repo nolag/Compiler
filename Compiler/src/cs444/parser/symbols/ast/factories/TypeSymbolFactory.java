@@ -21,6 +21,7 @@ public class TypeSymbolFactory extends ASTSymbolFactory{
         if(typeChild.getName().equalsIgnoreCase("ArrayType")){
             isArray = true;
             //This drops the brackets, if they are needed for multi dim array then it will need to change
+            nonTerm = (ANonTerminal) typeChild;
             typeChild = nonTerm.children.get(0);
         }
 

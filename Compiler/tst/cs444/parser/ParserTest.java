@@ -401,8 +401,6 @@ public class ParserTest {
 
         assertEquals(2, start.children.size());
 
-        assertTrue(JoosNonTerminal.class.isInstance(start));
-
         NameSymbol id = (NameSymbol)start.children.get(0);
         assertEquals("my.pkg.lol.simple", id.value);
         assertEquals(NameSymbol.Type.PACKAGE, id.type);
@@ -412,6 +410,8 @@ public class ParserTest {
         assertEquals("CompleteCompUnit", classSymbol.dclName);
         assertTrue(classSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC);
         assertTrue(classSymbol.getImplementationLevel() == ImplementationLevel.NORMAL);
+
+        builder.isValidFileName("CompleteCompUnit.java", start);
     }
 
     @Test
@@ -428,7 +428,7 @@ public class ParserTest {
 
         assertEquals(3, start.children.size());
 
-        assertTrue(JoosNonTerminal.class.isInstance(start));
+        builder.isValidFileName("CompWithMethods.java", start);
 
         NameSymbol id = (NameSymbol)start.children.get(0);
         assertEquals("my.pkg.lol.simple", id.value);
