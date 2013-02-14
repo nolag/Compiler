@@ -143,6 +143,8 @@ FieldDeclaration
 
 MethodDeclaration
 
+;
+
 FieldDeclaration:
 
 [Modifiers] Type VariableDeclarators ;
@@ -151,7 +153,7 @@ VariableDeclarators:
 
 VariableDeclarator
 
-//VariableDeclarators , VariableDeclarator
+// VariableDeclarators , VariableDeclarator
 
 VariableDeclarator:
 
