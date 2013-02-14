@@ -14,11 +14,11 @@ public abstract class CompWithMethods {
         return 120;
     }
     
-    private static boolean valueReturn(){
+    protected static boolean valueReturn(){
         return true;
     }
     
-    public boolean hasVal(){
+    protected boolean hasVal(){
         return true;
     }
     

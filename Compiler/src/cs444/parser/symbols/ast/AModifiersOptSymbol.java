@@ -26,7 +26,7 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
     public final String dclName;
     public TypeSymbol type;
 
-    protected AModifiersOptSymbol(String name, String dclName, ANonTerminal from, TypeSymbol type)
+    protected AModifiersOptSymbol(String name, String dclName, ANonTerminal modifiersParent, TypeSymbol type)
             throws IllegalModifierException, UnsupportedException {
 
         super(name);
@@ -35,7 +35,7 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
 
         List<Terminal> modifiers = new LinkedList<Terminal>();
 
-        ANonTerminal modiferChild = (ANonTerminal)from.firstOrDefault("Modifiers");
+        ANonTerminal modiferChild = (ANonTerminal)modifiersParent.firstOrDefault("Modifiers");
 
         if(modiferChild != null){
             for(ISymbol child : modiferChild.getChildren()) modifiers.add((Terminal)child);
