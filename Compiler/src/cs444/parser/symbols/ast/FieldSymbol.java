@@ -11,7 +11,7 @@ public class FieldSymbol extends AModifiersOptSymbol{
             throws IllegalModifierException, UnsupportedException {
 
         super("Field", dclName, from, type);
-        if(initVal != null) children.add(initVal);
+        if(initVal != null) children.addAll(initVal.children);
     }
 
     @Override

@@ -2,8 +2,8 @@ package cs444.parser.symbols.ast.factories;
 
 import cs444.lexer.Token;
 import cs444.parser.symbols.ANonTerminal;
+import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
-import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 
@@ -11,8 +11,11 @@ public class IntegerLiteralFactory extends ASTSymbolFactory{
 
     @Override
     protected ISymbol convert(ISymbol from) throws OutOfRangeException {
-        //TODO when the name of the expression type is known use it here
-        if(!"numHolder".equalsIgnoreCase(from.getName())) return from;
+        if(from.getName().toUpperCase().equals(Token.Type.DECIMAL_INTEGER_LITERAL.toString())){
+            return new IntegerLiteralSymbol((ATerminal) from, false);
+        }
+
+        if(!"UNARYEXPRESSION".equalsIgnoreCase(from.getName())) return from;
 
         ANonTerminal nonTerm = (ANonTerminal) from;
 
@@ -28,7 +31,7 @@ public class IntegerLiteralFactory extends ASTSymbolFactory{
             else{
                 if(child.getName().toUpperCase().equals(Token.Type.DECIMAL_INTEGER_LITERAL.toString())){
                     nonTerm.children.remove(i);
-                    nonTerm.children.add(i, new IntegerLiteralSymbol((Terminal)child, lastWasMinus));
+                    nonTerm.children.add(i, new IntegerLiteralSymbol((ATerminal)child, lastWasMinus));
                     //we don't need the -ve from before the number anymore
                     if(lastWasMinus) nonTerm.children.remove(i - 1);
                 }

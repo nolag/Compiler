@@ -278,26 +278,18 @@ public class ParserTest {
     @Test
     public void basicNumbers() throws Exception {
         IntegerLiteralFactory fact = new IntegerLiteralFactory();
-        Terminal [] children = new Terminal[1];
-        children[0] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483647"));
-        JoosNonTerminal nonTerm = new JoosNonTerminal("numHolder", children);
-        nonTerm = (JoosNonTerminal) fact.convertAll(nonTerm);
+        Terminal term = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483647"));
 
-        assertEquals(1, nonTerm.children.size());
+        assertEquals(2147483647, ((IntegerLiteralSymbol)fact.convertAll(term)).intVal);
 
-        IntegerLiteralSymbol result = (IntegerLiteralSymbol)nonTerm.children.get(0);
-        assertEquals(2147483647, result.intVal);
-
+        ISymbol [] children = new ISymbol[2];
         children = new Terminal[2];
         children[0] = new Terminal(new Token(Token.Type.MINUS, "-"));
         children[1] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483648"));
-        nonTerm = new JoosNonTerminal("numHolder", children);
-        nonTerm = (JoosNonTerminal) fact.convertAll(nonTerm);
-
-        assertEquals(1, nonTerm.children.size());
-
-        result = (IntegerLiteralSymbol)nonTerm.children.get(0);
-        assertEquals(-2147483648, result.intVal);
+        JoosNonTerminal nonTerm = new JoosNonTerminal("UNARYEXPRESSION", children);
+        ANonTerminal converted = (ANonTerminal)fact.convertAll(nonTerm);
+        assertEquals(-2147483648, ((IntegerLiteralSymbol)converted.children.get(0)).intVal);
+        assertEquals(1, converted.children.size());
     }
 
     @Test(expected = OutOfRangeException.class)
@@ -306,7 +298,7 @@ public class ParserTest {
         Terminal [] children = new Terminal[2];
         children[0] = new Terminal(new Token(Token.Type.MINUS, "-"));
         children[1] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483649"));
-        JoosNonTerminal nonTerm = new JoosNonTerminal("numHolder", children);
+        JoosNonTerminal nonTerm = new JoosNonTerminal("UNARYEXPRESSION", children);
         nonTerm = (JoosNonTerminal) fact.convertAll(nonTerm);
     }
 
@@ -315,7 +307,7 @@ public class ParserTest {
         IntegerLiteralFactory fact = new IntegerLiteralFactory();
         Terminal [] children = new Terminal[1];
         children[0] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483648"));
-        JoosNonTerminal nonTerm = new JoosNonTerminal("Literal", children);
+        JoosNonTerminal nonTerm = new JoosNonTerminal("UNARYEXPRESSION", children);
         nonTerm = (JoosNonTerminal) fact.convertAll(nonTerm);
     }
 
