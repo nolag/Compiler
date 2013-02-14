@@ -12,7 +12,13 @@ public class TypeSymbolFactory extends ASTSymbolFactory{
 
     @Override
     protected ISymbol convert(ISymbol from) throws OutOfRangeException, UnsupportedException, IllegalModifierException {
-        if(!from.getName().equalsIgnoreCase("Type")) return from;
+        if(!from.getName().equalsIgnoreCase("Type")
+           && !from.getName().equalsIgnoreCase("void")) return from;
+
+        if (from.getName().equalsIgnoreCase("void")){
+            return new TypeSymbol("void", false);
+        }
+
         ANonTerminal nonTerm = (ANonTerminal) from;
         ISymbol typeChild = nonTerm.children.get(0);
 

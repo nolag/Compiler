@@ -28,7 +28,6 @@ public class MethodSymbolFactory extends ASTSymbolFactory{
 
                 TypeSymbol type = (TypeSymbol) methodHeader.firstOrDefault("Type");
 
-                // TODO: if type is null, method may used a void. check for that.
                 // TODO: also fetch abstract methods
 
                 NameSymbol name = getName(methodHeader);

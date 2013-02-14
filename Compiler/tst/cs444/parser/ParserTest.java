@@ -464,7 +464,7 @@ public class ParserTest {
     }
 
     private void assertSmallClassMethods(Iterator<MethodSymbol> methods) {
-        String [] methodNames = new String [] { "getValue", "valueReturn", "hasVal", "doStuff" };
+        String [] methodNames = new String [] { "getValue", "valueReturn", "voidMethod", "doStuff" };
 
         ProtectionLevel [] methodProtections = new ProtectionLevel [] {
             ProtectionLevel.PUBLIC, ProtectionLevel.PROTECTED, ProtectionLevel.PROTECTED,
@@ -474,6 +474,9 @@ public class ParserTest {
             ImplementationLevel.FINAL, ImplementationLevel.NORMAL, ImplementationLevel.NORMAL,
             ImplementationLevel.ABSTRACT
         };
+
+        String [] types = new String [] {"int", "boolean", "void", "void"};
+
         boolean [] isStatics = { false, true, false, false };
         boolean [] isInit = { true, true, true, false };
 
@@ -482,6 +485,8 @@ public class ParserTest {
             MethodSymbol method = methods.next();
             assertEquals(methodNames[i], method.dclName);
             assertEquals(methodProtections[i], method.getProtectionLevel());
+            assertEquals(types[i], method.type.value);
+            assertEquals(implLevel[i], method.getImplementationLevel());
             assertEquals(isStatics[i], method.isStatic());
             assertFalse(method.isNative());
           //  assertEquals(isInit[i], method.children.size() != 0);

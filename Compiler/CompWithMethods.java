@@ -18,7 +18,7 @@ public abstract class CompWithMethods {
         return true;
     }
     
-    protected boolean hasVal(){
+    protected void voidMethod(){
         return true;
     }
     
