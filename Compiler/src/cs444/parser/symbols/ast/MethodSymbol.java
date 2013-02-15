@@ -10,10 +10,13 @@ public class MethodSymbol extends AModifiersOptSymbol{
     public MethodSymbol(String dclName, ANonTerminal from, TypeSymbol type, ANonTerminal body)
         throws IllegalModifierException, UnsupportedException {
 
-        super("Method", dclName, (ANonTerminal)from.firstOrDefault("MethodHeader"), type);
+        super("Method", dclName, getModifiersParent(from), type);
 
-        // TODO: add method body
-        // if(body != null) children.addAll(body.children);
+        if(body != null) children.addAll(body.children);
+    }
+
+    private static ANonTerminal getModifiersParent(ANonTerminal from) {
+        return (ANonTerminal)from.firstOrDefault("MethodHeader");
     }
 
     @Override

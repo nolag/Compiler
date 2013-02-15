@@ -28,12 +28,9 @@ public class MethodSymbolFactory extends ASTSymbolFactory{
 
                 TypeSymbol type = (TypeSymbol) methodHeader.firstOrDefault("Type");
 
-                // TODO: also fetch abstract methods
-
                 NameSymbol name = getName(methodHeader);
 
-                // TODO: add rest of tokens to body;
-                ANonTerminal methodBody = null; // = (ANonTerminal) methDeclaration.firstOrDefault("MethodBody");
+                ANonTerminal methodBody = (ANonTerminal) methDeclaration.firstOrDefault("MethodBody");
 
                 MethodSymbol method =  new MethodSymbol(name.value, methDeclaration, type, methodBody);
 
@@ -46,12 +43,9 @@ public class MethodSymbolFactory extends ASTSymbolFactory{
     }
 
     private NameSymbol getName(ANonTerminal methodHeader) {
-        NameSymbol name = (NameSymbol)methodHeader.firstOrDefault("Name");
-        if(name == null){ // find it?
-            // not found because methodDecl was not collapsed
-            ANonTerminal methodDecl = (ANonTerminal)methodHeader.firstOrDefault("MethodDeclarator");
-            name = (NameSymbol) methodDecl.firstOrDefault("Name");
-        }
+        ANonTerminal methodDecl = (ANonTerminal)methodHeader.firstOrDefault("MethodDeclarator");
+        NameSymbol name = (NameSymbol) methodDecl.firstOrDefault("Name");
+
         return name;
     }
 }

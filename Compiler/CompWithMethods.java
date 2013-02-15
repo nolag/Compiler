@@ -8,7 +8,7 @@ public abstract class CompWithMethods {
     public int b = 100;
     public boolean c = false;
     
-    protected my.pkg.lol.X d; 
+    protected my.pkg.lol.X d;
     
     public final int getValue(){
         return 120;
@@ -19,7 +19,7 @@ public abstract class CompWithMethods {
     }
     
     protected void voidMethod(){
-        return true;
+
     }
     
     public abstract void doStuff(int x, int y);

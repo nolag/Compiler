@@ -478,18 +478,16 @@ public class ParserTest {
         String [] types = new String [] {"int", "boolean", "void", "void"};
 
         boolean [] isStatics = { false, true, false, false };
-        boolean [] isInit = { true, true, true, false };
+        boolean [] hasBody = { true, true, false, false };
 
-        // TODO: do not check abstract methods for now
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < 4; i++){
             MethodSymbol method = methods.next();
             assertEquals(methodNames[i], method.dclName);
             assertEquals(methodProtections[i], method.getProtectionLevel());
             assertEquals(types[i], method.type.value);
             assertEquals(implLevel[i], method.getImplementationLevel());
             assertEquals(isStatics[i], method.isStatic());
-            assertFalse(method.isNative());
-          //  assertEquals(isInit[i], method.children.size() != 0);
+            assertEquals(hasBody[i], method.children.size() != 0);
         }
 
         if(methods.hasNext()) assertTrue(false);
