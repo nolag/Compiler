@@ -11,6 +11,7 @@ public class JoosGrammar extends LexicalGrammar {
                                            NFA.literal("\n"), NFA.literal("\r")), Type.IGNORE);
 
         // Traditional comment pattern: /\*([^*]|(\*+[^*/]))*\*+/
+        // http://ostermiller.org/findcomment.html
         
         addPattern("COMMENT", NFA.concatenate(
             NFA.literal("/*"),

@@ -30,7 +30,7 @@ IntegralType
 
 IntegralType:
 
-(byte | short | int | long | char)
+(byte | short | int | char)
 
 ReferenceType:
 
