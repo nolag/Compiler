@@ -112,6 +112,10 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
         }
     }
 
+    public boolean empty(){
+        return false;
+    }
+
     public abstract void validate() throws UnsupportedException;
     public abstract ProtectionLevel defaultProtectionLevel();
     public abstract ImplementationLevel defaultImplementationLevel();

@@ -222,13 +222,15 @@ SimpleName lparen [FormalParameterList] rparen
 
 ConstructorBody:
 
-lbrace [ExplicitConstructorInvocation] [BlockStatements] rbrace
+//lbrace [ExplicitConstructorInvocation] [BlockStatements] rbrace  NOT ALLOWED IN JOOS
 
-ExplicitConstructorInvocation:
+lbrace [BlockStatements] rbrace
 
-this lparen [ArgumentList] rparen ;
+//ExplicitConstructorInvocation:
 
-super lparen [ArgumentList] rparen ;
+//this lparen [ArgumentList] rparen ;
+
+//super lparen [ArgumentList] rparen ;
 
 InterfaceDeclaration:
 

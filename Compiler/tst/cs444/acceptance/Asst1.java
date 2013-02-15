@@ -45,7 +45,7 @@ public class Asst1 {
             String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.equals("StaticMethodDeclaration.java")) continue;
+            //if (!fileName.equals("FinalClasses.java")) continue;
 
             if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
                 if (compileFile(path + fileName, printErrors) == expectedReturnCode) {
@@ -81,6 +81,6 @@ public class Asst1 {
                                                                          InterruptedException {
         String[] files = new String[1];
         files[0] = filePath;
-        return Compiler.compile(files, printErrors);
+        return Compiler.compile(files, false);
     }
 }

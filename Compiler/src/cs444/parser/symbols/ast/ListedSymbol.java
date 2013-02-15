@@ -32,4 +32,9 @@ public class ListedSymbol extends ANonTerminal{
     public boolean isCollapsable() {
         return true;
     }
+
+    @Override
+    public boolean empty() {
+        return false;
+    }
 }

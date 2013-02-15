@@ -19,8 +19,7 @@ public class FieldSymbol extends AModifiersOptSymbol{
         ImplementationLevel lvl = getImplementationLevel();
         if(lvl == ImplementationLevel.ABSTRACT )throw new UnsupportedException("abstract fields");
 
-        if(lvl == ImplementationLevel.FINAL && children.isEmpty())
-            throw new UnsupportedException("omitted final field initializer");
+        if(lvl == ImplementationLevel.FINAL ) throw new UnsupportedException("final fields");
 
         if(type.equals("void"))throw new UnsupportedException("void fields");
     }

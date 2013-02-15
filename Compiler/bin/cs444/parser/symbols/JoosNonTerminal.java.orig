@@ -16,15 +16,18 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add("ARRAYTYPE");
         noCollapse.add("VARIABLEINITIALIZER");
         noCollapse.add("VARIABLEDECLARATOR");
-        noCollapse.add("CONSTRUCTORDECLARATION");
-        noCollapse.add("FORMALPARAMETERLIST");
-        noCollapse.add("CONSTRUCTORBODY");
+<<<<<<< HEAD
         noCollapse.add("METHODBODY");
         noCollapse.add("METHODDECLARATION");
         noCollapse.add("METHODDECLARATOR");
+=======
+        noCollapse.add("CONSTRUCTORDECLARATION");
+        noCollapse.add("FORMALPARAMETERLIST");
+        noCollapse.add("CONSTRUCTORBODY");
         noCollapse.add("CONSTRUCTORDECLARATOR");
         noCollapse.add("INTERFACEMEMBERDECLARATIONS");
         noCollapse.add("CLASSBODYDECLARATIONS");
+>>>>>>> Added a symbol for constructors and a fix for class symbol
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {

@@ -19,10 +19,6 @@ public abstract class ANonTerminal implements ISymbol{
         return name;
     }
 
-    public boolean empty() {
-        return children.isEmpty();
-    }
-
     public String getRule() {
         StringBuilder rule = new StringBuilder(name).append(" -> ");
 

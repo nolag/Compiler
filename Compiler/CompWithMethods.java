@@ -23,4 +23,6 @@ public abstract class CompWithMethods {
     }
     
     public abstract void doStuff(int x, int y);
+    
+    public CompWithMethods(){ }
 }
