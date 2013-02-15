@@ -20,10 +20,10 @@ public class StringLiteralSymbol extends ATerminal {
 			} else {
 				idx++;
 				char escapeChar = value.charAt(idx);
-				if (Character.isDigit(escapeChar)) {
+				if (StringEscapeUtils.isOctalDigit(escapeChar)) {
 					String str = "";
 					int offset = 0;
-					while (Character.isDigit(value.charAt(idx + offset))) {
+					while (StringEscapeUtils.isOctalDigit(value.charAt(idx + offset))) {
 						str += value.charAt(idx + offset);
 						offset++;
 					}

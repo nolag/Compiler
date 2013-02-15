@@ -16,7 +16,8 @@ public class CharacterLiteralSymbol extends ATerminal {
 		if (idx != -1) {
 
 			char escapeChar = value.charAt(idx + 1);
-			if (Character.isDigit(escapeChar)) {
+			if (StringEscapeUtils.isOctalDigit(escapeChar)) {
+				
 				String octal = value.substring(idx + 1, value.length() - 1);
 				cvalue = StringEscapeUtils.octalEscape(octal);
 			} else {

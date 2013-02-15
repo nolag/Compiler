@@ -31,7 +31,7 @@ public class Asst1 {
     public void testMarmosetTestCases() throws IOException, InterruptedException {
         String path = "JoosPrograms/MarmosetPrograms/a1/valid/";
 
-        assertReturnCodeForFiles(path, 0, false);
+        assertReturnCodeForFiles(path, 0, true);
         
         path = "JoosPrograms/MarmosetPrograms/a1/invalid/";
         
@@ -49,7 +49,7 @@ public class Asst1 {
             String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.equals("FinalClasses.java")) continue;
+            //if (!fileName.equals("J1_octal_escape5.java")) continue;
 
             if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
                 if (compileFile(path + fileName, printErrors) == expectedReturnCode) {
@@ -85,6 +85,6 @@ public class Asst1 {
                                                                          InterruptedException {
         String[] files = new String[1];
         files[0] = filePath;
-        return Compiler.compile(files, false);
+        return Compiler.compile(files, printErrors);
     }
 }

@@ -2,6 +2,10 @@ package cs444.parser.symbols.ast;
 
 public class StringEscapeUtils {
 
+	public static boolean isOctalDigit(char ch) {
+		return '0' <= ch && ch <= '7'; 
+	}
+	
 	public static char simpleEscape(char ch) {
 		
 		char value = 0;
