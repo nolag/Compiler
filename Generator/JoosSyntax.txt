@@ -249,13 +249,7 @@ InterfaceMemberDeclarations InterfaceMemberDeclaration
 
 InterfaceMemberDeclaration:
 
-ConstantDeclaration
-
 AbstractMethodDeclaration
-
-ConstantDeclaration:
-
-FieldDeclaration
 
 AbstractMethodDeclaration:
 
