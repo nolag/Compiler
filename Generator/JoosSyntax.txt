@@ -415,15 +415,17 @@ ArgumentList , Expression
 
 ArrayCreationExpression:
 
-new PrimitiveType DimExprs [Dims]
+new PrimitiveType DimExpr
+//new PrimitiveType DimExprs [Dims]
 
-new Name DimExprs [Dims]
+new Name DimExpr
+//new Name DimExprs [Dims]
 
-DimExprs:
+//DimExprs:
 
-DimExpr
+//DimExpr
 
-DimExprs DimExpr
+//DimExprs DimExpr
 
 DimExpr:
 
@@ -433,7 +435,7 @@ Dims:
 
 lbracket rbracket
 
-Dims lbracket rbracket
+//Dims lbracket rbracket
 
 FieldAccess:
 
