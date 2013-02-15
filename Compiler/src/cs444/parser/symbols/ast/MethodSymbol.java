@@ -24,8 +24,11 @@ public class MethodSymbol extends AModifiersOptSymbol{
         ImplementationLevel implLvl = getImplementationLevel();
         if(isStatic() && implLvl == ImplementationLevel.FINAL)
             throw new UnsupportedException("A static method cannot be final");
-        if(implLvl == ImplementationLevel.ABSTRACT && hasBody())
-            throw new UnsupportedException("An abstract method must not have a body");
+
+        if(hasBody() && (isNative() || implLvl == ImplementationLevel.ABSTRACT))
+        	throw new UnsupportedException("Abstract or Native method with a body");
+        if(!hasBody() && !isNative() && implLvl != ImplementationLevel.ABSTRACT)
+        	throw new UnsupportedException("Only Abstract or Native methods don't require a body");
 
         super.validate();
     }
