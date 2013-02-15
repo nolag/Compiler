@@ -5,30 +5,28 @@ import java.util.List;
 
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
-import cs444.parser.symbols.ast.ClassSymbol;
-import cs444.parser.symbols.ast.MethodSymbol;
+import cs444.parser.symbols.ast.InterfaceMethodSymbol;
+import cs444.parser.symbols.ast.InterfaceSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
-public class MethodSymbolFactory extends ASTSymbolFactory{
+public class InterfaceMethodSymbolFactory extends ASTSymbolFactory{
 
     @Override
     protected ISymbol convert(ISymbol from) throws UnsupportedException, IllegalModifierException {
-        if(ClassSymbol.class.isInstance(from)){
-            ClassSymbol parent = (ClassSymbol) from;
+        if(InterfaceSymbol.class.isInstance(from)){
+        	InterfaceSymbol parent = (InterfaceSymbol) from;
 
             List<ISymbol> remove = new LinkedList<ISymbol>();
 
-            for(ISymbol child : parent.getAll("MethodDeclaration")){
+            for(ISymbol child : parent.getAll("AbstractMethodDeclaration")){
                 remove.add(child);
-                ANonTerminal methDeclaration = (ANonTerminal) child;
+                ANonTerminal intMethDecl = (ANonTerminal) child;
 
-                MethodHeader methodHeader = new MethodHeader((ANonTerminal) methDeclaration.firstOrDefault("MethodHeader"));
-                ANonTerminal methodBody = (ANonTerminal) methDeclaration.firstOrDefault("MethodBody");
-
+                MethodHeader methodHeader = new MethodHeader((ANonTerminal) intMethDecl.firstOrDefault("MethodHeader"));
                 NameSymbol name = methodHeader.getName();
-                MethodSymbol method = new MethodSymbol(name.value, methDeclaration, methodHeader.getType(), methodBody);
+                InterfaceMethodSymbol method = new InterfaceMethodSymbol(name.value, intMethDecl, methodHeader.getType());
                 method.validate();
 
                 parent.children.add(method);

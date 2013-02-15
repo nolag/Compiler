@@ -22,6 +22,7 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add("CONSTRUCTORBODY");
         noCollapse.add("METHODBODY");
         noCollapse.add("METHODDECLARATION");
+        noCollapse.add("ABSTRACTMETHODDECLARATION");
         noCollapse.add("METHODDECLARATOR");
         noCollapse.add("CONSTRUCTORDECLARATOR");
         noCollapse.add("INTERFACEMEMBERDECLARATIONS");
