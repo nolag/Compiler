@@ -27,6 +27,7 @@ public class ClassSymbol extends AInterfaceOrClassSymbol{
         default:
             break;
         }
+        if(isNative())throw new UnsupportedException("native constructors");
         //Since we don't have nested classes, the class can't be static
         if(isStatic()) throw new UnsupportedException("static classes");
     }

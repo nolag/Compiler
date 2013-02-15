@@ -31,10 +31,10 @@ public class Asst1 {
     public void testMarmosetTestCases() throws IOException, InterruptedException {
         String path = "JoosPrograms/MarmosetPrograms/a1/valid/";
 
-        assertReturnCodeForFiles(path, 0, true);
-        
+        assertReturnCodeForFiles(path, 0, false);
+
         path = "JoosPrograms/MarmosetPrograms/a1/invalid/";
-        
+
         assertReturnCodeForFiles(path, 42, false);
     }
 

@@ -43,6 +43,8 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
 
         for(Terminal modifer : modifiers) giveModifier(modifer);
 
+        //Joos only
+        if(!hasStatic && hasNative) throw new UnsupportedException("native not abstract");
         validate();
 
     }
@@ -103,9 +105,11 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
             if(hasFinal)throw new IllegalModifierException("abstract", "final");
             if(hasAbstract)throw new IllegalModifierException("abstract", "abstract");
             if(hasStatic)throw new IllegalModifierException("abstract", "static");
+            if(hasNative)throw new IllegalModifierException("abstract", "native");
             hasAbstract = true;
         }else if(name.equals("NATIVE")){
             if(hasNative) throw new IllegalModifierException("native", "native");
+            if(hasAbstract)throw new IllegalModifierException("native", "abstract");
             hasNative = true;
         }else{
             throw new IllegalModifierException(name);
