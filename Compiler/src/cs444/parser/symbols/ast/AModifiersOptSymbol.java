@@ -124,7 +124,11 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
         return false;
     }
 
-    public abstract void validate() throws UnsupportedException;
+    public void validate() throws UnsupportedException{
+        if(getProtectionLevel() == ProtectionLevel.NOT_VALID)
+            throw new UnsupportedException("Package private protection for fields, constructors, and methods");
+    }
+
     public abstract ProtectionLevel defaultProtectionLevel();
     public abstract ImplementationLevel defaultImplementationLevel();
 }

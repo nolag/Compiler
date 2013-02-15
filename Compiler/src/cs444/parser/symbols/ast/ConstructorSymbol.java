@@ -23,8 +23,9 @@ public class ConstructorSymbol extends AModifiersOptSymbol{
     @Override
     public void validate() throws UnsupportedException {
         if(getImplementationLevel() != ImplementationLevel.NORMAL) throw new UnsupportedException("Unimlemented and final constructors");
-        if(getProtectionLevel() == ProtectionLevel.NOT_VALID) throw new UnsupportedException("Package private protection for constructors");
         if(isNative())throw new UnsupportedException("native constructors");
+
+        super.validate();
     }
 
     @Override

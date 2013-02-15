@@ -22,6 +22,8 @@ public class FieldSymbol extends AModifiersOptSymbol{
         if(lvl == ImplementationLevel.FINAL ) throw new UnsupportedException("final fields");
 
         if(type.equals("void"))throw new UnsupportedException("void fields");
+
+        super.validate();
     }
 
     @Override
