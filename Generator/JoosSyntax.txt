@@ -462,8 +462,6 @@ Name
 
 UnaryExpression:
 
-+ UnaryExpression
-
 - UnaryExpression
 
 UnaryExpressionNotPlusMinus
