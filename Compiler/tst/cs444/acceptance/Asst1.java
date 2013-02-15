@@ -49,7 +49,7 @@ public class Asst1 {
             String fileName = file.getName();
 
             // Use this line to test a single file
-            // if (!fileName.equals("Je_1_Interface_StaticMethod.java")) continue;
+            //if (!fileName.equals("J1_IntRange_MinNegativeInt.java")) continue;
 
             if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
                 if (compileFile(path + fileName, printErrors) == expectedReturnCode) {

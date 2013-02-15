@@ -1,5 +1,8 @@
 package cs444.parser.symbols.ast.factories;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import cs444.lexer.Token;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ATerminal;
@@ -22,6 +25,8 @@ public class IntegerLiteralFactory extends ASTSymbolFactory{
         int length = nonTerm.children.size();
         boolean lastWasMinus = false;
 
+        List<ISymbol> remove = new LinkedList<ISymbol>();
+
         for(int i = 0; i < length; i++){
             ISymbol child = nonTerm.children.get(i);
 
@@ -29,15 +34,17 @@ public class IntegerLiteralFactory extends ASTSymbolFactory{
                 lastWasMinus = true;
             }
             else{
-                if(child.getName().toUpperCase().equals(Token.Type.DECIMAL_INTEGER_LITERAL.toString())){
-                    nonTerm.children.remove(i);
+                if(child.getName().equalsIgnoreCase(Token.Type.DECIMAL_INTEGER_LITERAL.toString())){
+                    remove.add(nonTerm.children.get(i));
                     nonTerm.children.add(i, new IntegerLiteralSymbol((ATerminal)child, lastWasMinus));
                     //we don't need the -ve from before the number anymore
-                    if(lastWasMinus) nonTerm.children.remove(i - 1);
+                    if(lastWasMinus) remove.add(nonTerm.children.get(i - 1));
                 }
                 lastWasMinus = false;
             }
         }
+
+        nonTerm.children.removeAll(remove);
 
         return from;
     }

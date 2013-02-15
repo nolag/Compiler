@@ -375,6 +375,10 @@ ReturnStatement:
 
 return [Expression] ;
 
+BracketPrimary:
+
+lparen Expression rparen
+
 Primary:
 
 PrimaryNoNewArray
@@ -387,7 +391,7 @@ Literal
 
 this
 
-lparen Expression rparen
+BracketPrimary
 
 ClassInstanceCreationExpression
 
