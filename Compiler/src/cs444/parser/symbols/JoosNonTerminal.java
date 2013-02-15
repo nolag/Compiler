@@ -5,6 +5,7 @@ import java.util.Set;
 
 public class JoosNonTerminal extends NonTerminal{
     public static final Set<String> noCollapse = new HashSet<String>();
+    public static final Set<String> specialNoDie = new HashSet<String>();
 
     static{
         noCollapse.add("MODIFIERS");
@@ -25,6 +26,7 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add("CONSTRUCTORDECLARATOR");
         noCollapse.add("INTERFACEMEMBERDECLARATIONS");
         noCollapse.add("CLASSBODYDECLARATIONS");
+        specialNoDie.add("EMPTYSTATEMENT");
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {
@@ -38,6 +40,6 @@ public class JoosNonTerminal extends NonTerminal{
 
     @Override
     public boolean empty() {
-        return children.size() == 0;
+        return children.size() == 0 && !specialNoDie.contains(name.toUpperCase());
     }
 }
