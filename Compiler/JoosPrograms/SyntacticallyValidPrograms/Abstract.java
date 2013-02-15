@@ -1,3 +1,6 @@
 public abstract class Abstract {
-  public abstract int m();
+    public Abstract(){
+        
+    }
+    public abstract int m();
 }

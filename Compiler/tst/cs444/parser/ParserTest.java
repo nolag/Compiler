@@ -27,6 +27,7 @@ import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.ClassSymbol;
+import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.FieldSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
@@ -443,6 +444,8 @@ public class ParserTest {
         assertSmallClassFields(classSymbol.getFields().iterator());
 
         assertSmallClassMethods(classSymbol.getMethods().iterator());
+
+        assertSmallClassConstructors(classSymbol.getConstructors().iterator());
     }
 
     private void assertSmallClassDeclaration(ClassSymbol classSymbol) {
@@ -512,5 +515,12 @@ public class ParserTest {
         }
 
         if(fields.hasNext()) assertTrue(false);
+    }
+
+    private void assertSmallClassConstructors(Iterator<ConstructorSymbol> constructors){
+        ConstructorSymbol constructor = constructors.next();
+        assertFalse(constructors.hasNext());
+        assertEquals(ProtectionLevel.PUBLIC, constructor.getProtectionLevel());
+        assertEquals(ImplementationLevel.NORMAL, constructor.getImplementationLevel());
     }
 }

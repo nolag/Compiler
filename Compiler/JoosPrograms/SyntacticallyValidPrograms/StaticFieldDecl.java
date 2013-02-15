@@ -1,3 +1,6 @@
 public class StaticFieldDecl {
-  protected static int x;
+    public StaticFieldDecl(){
+        
+    }
+    protected static int x;
 }

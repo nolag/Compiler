@@ -37,6 +37,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         return fieldSymbols;
     }
 
+<<<<<<< HEAD
     public Iterable<MethodSymbol> getMethods() {
         List<MethodSymbol> methodSymbols = new LinkedList<MethodSymbol>();
 
@@ -45,8 +46,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         }
 
         return methodSymbols;
-    }
-
+=======
     public Iterable<ConstructorSymbol> getConstructors(){
         List<ConstructorSymbol> constructorSymbols = new LinkedList<ConstructorSymbol>();
 
@@ -55,5 +55,6 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         }
 
         return constructorSymbols;
+>>>>>>> Added a symbol for constructors and a fix for class symbol
     }
 }
