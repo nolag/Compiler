@@ -45,6 +45,7 @@ public class ConstructorSymbolFactory extends ASTSymbolFactory{
                 //ANonTerminal from, List<ISymbol> children, Iterable<ISymbol> args, Iterable<ISymbol> body)
 
                 ConstructorSymbol constructor = new ConstructorSymbol(name, constructorDcl, children, paramIter);
+                constructor.validate();
                 parent.children.add(constructor);
             }
 

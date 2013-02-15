@@ -51,8 +51,6 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
             if(hasStatic)throw new IllegalModifierException("abstract", "static");
             if(hasNative)throw new IllegalModifierException("abstract", "native");
         }
-        validate();
-
     }
 
     public ProtectionLevel getProtectionLevel(){

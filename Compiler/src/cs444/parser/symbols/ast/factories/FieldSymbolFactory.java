@@ -37,6 +37,7 @@ public class FieldSymbolFactory extends ASTSymbolFactory{
 
                 FieldSymbol field =  new FieldSymbol(name.value, nonTerm, type, initVal);
 
+                field.validate();
                 parent.children.add(field);
             }
 

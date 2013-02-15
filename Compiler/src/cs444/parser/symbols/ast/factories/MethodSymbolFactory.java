@@ -32,7 +32,8 @@ public class MethodSymbolFactory extends ASTSymbolFactory{
 
                 ANonTerminal methodBody = (ANonTerminal) methDeclaration.firstOrDefault("MethodBody");
 
-                MethodSymbol method =  new MethodSymbol(name.value, methDeclaration, type, methodBody);
+                MethodSymbol method = new MethodSymbol(name.value, methDeclaration, type, methodBody);
+                method.validate();
 
                 parent.children.add(method);
             }

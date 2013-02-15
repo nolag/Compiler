@@ -27,6 +27,7 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add("INTERFACEMEMBERDECLARATIONS");
         noCollapse.add("CLASSBODYDECLARATIONS");
         specialNoDie.add("EMPTYSTATEMENT");
+        specialNoDie.add("BLOCK");
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {

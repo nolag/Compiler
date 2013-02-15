@@ -49,7 +49,7 @@ public class Asst1 {
             String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.equals("Je_16_MultiArrayCreation_Assign_1.java")) continue;
+            // if (!fileName.equals("Je_1_AbstractMethod_EmptyBody.java")) continue;
 
             if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
                 if (compileFile(path + fileName, printErrors) == expectedReturnCode) {

@@ -481,7 +481,7 @@ public class ParserTest {
         String [] types = new String [] {"int", "boolean", "void", "void"};
 
         boolean [] isStatics = { false, true, false, false };
-        boolean [] hasBody = { true, true, false, false };
+        boolean [] hasBody = { true, true, true, false };
 
         for(int i = 0; i < 4; i++){
             MethodSymbol method = methods.next();

@@ -21,10 +21,17 @@ public class MethodSymbol extends AModifiersOptSymbol{
 
     @Override
     public void validate() throws UnsupportedException {
-        if(isStatic() && getImplementationLevel() == ImplementationLevel.FINAL)
+        ImplementationLevel implLvl = getImplementationLevel();
+        if(isStatic() && implLvl == ImplementationLevel.FINAL)
             throw new UnsupportedException("A static method cannot be final");
+        if(implLvl == ImplementationLevel.ABSTRACT && hasBody())
+            throw new UnsupportedException("An abstract method must not have a body");
 
         super.validate();
+    }
+
+    private boolean hasBody() {
+        return children.size() > 0;
     }
 
     @Override

@@ -67,7 +67,7 @@ public class ClassInterfaceFactory extends ASTSymbolFactory{
             }
             classInterface = new ClassSymbol(classOrInterfaceName, declaration, interfaceNames, children, superType);
         }
-
+        classInterface.validate();
         return classInterface;
     }
 }
