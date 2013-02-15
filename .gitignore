@@ -4,6 +4,8 @@
 *.pydevproject
 .project
 .metadata
+*.orig
+bin
 bin/**
 tmp/**
 tmp/**/*
