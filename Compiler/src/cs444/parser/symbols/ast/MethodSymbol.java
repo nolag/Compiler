@@ -21,7 +21,7 @@ public class MethodSymbol extends AModifiersOptSymbol{
 
     @Override
     public void validate() throws UnsupportedException {
-        // TODO: validate method
+        if(getProtectionLevel() == ProtectionLevel.NOT_VALID) throw new UnsupportedException("Package private protection for methods");
     }
 
     @Override

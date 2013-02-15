@@ -26,7 +26,8 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
     public final String dclName;
     public TypeSymbol type;
 
-    protected AModifiersOptSymbol(String name, String dclName, ANonTerminal modifiersParent, TypeSymbol type)
+    protected AModifiersOptSymbol(String name, String dclName, ANonTerminal modifiersParent,
+                                  TypeSymbol type)
             throws IllegalModifierException, UnsupportedException {
 
         super(name);
