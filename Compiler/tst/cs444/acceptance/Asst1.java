@@ -27,12 +27,16 @@ public class Asst1 {
         assertReturnCodeForFiles(path, 42, false);
     }
 
-//    @Test
-//    public void testMarmosetTestCases() throws IOException, InterruptedException {
-//        String path = "JoosPrograms/MarmosetPrograms/a1/";
-//
-//        assertReturnCodeForFiles(path, 0, false);
-//    }
+    @Test
+    public void testMarmosetTestCases() throws IOException, InterruptedException {
+        String path = "JoosPrograms/MarmosetPrograms/a1/valid/";
+
+        assertReturnCodeForFiles(path, 0, false);
+        
+        path = "JoosPrograms/MarmosetPrograms/a1/invalid/";
+        
+        assertReturnCodeForFiles(path, 42, false);
+    }
 
     private void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors) throws IOException,
                                                                                                            InterruptedException {
