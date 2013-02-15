@@ -1,3 +1,4 @@
 public class MultiArray {
-  protected int[][] x;
+    public MultiArray() {}
+    protected int[][] x;
 }
