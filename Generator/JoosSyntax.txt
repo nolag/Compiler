@@ -446,7 +446,7 @@ Name lparen [ArgumentList] rparen
 
 Primary . id lparen [ArgumentList] rparen
 
-super . id lparen [ArgumentList] rparen
+//super . id lparen [ArgumentList] rparen
 
 ArrayAccess:
 
