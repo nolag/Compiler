@@ -10,11 +10,22 @@ public class JoosGrammar extends LexicalGrammar {
         addPattern("WHITESPACE", NFA.union(NFA.literal(" "), NFA.literal("\t"),
                                            NFA.literal("\n"), NFA.literal("\r")), Type.IGNORE);
 
-        // Traditional comment pattern: /\*([^*]|(\*+([^*/])))*\*+/
-        addPattern("COMMENT", NFA.concatenate(NFA.literal("/*"),
-        		NFA.zeroOrMore(NFA.union(anythingButStar(),
-        				NFA.concatenate(NFA.oneOrMore(NFA.literal("*")), anythingButSlash()))),
-        		NFA.oneOrMore(NFA.literal("*")), NFA.literal("/")), Type.IGNORE);
+        // Traditional comment pattern: /\*([^*]|(\*+[^*/]))*\*+/
+        
+        addPattern("COMMENT", NFA.concatenate(
+            NFA.literal("/*"),
+            NFA.zeroOrMore(
+        		NFA.union(
+               		anythingButStar(),
+                	NFA.concatenate(
+                		NFA.oneOrMore(NFA.literal("*")),
+                		anythingButStarOrSlash()
+                	)
+                )	
+            ),
+            NFA.oneOrMore(NFA.literal("*")),
+            NFA.literal("/")
+        	), Type.IGNORE);
 
         addPattern("END_LINE_COMMENT", NFA.concatenate(NFA.literal("//"),
                                                        NFA.zeroOrMore(anythingButEndOfLine()),
@@ -138,9 +149,11 @@ public class JoosGrammar extends LexicalGrammar {
 				NFA.acceptRange((char)14, (char)127));
 	}
 
-	private NFA anythingButSlash() {
+	private NFA anythingButStarOrSlash() {
+		// * is 42
 		// / is 47
-    	return NFA.union(NFA.acceptRange((char)0, (char)46),
+    	return NFA.union(NFA.acceptRange((char)0, (char)41),
+    			NFA.acceptRange((char)43, (char)46),
     			NFA.acceptRange((char)48, (char)127));
 	}
 
@@ -149,7 +162,7 @@ public class JoosGrammar extends LexicalGrammar {
 		return NFA.union(NFA.acceptRange((char)0, (char)41),
 				NFA.acceptRange((char)43, (char)127));
 	}
-
+	
 	private NFA escapeSequence() {
         // escapeSequence -> \b|\t|\n|\f|\r|\"|\'|\\|(OctalEscape)
         // http://docs.oracle.com/javase/specs/jls/se5.0/html/lexical.html#101089
