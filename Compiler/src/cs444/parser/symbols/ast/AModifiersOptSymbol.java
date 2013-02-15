@@ -45,6 +45,11 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
 
         //Joos only
         if(!hasStatic && hasNative) throw new UnsupportedException("native not abstract");
+        if(getImplementationLevel() == ImplementationLevel.ABSTRACT){
+            if(hasFinal)throw new IllegalModifierException("abstract", "final");
+            if(hasStatic)throw new IllegalModifierException("abstract", "static");
+            if(hasNative)throw new IllegalModifierException("abstract", "native");
+        }
         validate();
 
     }
@@ -102,10 +107,8 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
             if(hasAbstract)throw new IllegalModifierException("final", "abstract");
             hasFinal = true;
         }else if(name.equals("ABSTRACT")){
-            if(hasFinal)throw new IllegalModifierException("abstract", "final");
+            //This is checked after because it's possible to imply with interfaces
             if(hasAbstract)throw new IllegalModifierException("abstract", "abstract");
-            if(hasStatic)throw new IllegalModifierException("abstract", "static");
-            if(hasNative)throw new IllegalModifierException("abstract", "native");
             hasAbstract = true;
         }else if(name.equals("NATIVE")){
             if(hasNative) throw new IllegalModifierException("native", "native");
