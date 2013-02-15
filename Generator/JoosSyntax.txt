@@ -168,7 +168,8 @@ id
 //No multi dim arrays
 //VariableDeclaratorId lbracket rbracket
 
-id lbracket rbracket
+//No array after variable name in declaration
+//id lbracket rbracket
 
 VariableInitializer:
 
