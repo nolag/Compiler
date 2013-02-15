@@ -21,7 +21,10 @@ public class MethodSymbol extends AModifiersOptSymbol{
 
     @Override
     public void validate() throws UnsupportedException {
-        if(getProtectionLevel() == ProtectionLevel.NOT_VALID) throw new UnsupportedException("Package private protection for methods");
+        if(getProtectionLevel() == ProtectionLevel.NOT_VALID)
+            throw new UnsupportedException("Package private protection for methods");
+        if(isStatic() && getImplementationLevel() == ImplementationLevel.FINAL)
+            throw new UnsupportedException("A static method cannot be final");
     }
 
     @Override
