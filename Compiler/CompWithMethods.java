@@ -8,18 +8,18 @@ public abstract class CompWithMethods {
     public int b = 100;
     public boolean c = false;
     
-    protected my.pkg.lol.X d; 
+    protected my.pkg.lol.X d;
     
     public final int getValue(){
         return 120;
     }
     
-    private static boolean valueReturn(){
+    protected static boolean valueReturn(){
         return true;
     }
     
-    public boolean hasVal(){
-        return true;
+    protected void voidMethod(){
+
     }
     
     public abstract void doStuff(int x, int y);

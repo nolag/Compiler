@@ -29,6 +29,7 @@ import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.ClassSymbol;
 import cs444.parser.symbols.ast.FieldSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
+import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.NameSymbol.Type;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
@@ -434,8 +435,24 @@ public class ParserTest {
         assertEquals("my.pkg.lol.simple", id.value);
         assertEquals(Type.PACKAGE, id.type);
 
-        ANonTerminal imports = (ANonTerminal) start.children.get(1);
+        assertSmallClassImports((ANonTerminal) start.children.get(1));
 
+        ClassSymbol classSymbol = (ClassSymbol) start.children.get(2);
+        assertSmallClassDeclaration(classSymbol);
+
+        assertSmallClassFields(classSymbol.getFields().iterator());
+
+        assertSmallClassMethods(classSymbol.getMethods().iterator());
+    }
+
+    private void assertSmallClassDeclaration(ClassSymbol classSymbol) {
+        assertEquals("CompWithMethods", classSymbol.dclName);
+        assertTrue(classSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC);
+        assertTrue(classSymbol.getImplementationLevel() == ImplementationLevel.ABSTRACT);
+    }
+
+    private void assertSmallClassImports(ANonTerminal imports) {
+        NameSymbol id;
         String [] names = {"my.pkg.lol.X", "your.pkg.lol"};
         Type [] types = {Type.IMPORT, Type.STAR_IMPORT };
 
@@ -444,18 +461,43 @@ public class ParserTest {
             assertEquals(names[i], id.value);
             assertEquals(types[i], id.type);
         }
+    }
 
-        ISymbol classInterface = start.children.get(2);
-        ClassSymbol classSymbol = (ClassSymbol) classInterface;
-        assertEquals("CompWithMethods", classSymbol.dclName);
-        assertTrue(classSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC);
-        assertTrue(classSymbol.getImplementationLevel() == ImplementationLevel.ABSTRACT);
+    private void assertSmallClassMethods(Iterator<MethodSymbol> methods) {
+        String [] methodNames = new String [] { "getValue", "valueReturn", "voidMethod", "doStuff" };
 
+        ProtectionLevel [] methodProtections = new ProtectionLevel [] {
+            ProtectionLevel.PUBLIC, ProtectionLevel.PROTECTED, ProtectionLevel.PROTECTED,
+            ProtectionLevel.PUBLIC};
 
-        Iterator<FieldSymbol> fields = classSymbol.getFields().iterator();
+        ImplementationLevel [] implLevel = new ImplementationLevel [] {
+            ImplementationLevel.FINAL, ImplementationLevel.NORMAL, ImplementationLevel.NORMAL,
+            ImplementationLevel.ABSTRACT
+        };
+
+        String [] types = new String [] {"int", "boolean", "void", "void"};
+
+        boolean [] isStatics = { false, true, false, false };
+        boolean [] hasBody = { true, true, false, false };
+
+        for(int i = 0; i < 4; i++){
+            MethodSymbol method = methods.next();
+            assertEquals(methodNames[i], method.dclName);
+            assertEquals(methodProtections[i], method.getProtectionLevel());
+            assertEquals(types[i], method.type.value);
+            assertEquals(implLevel[i], method.getImplementationLevel());
+            assertEquals(isStatics[i], method.isStatic());
+            assertEquals(hasBody[i], method.children.size() != 0);
+        }
+
+        if(methods.hasNext()) assertTrue(false);
+
+    }
+
+    private void assertSmallClassFields(Iterator<FieldSymbol> fields) {
         String [] fieldNames = new String [] { "a", "b", "c", "d" };
         ProtectionLevel [] fieldProtections = new ProtectionLevel [] {
-                ProtectionLevel.PUBLIC, ProtectionLevel.PUBLIC, ProtectionLevel.PUBLIC, ProtectionLevel.PROTECTED};
+            ProtectionLevel.PUBLIC, ProtectionLevel.PUBLIC, ProtectionLevel.PUBLIC, ProtectionLevel.PROTECTED};
 
         boolean [] isStatics = { true, false, false, false };
         boolean [] isInit = { true, true, true, false };

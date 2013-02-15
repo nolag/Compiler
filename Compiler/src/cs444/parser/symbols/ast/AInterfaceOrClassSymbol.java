@@ -36,4 +36,14 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
 
         return fieldSymbols;
     }
+
+    public Iterable<MethodSymbol> getMethods() {
+        List<MethodSymbol> methodSymbols = new LinkedList<MethodSymbol>();
+
+        for(ISymbol child : children){
+            if(MethodSymbol.class.isInstance(child)) methodSymbols.add((MethodSymbol)child);
+        }
+
+        return methodSymbols;
+    }
 }
