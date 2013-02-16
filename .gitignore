@@ -41,3 +41,6 @@ TEST*Test.xml
 Compiler/src/cs444/lexer/JoosDFA.java
 Compiler/src/cs444/lexer/Token.java
 Compiler/JoosRules.txt
+
+# file to submit
+*.zip
