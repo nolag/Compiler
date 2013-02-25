@@ -28,7 +28,7 @@ import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.ClassSymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
-import cs444.parser.symbols.ast.FieldSymbol;
+import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
@@ -491,13 +491,33 @@ public class ParserTest {
             assertEquals(implLevel[i], method.getImplementationLevel());
             assertEquals(isStatics[i], method.isStatic());
             assertEquals(hasBody[i], method.children.size() != 0);
+            if(method.dclName.equals("getValue")){
+                ANonTerminal block = (NonTerminal) method.firstOrDefault("Block");
+                block = (ANonTerminal) block.firstOrDefault("BLOCKSTATEMENTS");
+                assertSmallClassLocalVars(block.getAll("Field").iterator());
+            }
         }
 
         if(methods.hasNext()) assertTrue(false);
 
     }
 
-    private void assertSmallClassFields(Iterator<FieldSymbol> fields) {
+    private void assertSmallClassLocalVars(Iterator<ISymbol> members){
+        String [] types = new String [] { "int", "int" };
+        boolean [] isArray = { false, true };
+        String [] names = { "n", "j" };
+
+        for(int i = 0; i < 2; i++){
+            DclSymbol symbol = (DclSymbol)members.next();
+            assertEquals(names[i], symbol.dclName);
+            assertEquals(isArray[i], symbol.type.isArray);
+            assertEquals(types[i], symbol.type.value);
+        }
+
+        if(members.hasNext()) assertTrue(false);
+    }
+
+    private void assertSmallClassFields(Iterator<DclSymbol> fields) {
         String [] fieldNames = new String [] { "a", "b", "c", "d" };
         ProtectionLevel [] fieldProtections = new ProtectionLevel [] {
             ProtectionLevel.PUBLIC, ProtectionLevel.PUBLIC, ProtectionLevel.PUBLIC, ProtectionLevel.PROTECTED};
@@ -506,7 +526,7 @@ public class ParserTest {
         boolean [] isInit = { true, true, true, false };
 
         for(int i = 0; i < 4; i++){
-            FieldSymbol field = fields.next();
+            DclSymbol field = fields.next();
             assertEquals(fieldNames[i], field.dclName);
             assertEquals(fieldProtections[i], field.getProtectionLevel());
             assertEquals(isStatics[i], field.isStatic());

@@ -29,6 +29,7 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add("CLASSBODYDECLARATIONS");
         noCollapse.add("BRACKETPRIMARY");
         noCollapse.add("METHODINVOCATION");
+        noCollapse.add("BLOCK");
         specialNoDie.add("EMPTYSTATEMENT");
         specialNoDie.add("BLOCK");
     }

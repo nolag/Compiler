@@ -6,7 +6,7 @@ import java.util.List;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.ClassSymbol;
-import cs444.parser.symbols.ast.FieldSymbol;
+import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
@@ -35,7 +35,7 @@ public class FieldSymbolFactory extends ASTSymbolFactory{
                 if(type.isArray && isArray) throw new UnsupportedException("Arrays of arrays");
                 if(isArray) type.isArray = true;
 
-                FieldSymbol field =  new FieldSymbol(name.value, nonTerm, type, initVal);
+                DclSymbol field =  new DclSymbol(name.value, nonTerm, type, initVal, false);
 
                 field.validate();
                 parent.children.add(field);

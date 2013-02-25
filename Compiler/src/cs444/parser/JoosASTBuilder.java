@@ -12,6 +12,7 @@ import cs444.parser.symbols.ast.factories.FieldSymbolFactory;
 import cs444.parser.symbols.ast.factories.IntegerLiteralFactory;
 import cs444.parser.symbols.ast.factories.InterfaceMethodSymbolFactory;
 import cs444.parser.symbols.ast.factories.ListedSymbolFactory;
+import cs444.parser.symbols.ast.factories.LocalDclFactory;
 import cs444.parser.symbols.ast.factories.MethodSymbolFactory;
 import cs444.parser.symbols.ast.factories.NameSymbolFactory;
 import cs444.parser.symbols.ast.factories.OneChildFactory;
@@ -22,8 +23,7 @@ public class JoosASTBuilder implements IASTBuilder{
     private static final Iterable<ASTSymbolFactory> simplifications = Arrays.asList(new ASTSymbolFactory [] {
             new ListedSymbolFactory(), new OneChildFactory(), new NameSymbolFactory(), new TypeSymbolFactory(),
             new ClassInterfaceFactory(), new FieldSymbolFactory(), new MethodSymbolFactory(),
-            new InterfaceMethodSymbolFactory(),
-            new ConstructorSymbolFactory(),
+            new LocalDclFactory(), new InterfaceMethodSymbolFactory(), new ConstructorSymbolFactory(),
             new IntegerLiteralFactory(), new StringLiteralFactory(),
             new CastExpressionFactory()});
 

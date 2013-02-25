@@ -5,13 +5,16 @@ import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
 
-public class FieldSymbol extends AModifiersOptSymbol{
+public class DclSymbol extends AModifiersOptSymbol{
+    private final boolean isLocal;
 
-    public FieldSymbol(String dclName, ANonTerminal from, TypeSymbol type, ANonTerminal initVal)
+
+    public DclSymbol(String dclName, ANonTerminal from, TypeSymbol type, ANonTerminal initVal, boolean isLocal)
             throws IllegalModifierException, UnsupportedException {
 
         super("Field", dclName, from, type);
         if(initVal != null) children.addAll(initVal.children);
+        this.isLocal = isLocal;
     }
 
     @Override
@@ -29,7 +32,7 @@ public class FieldSymbol extends AModifiersOptSymbol{
     @Override
     public ProtectionLevel defaultProtectionLevel() {
         // We don't support package private members
-        return ProtectionLevel.NOT_VALID;
+        return isLocal ? ProtectionLevel.PRIVATE : ProtectionLevel.NOT_VALID;
     }
 
     @Override

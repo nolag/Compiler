@@ -11,6 +11,8 @@ public abstract class CompWithMethods {
     protected my.pkg.lol.X d;
     
     public final int getValue(){
+        int n = 10;
+        int [] j = new int [10];
         return 120;
     }
     
@@ -18,9 +20,7 @@ public abstract class CompWithMethods {
         return true;
     }
     
-    protected void voidMethod(){
-
-    }
+    protected void voidMethod(){ }
     
     public abstract void doStuff(int x, int y);
     

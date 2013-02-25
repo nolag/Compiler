@@ -27,11 +27,11 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
 
     public abstract boolean isClass();
 
-    public Iterable<FieldSymbol> getFields(){
-        List<FieldSymbol> fieldSymbols = new LinkedList<FieldSymbol>();
+    public Iterable<DclSymbol> getFields(){
+        List<DclSymbol> fieldSymbols = new LinkedList<DclSymbol>();
 
         for(ISymbol child : children){
-            if(FieldSymbol.class.isInstance(child)) fieldSymbols.add((FieldSymbol)child);
+            if(DclSymbol.class.isInstance(child)) fieldSymbols.add((DclSymbol)child);
         }
 
         return fieldSymbols;
