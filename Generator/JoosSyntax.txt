@@ -225,7 +225,7 @@ ConstructorBody:
 
 //lbrace [ExplicitConstructorInvocation] [BlockStatements] rbrace  NOT ALLOWED IN JOOS
 
-lbrace [BlockStatements] rbrace
+Block
 
 //ExplicitConstructorInvocation:
 
