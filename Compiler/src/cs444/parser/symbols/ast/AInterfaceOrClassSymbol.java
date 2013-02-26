@@ -9,8 +9,9 @@ import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
-
     final Iterable<String> impls;
+
+    private boolean built = false;
 
     protected AInterfaceOrClassSymbol(String ruleName, String dclName, ANonTerminal from, Iterable<String> impls, List<ISymbol> body)
             throws IllegalModifierException, UnsupportedException {
@@ -55,5 +56,13 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         }
 
         return constructorSymbols;
+    }
+
+    public void makeBuilt(){
+        built = true;
+    }
+
+    public boolean isBuilt(){
+        return built;
     }
 }
