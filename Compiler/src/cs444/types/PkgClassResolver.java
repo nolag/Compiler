@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.Set;
 
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
-import cs444.parser.symbols.ast.AModifiersOptSymbol;
+import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.MethodSymbol;
 
 public class PkgClassResolver {
     private final AInterfaceOrClassSymbol start;
@@ -15,17 +16,29 @@ public class PkgClassResolver {
 
     public PkgClassResolver(AInterfaceOrClassSymbol start){
         this.start = start;
-
     }
 
-    public AModifiersOptSymbol findDCl(String fullName)throws UndeclaredException {
+    public DclSymbol findDCl(String fullName)throws UndeclaredException {
+        //TODO
+        return null;
+    }
+
+    public MethodSymbol [] findMethod(String fullName) throws UndeclaredException{
         //TODO
         return null;
     }
 
     public AInterfaceOrClassSymbol getClass(String name) throws UndeclaredException {
-        //TODO
-        //if(imports.contains(name)) return PkgClassInfo.instance.getSymbol(name);
-        return null;
+        AInterfaceOrClassSymbol ret = null;
+
+        if(imports.contains(name)){
+            ret = PkgClassInfo.instance.getSymbol(name);
+        }
+        else{
+            //TODO
+        }
+
+        if(ret == null) throw new UndeclaredException(name, start.dclName);
+        return ret;
     }
 }
