@@ -1,5 +1,6 @@
 package cs444.parser.symbols.ast;
 
+import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ATerminal;
 
 public class NameSymbol extends ATerminal{
@@ -14,5 +15,10 @@ public class NameSymbol extends ATerminal{
 
     public boolean empty() {
         return false;
+    }
+
+    @Override
+    public void accept(ISymbolVisitor visitor) {
+        visitor.visit(this);
     }
 }

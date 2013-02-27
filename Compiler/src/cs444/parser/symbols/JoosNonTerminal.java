@@ -3,6 +3,8 @@ package cs444.parser.symbols;
 import java.util.HashSet;
 import java.util.Set;
 
+import cs444.ast.ISymbolVisitor;
+
 public class JoosNonTerminal extends NonTerminal{
     public static final Set<String> noCollapse = new HashSet<String>();
     public static final Set<String> specialNoDie = new HashSet<String>();
@@ -46,5 +48,10 @@ public class JoosNonTerminal extends NonTerminal{
     @Override
     public boolean empty() {
         return children.size() == 0 && !specialNoDie.contains(name.toUpperCase());
+    }
+
+    @Override
+    public void accept(ISymbolVisitor visitor) {
+        visitor.visit(this);
     }
 }

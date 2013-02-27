@@ -3,6 +3,7 @@ package cs444.parser.symbols.ast;
 import java.util.LinkedList;
 import java.util.List;
 
+import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
@@ -55,5 +56,16 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         }
 
         return constructorSymbols;
+    }
+
+    @Override
+    public void accept(ISymbolVisitor visitor) {
+        visitor.open(this);
+
+        for (ISymbol child : children) {
+            child.accept(visitor);
+        }
+
+        visitor.close(this);
     }
 }

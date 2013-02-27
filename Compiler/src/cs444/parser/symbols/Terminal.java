@@ -1,5 +1,6 @@
 package cs444.parser.symbols;
 
+import cs444.ast.ISymbolVisitor;
 import cs444.lexer.Token;
 import cs444.lexer.Token.Parse;
 
@@ -13,5 +14,10 @@ public final class Terminal extends ATerminal{
 
     public boolean empty() {
         return empty;
+    }
+
+    @Override
+    public void accept(ISymbolVisitor visitor) {
+        visitor.visit(this);
     }
 }

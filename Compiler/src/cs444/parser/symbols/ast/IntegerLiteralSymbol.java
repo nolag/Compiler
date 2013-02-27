@@ -2,6 +2,7 @@ package cs444.parser.symbols.ast;
 
 import java.math.BigInteger;
 
+import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 
@@ -20,5 +21,10 @@ public class IntegerLiteralSymbol extends ATerminal{
 
     public boolean empty() {
         return false;
+    }
+
+    @Override
+    public void accept(ISymbolVisitor visitor) {
+        visitor.visit(this);
     }
 }

@@ -1,5 +1,6 @@
 package cs444.parser.symbols.ast;
 
+import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ast.factories.MethodHeader;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
@@ -48,5 +49,10 @@ public class InterfaceMethodSymbol extends AModifiersOptSymbol{
     @Override
     public boolean isCollapsable() {
         return false;
+    }
+
+    @Override
+    public void accept(ISymbolVisitor visitor) {
+        visitor.visit(this);
     }
 }

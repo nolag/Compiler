@@ -1,5 +1,6 @@
 package cs444.parser.symbols.ast;
 
+import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 
@@ -22,5 +23,12 @@ public class CastExpressionSymbol extends ANonTerminal{
     @Override
     public boolean isCollapsable() {
         return false;
+    }
+
+    @Override
+    public void accept(ISymbolVisitor visitor) {
+        visitor.visit(this);
+        this.castExprType.accept(visitor);
+        this.operandExpression.accept(visitor);
     }
 }

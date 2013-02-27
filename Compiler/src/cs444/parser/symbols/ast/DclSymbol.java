@@ -1,6 +1,8 @@
 package cs444.parser.symbols.ast;
 
+import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
+import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
@@ -43,5 +45,16 @@ public class DclSymbol extends AModifiersOptSymbol{
     @Override
     public boolean isCollapsable() {
         return false;
+    }
+
+    @Override
+    public void accept(ISymbolVisitor visitor) {
+        visitor.open(this);
+
+        for (ISymbol child : children) {
+            child.accept(visitor);
+        }
+
+        visitor.close(this);
     }
 }

@@ -1,5 +1,7 @@
 package cs444.parser.symbols;
 
+import cs444.ast.ISymbolVisitor;
+
 
 public interface ISymbol {
 
@@ -20,4 +22,10 @@ public interface ISymbol {
      * @return if the rule becomes empty so that it can be known if it should be added to a tree
      */
     boolean empty();
+
+    /**
+     *
+     * accepts a visitor that walks the tree
+     */
+    void accept(final ISymbolVisitor visitor);
 }

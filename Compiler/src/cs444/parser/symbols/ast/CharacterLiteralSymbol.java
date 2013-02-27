@@ -1,5 +1,6 @@
 package cs444.parser.symbols.ast;
 
+import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ATerminal;
 
 public class CharacterLiteralSymbol extends ATerminal {
@@ -31,5 +32,10 @@ public class CharacterLiteralSymbol extends ATerminal {
 	@Override
 	public boolean empty() {
 		return false;
+	}
+
+	@Override
+	public void accept(ISymbolVisitor visitor) {
+	    visitor.visit(this);
 	}
 }
