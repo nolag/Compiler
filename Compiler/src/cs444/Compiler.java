@@ -15,7 +15,6 @@ import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 import cs444.types.PkgClassInfo;
 import cs444.types.PkgClassResolver;
-import cs444.types.exceptions.UndeclaredException;
 
 public class Compiler {
 
@@ -69,7 +68,7 @@ public class Compiler {
         for(PkgClassResolver resolver : PkgClassInfo.instance.getSymbols()){
             try {
                 resolver.build();
-            } catch (UndeclaredException e) {
+            } catch (Exception e) {
                 if(printErrors) e.printStackTrace();
                 return COMPILER_ERROR_CODE;
             }

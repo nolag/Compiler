@@ -2,16 +2,19 @@ package cs444.types;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
+import cs444.types.exceptions.CircularDependancyException;
 import cs444.types.exceptions.DuplicateDeclearationException;
 import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
@@ -197,7 +200,11 @@ public class PkgClassResolver {
         return null;
     }
 
-    public void build() throws UndeclaredException{
+    private void build(Set<PkgClassResolver> visited) throws UndeclaredException, CircularDependancyException{
+        if(visited.contains(this)) throw new CircularDependancyException(start.dclName);
+
+        visited.add(this);
+
         if(isBuilt) return;
         isBuilt = true;
 
@@ -208,7 +215,7 @@ public class PkgClassResolver {
 
         if(start.superName != null){
             building = getClass(start.name, false);
-            building.build();
+            building.build(visited);
             for(ISymbol child : building.start.children){
 
                 if(DclSymbol.class.isInstance(child)){
@@ -229,5 +236,9 @@ public class PkgClassResolver {
         //TODO take all interface stuff if it is an interface and if it's not then make sure it impls every one of them or is abs?
 
         //TODO build the methods and everything else in the tree (fields)
+    }
+
+    public void build() throws UndeclaredException, CircularDependancyException{
+        build(new HashSet<PkgClassResolver>());
     }
 }
