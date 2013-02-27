@@ -7,7 +7,6 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.InterfaceMethodSymbol;
 import cs444.parser.symbols.ast.InterfaceSymbol;
-import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
@@ -25,8 +24,7 @@ public class InterfaceMethodSymbolFactory extends ASTSymbolFactory{
                 ANonTerminal intMethDecl = (ANonTerminal) child;
 
                 MethodHeader methodHeader = new MethodHeader((ANonTerminal) intMethDecl.firstOrDefault("MethodHeader"));
-                NameSymbol name = methodHeader.getName();
-                InterfaceMethodSymbol method = new InterfaceMethodSymbol(name.value, intMethDecl, methodHeader.getType());
+                InterfaceMethodSymbol method = new InterfaceMethodSymbol(methodHeader, intMethDecl);
                 method.validate();
 
                 parent.children.add(method);

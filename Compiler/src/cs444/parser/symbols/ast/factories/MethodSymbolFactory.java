@@ -7,7 +7,6 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.ClassSymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
-import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
@@ -27,8 +26,7 @@ public class MethodSymbolFactory extends ASTSymbolFactory{
                 MethodHeader methodHeader = new MethodHeader((ANonTerminal) methDeclaration.firstOrDefault("MethodHeader"));
                 ANonTerminal methodBody = (ANonTerminal) methDeclaration.firstOrDefault("MethodBody");
 
-                NameSymbol name = methodHeader.getName();
-                MethodSymbol method = new MethodSymbol(name.value, methDeclaration, methodHeader.getType(), methodBody);
+                MethodSymbol method = new MethodSymbol(methDeclaration, methodHeader, methodBody);
                 method.validate();
 
                 parent.children.add(method);

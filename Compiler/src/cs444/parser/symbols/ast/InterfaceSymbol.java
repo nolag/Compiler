@@ -11,8 +11,7 @@ public class InterfaceSymbol extends AInterfaceOrClassSymbol{
 
     public InterfaceSymbol(String interfaceName, ANonTerminal from, Iterable<String> impls, List<ISymbol> body)
             throws IllegalModifierException, UnsupportedException {
-
-        super("InterfaceDeclaration", interfaceName, from, impls, body);
+        super("InterfaceDeclaration", interfaceName, from, impls, body, null);
     }
 
     @Override

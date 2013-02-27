@@ -9,16 +9,15 @@ import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
-    final Iterable<String> impls;
+    public final Iterable<String> impls;
+    public final String superName;
 
-    private boolean built = false;
-
-    protected AInterfaceOrClassSymbol(String ruleName, String dclName, ANonTerminal from, Iterable<String> impls, List<ISymbol> body)
+    protected AInterfaceOrClassSymbol(String ruleName, String dclName, ANonTerminal from, Iterable<String> impls, List<ISymbol> body, String superName)
             throws IllegalModifierException, UnsupportedException {
-
         super(ruleName, dclName, from, null);
         this.impls = impls;
         children.addAll(body);
+        this.superName = superName;
     }
 
     @Override
@@ -56,13 +55,5 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         }
 
         return constructorSymbols;
-    }
-
-    public void makeBuilt(){
-        built = true;
-    }
-
-    public boolean isBuilt(){
-        return built;
     }
 }

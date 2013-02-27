@@ -1,4 +1,4 @@
-package cs444.types;
+package cs444.types.exceptions;
 
 public class UndeclaredException extends Exception{
     private static final long serialVersionUID = 1L;

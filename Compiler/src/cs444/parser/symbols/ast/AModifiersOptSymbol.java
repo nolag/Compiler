@@ -36,10 +36,12 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
 
         List<Terminal> modifiers = new LinkedList<Terminal>();
 
-        ANonTerminal modiferChild = (ANonTerminal)modifiersParent.firstOrDefault("Modifiers");
+        if(modifiersParent != null){
+            ANonTerminal modiferChild = (ANonTerminal)modifiersParent.firstOrDefault("Modifiers");
 
-        if(modiferChild != null){
-            for(ISymbol child : modiferChild.getChildren()) modifiers.add((Terminal)child);
+            if(modiferChild != null){
+                for(ISymbol child : modiferChild.getChildren()) modifiers.add((Terminal)child);
+            }
         }
 
         for(Terminal modifer : modifiers) giveModifier(modifer);

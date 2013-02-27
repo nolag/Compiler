@@ -494,7 +494,7 @@ public class ParserTest {
             if(method.dclName.equals("getValue")){
                 ANonTerminal block = (NonTerminal) method.firstOrDefault("Block");
                 block = (ANonTerminal) block.firstOrDefault("BLOCKSTATEMENTS");
-                assertSmallClassLocalVars(block.getAll("Field").iterator());
+                assertSmallClassLocalVars(block.getAll("Dcl").iterator());
             }
         }
 

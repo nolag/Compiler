@@ -8,13 +8,11 @@ import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public class ClassSymbol extends AInterfaceOrClassSymbol{
-    final String superName;
+
 
     public ClassSymbol(String className, ANonTerminal from, Iterable<String> impls, List<ISymbol> body, String superName)
             throws IllegalModifierException, UnsupportedException {
-        super("ClassDeclaration", className, from, impls, body);
-
-        this.superName = superName;
+        super("ClassDeclaration", className, from, impls, body, superName);
     }
 
     @Override

@@ -12,7 +12,7 @@ public class DclSymbol extends AModifiersOptSymbol{
     public DclSymbol(String dclName, ANonTerminal from, TypeSymbol type, ANonTerminal initVal, boolean isLocal)
             throws IllegalModifierException, UnsupportedException {
 
-        super("Field", dclName, from, type);
+        super("Dcl", dclName, from, type);
         if(initVal != null) children.addAll(initVal.children);
         this.isLocal = isLocal;
     }

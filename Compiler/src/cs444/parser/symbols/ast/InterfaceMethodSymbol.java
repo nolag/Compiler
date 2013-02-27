@@ -1,16 +1,18 @@
 package cs444.parser.symbols.ast;
 
 import cs444.parser.symbols.ANonTerminal;
+import cs444.parser.symbols.ast.factories.MethodHeader;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
 
 public class InterfaceMethodSymbol extends AModifiersOptSymbol{
 
-    public InterfaceMethodSymbol(String dclName, ANonTerminal from, TypeSymbol type)
+    public InterfaceMethodSymbol(MethodHeader header, ANonTerminal from)
         throws IllegalModifierException, UnsupportedException {
 
-        super("InterfaceMethod", dclName, getModifiersParent(from), type);
+        super("InterfaceMethod", header.name.value, getModifiersParent(from), header.type);
+
     }
 
     private static ANonTerminal getModifiersParent(ANonTerminal from) {

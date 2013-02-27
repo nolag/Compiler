@@ -11,7 +11,11 @@ import cs444.parser.JoosASTBuilder;
 import cs444.parser.Parser;
 import cs444.parser.TextReadingRules;
 import cs444.parser.symbols.ANonTerminal;
+import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
+import cs444.types.PkgClassInfo;
+import cs444.types.PkgClassResolver;
+import cs444.types.exceptions.UndeclaredException;
 
 public class Compiler {
 
@@ -40,15 +44,14 @@ public class Compiler {
 
                 IASTBuilder builder = new JoosASTBuilder();
 
-                for(ASTSymbolFactory astSymbol : builder.getSimplifcations()){
-
-                    parseTree = (ANonTerminal)astSymbol.convertAll(parseTree);
-                }
+                for(ASTSymbolFactory astSymbol : builder.getSimplifcations()) parseTree = (ANonTerminal)astSymbol.convertAll(parseTree);
 
                 if(!builder.isValidFileName(file.getName(), parseTree)){
                     System.err.print("Invalid file name" + fileName);
                     return COMPILER_ERROR_CODE;
                 }
+
+                PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
             }
         }catch(Exception e){
             if (printErrors) e.printStackTrace();
@@ -60,6 +63,15 @@ public class Compiler {
                 } catch (IOException e) {
                 	if (printErrors) e.printStackTrace();
                 }
+            }
+        }
+
+        for(PkgClassResolver resolver : PkgClassInfo.instance.getSymbols()){
+            try {
+                resolver.build();
+            } catch (UndeclaredException e) {
+                if(printErrors) e.printStackTrace();
+                return COMPILER_ERROR_CODE;
             }
         }
 

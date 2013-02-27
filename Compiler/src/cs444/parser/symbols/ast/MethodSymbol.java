@@ -1,18 +1,20 @@
 package cs444.parser.symbols.ast;
 
 import cs444.parser.symbols.ANonTerminal;
+import cs444.parser.symbols.ast.factories.MethodHeader;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
 
 public class MethodSymbol extends AModifiersOptSymbol{
+    public final Iterable<DclSymbol> params;
 
-    public MethodSymbol(String dclName, ANonTerminal from, TypeSymbol type, ANonTerminal body)
+    public MethodSymbol(ANonTerminal from, MethodHeader header, ANonTerminal body)
         throws IllegalModifierException, UnsupportedException {
-
-        super("Method", dclName, getModifiersParent(from), type);
+        super("Method", header.name.value, getModifiersParent(from), header.type);
 
         if(body != null) children.addAll(body.children);
+        params = header.dcls;
     }
 
     private static ANonTerminal getModifiersParent(ANonTerminal from) {
