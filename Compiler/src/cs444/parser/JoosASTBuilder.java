@@ -33,14 +33,7 @@ public class JoosASTBuilder implements IASTBuilder{
 
     @Override
     public boolean isValidFileName(String fileName, ANonTerminal start) {
-        //make sure the file name is correct and matches the class/interface
-        AInterfaceOrClassSymbol publicClassInterface;
-        if(AInterfaceOrClassSymbol.class.isInstance(start)){
-            publicClassInterface = (AInterfaceOrClassSymbol) start;
-        }else{
-            publicClassInterface =
-                (AInterfaceOrClassSymbol) start.firstOrDefault("ClassDeclaration", "InterfaceDeclaration");
-        }
+        AInterfaceOrClassSymbol publicClassInterface = (AInterfaceOrClassSymbol) start;
 
         return fileName.equals(publicClassInterface.dclName + ".java");
     }

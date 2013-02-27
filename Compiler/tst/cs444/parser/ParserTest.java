@@ -401,17 +401,19 @@ public class ParserTest {
             start = (ANonTerminal) factory.convertAll(start);
         }
 
-        assertEquals(2, start.children.size());
-
-        NameSymbol id = (NameSymbol)start.children.get(0);
-        assertEquals("my.pkg.lol.simple", id.value);
-        assertEquals(NameSymbol.Type.PACKAGE, id.type);
-
-        ISymbol classInterface = start.children.get(1);
-        ClassSymbol classSymbol = (ClassSymbol) classInterface;
+        ClassSymbol classSymbol = (ClassSymbol) start;
         assertEquals("CompleteCompUnit", classSymbol.dclName);
         assertTrue(classSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC);
         assertTrue(classSymbol.getImplementationLevel() == ImplementationLevel.NORMAL);
+
+        assertEquals(2, start.children.size());
+
+        ANonTerminal empty = (ANonTerminal) start.children.get(0);
+        assertEquals("emptystatement", empty.name.toLowerCase());
+
+        NameSymbol id = classSymbol.pkgImports.iterator().next();
+        assertEquals("my.pkg.lol.simple", id.value);
+        assertEquals(NameSymbol.Type.PACKAGE, id.type);
 
         builder.isValidFileName("CompleteCompUnit.java", start);
     }
@@ -428,18 +430,14 @@ public class ParserTest {
             start = (ANonTerminal) factory.convertAll(start);
         }
 
-        assertEquals(3, start.children.size());
+        assertEquals(9, start.children.size());
 
         builder.isValidFileName("CompWithMethods.java", start);
 
-        NameSymbol id = (NameSymbol)start.children.get(0);
-        assertEquals("my.pkg.lol.simple", id.value);
-        assertEquals(Type.PACKAGE, id.type);
-
-        assertSmallClassImports((ANonTerminal) start.children.get(1));
-
-        ClassSymbol classSymbol = (ClassSymbol) start.children.get(2);
+        ClassSymbol classSymbol = (ClassSymbol) start;
         assertSmallClassDeclaration(classSymbol);
+
+        assertSmallClassImports(classSymbol.pkgImports.iterator());
 
         assertSmallClassFields(classSymbol.getFields().iterator());
 
@@ -452,18 +450,22 @@ public class ParserTest {
         assertEquals("CompWithMethods", classSymbol.dclName);
         assertTrue(classSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC);
         assertTrue(classSymbol.getImplementationLevel() == ImplementationLevel.ABSTRACT);
+        NameSymbol id = classSymbol.pkgImports.iterator().next();
+        assertEquals("my.pkg.lol.simple", id.value);
+        assertEquals(Type.PACKAGE, id.type);
     }
 
-    private void assertSmallClassImports(ANonTerminal imports) {
-        NameSymbol id;
+    private void assertSmallClassImports(Iterator<NameSymbol> imports) {
+        imports.next();
         String [] names = {"my.pkg.lol.X", "your.pkg.lol"};
         Type [] types = {Type.IMPORT, Type.STAR_IMPORT };
 
-        for(int i = 0; i < imports.children.size(); i++){
-            id = (NameSymbol) imports.children.get(i);
+        for(int i = 0; i < 2; i++){
+            NameSymbol id = imports.next();
             assertEquals(names[i], id.value);
             assertEquals(types[i], id.type);
         }
+        assertFalse(imports.hasNext());
     }
 
     private void assertSmallClassMethods(Iterator<MethodSymbol> methods) {

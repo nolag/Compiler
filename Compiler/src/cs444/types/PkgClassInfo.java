@@ -28,14 +28,27 @@ public class PkgClassInfo {
         if(nameSpaces.containsKey(symbol.dclName))throw new DuplicateDeclearationException(symbol.dclName, symbol.dclName);
 
         NameSymbol nameSymbol = (NameSymbol) symbol.firstOrDefault("Name");
-        String pkg = nameSymbol.type == Type.PACKAGE ? nameSymbol.value + "." : "";
+        String pkg = nameSymbol != null && nameSymbol.type == Type.PACKAGE ? nameSymbol.value + "." : "";
 
-        Map<String, PkgClassResolver> pkgs = nameSpaces.get(pkg);
+        Map<String, PkgClassResolver> pkgs = null;
 
-        if(pkgs == null){
-            pkgs = new HashMap<String, PkgClassResolver>();
-            nameSpaces.put(pkg, pkgs);
+        String [] innerPkgs = pkg.split("\\.");
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = 0; i < innerPkgs.length; i++){
+            sb.append(innerPkgs[i]);
+
+            pkgs = nameSpaces.get(sb.toString());
+
+            if(pkgs == null){
+                pkgs = new HashMap<String, PkgClassResolver>();
+                nameSpaces.put(pkg, pkgs);
+            }
+
+            sb.append(".");
         }
+
+
 
         PkgClassResolver reslover = PkgClassResolver.getResolver(symbol);
 

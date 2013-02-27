@@ -59,6 +59,7 @@ public class PkgClassResolver {
 
     private PkgClassResolver() {
         this.start = null;
+        isBuilt = true;
     }
 
     private PkgClassResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclearationException{
@@ -95,11 +96,11 @@ public class PkgClassResolver {
 
         for (MethodSymbol methodSymbol : start.getMethods()){
             List<String> types = new LinkedList<String>();
-            for(DclSymbol dcl : methodSymbol.params) types.add(dcl.dclName);
+            for(DclSymbol dcl : methodSymbol.params) types.add(dcl.type.value);
 
             String uniqueName = generateUniqueName(methodSymbol.dclName, types);
-            if(methodMap.containsKey(uniqueName)) throw new UndeclaredException(uniqueName, start.dclName);
-            if(smethodMap.containsKey(uniqueName)) throw new UndeclaredException(uniqueName, start.dclName);
+            if(methodMap.containsKey(uniqueName)) throw new DuplicateDeclearationException(uniqueName, start.dclName);
+            if(smethodMap.containsKey(uniqueName)) throw new DuplicateDeclearationException(uniqueName, start.dclName);
 
             final Map<String, MethodSymbol> addTo = methodSymbol.isStatic() ? methodMap : smethodMap;
             addTo.put(uniqueName, methodSymbol);
@@ -189,6 +190,7 @@ public class PkgClassResolver {
     }
 
     public PkgClassResolver getClass(String name, boolean die) throws UndeclaredException {
+        if(name.equals("this")) return this;
         if(namedMap.containsKey(name)) return namedMap.get(name);
         if(samepkgMap.containsKey(name)) return samepkgMap.get(name);
         if(staredMap.containsKey(name)) return staredMap.get(name);

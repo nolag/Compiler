@@ -12,13 +12,15 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
     public final Iterable<String> impls;
     public final String superName;
+    public final Iterable<NameSymbol> pkgImports;
 
-    protected AInterfaceOrClassSymbol(String ruleName, String dclName, ANonTerminal from, Iterable<String> impls, List<ISymbol> body, String superName)
-            throws IllegalModifierException, UnsupportedException {
+    protected AInterfaceOrClassSymbol(String ruleName, String dclName, ANonTerminal from, Iterable<String> impls, List<ISymbol> body,
+            String superName, Iterable<NameSymbol> pkgImports) throws IllegalModifierException, UnsupportedException {
         super(ruleName, dclName, from, null);
         this.impls = impls;
         children.addAll(body);
         this.superName = superName;
+        this.pkgImports = pkgImports;
     }
 
     @Override

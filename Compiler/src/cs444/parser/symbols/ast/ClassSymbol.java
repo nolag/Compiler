@@ -10,9 +10,9 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 public class ClassSymbol extends AInterfaceOrClassSymbol{
 
 
-    public ClassSymbol(String className, ANonTerminal from, Iterable<String> impls, List<ISymbol> body, String superName)
-            throws IllegalModifierException, UnsupportedException {
-        super("ClassDeclaration", className, from, impls, body, superName);
+    public ClassSymbol(String className, ANonTerminal from, Iterable<String> impls, List<ISymbol> body,
+            String superName, Iterable<NameSymbol> pkgImports) throws IllegalModifierException, UnsupportedException {
+        super("ClassDeclaration", className, from, impls, body, superName, pkgImports);
     }
 
     @Override

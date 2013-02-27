@@ -9,9 +9,9 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public class InterfaceSymbol extends AInterfaceOrClassSymbol{
 
-    public InterfaceSymbol(String interfaceName, ANonTerminal from, Iterable<String> impls, List<ISymbol> body)
+    public InterfaceSymbol(String interfaceName, ANonTerminal from, Iterable<String> impls, List<ISymbol> body, Iterable<NameSymbol> pkgImports)
             throws IllegalModifierException, UnsupportedException {
-        super("InterfaceDeclaration", interfaceName, from, impls, body, null);
+        super("InterfaceDeclaration", interfaceName, from, impls, body, null, pkgImports);
     }
 
     @Override

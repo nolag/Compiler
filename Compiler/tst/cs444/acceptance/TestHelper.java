@@ -15,7 +15,7 @@ public class TestHelper {
 	public static void assertReturnCodeForFilesAndFolders(String path, int expectedReturnCode, boolean printErrors) {
 		File folder = new File(path);
 	}
-	
+
 	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors) throws IOException, InterruptedException {
 		File folder = new File(path);
 
@@ -26,7 +26,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("J1_IntRange_MinNegativeInt.java")) continue;
+			//if (!fileName.equals("ClassImport.java")) continue;
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
 				if (compileAndTest(new String[] { path + fileName }, printErrors) == expectedReturnCode) {
@@ -58,13 +58,13 @@ public class TestHelper {
 	}
 
 	private static ArrayList<String> getAllFiles(File root) {
-		
+
 		ArrayList<String> result = new ArrayList<String>();
 		Stack<File> toVisit = new Stack<File>();
-		
+
 		for (File sourceFile : root.listFiles())
 			toVisit.push(sourceFile);
-		
+
 		while (!toVisit.isEmpty()) {
 			File currentFile = toVisit.pop();
 			if (currentFile.isFile()) {
@@ -76,10 +76,10 @@ public class TestHelper {
 					toVisit.push(sourceFile);
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	private static void printSummary(int totalTests, int filesSkipped, List<String> failFiles) {
 		System.out.println("\nNumber of tests: " + totalTests);
 		if(filesSkipped > 0) System.out.println("Number of files skipped: " + filesSkipped);

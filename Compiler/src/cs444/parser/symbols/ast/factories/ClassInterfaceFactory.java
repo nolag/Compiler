@@ -9,6 +9,7 @@ import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.ClassSymbol;
+import cs444.parser.symbols.ast.EmptyClassSymbol;
 import cs444.parser.symbols.ast.InterfaceSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
@@ -18,6 +19,20 @@ public class ClassInterfaceFactory extends ASTSymbolFactory{
 
     @Override
     protected ISymbol convert(ISymbol from) throws UnsupportedException, IllegalModifierException {
+        List<NameSymbol> pkgImports = new LinkedList<NameSymbol>();
+
+        if(from.getName().equalsIgnoreCase("CompilationUnit")){
+            ANonTerminal nonTerm = (ANonTerminal) from;
+            from = nonTerm.firstOrDefault("TypeDeclaration");
+            NameSymbol pkg = (NameSymbol) nonTerm.firstOrDefault("Name");
+            if(pkg != null) pkgImports.add(pkg);
+            nonTerm = (ANonTerminal) nonTerm.firstOrDefault("IMPORTDECLARATIONS");
+            if(nonTerm != null){
+                for(ISymbol name : nonTerm.getAll("Name")) pkgImports.add((NameSymbol) name);
+            }
+            if(from == null) return new EmptyClassSymbol(nonTerm, pkgImports);
+        }
+
         if(!from.getName().equalsIgnoreCase("TypeDeclaration")) return from;
 
         ANonTerminal nonTerm = (ANonTerminal) from;
@@ -58,14 +73,14 @@ public class ClassInterfaceFactory extends ASTSymbolFactory{
         if(body != null) children = body.children;
 
         if(isInterface){
-            classInterface = new InterfaceSymbol(classOrInterfaceName, declaration, interfaceNames, children);
+            classInterface = new InterfaceSymbol(classOrInterfaceName, declaration, interfaceNames, children, pkgImports);
         }else{
             ANonTerminal superName = (ANonTerminal)declaration.firstOrDefault("ClassName");
             String superType = null;
             if(superName != null){
                 superType = ((NameSymbol) superName.firstOrDefault("Name")).value;
             }
-            classInterface = new ClassSymbol(classOrInterfaceName, declaration, interfaceNames, children, superType);
+            classInterface = new ClassSymbol(classOrInterfaceName, declaration, interfaceNames, children, superType, pkgImports);
         }
         classInterface.validate();
         return classInterface;
