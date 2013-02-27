@@ -1,5 +1,6 @@
 package cs444.ast;
 
+import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
@@ -20,5 +21,6 @@ public interface ISymbolVisitor {
 
     void visit(final TypeSymbol typeSymbol);
 
+    void visit(final ATerminal terminal);
     void visit(final ISymbol symbol);
 }

@@ -52,6 +52,8 @@ public class JoosNonTerminal extends NonTerminal{
 
     @Override
     public void accept(ISymbolVisitor visitor) {
-        visitor.visit(this);
+        for (ISymbol child : this.children) {
+            child.accept(visitor);
+        }
     }
 }

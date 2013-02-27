@@ -51,6 +51,8 @@ public class DclSymbol extends AModifiersOptSymbol{
     public void accept(ISymbolVisitor visitor) {
         visitor.open(this);
 
+        this.type.accept(visitor);
+
         for (ISymbol child : children) {
             child.accept(visitor);
         }

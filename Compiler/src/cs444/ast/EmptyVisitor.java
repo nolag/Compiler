@@ -1,5 +1,6 @@
 package cs444.ast;
 
+import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
@@ -38,5 +39,8 @@ public class EmptyVisitor implements ISymbolVisitor {
 
     @Override
     public void close(ConstructorSymbol constructorSymbol) {}
+
+    @Override
+    public void visit(ATerminal terminal) {}
 
 }
