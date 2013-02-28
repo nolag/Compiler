@@ -228,11 +228,11 @@ public class PkgClassResolver {
         return null;
     }
 
-    private void copyInfo(PkgClassResolver building, Set<PkgClassResolver> visited, List<Set<PkgClassResolver>> resolvedSets)
+    private void copyInfo(PkgClassResolver building, Set<PkgClassResolver> visited, List<Set<PkgClassResolver>> resolvedSets, boolean inter)
             throws IllegalMethodOverloadException, UndeclaredException, CircularDependancyException, UnsupportedException{
 
         Set<PkgClassResolver> cpySet = new HashSet<PkgClassResolver>(visited);
-        building.build(cpySet);
+        building.build(cpySet, inter);
         resolvedSets.add(cpySet);
 
         //copy in reverse order so that when they are added to the start they are in order
@@ -279,41 +279,46 @@ public class PkgClassResolver {
         }
     }
 
-    private void build(Set<PkgClassResolver> visited)
+    private void build(Set<PkgClassResolver> visited, boolean mustBeInterface)
             throws UndeclaredException, CircularDependancyException, IllegalMethodOverloadException, UnsupportedException{
 
-        if(visited.contains(this)) throw new CircularDependancyException(start.dclName);
 
+        if(visited.contains(this)) throw new CircularDependancyException(start.dclName);
+        if(mustBeInterface && start.isClass()) throw new UnsupportedException("Interface extending a class");
         visited.add(this);
 
-        if(isBuilt) return;
-        isBuilt = true;
+        if(!isBuilt){
+            mustBeInterface |= !start.isClass();
 
-        PkgClassResolver building = null;
+            PkgClassResolver building = null;
 
-        List<Set<PkgClassResolver>> resolvedSets = new LinkedList<Set<PkgClassResolver>>();
+            List<Set<PkgClassResolver>> resolvedSets = new LinkedList<Set<PkgClassResolver>>();
 
-        if(start.superName != null){
-            building = getClass(start.name, false);
-            copyInfo(building, visited, resolvedSets);
+            if(start.superName != null){
+                building = getClass(start.name, false);
+                copyInfo(building, visited, resolvedSets, mustBeInterface);
+            }
+
+            for(String impl : start.impls){
+                building = getClass(impl, false);
+                copyInfo(building, visited, resolvedSets, mustBeInterface);
+            }
+
+            for(Set<PkgClassResolver> pkgSet : resolvedSets) visited.addAll(pkgSet);
+
+            start.validate();
+
+            for(PkgClassResolver resolver : visited) assignableTo.add(resolver.fullName);
+            //Java specific
+            assignableTo.add("java.lang.Object");
+        }else{
+            for(String s : assignableTo) visited.add(PkgClassInfo.instance.getSymbol(s));
+            isBuilt = true;
         }
-
-        for(String impl : start.impls){
-            building = getClass(impl, false);
-            copyInfo(building, visited, resolvedSets);
-        }
-
-        for(Set<PkgClassResolver> pkgSet : resolvedSets) visited.addAll(pkgSet);
-
-        start.validate();
-
-        for(PkgClassResolver resolver : visited) assignableTo.add(resolver.fullName);
-        //Java specific
-        assignableTo.add("java.lang.Object");
     }
 
     public void build() throws UndeclaredException, CircularDependancyException, IllegalMethodOverloadException, UnsupportedException{
-        build(new HashSet<PkgClassResolver>());
+        build(new HashSet<PkgClassResolver>(), false);
     }
 
     public PkgClassResolver getSuper() throws UndeclaredException{
