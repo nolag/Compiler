@@ -50,10 +50,10 @@ public class PkgClassInfo {
 
 
 
-        PkgClassResolver reslover = PkgClassResolver.getResolver(symbol);
+        PkgClassResolver resolver = PkgClassResolver.getResolver(symbol);
 
-        pkgs.put(pkg, reslover);
-        symbolMap.put(symbol.dclName, reslover);
+        pkgs.put(pkg, resolver);
+        symbolMap.put(symbol.dclName, resolver);
     }
 
     public PkgClassResolver getSymbol(String name){

@@ -1,11 +1,13 @@
 package cs444;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
 import cs444.lexer.Lexer;
+import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
 import cs444.parser.JoosASTBuilder;
 import cs444.parser.Parser;
@@ -13,6 +15,7 @@ import cs444.parser.TextReadingRules;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
+import cs444.parser.symbols.exceptions.UnexpectedTokenException;
 import cs444.types.PkgClassInfo;
 import cs444.types.PkgClassResolver;
 
@@ -34,17 +37,13 @@ public class Compiler {
 
         try {
             for(String fileName : files){
-                File file = new File(fileName);
-                reader = new FileReader(fileName);
-                Lexer lexer = new Lexer(reader);
-                Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
-
-                parseTree = parser.parse(lexer);
+                parseTree = parse(fileName, reader);
 
                 IASTBuilder builder = new JoosASTBuilder();
 
                 for(ASTSymbolFactory astSymbol : builder.getSimplifcations()) parseTree = (ANonTerminal)astSymbol.convertAll(parseTree);
 
+                File file = new File(fileName);
                 if(!builder.isValidFileName(file.getName(), parseTree)){
                     System.err.print("Invalid file name" + fileName);
                     return COMPILER_ERROR_CODE;
@@ -60,7 +59,7 @@ public class Compiler {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                	if (printErrors) e.printStackTrace();
+                    if (printErrors) e.printStackTrace();
                 }
             }
         }
@@ -75,5 +74,26 @@ public class Compiler {
         }
 
         return 0;
+    }
+
+    /**
+     * @param fileName
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws LexerException
+     * @throws UnexpectedTokenException
+     */
+    private static ANonTerminal parse(String fileName, Reader reader)
+            throws FileNotFoundException, IOException, LexerException,
+            UnexpectedTokenException {
+        ANonTerminal parseTree;
+
+        reader = new FileReader(fileName);
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
+
+        parseTree = parser.parse(lexer);
+        return parseTree;
     }
 }
