@@ -208,11 +208,16 @@ public class PkgClassResolver {
         return dclList;
     }
 
-    public MethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes) throws UndeclaredException{
+    public MethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes, PkgClassResolver pkgClass) throws UndeclaredException{
         if(start == null) throw new UndeclaredException(name, "primatives");
         final Map<String, MethodSymbol> getFrom = isStatic ? methodMap : smethodMap;
         MethodSymbol retVal = getFrom.get(generateUniqueName(name, paramTypes));
+
         if(retVal == null) throw new UndeclaredException(name, start.dclName);
+
+        if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName))
+            throw new UndeclaredException(name, start.dclName);
+
         return retVal;
     }
 
