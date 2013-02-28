@@ -1,6 +1,8 @@
 package cs444.types.exceptions;
 
-public class IllegalMethodOverloadException extends Exception{
+import cs444.CompilerException;
+
+public class IllegalMethodOverloadException extends CompilerException{
     private static final long serialVersionUID = 1L;
 
     public IllegalMethodOverloadException(String where, String what, String why){

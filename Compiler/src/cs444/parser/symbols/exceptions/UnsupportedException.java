@@ -1,6 +1,8 @@
 package cs444.parser.symbols.exceptions;
 
-public class UnsupportedException extends Exception{
+import cs444.CompilerException;
+
+public class UnsupportedException extends CompilerException{
     private static final long serialVersionUID = 1L;
 
     public UnsupportedException(String what){

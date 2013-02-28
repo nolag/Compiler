@@ -1,6 +1,8 @@
 package cs444.types.exceptions;
 
-public class UndeclaredException extends Exception{
+import cs444.CompilerException;
+
+public class UndeclaredException extends CompilerException {
     private static final long serialVersionUID = 1L;
 
     public UndeclaredException(String what, String in){

@@ -15,11 +15,7 @@ public class PkgClassInfo {
     public static final PkgClassInfo instance = new PkgClassInfo();
 
     private PkgClassInfo(){
-        symbolMap.put("boolean", PkgClassResolver.primResolver);
-        symbolMap.put("byte", PkgClassResolver.primResolver);
-        symbolMap.put("short", PkgClassResolver.primResolver);
-        symbolMap.put("int", PkgClassResolver.primResolver);
-        symbolMap.put("char", PkgClassResolver.primResolver);
+        addInitialSymbols();
     }
 
     public void addClassOrInterface(AInterfaceOrClassSymbol symbol) throws DuplicateDeclearationException, UndeclaredException{
@@ -61,5 +57,13 @@ public class PkgClassInfo {
 
     public Iterable<Entry<String, PkgClassResolver>> getNamespaceParts(String nameSpace){
         return nameSpaces.get(nameSpace).entrySet();
+    }
+
+    private void addInitialSymbols() {
+        symbolMap.put("boolean", PkgClassResolver.primResolver);
+        symbolMap.put("byte", PkgClassResolver.primResolver);
+        symbolMap.put("short", PkgClassResolver.primResolver);
+        symbolMap.put("int", PkgClassResolver.primResolver);
+        symbolMap.put("char", PkgClassResolver.primResolver);
     }
 }

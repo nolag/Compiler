@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import cs444.CompilerException;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
@@ -225,7 +226,7 @@ public class PkgClassResolver {
     }
 
     private void copyInfo(PkgClassResolver building, Set<PkgClassResolver> visited, List<Set<PkgClassResolver>> resolvedSets, boolean inter)
-            throws IllegalMethodOverloadException, UndeclaredException, CircularDependancyException, UnsupportedException, DuplicateDeclearationException{
+            throws CompilerException{
 
         Set<PkgClassResolver> cpySet = new HashSet<PkgClassResolver>(visited);
         building.build(cpySet, inter);
@@ -278,8 +279,7 @@ public class PkgClassResolver {
     }
 
     private void build(Set<PkgClassResolver> visited, boolean mustBeInterface)
-            throws UndeclaredException, CircularDependancyException, IllegalMethodOverloadException, UnsupportedException, DuplicateDeclearationException{
-
+            throws CompilerException{
 
         if(visited.contains(this)) throw new CircularDependancyException(start.dclName);
         if(mustBeInterface && start.isClass()) throw new UnsupportedException("Interface extending a class");
@@ -339,13 +339,15 @@ public class PkgClassResolver {
             for(PkgClassResolver resolver : visited) assignableTo.add(resolver.fullName);
             //Java specific
             assignableTo.add("java.lang.Object");
+
+            start.accept(new TypeResolverVisitor(this));
         }else{
             for(String s : assignableTo) visited.add(PkgClassInfo.instance.getSymbol(s));
             isBuilt = true;
         }
     }
 
-    public void build() throws UndeclaredException, CircularDependancyException, IllegalMethodOverloadException, UnsupportedException, DuplicateDeclearationException{
+    public void build() throws CompilerException{
         build(new HashSet<PkgClassResolver>(), false);
     }
 

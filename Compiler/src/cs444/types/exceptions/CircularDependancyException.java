@@ -1,6 +1,8 @@
 package cs444.types.exceptions;
 
-public class CircularDependancyException extends Exception{
+import cs444.CompilerException;
+
+public class CircularDependancyException extends CompilerException{
     private static final long serialVersionUID = 1L;
 
     public CircularDependancyException(String name){

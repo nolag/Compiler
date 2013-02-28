@@ -3,6 +3,7 @@ package cs444.parser.symbols;
 import java.util.HashSet;
 import java.util.Set;
 
+import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 
 public class JoosNonTerminal extends NonTerminal{
@@ -52,7 +53,7 @@ public class JoosNonTerminal extends NonTerminal{
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         for (ISymbol child : this.children) {
             child.accept(visitor);
         }

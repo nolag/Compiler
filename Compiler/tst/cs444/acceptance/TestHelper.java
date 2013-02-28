@@ -22,7 +22,8 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("J1_extends.java")) continue;
+			//if (!fileName.equals("J1_1_Cast_MultipleCastOfSameValue_1.java")) continue;
+			//System.out.println( path + fileName);
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
 

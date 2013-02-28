@@ -1,5 +1,6 @@
 package cs444.parser.symbols;
 
+import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 
 
@@ -26,6 +27,7 @@ public interface ISymbol {
     /**
      *
      * accepts a visitor that walks the tree
+     * @throws CompilerException 
      */
-    void accept(final ISymbolVisitor visitor);
+    void accept(final ISymbolVisitor visitor) throws CompilerException;
 }

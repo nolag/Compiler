@@ -1,5 +1,6 @@
 package cs444.parser.symbols;
 
+import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.lexer.Token;
 import cs444.lexer.Token.Parse;
@@ -17,7 +18,7 @@ public final class Terminal extends ATerminal{
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.visit(this);
     }
 }

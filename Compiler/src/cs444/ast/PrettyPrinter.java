@@ -58,7 +58,7 @@ public class PrettyPrinter implements ISymbolVisitor {
 
     @Override
     public void visit(TypeSymbol typeSymbol) {
-
+        // dclSymbol is printing its type
     }
 
     @Override
