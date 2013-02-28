@@ -37,6 +37,8 @@ public class Compiler {
 
         try {
             for(String fileName : files){
+
+                reader = new FileReader(fileName);
                 parseTree = parse(fileName, reader);
 
                 IASTBuilder builder = new JoosASTBuilder();
@@ -89,7 +91,6 @@ public class Compiler {
             UnexpectedTokenException {
         ANonTerminal parseTree;
 
-        reader = new FileReader(fileName);
         Lexer lexer = new Lexer(reader);
         Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
 
