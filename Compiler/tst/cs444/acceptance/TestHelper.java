@@ -12,10 +12,6 @@ import cs444.Compiler;
 
 public class TestHelper {
 
-	public static void assertReturnCodeForFilesAndFolders(String path, int expectedReturnCode, boolean printErrors) {
-		File folder = new File(path);
-	}
-
 	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors) throws IOException, InterruptedException {
 		File folder = new File(path);
 
@@ -29,7 +25,13 @@ public class TestHelper {
 			if (!fileName.equals("J1_extends.java")) continue;
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
-				if (compileAndTest(new String[] { path + fileName }, printErrors) == expectedReturnCode) {
+				
+				ArrayList<String> sourceFiles = getAllFiles(file);
+				String[] array = new String[sourceFiles.size()];
+				for (int i = 0; i < array.length; i++)
+					array[i] = sourceFiles.get(i);
+				
+				if (compileAndTest(array, printErrors) == expectedReturnCode) {
 					System.out.print(".");
 				}else{
 					System.out.print("F");
@@ -37,9 +39,13 @@ public class TestHelper {
 				}
 				totalTests++;
 			} else if (file.isDirectory()) {
-				String[] array = null;
+				
 				ArrayList<String> sourceFiles = getAllFiles(file);
-				if (compileAndTest(sourceFiles.toArray(array), printErrors) == expectedReturnCode) {
+				String[] array = new String[sourceFiles.size()];
+				for (int i = 0; i < array.length; i++)
+					array[i] = sourceFiles.get(i);
+				
+				if (compileAndTest(array, printErrors) == expectedReturnCode) {
 					System.out.print(".");
 				} else {
 					System.out.print("F");
@@ -62,8 +68,9 @@ public class TestHelper {
 		ArrayList<String> result = new ArrayList<String>();
 		Stack<File> toVisit = new Stack<File>();
 
-		for (File sourceFile : root.listFiles())
-			toVisit.push(sourceFile);
+		File stdLib = new File("JoosPrograms/StdLib");
+		toVisit.push(stdLib);
+		toVisit.push(root);
 
 		while (!toVisit.isEmpty()) {
 			File currentFile = toVisit.pop();

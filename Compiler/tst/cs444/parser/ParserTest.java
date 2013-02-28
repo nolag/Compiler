@@ -395,11 +395,9 @@ public class ParserTest {
         Reader reader = new FileReader("CompleteCompUnit.java");
         Lexer lexer = new Lexer(reader);
         ANonTerminal start = parser.parse(lexer);
+        
         IASTBuilder builder = new JoosASTBuilder();
-
-        for(ASTSymbolFactory factory : builder.getSimplifcations()){
-            start = (ANonTerminal) factory.convertAll(start);
-        }
+        start = (ANonTerminal)builder.build("CompleteCompUnit.java", start);
 
         ClassSymbol classSymbol = (ClassSymbol) start;
         assertEquals("CompleteCompUnit", classSymbol.dclName);
@@ -414,8 +412,6 @@ public class ParserTest {
         NameSymbol id = classSymbol.pkgImports.iterator().next();
         assertEquals("my.pkg.lol.simple", id.value);
         assertEquals(NameSymbol.Type.PACKAGE, id.type);
-
-        builder.isValidFileName("CompleteCompUnit.java", start);
     }
 
     @Test
@@ -424,15 +420,11 @@ public class ParserTest {
         Reader reader = new FileReader("CompWithMethods.java");
         Lexer lexer = new Lexer(reader);
         ANonTerminal start = parser.parse(lexer);
-        IASTBuilder builder = new JoosASTBuilder();
-
-        for(ASTSymbolFactory factory : builder.getSimplifcations()){
-            start = (ANonTerminal) factory.convertAll(start);
-        }
+        
+        IASTBuilder builder = new JoosASTBuilder();        
+        start = (ANonTerminal)builder.build("CompWithMethods.java", start);
 
         assertEquals(9, start.children.size());
-
-        builder.isValidFileName("CompWithMethods.java", start);
 
         ClassSymbol classSymbol = (ClassSymbol) start;
         assertSmallClassDeclaration(classSymbol);

@@ -42,15 +42,8 @@ public class Compiler {
                 parseTree = parse(fileName, reader);
 
                 IASTBuilder builder = new JoosASTBuilder();
-
-                for(ASTSymbolFactory astSymbol : builder.getSimplifcations()) parseTree = (ANonTerminal)astSymbol.convertAll(parseTree);
-
-                File file = new File(fileName);
-                if(!builder.isValidFileName(file.getName(), parseTree)){
-                    System.err.print("Invalid file name" + fileName);
-                    return COMPILER_ERROR_CODE;
-                }
-
+                parseTree = (ANonTerminal)builder.build(new File(fileName).getName(), parseTree);
+                
                 PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
             }
         }catch(Exception e){
