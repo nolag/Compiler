@@ -300,12 +300,14 @@ public class PkgClassResolver {
             List<Set<PkgClassResolver>> resolvedSets = new LinkedList<Set<PkgClassResolver>>();
 
             if(start.superName != null){
-                building = getClass(start.name, false);
+                building = getClass(start.superName, false);
+                if(building == null) throw new UndeclaredException(start.superName, fullName);
                 copyInfo(building, visited, resolvedSets, mustBeInterface);
             }
 
             for(String impl : start.impls){
                 building = getClass(impl, false);
+                if(building == null) throw new UndeclaredException(start.superName, fullName);
                 copyInfo(building, visited, resolvedSets, mustBeInterface);
             }
 

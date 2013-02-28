@@ -75,7 +75,7 @@ public class ClassInterfaceFactory extends ASTSymbolFactory{
         if(isInterface){
             classInterface = new InterfaceSymbol(classOrInterfaceName, declaration, interfaceNames, children, pkgImports);
         }else{
-            ANonTerminal superName = (ANonTerminal)declaration.firstOrDefault("ClassName");
+            ANonTerminal superName = (ANonTerminal)declaration.firstOrDefault("ClassType");
             String superType = null;
             if(superName != null){
                 superType = ((NameSymbol) superName.firstOrDefault("Name")).value;

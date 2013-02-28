@@ -26,7 +26,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("ClassImport.java")) continue;
+			if (!fileName.equals("J1_extends.java")) continue;
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
 				if (compileAndTest(new String[] { path + fileName }, printErrors) == expectedReturnCode) {
