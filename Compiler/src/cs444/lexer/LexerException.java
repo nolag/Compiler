@@ -1,6 +1,8 @@
 package cs444.lexer;
 
-public class LexerException extends Exception {
+import cs444.CompilerException;
+
+public class LexerException extends CompilerException {
 	private static final long serialVersionUID = -2043204283971930316L;
 	
     public LexerException(String message) {

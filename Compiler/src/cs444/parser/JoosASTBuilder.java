@@ -1,6 +1,5 @@
 package cs444.parser;
 
-import java.io.File;
 import java.util.Arrays;
 
 import cs444.parser.symbols.ANonTerminal;

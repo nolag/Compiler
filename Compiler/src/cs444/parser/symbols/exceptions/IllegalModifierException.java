@@ -1,6 +1,8 @@
 package cs444.parser.symbols.exceptions;
 
-public class IllegalModifierException extends Exception{
+import cs444.CompilerException;
+
+public class IllegalModifierException extends CompilerException{
     private static final long serialVersionUID = 1L;
 
     public IllegalModifierException(String is, String isAlso){

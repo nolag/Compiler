@@ -2,9 +2,10 @@ package cs444.parser.symbols.exceptions;
 
 import java.util.Set;
 
+import cs444.CompilerException;
 import cs444.lexer.Token;
 
-public class UnexpectedTokenException extends Exception{
+public class UnexpectedTokenException extends CompilerException{
     private static final long serialVersionUID = 1L;
 
     private static String tokensAsString(Set<String> expectedTokens){
