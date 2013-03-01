@@ -50,6 +50,10 @@ public class ConstructorSymbol extends AModifiersOptSymbol{
     public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
 
+        for (ISymbol param : this.args) {
+            param.accept(visitor);
+        }
+
         for (ISymbol child : children) {
             child.accept(visitor);
         }
