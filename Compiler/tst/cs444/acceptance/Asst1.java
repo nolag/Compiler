@@ -24,7 +24,7 @@ public class Asst1 {
     public void testMarmosetTestCases() throws IOException, InterruptedException {
         String path = "JoosPrograms/MarmosetPrograms/a1/valid/";
 
-        TestHelper.assertReturnCodeForFiles(path, 0, false);
+        TestHelper.assertReturnCodeForFiles(path, 0, true);
 
         path = "JoosPrograms/MarmosetPrograms/a1/invalid/";
 

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
-import cs444.types.exceptions.DuplicateDeclearationException;
+import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.UndeclaredException;
 
 public class PkgClassInfo {
@@ -18,10 +18,10 @@ public class PkgClassInfo {
         addInitialSymbols();
     }
 
-    public void addClassOrInterface(AInterfaceOrClassSymbol symbol) throws DuplicateDeclearationException, UndeclaredException{
+    public void addClassOrInterface(AInterfaceOrClassSymbol symbol) throws DuplicateDeclarationException, UndeclaredException{
         PkgClassResolver resolver = PkgClassResolver.getResolver(symbol);
 
-        if(nameSpaces.containsKey(resolver.fullName))throw new DuplicateDeclearationException(resolver.fullName, resolver.fullName);
+        if(nameSpaces.containsKey(resolver.fullName))throw new DuplicateDeclarationException(resolver.fullName, resolver.fullName);
 
         String pkg = resolver.pkg;
 

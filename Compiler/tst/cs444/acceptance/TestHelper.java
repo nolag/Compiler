@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Stack;
 
 import cs444.Compiler;
+import cs444.types.PkgClassInfo;
 
 public class TestHelper {
 
@@ -100,6 +101,7 @@ public class TestHelper {
 	}
 
 	private static int compileAndTest(String[] files, boolean printErrors) throws IOException, InterruptedException {
-		return Compiler.compile(files, printErrors);
+	    PkgClassInfo.instance.clear();
+	    return Compiler.compile(files, printErrors);
 	}
 }

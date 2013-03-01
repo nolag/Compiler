@@ -21,7 +21,7 @@ import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.exceptions.CircularDependancyException;
-import cs444.types.exceptions.DuplicateDeclearationException;
+import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.IllegalMethodOverloadException;
 import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
@@ -69,7 +69,7 @@ public class PkgClassResolver {
         return generateUniqueName(methodSymbol.dclName, types);
     }
 
-    public static PkgClassResolver getResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclearationException{
+    public static PkgClassResolver getResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
         PkgClassResolver resolver = resolverMap.get(start);
 
         if(resolver == null){
@@ -87,7 +87,7 @@ public class PkgClassResolver {
         pkg = null;
     }
 
-    private PkgClassResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclearationException{
+    private PkgClassResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
         this.start = start;
         String myName = name = start.dclName;
         Iterator<NameSymbol> pkg = start.pkgImports.iterator();
@@ -106,8 +106,8 @@ public class PkgClassResolver {
 
         for (MethodSymbol methodSymbol : start.getMethods()){
             String uniqueName = generateUniqueName(methodSymbol);
-            if(methodMap.containsKey(uniqueName)) throw new DuplicateDeclearationException(uniqueName, start.dclName);
-            if(smethodMap.containsKey(uniqueName)) throw new DuplicateDeclearationException(uniqueName, start.dclName);
+            if(methodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
+            if(smethodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
 
             final Map<String, MethodSymbol> addTo = methodSymbol.isStatic() ? methodMap : smethodMap;
             addTo.put(uniqueName, methodSymbol);
@@ -127,12 +127,12 @@ public class PkgClassResolver {
         //TODO later constructors
     }
 
-    private void addAll(String firstPart, Map<String, PkgClassResolver> entryMap) throws DuplicateDeclearationException{
+    private void addAll(String firstPart, Map<String, PkgClassResolver> entryMap) throws DuplicateDeclarationException{
         if(imported.contains(firstPart)) return;
         for(Entry<String, PkgClassResolver> entry : PkgClassInfo.instance.getNamespaceParts(firstPart)){
             if(namedMap.containsKey(entry)) continue;
             String ename = entry.getKey();
-            if(entryMap.containsKey(ename)) throw new DuplicateDeclearationException(ename, start.dclName);
+            if(entryMap.containsKey(ename)) throw new DuplicateDeclarationException(ename, start.dclName);
             entryMap.put(ename, entry.getValue());
         }
         imported.add(firstPart);
@@ -293,9 +293,12 @@ public class PkgClassResolver {
                 case IMPORT:
                     PkgClassResolver resolver = PkgClassInfo.instance.getSymbol(name.value);
                     if(resolver == null) throw new UndeclaredException(name.value, start.dclName);
-                    String namedPart = name.value.substring(0, name.value.lastIndexOf(".") + 1);
-                    if(namedMap.containsKey(namedPart)) throw new DuplicateDeclearationException(namedPart, start.dclName);
-                    namedMap.put(namedPart, resolver);
+
+                    // TODO: take care of import-on-demand cases
+                    String typeName = name.value.substring(name.value.lastIndexOf(".") + 1, name.value.length());
+                    if(namedMap.containsKey(name.value)) throw new DuplicateDeclarationException(name.value, start.dclName);
+                    namedMap.put(name.value, resolver);
+                    namedMap.put(typeName, resolver);
                     break;
                 case PACKAGE:
                     addAll(name.value, samepkgMap);

@@ -14,7 +14,7 @@ public class TypeResolverVisitor extends EmptyVisitor {
 
     @Override
     public void visit(TypeSymbol typeSymbol) throws CompilerException {
-        if (typeSymbol.getTypeDclNode() == null){
+        if (typeSymbol.getTypeDclNode() == null && typeSymbol.value != "void"){
             typeSymbol.setTypeDclNode(classResolver.getClass(typeSymbol.value, true));
         }
     }
