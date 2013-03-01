@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -13,7 +14,7 @@ import cs444.types.PkgClassInfo;
 
 public class TestHelper {
 
-	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors) throws IOException, InterruptedException {
+	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean getFiles, boolean printErrors) throws IOException, InterruptedException {
 		File folder = new File(path);
 
 		int totalTests = 0;
@@ -23,12 +24,15 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("J1_1_Cast_MultipleCastOfSameValue_1.java")) continue;
+			//if (!fileName.equals("J1_3_SingleTypeImport_MultipleImportsOfSameType")) continue;
 			//System.out.println( path + fileName);
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
+			    List<String> sourceFiles;
 
-				ArrayList<String> sourceFiles = getAllFiles(file);
+			    if(getFiles)sourceFiles = getAllFiles(file);
+				else sourceFiles = Collections.emptyList();
+
 				String[] array = new String[sourceFiles.size()];
 				for (int i = 0; i < array.length; i++)
 					array[i] = sourceFiles.get(i);
@@ -41,8 +45,11 @@ public class TestHelper {
 				}
 				totalTests++;
 			} else if (file.isDirectory()) {
+			    List<String> sourceFiles;
 
-				ArrayList<String> sourceFiles = getAllFiles(file);
+			    if(getFiles)sourceFiles = getAllFiles(file);
+                else sourceFiles = Collections.emptyList();
+
 				String[] array = new String[sourceFiles.size()];
 				for (int i = 0; i < array.length; i++)
 					array[i] = sourceFiles.get(i);
