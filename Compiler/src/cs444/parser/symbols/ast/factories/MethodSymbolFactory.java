@@ -6,6 +6,7 @@ import java.util.List;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.ClassSymbol;
+import cs444.parser.symbols.ast.MethodHeader;
 import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;

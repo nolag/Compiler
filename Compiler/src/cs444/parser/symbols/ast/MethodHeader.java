@@ -1,13 +1,10 @@
-package cs444.parser.symbols.ast.factories;
+package cs444.parser.symbols.ast;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
-import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.NameSymbol;
-import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 

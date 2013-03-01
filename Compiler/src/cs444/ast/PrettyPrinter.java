@@ -4,12 +4,7 @@ import cs444.CompilerException;
 import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
-import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
-import cs444.parser.symbols.ast.ConstructorSymbol;
-import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.MethodSymbol;
-import cs444.parser.symbols.ast.NameSymbol;
-import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.ast.*;
 
 public class PrettyPrinter implements ISymbolVisitor {
 
