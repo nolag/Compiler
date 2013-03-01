@@ -1,12 +1,10 @@
 package cs444.ast;
 
+import cs444.CompilerException;
 import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
-import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
-import cs444.parser.symbols.ast.ConstructorSymbol;
-import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.MethodSymbol;
-import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.JoosNonTerminal;
+import cs444.parser.symbols.ast.*;
 
 public class PrettyPrinter implements ISymbolVisitor {
 
@@ -37,6 +35,11 @@ public class PrettyPrinter implements ISymbolVisitor {
     }
 
     @Override
+    public void open(JoosNonTerminal aNonTerminal){
+        level++;
+    }
+
+    @Override
     public void close(AInterfaceOrClassSymbol aInterfaceOrClassSymbol) {
         level--;
     }
@@ -57,8 +60,18 @@ public class PrettyPrinter implements ISymbolVisitor {
     }
 
     @Override
+    public void close(JoosNonTerminal aNonTerminal){
+        level--;
+    }
+
+    @Override
     public void visit(TypeSymbol typeSymbol) {
         // dclSymbol is printing its type
+    }
+
+    @Override
+    public void visit(NameSymbol nameSymbol) throws CompilerException {
+        print("symbol: " + nameSymbol.value);
     }
 
     @Override
