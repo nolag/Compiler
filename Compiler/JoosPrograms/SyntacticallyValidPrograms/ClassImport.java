@@ -1,6 +1,5 @@
-import java.util.Array;
+import java.util.Arrays;
 
 public class ClassImport {
   public ClassImport() {}
-  protected Array c;
 }

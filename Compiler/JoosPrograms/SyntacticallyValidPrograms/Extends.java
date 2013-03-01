@@ -1,4 +1,4 @@
-public class Extends extends java.lang.Thread {
+public class Extends extends java.io.PrintStream {
   public int y;
   public Extends() {}
 }
