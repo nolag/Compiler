@@ -66,4 +66,11 @@ public class PkgClassInfo {
         symbolMap.put("int", PkgClassResolver.primResolver);
         symbolMap.put("char", PkgClassResolver.primResolver);
     }
+
+    // NOTE: this method is for tests only
+    public void clear(){
+        this.nameSpaces.clear();
+        this.symbolMap.clear();
+        addInitialSymbols();
+    }
 }
