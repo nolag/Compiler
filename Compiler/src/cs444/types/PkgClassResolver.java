@@ -294,7 +294,6 @@ public class PkgClassResolver {
                     PkgClassResolver resolver = PkgClassInfo.instance.getSymbol(name.value);
                     if(resolver == null) throw new UndeclaredException(name.value, start.dclName);
 
-                    // TODO: take care of import-on-demand cases
                     String typeName = name.value.substring(name.value.lastIndexOf(".") + 1, name.value.length());
                     if(namedMap.containsKey(name.value)) throw new DuplicateDeclarationException(name.value, start.dclName);
                     namedMap.put(name.value, resolver);
@@ -304,10 +303,10 @@ public class PkgClassResolver {
                     addAll(name.value, samepkgMap);
                     break;
                 case STAR_IMPORT:
-                    String firstPart = name.value.substring(0, name.value.lastIndexOf("."));
+                    String packageName = name.value;
                     //note this is already done at the end;
-                    if(firstPart.equals("java.lang")) continue;
-                    addAll(firstPart, staredMap);
+                    if(packageName.equals("java.lang")) continue;
+                    addAll(packageName, staredMap);
                     break;
                 default:
                     //should not get here!

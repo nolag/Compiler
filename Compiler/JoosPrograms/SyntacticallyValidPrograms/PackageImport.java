@@ -1,6 +1,6 @@
-import java.util.*;
+import java.io.*;
 
 public class PackageImport {
   public PackageImport() {}
-  protected Vector c;
+  protected PrintStream c;
 }
