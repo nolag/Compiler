@@ -4,6 +4,7 @@ import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.types.exceptions.DuplicateDeclarationException;
 
@@ -13,6 +14,17 @@ public class LocalDclLinker extends EmptyVisitor {
 
     public LocalDclLinker(String enclosingClassName){
         this.enclosingClassName = enclosingClassName;
+    }
+
+    // creates root scope which will contain parameters declarations
+    @Override
+    public void open(MethodSymbol methodSymbol){
+        pushNewScope();
+    }
+
+    @Override
+    public void close(MethodSymbol methodSymbol){
+        popCurrentScope();
     }
 
     @Override
@@ -26,19 +38,27 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void open(JoosNonTerminal aNonTerminal){
         if (aNonTerminal.getName().equals(JoosNonTerminal.BLOCK)){
-            currentScope = new LocalScope(currentScope);
+            pushNewScope();
         }
     }
 
     @Override
     public void close(JoosNonTerminal aNonTerminal){
         if (aNonTerminal.getName().equals(JoosNonTerminal.BLOCK)){
-            currentScope = currentScope.parent;
+            popCurrentScope();
         }
+    }
+
+    private void pushNewScope() {
+        currentScope = new LocalScope(currentScope);
+    }
+
+    private void popCurrentScope() {
+        currentScope = currentScope.parent;
     }
 
     @Override
     public void visit(NameSymbol nameSymbol){
-        // TODO: store a reference to the DclSymbol node that this name refers to
+        // TODO: store a reference to the DclSymbol node that this name refers to. Required for A3
     }
 }

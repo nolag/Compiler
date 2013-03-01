@@ -61,6 +61,10 @@ public class MethodSymbol extends AModifiersOptSymbol{
     public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
 
+        for (DclSymbol param : this.params) {
+            param.accept(visitor);
+        }
+
         for (ISymbol child : children) {
             child.accept(visitor);
         }

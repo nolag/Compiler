@@ -17,8 +17,12 @@ public class Asst2 {
 //    }
 
     @Test
-    public void testMarmosetTestCases() throws IOException, InterruptedException {
+    public void testMarmosetValidTestCases() throws IOException, InterruptedException {
         TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a2/valid/", 0, false);
+    }
+
+    @Test
+    public void testMarmosetInvalidTestCases() throws IOException, InterruptedException{
         //TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a2/invalid/", 42,  false);
     }
 }
