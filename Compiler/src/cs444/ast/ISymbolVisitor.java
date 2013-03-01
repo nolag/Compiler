@@ -8,6 +8,7 @@ import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
+import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 
 public interface ISymbolVisitor {
@@ -24,7 +25,7 @@ public interface ISymbolVisitor {
     void close(final JoosNonTerminal aNonTerminal) throws CompilerException;
 
     void visit(final TypeSymbol typeSymbol) throws CompilerException;
-
+    void visit(final NameSymbol nameSymbol) throws CompilerException;
     void visit(final ATerminal terminal) throws CompilerException;
     void visit(final ISymbol symbol) throws CompilerException;
 }

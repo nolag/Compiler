@@ -4,6 +4,7 @@ import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.NameSymbol;
 import cs444.types.exceptions.DuplicateDeclarationException;
 
 public class LocalDclLinker extends EmptyVisitor {
@@ -34,5 +35,10 @@ public class LocalDclLinker extends EmptyVisitor {
         if (aNonTerminal.getName().equals(JoosNonTerminal.BLOCK)){
             currentScope = currentScope.parent;
         }
+    }
+
+    @Override
+    public void visit(NameSymbol nameSymbol){
+        // TODO: store a reference to the DclSymbol node that this name refers to
     }
 }
