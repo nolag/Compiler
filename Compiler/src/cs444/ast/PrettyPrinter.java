@@ -14,19 +14,19 @@ public class PrettyPrinter implements ISymbolVisitor {
 
     @Override
     public void open(AInterfaceOrClassSymbol aInterfaceOrClassSymbol) {
-        print("InterfOrClass: " + aInterfaceOrClassSymbol.getName());
+        print("InterfOrClass: " + aInterfaceOrClassSymbol.dclName);
         level++;
     }
 
     @Override
     public void open(MethodSymbol method) {
-        print("method: " + method.type.value + " " + method.getName());
+        print("method: " + method.type.value + " " + method.dclName);
         level++;
     }
 
     @Override
     public void open(DclSymbol dclSymbol) {
-        print("dclSymbol: " + dclSymbol.type.value + " " + dclSymbol.getName());
+        print("dclSymbol: " + dclSymbol.type.value + " " + dclSymbol.dclName);
         level++;
     }
 

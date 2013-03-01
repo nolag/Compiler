@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import cs444.ast.PrettyPrinter;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
@@ -31,6 +32,13 @@ public class Compiler {
     }
 
     public static int compile(String[] files, boolean printErrors) {
+
+        if (files.length == 0){
+            System.err.println("ERROR: At least a file should be passed.");
+            printUsage();
+            return COMPILER_ERROR_CODE;
+        }
+
         Reader reader = null;
         ANonTerminal parseTree = null;
 
@@ -38,12 +46,14 @@ public class Compiler {
             for(String fileName : files){
 
                 reader = new FileReader(fileName);
-                parseTree = parse(fileName, reader);
+                parseTree = parse(reader);
 
                 IASTBuilder builder = new JoosASTBuilder();
                 parseTree = (ANonTerminal)builder.build(new File(fileName).getName(), parseTree);
 
                 PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
+
+                // parseTree.accept(new PrettyPrinter());
             }
         }catch(Exception e){
             if (printErrors) e.printStackTrace();
@@ -70,15 +80,11 @@ public class Compiler {
         return 0;
     }
 
-    /**
-     * @param fileName
-     * @return
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws LexerException
-     * @throws UnexpectedTokenException
-     */
-    private static ANonTerminal parse(String fileName, Reader reader)
+    private static void printUsage() {
+        System.err.println("Usage: ./joosc file1 [file2 [file3 ...]]");
+    }
+
+    private static ANonTerminal parse(Reader reader)
             throws FileNotFoundException, IOException, LexerException,
             UnexpectedTokenException {
         ANonTerminal parseTree;
