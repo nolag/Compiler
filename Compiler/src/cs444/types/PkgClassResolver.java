@@ -16,6 +16,7 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
+import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
@@ -84,7 +85,7 @@ public class PkgClassResolver {
     private PkgClassResolver() {
         this.start = null;
         isBuilt = true;
-        fullName = name = "Primative";
+        fullName = name = "Primitive";
         pkg = null;
     }
 
@@ -349,9 +350,25 @@ public class PkgClassResolver {
             assignableTo.add("java.lang.Object");
 
             start.accept(new TypeResolverVisitor(this));
+            linkLocalNamesToDcl();
         }else{
             for(String s : assignableTo) visited.add(PkgClassInfo.instance.getSymbol(s));
             isBuilt = true;
+        }
+    }
+
+    private void linkLocalNamesToDcl() throws CompilerException {
+        for (ISymbol child : start.children) {
+            if(child instanceof ConstructorSymbol){
+                child.accept(new LocalDclLinker(fullName));
+            }else if (child instanceof MethodSymbol){
+                MethodSymbol method = (MethodSymbol) child;
+                if (method.areLocalVarLinked()) continue;
+
+                child.accept(new LocalDclLinker(fullName));
+
+                method.localVarsLinked();
+            }
         }
     }
 

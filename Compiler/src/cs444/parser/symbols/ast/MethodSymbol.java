@@ -68,4 +68,13 @@ public class MethodSymbol extends AModifiersOptSymbol{
 
         visitor.close(this);
     }
+
+    private boolean arelocalVarsLinked = false;
+    public boolean areLocalVarLinked() {
+        return arelocalVarsLinked;
+    }
+
+    public void localVarsLinked() {
+        arelocalVarsLinked = true;
+    }
 }

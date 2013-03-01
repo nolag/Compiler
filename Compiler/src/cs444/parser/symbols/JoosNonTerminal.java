@@ -7,6 +7,7 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 
 public class JoosNonTerminal extends NonTerminal{
+    public static final String BLOCK = "BLOCK";
     public static final Set<String> noCollapse = new HashSet<String>();
     public static final Set<String> specialNoDie = new HashSet<String>();
 
@@ -33,9 +34,9 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add("BRACKETPRIMARY");
         noCollapse.add("METHODINVOCATION");
         noCollapse.add("IMPORTDECLARATIONS");
-        noCollapse.add("BLOCK");
+        noCollapse.add(BLOCK);
         specialNoDie.add("EMPTYSTATEMENT");
-        specialNoDie.add("BLOCK");
+        specialNoDie.add(BLOCK);
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {
