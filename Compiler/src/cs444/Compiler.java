@@ -14,7 +14,6 @@ import cs444.parser.Parser;
 import cs444.parser.TextReadingRules;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
-import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
 import cs444.types.PkgClassInfo;
 import cs444.types.PkgClassResolver;
@@ -43,7 +42,7 @@ public class Compiler {
 
                 IASTBuilder builder = new JoosASTBuilder();
                 parseTree = (ANonTerminal)builder.build(new File(fileName).getName(), parseTree);
-                
+
                 PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
             }
         }catch(Exception e){

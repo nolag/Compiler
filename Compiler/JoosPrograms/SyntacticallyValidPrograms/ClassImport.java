@@ -1,6 +1,6 @@
-import java.util.Vector;
+import java.util.Array;
 
 public class ClassImport {
   public ClassImport() {}
-  protected Vector c;
+  protected Array c;
 }

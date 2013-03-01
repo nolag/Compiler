@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
-import cs444.parser.symbols.ast.NameSymbol;
-import cs444.parser.symbols.ast.NameSymbol.Type;
 import cs444.types.exceptions.DuplicateDeclearationException;
 import cs444.types.exceptions.UndeclaredException;
 
@@ -25,10 +23,11 @@ public class PkgClassInfo {
     }
 
     public void addClassOrInterface(AInterfaceOrClassSymbol symbol) throws DuplicateDeclearationException, UndeclaredException{
-        if(nameSpaces.containsKey(symbol.dclName))throw new DuplicateDeclearationException(symbol.dclName, symbol.dclName);
+        PkgClassResolver resolver = PkgClassResolver.getResolver(symbol);
 
-        NameSymbol nameSymbol = (NameSymbol) symbol.firstOrDefault("Name");
-        String pkg = nameSymbol != null && nameSymbol.type == Type.PACKAGE ? nameSymbol.value + "." : "";
+        if(nameSpaces.containsKey(resolver.fullName))throw new DuplicateDeclearationException(resolver.fullName, resolver.fullName);
+
+        String pkg = resolver.pkg;
 
         Map<String, PkgClassResolver> pkgs = null;
 
@@ -42,18 +41,14 @@ public class PkgClassInfo {
 
             if(pkgs == null){
                 pkgs = new HashMap<String, PkgClassResolver>();
-                nameSpaces.put(pkg, pkgs);
+                nameSpaces.put(sb.toString(), pkgs);
             }
 
             sb.append(".");
         }
 
-
-
-        PkgClassResolver resolver = PkgClassResolver.getResolver(symbol);
-
-        pkgs.put(pkg, resolver);
-        symbolMap.put(symbol.dclName, resolver);
+        pkgs.put(resolver.name, resolver);
+        symbolMap.put(resolver.fullName, resolver);
     }
 
     public PkgClassResolver getSymbol(String name){

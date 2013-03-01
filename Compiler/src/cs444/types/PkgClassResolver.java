@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +40,11 @@ public class PkgClassResolver {
     private final Map<String, PkgClassResolver> samepkgMap = new HashMap<String, PkgClassResolver>();
     private final Map<String, PkgClassResolver> staredMap = new HashMap<String, PkgClassResolver>();
     private final Set<String> assignableTo = new HashSet<String>();
+    private final Set<String> imported = new HashSet<String>();
 
-    private final String fullName;
+    public final String name;
+    public final String fullName;
+    public final String pkg;
 
     private boolean isBuilt = false;
 
@@ -78,44 +82,26 @@ public class PkgClassResolver {
     private PkgClassResolver() {
         this.start = null;
         isBuilt = true;
-        fullName = "Primative";
+        fullName = name = "Primative";
+        pkg = null;
     }
 
     private PkgClassResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclearationException{
         this.start = start;
-        String myName = start.dclName;
+        String myName = name = start.dclName;
+        Iterator<NameSymbol> pkg = start.pkgImports.iterator();
+        String mypkg = "";
 
-        for(ISymbol symbol : start.children){
-            if(!NameSymbol.class.isInstance(symbol)) continue;
-            NameSymbol name = (NameSymbol) symbol;
-
-            switch(name.type){
-            case IMPORT:
-                PkgClassResolver resolver = PkgClassInfo.instance.getSymbol(name.value);
-                if(resolver == null) throw new UndeclaredException(name.value, start.dclName);
-                String namedPart = name.value.substring(0, name.value.lastIndexOf(".") + 1);
-                if(namedMap.containsKey(namedPart)) throw new DuplicateDeclearationException(namedPart, start.dclName);
-                namedMap.put(namedPart, resolver);
-                break;
-            case PACKAGE:
-                addAll(name.value, samepkgMap);
-                myName = name.value + "." + myName;
-                break;
-            case STAR_IMPORT:
-                String firstPart = name.value.substring(0, name.value.lastIndexOf("."));
-                //note this is already done at the end;
-                if(firstPart.equals("java.lang")) continue;
-                addAll(firstPart, staredMap);
-                break;
-            default:
-                //should not get here!
-                break;
+        if(pkg.hasNext()){
+            NameSymbol first = pkg.next();
+            if(first.type == NameSymbol.Type.PACKAGE){
+                myName = first.value + "." + myName;
+                mypkg = first.value;
             }
-
-            addAll("java.lang", staredMap);
         }
 
         fullName = myName;
+        this.pkg = mypkg;
 
         for (MethodSymbol methodSymbol : start.getMethods()){
             String uniqueName = generateUniqueName(methodSymbol);
@@ -136,14 +122,19 @@ public class PkgClassResolver {
             addTo.put(fieldSymbol.dclName, fieldSymbol);
             getClass(fieldSymbol.type.value, false);
         }
+
+        //TODO later constructors
     }
 
     private void addAll(String firstPart, Map<String, PkgClassResolver> entryMap) throws DuplicateDeclearationException{
+        if(imported.contains(firstPart)) return;
         for(Entry<String, PkgClassResolver> entry : PkgClassInfo.instance.getNamespaceParts(firstPart)){
+            if(namedMap.containsKey(entry)) continue;
             String ename = entry.getKey();
-            entryMap.put(ename, entry.getValue());
             if(entryMap.containsKey(ename)) throw new DuplicateDeclearationException(ename, start.dclName);
+            entryMap.put(ename, entry.getValue());
         }
+        imported.add(firstPart);
     }
 
     private DclSymbol getDcl(String name, boolean isStatic, PkgClassResolver pkgClass)
@@ -234,7 +225,7 @@ public class PkgClassResolver {
     }
 
     private void copyInfo(PkgClassResolver building, Set<PkgClassResolver> visited, List<Set<PkgClassResolver>> resolvedSets, boolean inter)
-            throws IllegalMethodOverloadException, UndeclaredException, CircularDependancyException, UnsupportedException{
+            throws IllegalMethodOverloadException, UndeclaredException, CircularDependancyException, UnsupportedException, DuplicateDeclearationException{
 
         Set<PkgClassResolver> cpySet = new HashSet<PkgClassResolver>(visited);
         building.build(cpySet, inter);
@@ -257,7 +248,7 @@ public class PkgClassResolver {
                     addTo.put(dcl.dclName, dcl);
                 }
                 start.children.add(0, dcl);
-            }else{
+            }else if(MethodSymbol.class.isInstance(child)){
                 MethodSymbol methodSymbol = (MethodSymbol) child;
                 String uniqueName = generateUniqueName(methodSymbol);
                 MethodSymbol has = methodMap.get(uniqueName);
@@ -279,13 +270,15 @@ public class PkgClassResolver {
                     //covarient return types not allowed in JOOS, it was added in java 5
                     if(!methodSymbol.type.value.equals(is.type.value))
                         throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "return types don't match");
+                }else{
+                    //TODO later super constructor(s)
                 }
             }
         }
     }
 
     private void build(Set<PkgClassResolver> visited, boolean mustBeInterface)
-            throws UndeclaredException, CircularDependancyException, IllegalMethodOverloadException, UnsupportedException{
+            throws UndeclaredException, CircularDependancyException, IllegalMethodOverloadException, UnsupportedException, DuplicateDeclearationException{
 
 
         if(visited.contains(this)) throw new CircularDependancyException(start.dclName);
@@ -293,6 +286,34 @@ public class PkgClassResolver {
         visited.add(this);
 
         if(!isBuilt){
+            for(NameSymbol symbol : start.pkgImports){
+                NameSymbol name = symbol;
+
+                switch(name.type){
+                case IMPORT:
+                    PkgClassResolver resolver = PkgClassInfo.instance.getSymbol(name.value);
+                    if(resolver == null) throw new UndeclaredException(name.value, start.dclName);
+                    String namedPart = name.value.substring(0, name.value.lastIndexOf(".") + 1);
+                    if(namedMap.containsKey(namedPart)) throw new DuplicateDeclearationException(namedPart, start.dclName);
+                    namedMap.put(namedPart, resolver);
+                    break;
+                case PACKAGE:
+                    addAll(name.value, samepkgMap);
+                    break;
+                case STAR_IMPORT:
+                    String firstPart = name.value.substring(0, name.value.lastIndexOf("."));
+                    //note this is already done at the end;
+                    if(firstPart.equals("java.lang")) continue;
+                    addAll(firstPart, staredMap);
+                    break;
+                default:
+                    //should not get here!
+                    break;
+                }
+            }
+
+            addAll("java.lang", staredMap);
+
             mustBeInterface |= !start.isClass();
 
             PkgClassResolver building = null;
@@ -324,7 +345,7 @@ public class PkgClassResolver {
         }
     }
 
-    public void build() throws UndeclaredException, CircularDependancyException, IllegalMethodOverloadException, UnsupportedException{
+    public void build() throws UndeclaredException, CircularDependancyException, IllegalMethodOverloadException, UnsupportedException, DuplicateDeclearationException{
         build(new HashSet<PkgClassResolver>(), false);
     }
 

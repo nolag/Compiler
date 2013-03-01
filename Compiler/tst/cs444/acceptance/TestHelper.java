@@ -22,15 +22,15 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			if (!fileName.equals("J1_extends.java")) continue;
+			//if (!fileName.equals("J1_extends.java")) continue;
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
-				
+
 				ArrayList<String> sourceFiles = getAllFiles(file);
 				String[] array = new String[sourceFiles.size()];
 				for (int i = 0; i < array.length; i++)
 					array[i] = sourceFiles.get(i);
-				
+
 				if (compileAndTest(array, printErrors) == expectedReturnCode) {
 					System.out.print(".");
 				}else{
@@ -39,12 +39,12 @@ public class TestHelper {
 				}
 				totalTests++;
 			} else if (file.isDirectory()) {
-				
+
 				ArrayList<String> sourceFiles = getAllFiles(file);
 				String[] array = new String[sourceFiles.size()];
 				for (int i = 0; i < array.length; i++)
 					array[i] = sourceFiles.get(i);
-				
+
 				if (compileAndTest(array, printErrors) == expectedReturnCode) {
 					System.out.print(".");
 				} else {
