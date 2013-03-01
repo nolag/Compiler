@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -28,10 +27,7 @@ public class TestHelper {
 			//System.out.println( path + fileName);
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
-			    List<String> sourceFiles;
-
-			    if(getFiles)sourceFiles = getAllFiles(file);
-				else sourceFiles = Collections.emptyList();
+			    List<String> sourceFiles = getAllFiles(file, getFiles);
 
 				String[] array = new String[sourceFiles.size()];
 				for (int i = 0; i < array.length; i++)
@@ -45,10 +41,7 @@ public class TestHelper {
 				}
 				totalTests++;
 			} else if (file.isDirectory()) {
-			    List<String> sourceFiles;
-
-			    if(getFiles)sourceFiles = getAllFiles(file);
-                else sourceFiles = Collections.emptyList();
+			    List<String> sourceFiles = getAllFiles(file, getFiles);
 
 				String[] array = new String[sourceFiles.size()];
 				for (int i = 0; i < array.length; i++)
@@ -72,14 +65,16 @@ public class TestHelper {
 		assertEquals("Compiler return unexpected return code compiling " + failures + " files. Expected return code was: " + expectedReturnCode, 0, failures);
 	}
 
-	private static ArrayList<String> getAllFiles(File root) {
+	private static ArrayList<String> getAllFiles(File root, boolean std) {
 
 		ArrayList<String> result = new ArrayList<String>();
 		Stack<File> toVisit = new Stack<File>();
 
-		File stdLib = new File("JoosPrograms/StdLib");
-		toVisit.push(stdLib);
-		toVisit.push(root);
+		if(std){
+		    File stdLib = new File("JoosPrograms/StdLib");
+		    toVisit.push(stdLib);
+	        toVisit.push(root);
+		}
 
 		while (!toVisit.isEmpty()) {
 			File currentFile = toVisit.pop();
