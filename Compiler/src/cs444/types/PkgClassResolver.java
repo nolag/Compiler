@@ -88,6 +88,7 @@ public class PkgClassResolver {
     }
 
     private PkgClassResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
+        namedMap.put(start.name, this);
         this.start = start;
         String myName = name = start.dclName;
         Iterator<NameSymbol> pkg = start.pkgImports.iterator();
@@ -303,10 +304,8 @@ public class PkgClassResolver {
                     addAll(name.value, samepkgMap);
                     break;
                 case STAR_IMPORT:
-                    String packageName = name.value;
-                    //note this is already done at the end;
-                    if(packageName.equals("java.lang")) continue;
-                    addAll(packageName, staredMap);
+                    if(name.value.equals("java.lang")) continue;
+                    addAll(name.value, staredMap);
                     break;
                 default:
                     //should not get here!
