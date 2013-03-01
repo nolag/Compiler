@@ -1,5 +1,6 @@
 package cs444.ast;
 
+import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
@@ -37,6 +38,11 @@ public class PrettyPrinter implements ISymbolVisitor {
     }
 
     @Override
+    public void open(ANonTerminal aNonTerminal){
+        level++;
+    }
+
+    @Override
     public void close(AInterfaceOrClassSymbol aInterfaceOrClassSymbol) {
         level--;
     }
@@ -53,6 +59,11 @@ public class PrettyPrinter implements ISymbolVisitor {
 
     @Override
     public void close(ConstructorSymbol constructorSymbol) {
+        level--;
+    }
+
+    @Override
+    public void close(ANonTerminal aNonTerminal){
         level--;
     }
 

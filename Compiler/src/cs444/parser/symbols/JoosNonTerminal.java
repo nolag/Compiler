@@ -54,8 +54,11 @@ public class JoosNonTerminal extends NonTerminal{
 
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
+        visitor.visit(this);
+        visitor.open(this);
         for (ISymbol child : this.children) {
             child.accept(visitor);
         }
+        visitor.close(this);
     }
 }
