@@ -13,7 +13,7 @@ public class JoosNonTerminal extends NonTerminal{
     static{
         noCollapse.add("MODIFIERS");
         noCollapse.add("NAME");
-        noCollapse.add("INTERFACETYPE");
+        noCollapse.add("INTERFACETYPELIST");
         noCollapse.add("CLASSTYPE");
         noCollapse.add("TYPEDECLARATION");
         noCollapse.add("TYPE");

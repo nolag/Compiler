@@ -51,6 +51,7 @@ public class PkgClassResolver {
 
 
     public static final PkgClassResolver primResolver = new PkgClassResolver();
+    public static final PkgClassResolver badResolve = new PkgClassResolver();
 
     private static final Map<AInterfaceOrClassSymbol, PkgClassResolver> resolverMap =
             new HashMap<AInterfaceOrClassSymbol, PkgClassResolver>();
@@ -133,7 +134,9 @@ public class PkgClassResolver {
         for(Entry<String, PkgClassResolver> entry : PkgClassInfo.instance.getNamespaceParts(firstPart)){
             if(namedMap.containsKey(entry)) continue;
             String ename = entry.getKey();
-            if(entryMap.containsKey(ename)) throw new DuplicateDeclarationException(ename, start.dclName);
+            //According to trying in java, this is fine as long as you don't go to use it, so don't let them use it.
+            //if(entryMap.containsKey(ename)) throw new DuplicateDeclarationException(ename, start.dclName);
+            if(entryMap.containsKey(ename)) entryMap.put(ename, badResolve);
             entryMap.put(ename, entry.getValue());
         }
         imported.add(firstPart);
@@ -215,15 +218,14 @@ public class PkgClassResolver {
     }
 
     public PkgClassResolver getClass(String name, boolean die) throws UndeclaredException {
-        if(namedMap.containsKey(name)) return namedMap.get(name);
-        if(samepkgMap.containsKey(name)) return samepkgMap.get(name);
-        if(staredMap.containsKey(name)) return staredMap.get(name);
+        PkgClassResolver retVal = null;
+        if(namedMap.containsKey(name)) retVal = namedMap.get(name);
+        else if(samepkgMap.containsKey(name)) retVal =  samepkgMap.get(name);
+        else if(staredMap.containsKey(name)) retVal =  staredMap.get(name);
+        else retVal = PkgClassInfo.instance.getSymbol(name);
 
-        PkgClassResolver fullResolve = PkgClassInfo.instance.getSymbol(name);
-        if(fullResolve != null)return fullResolve;
-
-        if(die) throw new UndeclaredException(name, start.dclName);
-        return null;
+        if((retVal == null || retVal == badResolve) && die) throw new UndeclaredException(name, start.dclName);
+        return retVal;
     }
 
     private void copyInfo(PkgClassResolver building, Set<PkgClassResolver> visited, List<Set<PkgClassResolver>> resolvedSets, boolean inter)
@@ -296,7 +298,10 @@ public class PkgClassResolver {
                     if(resolver == null) throw new UndeclaredException(name.value, start.dclName);
 
                     String typeName = name.value.substring(name.value.lastIndexOf(".") + 1, name.value.length());
-                    if(namedMap.containsKey(name.value)) throw new DuplicateDeclarationException(name.value, start.dclName);
+
+                    if(namedMap.containsKey(name.value) && namedMap.get(name.value) != resolver)
+                        throw new DuplicateDeclarationException(name.value, start.dclName);
+
                     namedMap.put(name.value, resolver);
                     namedMap.put(typeName, resolver);
                     break;
@@ -322,12 +327,14 @@ public class PkgClassResolver {
             List<Set<PkgClassResolver>> resolvedSets = new LinkedList<Set<PkgClassResolver>>();
 
             if(start.superName != null){
-                building = getClass(start.superName, false);
-                if(building == null) throw new UndeclaredException(start.superName, fullName);
+                building = getClass(start.superName, true);
                 copyInfo(building, visited, resolvedSets, mustBeInterface);
             }
 
+            Set<String> alreadyImps = new HashSet<String>();
+
             for(String impl : start.impls){
+                if(alreadyImps.contains(impl)) throw new DuplicateDeclarationException(impl, fullName);
                 building = getClass(impl, false);
                 if(building == null) throw new UndeclaredException(start.superName, fullName);
                 copyInfo(building, visited, resolvedSets, mustBeInterface);

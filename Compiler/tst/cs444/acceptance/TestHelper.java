@@ -13,7 +13,7 @@ import cs444.types.PkgClassInfo;
 
 public class TestHelper {
 
-	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean getFiles, boolean printErrors) throws IOException, InterruptedException {
+	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors) throws IOException, InterruptedException {
 		File folder = new File(path);
 
 		int totalTests = 0;
@@ -23,11 +23,11 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("J1_3_SingleTypeImport_MultipleImportsOfSameType")) continue;
+			//if (!fileName.equals("J1_4_SingleTypeImport_OnDemandsClash")) continue;
 			//System.out.println( path + fileName);
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
-			    List<String> sourceFiles = getAllFiles(file, getFiles);
+			    List<String> sourceFiles = getAllFiles(file);
 
 				String[] array = new String[sourceFiles.size()];
 				for (int i = 0; i < array.length; i++)
@@ -41,7 +41,7 @@ public class TestHelper {
 				}
 				totalTests++;
 			} else if (file.isDirectory()) {
-			    List<String> sourceFiles = getAllFiles(file, getFiles);
+			    List<String> sourceFiles = getAllFiles(file);
 
 				String[] array = new String[sourceFiles.size()];
 				for (int i = 0; i < array.length; i++)
@@ -65,16 +65,15 @@ public class TestHelper {
 		assertEquals("Compiler return unexpected return code compiling " + failures + " files. Expected return code was: " + expectedReturnCode, 0, failures);
 	}
 
-	private static ArrayList<String> getAllFiles(File root, boolean std) {
+	private static ArrayList<String> getAllFiles(File root) {
 
 		ArrayList<String> result = new ArrayList<String>();
 		Stack<File> toVisit = new Stack<File>();
 
-		if(std){
-		    File stdLib = new File("JoosPrograms/StdLib");
-		    toVisit.push(stdLib);
-	        toVisit.push(root);
-		}
+		File stdLib = new File("JoosPrograms/StdLib");
+        toVisit.push(stdLib);
+
+		toVisit.push(root);
 
 		while (!toVisit.isEmpty()) {
 			File currentFile = toVisit.pop();

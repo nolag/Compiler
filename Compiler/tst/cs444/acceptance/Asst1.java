@@ -10,24 +10,24 @@ public class Asst1 {
     public void testValidJoosCode() throws IOException, InterruptedException {
         String path = "JoosPrograms/SyntacticallyValidPrograms/";
 
-        TestHelper.assertReturnCodeForFiles(path, 0, true,  true);
+        TestHelper.assertReturnCodeForFiles(path, 0,  true);
     }
 
     @Test
     public void testInvalidJoosCode() throws IOException, InterruptedException {
         String path = "JoosPrograms/SyntacticallyInvalidPrograms/";
 
-        TestHelper.assertReturnCodeForFiles(path, 42, true,  false);
+        TestHelper.assertReturnCodeForFiles(path, 42,  false);
     }
 
     @Test
     public void testMarmosetTestCases() throws IOException, InterruptedException {
         String path = "JoosPrograms/MarmosetPrograms/a1/valid/";
 
-        TestHelper.assertReturnCodeForFiles(path, 0, true,  true);
+        TestHelper.assertReturnCodeForFiles(path, 0,  true);
 
         path = "JoosPrograms/MarmosetPrograms/a1/invalid/";
 
-        TestHelper.assertReturnCodeForFiles(path, 42, true, false);
+        TestHelper.assertReturnCodeForFiles(path, 42, false);
     }
 }
