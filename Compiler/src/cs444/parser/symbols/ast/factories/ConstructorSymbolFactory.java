@@ -36,15 +36,10 @@ public class ConstructorSymbolFactory extends ASTSymbolFactory{
 
                 ANonTerminal params = (ANonTerminal) constructorDcl.firstOrDefault("FormalParameterList");
 
-                List<ISymbol> children = Collections.emptyList();
-                if(null != body) children = body.children;
-
                 Iterable<ISymbol> paramIter = Collections.emptyList();;
                 if(null != params) paramIter = params.children;
 
-                //ANonTerminal from, List<ISymbol> children, Iterable<ISymbol> args, Iterable<ISymbol> body)
-
-                ConstructorSymbol constructor = new ConstructorSymbol(name, constructorDcl, children, paramIter);
+                ConstructorSymbol constructor = new ConstructorSymbol(name, constructorDcl, body, paramIter);
                 constructor.validate();
                 parent.children.add(constructor);
             }

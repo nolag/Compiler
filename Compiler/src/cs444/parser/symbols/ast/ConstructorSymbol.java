@@ -1,7 +1,5 @@
 package cs444.parser.symbols.ast;
 
-import java.util.List;
-
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
@@ -13,13 +11,13 @@ public class ConstructorSymbol extends AModifiersOptSymbol{
     //TODO eventually make a class for arguments
     public final Iterable<ISymbol> args;
 
-    public ConstructorSymbol(String dclName, ANonTerminal from, List<ISymbol> children, Iterable<ISymbol> args)
+    public ConstructorSymbol(String dclName, ANonTerminal from, ANonTerminal body, Iterable<ISymbol> args)
             throws IllegalModifierException, UnsupportedException {
 
         super("ConstructorDeclaration", dclName, from, null);
 
         this.args = args;
-        this.children.addAll(children);
+        if(body != null) children.addAll(body.children);
     }
 
     @Override

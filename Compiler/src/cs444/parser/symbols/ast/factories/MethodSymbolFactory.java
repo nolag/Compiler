@@ -27,7 +27,8 @@ public class MethodSymbolFactory extends ASTSymbolFactory{
                 MethodHeader methodHeader = new MethodHeader((ANonTerminal) methDeclaration.firstOrDefault("MethodHeader"));
                 ANonTerminal methodBody = (ANonTerminal) methDeclaration.firstOrDefault("MethodBody");
 
-                MethodSymbol method = new MethodSymbol(methDeclaration, methodHeader, methodBody);
+                MethodSymbol method = new MethodSymbol(methodHeader.name.value, getModifiersParent(methDeclaration), methodHeader.type, 
+                        methodBody, methodHeader.dcls);
                 method.validate();
 
                 parent.children.add(method);
@@ -36,5 +37,9 @@ public class MethodSymbolFactory extends ASTSymbolFactory{
             parent.children.removeAll(remove);
         }
         return from;
+    }
+
+    private static ANonTerminal getModifiersParent(ANonTerminal methDeclaration) {
+        return (ANonTerminal)methDeclaration.firstOrDefault("MethodHeader");
     }
 }

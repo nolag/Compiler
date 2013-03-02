@@ -11,16 +11,12 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 public class MethodSymbol extends AModifiersOptSymbol{
     public final Iterable<DclSymbol> params;
 
-    public MethodSymbol(ANonTerminal from, MethodHeader header, ANonTerminal body)
+    public MethodSymbol(String dclName, ANonTerminal modifiersParent, TypeSymbol type, ANonTerminal body, Iterable<DclSymbol> args)
         throws IllegalModifierException, UnsupportedException {
-        super("Method", header.name.value, getModifiersParent(from), header.type);
+        super("Method", dclName, modifiersParent, type);
 
         if(body != null) children.addAll(body.children);
-        params = header.dcls;
-    }
-
-    private static ANonTerminal getModifiersParent(ANonTerminal from) {
-        return (ANonTerminal)from.firstOrDefault("MethodHeader");
+        params = args;
     }
 
     @Override

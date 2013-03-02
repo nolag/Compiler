@@ -419,8 +419,8 @@ public class ParserTest {
         Reader reader = new FileReader("CompWithMethods.java");
         Lexer lexer = new Lexer(reader);
         ANonTerminal start = parser.parse(lexer);
-        
-        IASTBuilder builder = new JoosASTBuilder();        
+
+        IASTBuilder builder = new JoosASTBuilder();
         start = (ANonTerminal)builder.build("CompWithMethods.java", start);
 
         assertEquals(9, start.children.size());
