@@ -4,7 +4,7 @@ import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.MethodSymbol;
+import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.types.exceptions.DuplicateDeclarationException;
 
@@ -18,12 +18,12 @@ public class LocalDclLinker extends EmptyVisitor {
 
     // creates root scope which will contain parameters declarations
     @Override
-    public void open(MethodSymbol methodSymbol){
+    public void open(MethodOrConstructorSymbol methodSymbol){
         pushNewScope();
     }
 
     @Override
-    public void close(MethodSymbol methodSymbol){
+    public void close(MethodOrConstructorSymbol methodSymbol){
         popCurrentScope();
     }
 

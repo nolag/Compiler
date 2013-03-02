@@ -30,6 +30,7 @@ import cs444.parser.symbols.ast.ClassSymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
+import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.NameSymbol.Type;
@@ -531,7 +532,7 @@ public class ParserTest {
     }
 
     private void assertSmallClassConstructors(Iterator<ConstructorSymbol> constructors){
-        ConstructorSymbol constructor = constructors.next();
+        MethodOrConstructorSymbol constructor = constructors.next();
         assertFalse(constructors.hasNext());
         assertEquals(ProtectionLevel.PUBLIC, constructor.getProtectionLevel());
         assertEquals(ImplementationLevel.NORMAL, constructor.getImplementationLevel());

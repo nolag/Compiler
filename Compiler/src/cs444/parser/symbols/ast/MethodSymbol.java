@@ -1,22 +1,14 @@
 package cs444.parser.symbols.ast;
 
-import cs444.CompilerException;
-import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
-import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
 
-public class MethodSymbol extends AModifiersOptSymbol{
-    public final Iterable<DclSymbol> params;
-
-    public MethodSymbol(String dclName, ANonTerminal modifiersParent, TypeSymbol type, ANonTerminal body, Iterable<DclSymbol> args)
+public class MethodSymbol extends MethodOrConstructorSymbol {
+    public MethodSymbol(MethodHeader header, ANonTerminal modifiersParent, TypeSymbol type, ANonTerminal body)
         throws IllegalModifierException, UnsupportedException {
-        super("Method", dclName, modifiersParent, type);
-
-        if(body != null) children.addAll(body.children);
-        params = args;
+        super("Method", header, modifiersParent, body, type);
     }
 
     @Override
@@ -38,42 +30,7 @@ public class MethodSymbol extends AModifiersOptSymbol{
     }
 
     @Override
-    public ProtectionLevel defaultProtectionLevel() {
-        // We don't support package private members
-        return ProtectionLevel.NOT_VALID;
-    }
-
-    @Override
-    public ImplementationLevel defaultImplementationLevel() {
-        return ImplementationLevel.NORMAL;
-    }
-
-    @Override
     public boolean isCollapsable() {
         return false;
-    }
-
-    @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
-        visitor.open(this);
-
-        for (DclSymbol param : this.params) {
-            param.accept(visitor);
-        }
-
-        for (ISymbol child : children) {
-            child.accept(visitor);
-        }
-
-        visitor.close(this);
-    }
-
-    private boolean arelocalVarsLinked = false;
-    public boolean areLocalVarLinked() {
-        return arelocalVarsLinked;
-    }
-
-    public void localVarsLinked() {
-        arelocalVarsLinked = true;
     }
 }

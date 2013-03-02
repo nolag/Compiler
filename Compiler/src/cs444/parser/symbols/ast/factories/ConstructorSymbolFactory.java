@@ -1,6 +1,5 @@
 package cs444.parser.symbols.ast.factories;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,7 +7,9 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.ClassSymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
-import cs444.parser.symbols.ast.NameSymbol;
+import cs444.parser.symbols.ast.MethodHeader;
+import cs444.parser.symbols.ast.MethodHeaderFactory;
+import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
@@ -28,18 +29,12 @@ public class ConstructorSymbolFactory extends ASTSymbolFactory{
             for(ISymbol symbol : constructors){
                 remove.add(symbol);
                 ANonTerminal constructorDcl = (ANonTerminal) symbol;
-                ANonTerminal dcl = (ANonTerminal) constructorDcl.firstOrDefault("ConstructorDeclarator");
+                MethodHeader header = MethodHeaderFactory.buildForConstructor((ANonTerminal) constructorDcl.firstOrDefault("ConstructorDeclarator"));
                 ANonTerminal body = (ANonTerminal) constructorDcl.firstOrDefault("ConstructorBody");
 
-                String name = ((NameSymbol)dcl.firstOrDefault("Name")).value;
-                if(!name.equals(parent.dclName)) throw new UnsupportedException("construcotrs with a different name than their parent");
+                if(!header.name.value.equals(parent.dclName)) throw new UnsupportedException("construcotrs with a different name than their parent");
 
-                ANonTerminal params = (ANonTerminal) constructorDcl.firstOrDefault("FormalParameterList");
-
-                Iterable<ISymbol> paramIter = Collections.emptyList();;
-                if(null != params) paramIter = params.children;
-
-                ConstructorSymbol constructor = new ConstructorSymbol(name, constructorDcl, body, paramIter);
+                MethodOrConstructorSymbol constructor = new ConstructorSymbol(header, constructorDcl, body);
                 constructor.validate();
                 parent.children.add(constructor);
             }

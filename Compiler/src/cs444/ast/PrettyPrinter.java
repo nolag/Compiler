@@ -17,20 +17,18 @@ public class PrettyPrinter implements ISymbolVisitor {
     }
 
     @Override
-    public void open(MethodSymbol method) {
-        print("method: " + method.type.value + " " + method.dclName);
-        level++;
-    }
-
-    @Override
     public void open(DclSymbol dclSymbol) {
         print("dclSymbol: " + dclSymbol.type.value + " " + dclSymbol.dclName);
         level++;
     }
 
     @Override
-    public void open(ConstructorSymbol constructorSymbol) {
-        print("Constructor");
+    public void open(MethodOrConstructorSymbol method) {
+        if (method.type == null){
+            print("Constructor: " + method.dclName);
+        }else{
+            print("Method: " + method.type.value + " " + method.dclName);
+        }
         level++;
     }
 
@@ -55,7 +53,7 @@ public class PrettyPrinter implements ISymbolVisitor {
     }
 
     @Override
-    public void close(ConstructorSymbol constructorSymbol) {
+    public void close(MethodOrConstructorSymbol methodSymbol) {
         level--;
     }
 
