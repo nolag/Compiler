@@ -23,9 +23,6 @@ public class EmptyVisitor implements ISymbolVisitor {
     public void open(AInterfaceOrClassSymbol aInterfaceOrClassSymbol)  throws CompilerException {}
 
     @Override
-    public void open(MethodSymbol method)  throws CompilerException  {}
-
-    @Override
     public void open(DclSymbol dclSymbol) throws CompilerException  {}
 
     @Override
