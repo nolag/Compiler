@@ -5,8 +5,8 @@ import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
-import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
@@ -23,13 +23,10 @@ public class EmptyVisitor implements ISymbolVisitor {
     public void open(AInterfaceOrClassSymbol aInterfaceOrClassSymbol)  throws CompilerException {}
 
     @Override
-    public void open(MethodSymbol method)  throws CompilerException  {}
-
-    @Override
     public void open(DclSymbol dclSymbol) throws CompilerException  {}
 
     @Override
-    public void open(ConstructorSymbol constructorSymbol) throws CompilerException {}
+    public void open(MethodOrConstructorSymbol constructorSymbol) throws CompilerException {}
 
     @Override
     public void open(JoosNonTerminal aNonTerminal) throws CompilerException {}
@@ -44,7 +41,7 @@ public class EmptyVisitor implements ISymbolVisitor {
     public void close(DclSymbol dclSymbol) throws CompilerException {}
 
     @Override
-    public void close(ConstructorSymbol constructorSymbol) throws CompilerException {}
+    public void close(MethodOrConstructorSymbol constructorSymbol) throws CompilerException {}
 
     @Override
     public void close(JoosNonTerminal aNonTerminal) throws CompilerException {}

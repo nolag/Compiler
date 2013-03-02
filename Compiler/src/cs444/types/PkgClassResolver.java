@@ -16,8 +16,8 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
-import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.exceptions.UnsupportedException;
@@ -359,15 +359,8 @@ public class PkgClassResolver {
 
     private void linkLocalNamesToDcl() throws CompilerException {
         for (ISymbol child : start.children) {
-            if(child instanceof ConstructorSymbol){
-                child.accept(new LocalDclLinker(fullName));
-            }else if (child instanceof MethodSymbol){
-                MethodSymbol method = (MethodSymbol) child;
-                if (method.areLocalVarLinked()) continue;
-
-                child.accept(new LocalDclLinker(fullName));
-
-                method.localVarsLinked();
+            if (child instanceof MethodOrConstructorSymbol){
+                ((MethodOrConstructorSymbol) child).resolveLocalVars(fullName);
             }
         }
     }
