@@ -319,6 +319,8 @@ public class PkgClassResolver {
 
         if(visited.contains(this)) throw new CircularDependancyException(start.dclName);
         if(mustBeInterface && start.isClass()) throw new UnsupportedException("Interface extending a class");
+        if(mustBeClass && !start.isClass()) throw new UnsupportedException("Class extending interface");
+
         visited.add(this);
 
         if(!isBuilt){
