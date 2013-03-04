@@ -5,7 +5,7 @@ import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
 
-public class MethodSymbol extends MethodOrConstructorSymbol {
+public class MethodSymbol extends AMethodSymbol {
     public MethodSymbol(MethodHeader header, ANonTerminal modifiersParent, TypeSymbol type, ANonTerminal body)
         throws IllegalModifierException, UnsupportedException {
         super("Method", header, modifiersParent, body, type);

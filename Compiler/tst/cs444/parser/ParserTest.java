@@ -23,6 +23,7 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.Terminal;
+import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
@@ -31,7 +32,6 @@ import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
-import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.NameSymbol.Type;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
@@ -395,7 +395,7 @@ public class ParserTest {
         Reader reader = new FileReader("CompleteCompUnit.java");
         Lexer lexer = new Lexer(reader);
         ANonTerminal start = parser.parse(lexer);
-        
+
         IASTBuilder builder = new JoosASTBuilder();
         start = (ANonTerminal)builder.build("CompleteCompUnit.java", start);
 
@@ -460,7 +460,7 @@ public class ParserTest {
         assertFalse(imports.hasNext());
     }
 
-    private void assertSmallClassMethods(Iterator<MethodSymbol> methods) {
+    private void assertSmallClassMethods(Iterator<AMethodSymbol> methods) {
         String [] methodNames = new String [] { "getValue", "valueReturn", "voidMethod", "doStuff" };
 
         ProtectionLevel [] methodProtections = new ProtectionLevel [] {
@@ -478,7 +478,7 @@ public class ParserTest {
         boolean [] hasBody = { true, true, true, false };
 
         for(int i = 0; i < 4; i++){
-            MethodSymbol method = methods.next();
+            AMethodSymbol method = methods.next();
             assertEquals(methodNames[i], method.dclName);
             assertEquals(methodProtections[i], method.getProtectionLevel());
             assertEquals(types[i], method.type.value);

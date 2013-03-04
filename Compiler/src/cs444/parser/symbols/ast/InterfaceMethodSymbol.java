@@ -7,13 +7,10 @@ import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
 
-public class InterfaceMethodSymbol extends AModifiersOptSymbol{
+public class InterfaceMethodSymbol extends AMethodSymbol{
 
-    public InterfaceMethodSymbol(MethodHeader header, ANonTerminal from)
-        throws IllegalModifierException, UnsupportedException {
-
-        super("InterfaceMethod", header.name.value, getModifiersParent(from), header.type);
-
+    public InterfaceMethodSymbol(MethodHeader header, ANonTerminal from) throws IllegalModifierException, UnsupportedException {
+        super("InterfaceMethod", header, getModifiersParent(from), null, header.type);
     }
 
     private static ANonTerminal getModifiersParent(ANonTerminal from) {
@@ -36,19 +33,8 @@ public class InterfaceMethodSymbol extends AModifiersOptSymbol{
     }
 
     @Override
-    public ProtectionLevel defaultProtectionLevel() {
-        // We don't support package private members
-        return ProtectionLevel.NOT_VALID;
-    }
-
-    @Override
     public ImplementationLevel defaultImplementationLevel() {
-        return ImplementationLevel.NORMAL;
-    }
-
-    @Override
-    public boolean isCollapsable() {
-        return false;
+        return ImplementationLevel.ABSTRACT;
     }
 
     @Override

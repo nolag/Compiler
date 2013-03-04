@@ -14,11 +14,11 @@ import java.util.Set;
 import cs444.CompilerException;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
+import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
-import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.exceptions.CircularDependancyException;
@@ -29,11 +29,13 @@ import cs444.types.exceptions.UndeclaredException;
 
 public class PkgClassResolver {
     private static final String DEFAULT_PKG = "";
+    private static final String LANG = "java.lang";
+    private static final String OBJECT = LANG + ".Object";
 
     private final AInterfaceOrClassSymbol start;
 
-    private final Map<String, MethodSymbol> methodMap = new HashMap<String, MethodSymbol>();
-    private final Map<String, MethodSymbol> smethodMap = new HashMap<String, MethodSymbol>();
+    private final Map<String, AMethodSymbol> methodMap = new HashMap<String, AMethodSymbol>();
+    private final Map<String, AMethodSymbol> smethodMap = new HashMap<String, AMethodSymbol>();
     private final Map<String, DclSymbol> fieldMap = new HashMap<String, DclSymbol>();
     private final Map<String, DclSymbol> sfieldMap = new HashMap<String, DclSymbol>();
 
@@ -52,9 +54,7 @@ public class PkgClassResolver {
 
     private boolean isBuilt = false;
 
-
-    public static final PkgClassResolver primResolver = new PkgClassResolver();
-    public static final PkgClassResolver badResolve = new PkgClassResolver();
+    public static final PkgClassResolver badResolve = new PkgClassResolver("!invalid");
 
     private static final Map<AInterfaceOrClassSymbol, PkgClassResolver> resolverMap =
             new HashMap<AInterfaceOrClassSymbol, PkgClassResolver>();
@@ -67,7 +67,7 @@ public class PkgClassResolver {
         return sb.toString();
     }
 
-    private static String generateUniqueName(MethodSymbol methodSymbol){
+    private static String generateUniqueName(AMethodSymbol methodSymbol){
         List<String> types = new LinkedList<String>();
         for(DclSymbol param : methodSymbol.params) types.add(param.type.value);
         return generateUniqueName(methodSymbol.dclName, types);
@@ -84,10 +84,14 @@ public class PkgClassResolver {
         return resolver;
     }
 
-    private PkgClassResolver() {
+    public static PkgClassResolver getPrimativeResolver(String name){
+        return new PkgClassResolver(name);
+    }
+
+    private PkgClassResolver(String name) {
         this.start = null;
         isBuilt = true;
-        fullName = name = "Primitive";
+        fullName = this.name = name;
         pkg = null;
     }
 
@@ -185,10 +189,10 @@ public class PkgClassResolver {
         return dclList;
     }
 
-    public MethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes, PkgClassResolver pkgClass) throws UndeclaredException{
+    public AMethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes, PkgClassResolver pkgClass) throws UndeclaredException{
         if(start == null) throw new UndeclaredException(name, "primatives");
-        final Map<String, MethodSymbol> getFrom = isStatic ? methodMap : smethodMap;
-        MethodSymbol retVal = getFrom.get(generateUniqueName(name, paramTypes));
+        final Map<String, AMethodSymbol> getFrom = isStatic ? methodMap : smethodMap;
+        AMethodSymbol retVal = getFrom.get(generateUniqueName(name, paramTypes));
 
         if(retVal == null) throw new UndeclaredException(name, start.dclName);
 
@@ -237,7 +241,7 @@ public class PkgClassResolver {
         Collections.reverse(copyChildren);
 
         for(ISymbol child : copyChildren){
-            if(DclSymbol.class.isInstance(child)){
+            if(child instanceof DclSymbol){
                 DclSymbol dcl = (DclSymbol) child;
                 DclSymbol field = fieldMap.get(dcl.dclName);
                 field = field == null ? sfieldMap.get(dcl.dclName) : field;
@@ -249,12 +253,13 @@ public class PkgClassResolver {
                     addTo.put(dcl.dclName, dcl);
                 }
                 start.children.add(0, dcl);
-            }else if(MethodSymbol.class.isInstance(child)){
-                MethodSymbol methodSymbol = (MethodSymbol) child;
+            }else if(child instanceof AMethodSymbol){
+                AMethodSymbol methodSymbol = (AMethodSymbol) child;
                 String uniqueName = generateUniqueName(methodSymbol);
-                MethodSymbol has = methodMap.get(uniqueName);
+                AMethodSymbol has = methodMap.get(uniqueName);
                 has = has == null ? smethodMap.get(uniqueName) : has;
-                MethodSymbol is = has == null ? methodSymbol : has;
+                AMethodSymbol is = has == null ? methodSymbol : has;
+
                 //If it has it move it to the front so that it's in the correct place for the super's this
                 start.children.remove(is);
                 start.children.add(0, is);
@@ -269,7 +274,7 @@ public class PkgClassResolver {
                             && is.getProtectionLevel() != ProtectionLevel.PUBLIC && is.getProtectionLevel() != ProtectionLevel.PROTECTED)
                         throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is protected, but overrided is not protected or public");
                     //covarient return types not allowed in JOOS, it was added in java 5
-                    if(!methodSymbol.type.value.equals(is.type.value))
+                    if(methodSymbol.resolver.getClass(is.type.value, true) != building.getClass(methodSymbol.type.value, true))
                         throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "return types don't match");
                 }else{
                     //TODO later super constructor(s)
@@ -278,8 +283,35 @@ public class PkgClassResolver {
         }
     }
 
-    private void build(Set<PkgClassResolver> visited, boolean mustBeInterface)
-            throws CompilerException{
+    public void verifyObject() throws CompilerException{
+        PkgClassResolver obj = getClass(OBJECT, true);
+        if(obj == this) return;
+        obj.build();
+        for(AMethodSymbol methodSymbol : obj.start.getMethods()){
+            String uniqueName = generateUniqueName(methodSymbol);
+            AMethodSymbol has = methodMap.get(uniqueName);
+            has = has == null ? smethodMap.get(uniqueName) : has;
+            AMethodSymbol is = has == null ? methodSymbol : has;
+            //If it has it move it to the front so that it's in the correct place for the super's this
+            start.children.remove(is);
+            if(has != null){
+                if(is.isStatic() != methodSymbol.isStatic())
+                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is static and not static");
+                if(methodSymbol.getImplementationLevel() == ImplementationLevel.FINAL && has != null)
+                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is final, but overrided");
+                if(methodSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC && is.getProtectionLevel() != ProtectionLevel.PUBLIC)
+                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is public, but overrided is not");
+                if(methodSymbol.getProtectionLevel() == ProtectionLevel.PROTECTED
+                        && is.getProtectionLevel() != ProtectionLevel.PUBLIC && is.getProtectionLevel() != ProtectionLevel.PROTECTED)
+                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is protected, but overrided is not protected or public");
+                //covarient return types not allowed in JOOS, it was added in java 5
+                if(methodSymbol.resolver.getClass(is.type.value, true) != obj.getClass(methodSymbol.type.value, true))
+                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "return types don't match");
+            }
+        }
+    }
+
+    private void build(Set<PkgClassResolver> visited, boolean mustBeInterface) throws CompilerException{
 
         if(visited.contains(this)) throw new CircularDependancyException(start.dclName);
         if(mustBeInterface && start.isClass()) throw new UnsupportedException("Interface extending a class");
@@ -303,7 +335,7 @@ public class PkgClassResolver {
                     namedMap.put(typeName, resolver);
                     break;
                 case STAR_IMPORT:
-                    if(name.value.equals("java.lang")) continue;
+                    if(name.value.equals(LANG)) continue;
                     addAll(name.value, staredMap);
                     break;
                 default:
@@ -314,14 +346,15 @@ public class PkgClassResolver {
             addAll(pkg, samepkgMap);
             addAll("java.lang", staredMap);
 
-            for (MethodSymbol methodSymbol : start.getMethods()){
+            for (AMethodSymbol methodSymbol : start.getMethods()){
                 String uniqueName = generateUniqueName(methodSymbol);
                 if(methodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
                 if(smethodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
 
-                final Map<String, MethodSymbol> addTo = methodSymbol.isStatic() ? methodMap : smethodMap;
+                final Map<String, AMethodSymbol> addTo = methodSymbol.isStatic() ? methodMap : smethodMap;
                 addTo.put(uniqueName, methodSymbol);
                 findClass(methodSymbol.type.value);
+                methodSymbol.resolver = this;
             }
 
             for(DclSymbol fieldSymbol : start.getFields()){
@@ -331,6 +364,7 @@ public class PkgClassResolver {
                 final Map<String, DclSymbol> addTo = fieldSymbol.isStatic() ? sfieldMap : fieldMap;
                 addTo.put(fieldSymbol.dclName, fieldSymbol);
                 findClass(fieldSymbol.type.value);
+                fieldSymbol.resolve = this;
             }
 
             //TODO later constructors
@@ -344,6 +378,8 @@ public class PkgClassResolver {
             if(start.superName != null){
                 building = findClass(start.superName);
                 copyInfo(building, visited, resolvedSets, mustBeInterface);
+            }else{
+                verifyObject();
             }
 
             Set<String> alreadyImps = new HashSet<String>();
@@ -361,7 +397,7 @@ public class PkgClassResolver {
 
             for(PkgClassResolver resolver : visited) assignableTo.add(resolver.fullName);
             //Java specific
-            assignableTo.add("java.lang.Object");
+            assignableTo.add(OBJECT);
 
             start.accept(new TypeResolverVisitor(this));
             linkLocalNamesToDcl();

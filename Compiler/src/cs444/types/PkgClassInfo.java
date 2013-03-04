@@ -60,12 +60,12 @@ public class PkgClassInfo {
     }
 
     private void addInitialSymbols() {
-        symbolMap.put("boolean", PkgClassResolver.primResolver);
-        symbolMap.put("byte", PkgClassResolver.primResolver);
-        symbolMap.put("short", PkgClassResolver.primResolver);
-        symbolMap.put("int", PkgClassResolver.primResolver);
-        symbolMap.put("char", PkgClassResolver.primResolver);
-        symbolMap.put("void", PkgClassResolver.primResolver);
+        symbolMap.put("boolean", PkgClassResolver.getPrimativeResolver("boolean"));
+        symbolMap.put("byte", PkgClassResolver.getPrimativeResolver("byte"));
+        symbolMap.put("short", PkgClassResolver.getPrimativeResolver("short"));
+        symbolMap.put("int", PkgClassResolver.getPrimativeResolver("int"));
+        symbolMap.put("char", PkgClassResolver.getPrimativeResolver("char"));
+        symbolMap.put("void", PkgClassResolver.getPrimativeResolver("void"));
     }
 
     // NOTE: this method is for tests only

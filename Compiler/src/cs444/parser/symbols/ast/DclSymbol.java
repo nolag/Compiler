@@ -6,11 +6,12 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
+import cs444.types.PkgClassResolver;
 
 
 public class DclSymbol extends AModifiersOptSymbol{
     private final boolean isLocal;
-
+    public PkgClassResolver resolve;
 
     public DclSymbol(String dclName, ANonTerminal from, TypeSymbol type, ANonTerminal initVal, boolean isLocal)
             throws IllegalModifierException, UnsupportedException {
