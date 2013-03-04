@@ -23,6 +23,7 @@ import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.exceptions.CircularDependancyException;
 import cs444.types.exceptions.DuplicateDeclarationException;
+import cs444.types.exceptions.IllegalExtendsException;
 import cs444.types.exceptions.IllegalMethodOverloadException;
 import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
@@ -51,6 +52,7 @@ public class PkgClassResolver {
     public final String name;
     public final String fullName;
     public final String pkg;
+    private final boolean isFinal;
 
     private boolean isBuilt = false;
 
@@ -93,6 +95,7 @@ public class PkgClassResolver {
         isBuilt = true;
         fullName = this.name = name;
         pkg = null;
+        isFinal = true;
     }
 
     private PkgClassResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
@@ -112,6 +115,7 @@ public class PkgClassResolver {
 
         fullName = myName;
         this.pkg = mypkg;
+        isFinal = start.getImplementationLevel() == ImplementationLevel.FINAL;
     }
 
     private void addAll(String firstPart, Map<String, PkgClassResolver> entryMap) throws DuplicateDeclarationException{
@@ -229,11 +233,11 @@ public class PkgClassResolver {
         return getClass(name, true);
     }
 
-    private void copyInfo(PkgClassResolver building, Set<PkgClassResolver> visited, List<Set<PkgClassResolver>> resolvedSets, boolean inter)
+    private void copyInfo(PkgClassResolver building, Set<PkgClassResolver> visited, List<Set<PkgClassResolver>> resolvedSets, boolean inter, boolean sclass)
             throws CompilerException{
 
         Set<PkgClassResolver> cpySet = new HashSet<PkgClassResolver>(visited);
-        building.build(cpySet, inter);
+        building.build(cpySet, inter, sclass);
         resolvedSets.add(cpySet);
 
         //copy in reverse order so that when they are added to the start they are in order
@@ -311,7 +315,7 @@ public class PkgClassResolver {
         }
     }
 
-    private void build(Set<PkgClassResolver> visited, boolean mustBeInterface) throws CompilerException{
+    private void build(Set<PkgClassResolver> visited, boolean mustBeInterface, boolean mustBeClass) throws CompilerException{
 
         if(visited.contains(this)) throw new CircularDependancyException(start.dclName);
         if(mustBeInterface && start.isClass()) throw new UnsupportedException("Interface extending a class");
@@ -377,7 +381,8 @@ public class PkgClassResolver {
 
             if(start.superName != null){
                 building = findClass(start.superName);
-                copyInfo(building, visited, resolvedSets, mustBeInterface);
+                if(building.isFinal) throw new IllegalExtendsException(start.superName);
+                copyInfo(building, visited, resolvedSets, mustBeInterface, true);
             }else{
                 verifyObject();
             }
@@ -388,7 +393,7 @@ public class PkgClassResolver {
                 if(alreadyImps.contains(impl)) throw new DuplicateDeclarationException(impl, fullName);
                 building = findClass(impl);
                 if(building == null) throw new UndeclaredException(start.superName, fullName);
-                copyInfo(building, visited, resolvedSets, mustBeInterface);
+                copyInfo(building, visited, resolvedSets, true, false);
             }
 
             for(Set<PkgClassResolver> pkgSet : resolvedSets) visited.addAll(pkgSet);
@@ -416,7 +421,7 @@ public class PkgClassResolver {
     }
 
     public void build() throws CompilerException{
-        build(new HashSet<PkgClassResolver>(), false);
+        build(new HashSet<PkgClassResolver>(), false, false);
     }
 
     public PkgClassResolver getSuper() throws UndeclaredException{
