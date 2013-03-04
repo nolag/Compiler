@@ -394,6 +394,7 @@ public class PkgClassResolver {
                 building = findClass(impl);
                 if(building == null) throw new UndeclaredException(start.superName, fullName);
                 copyInfo(building, visited, resolvedSets, true, false);
+                alreadyImps.add(impl);
             }
 
             for(Set<PkgClassResolver> pkgSet : resolvedSets) visited.addAll(pkgSet);
