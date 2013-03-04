@@ -31,8 +31,8 @@ public class TypeSymbolFactory extends ASTSymbolFactory{
             typeChild = nonTerm.children.get(0);
         }
 
-        ATerminal primative = (ATerminal)typeChild;
-        String name = primative.value;
+        ATerminal primitive = (ATerminal)typeChild;
+        String name = primitive.value;
 
         return new TypeSymbol(name, isArray);
     }

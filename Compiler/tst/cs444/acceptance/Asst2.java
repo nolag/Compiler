@@ -6,11 +6,11 @@ import org.junit.Test;
 
 public class Asst2 {
 
-//	@Test
-//    public void testTypeCorrectJoosCode() throws IOException, InterruptedException {
-//        TestHelper.assertReturnCodeForFiles("JoosPrograms/TypeCorrectPrograms/", 0,  true);
-//    }
-//
+	@Test
+    public void testTypeCorrectJoosCode() throws IOException, InterruptedException {
+        TestHelper.assertReturnCodeForFiles("JoosPrograms/A2/TypeCorrectPrograms/", 0,  true);
+    }
+
 //    @Test
 //    public void testNonTypeCorrectJoosCode() throws IOException, InterruptedException {
 //        TestHelper.assertReturnCodeForFiles("JoosPrograms/NonTypeCorrectPrograms/", 42, false);

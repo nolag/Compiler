@@ -10,6 +10,7 @@ import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.ast.expressions.CreationExpression;
 
 public class EmptyVisitor implements ISymbolVisitor {
 
@@ -51,4 +52,10 @@ public class EmptyVisitor implements ISymbolVisitor {
 
     @Override
     public void visit(NameSymbol nameSymbol) throws CompilerException {}
+
+    @Override
+    public void open(CreationExpression creationExpression) throws CompilerException {}
+
+    @Override
+    public void close(CreationExpression creationExpression) throws CompilerException {}
 }

@@ -1,11 +1,12 @@
-package cs444.parser.symbols.ast.factories;
+package cs444.parser.symbols.ast.factories.expressions;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
-import cs444.parser.symbols.ast.CastExpressionSymbol;
+import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
+import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 

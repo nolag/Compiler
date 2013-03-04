@@ -10,11 +10,13 @@ import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.ast.expressions.CreationExpression;
 
 public interface ISymbolVisitor {
     void open(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException;
     void open(final DclSymbol dclSymbol) throws CompilerException;
     void open(final MethodOrConstructorSymbol method) throws CompilerException;
+    void open(final CreationExpression creationExpression) throws CompilerException;
     void open(final JoosNonTerminal aNonTerminal) throws CompilerException;
 
     void close(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException;
@@ -22,6 +24,7 @@ public interface ISymbolVisitor {
     void close(final DclSymbol dclSymbol) throws CompilerException;
     void close(final MethodOrConstructorSymbol method) throws CompilerException;
     void close(final JoosNonTerminal aNonTerminal) throws CompilerException;
+    void close(final CreationExpression creationExpression) throws CompilerException;
 
     void visit(final TypeSymbol typeSymbol) throws CompilerException;
     void visit(final NameSymbol nameSymbol) throws CompilerException;

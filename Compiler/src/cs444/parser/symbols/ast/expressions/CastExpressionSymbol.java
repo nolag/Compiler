@@ -1,4 +1,4 @@
-package cs444.parser.symbols.ast;
+package cs444.parser.symbols.ast.expressions;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;

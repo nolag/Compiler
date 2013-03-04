@@ -7,6 +7,8 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 
 public class JoosNonTerminal extends NonTerminal{
+    public static final String ARGUMENT_LIST = "ARGUMENTLIST";
+    public static final String DIM_EXPR = "DIMEXPR";
     public static final String BLOCK = "BLOCK";
     public static final Set<String> noCollapse = new HashSet<String>();
     public static final Set<String> specialNoDie = new HashSet<String>();
@@ -35,6 +37,8 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add("METHODINVOCATION");
         noCollapse.add("IMPORTDECLARATIONS");
         noCollapse.add(BLOCK);
+        noCollapse.add(DIM_EXPR);
+        noCollapse.add(ARGUMENT_LIST);
         specialNoDie.add("EMPTYSTATEMENT");
         specialNoDie.add(BLOCK);
     }

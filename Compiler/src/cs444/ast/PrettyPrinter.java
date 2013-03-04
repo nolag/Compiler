@@ -5,6 +5,7 @@ import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.*;
+import cs444.parser.symbols.ast.expressions.CreationExpression;
 
 public class PrettyPrinter implements ISymbolVisitor {
 
@@ -59,6 +60,19 @@ public class PrettyPrinter implements ISymbolVisitor {
 
     @Override
     public void close(JoosNonTerminal aNonTerminal){
+        level--;
+    }
+
+    @Override
+    public void open(CreationExpression creationExpression)
+            throws CompilerException {
+        print("new");
+        level++;
+    }
+
+    @Override
+    public void close(CreationExpression creationExpression)
+            throws CompilerException {
         level--;
     }
 
