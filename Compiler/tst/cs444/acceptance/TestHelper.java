@@ -23,7 +23,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("J1_4_SingleTypeImport_OnDemandsClash")) continue;
+			//if (!fileName.equals("Je_4_Resolve_DefaultPackage")) continue;
 			//System.out.println( path + fileName);
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){

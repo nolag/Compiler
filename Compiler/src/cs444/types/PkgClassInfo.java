@@ -65,6 +65,7 @@ public class PkgClassInfo {
         symbolMap.put("short", PkgClassResolver.primResolver);
         symbolMap.put("int", PkgClassResolver.primResolver);
         symbolMap.put("char", PkgClassResolver.primResolver);
+        symbolMap.put("void", PkgClassResolver.primResolver);
     }
 
     // NOTE: this method is for tests only

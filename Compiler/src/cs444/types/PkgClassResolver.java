@@ -28,6 +28,8 @@ import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
 
 public class PkgClassResolver {
+    private static final String DEFAULT_PKG = "";
+
     private final AInterfaceOrClassSymbol start;
 
     private final Map<String, MethodSymbol> methodMap = new HashMap<String, MethodSymbol>();
@@ -94,7 +96,7 @@ public class PkgClassResolver {
         this.start = start;
         String myName = name = start.dclName;
         Iterator<NameSymbol> pkg = start.pkgImports.iterator();
-        String mypkg = "";
+        String mypkg = DEFAULT_PKG;
 
         if(pkg.hasNext()){
             NameSymbol first = pkg.next();
@@ -106,28 +108,6 @@ public class PkgClassResolver {
 
         fullName = myName;
         this.pkg = mypkg;
-
-        for (MethodSymbol methodSymbol : start.getMethods()){
-            String uniqueName = generateUniqueName(methodSymbol);
-            if(methodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
-            if(smethodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
-
-            final Map<String, MethodSymbol> addTo = methodSymbol.isStatic() ? methodMap : smethodMap;
-            addTo.put(uniqueName, methodSymbol);
-
-            getClass(methodSymbol.type.value, false);
-        }
-
-        for(DclSymbol fieldSymbol : start.getFields()){
-            if(fieldMap.containsKey(fieldSymbol.dclName) || sfieldMap.containsKey(fieldSymbol.dclName))
-                throw new UndeclaredException(fieldSymbol.dclName, start.dclName);
-
-            final Map<String, DclSymbol> addTo = fieldSymbol.isStatic() ? sfieldMap : fieldMap;
-            addTo.put(fieldSymbol.dclName, fieldSymbol);
-            getClass(fieldSymbol.type.value, false);
-        }
-
-        //TODO later constructors
     }
 
     private void addAll(String firstPart, Map<String, PkgClassResolver> entryMap) throws DuplicateDeclarationException{
@@ -218,7 +198,7 @@ public class PkgClassResolver {
         return retVal;
     }
 
-    public PkgClassResolver getClass(String name, boolean die) throws UndeclaredException {
+    public PkgClassResolver getClass(String name, boolean die) throws UndeclaredException{
         PkgClassResolver retVal = null;
         if(namedMap.containsKey(name)) retVal = namedMap.get(name);
         else if(samepkgMap.containsKey(name)) retVal =  samepkgMap.get(name);
@@ -227,6 +207,22 @@ public class PkgClassResolver {
 
         if((retVal == null || retVal == badResolve) && die) throw new UndeclaredException(name, start.dclName);
         return retVal;
+    }
+
+    public PkgClassResolver findClass(String name) throws UndeclaredException {
+        String [] nameParts = name.split("\\.");
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = 0; i < nameParts.length - 1; i++){
+            sb.append(nameParts[i]);
+            if(namedMap.containsKey(sb.toString())) throw new UndeclaredException(name, fullName);
+            if(samepkgMap.containsKey(sb.toString())) throw new UndeclaredException(name, fullName);
+            if(staredMap.containsKey(sb.toString())) throw new UndeclaredException(name, fullName);
+
+            sb.append('.');
+        }
+
+        return getClass(name, true);
     }
 
     private void copyInfo(PkgClassResolver building, Set<PkgClassResolver> visited, List<Set<PkgClassResolver>> resolvedSets, boolean inter)
@@ -306,20 +302,38 @@ public class PkgClassResolver {
                     namedMap.put(name.value, resolver);
                     namedMap.put(typeName, resolver);
                     break;
-                case PACKAGE:
-                    addAll(name.value, samepkgMap);
-                    break;
                 case STAR_IMPORT:
                     if(name.value.equals("java.lang")) continue;
                     addAll(name.value, staredMap);
                     break;
                 default:
-                    //should not get here!
                     break;
                 }
             }
 
+            addAll(pkg, samepkgMap);
             addAll("java.lang", staredMap);
+
+            for (MethodSymbol methodSymbol : start.getMethods()){
+                String uniqueName = generateUniqueName(methodSymbol);
+                if(methodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
+                if(smethodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
+
+                final Map<String, MethodSymbol> addTo = methodSymbol.isStatic() ? methodMap : smethodMap;
+                addTo.put(uniqueName, methodSymbol);
+                findClass(methodSymbol.type.value);
+            }
+
+            for(DclSymbol fieldSymbol : start.getFields()){
+                if(fieldMap.containsKey(fieldSymbol.dclName) || sfieldMap.containsKey(fieldSymbol.dclName))
+                    throw new UndeclaredException(fieldSymbol.dclName, start.dclName);
+
+                final Map<String, DclSymbol> addTo = fieldSymbol.isStatic() ? sfieldMap : fieldMap;
+                addTo.put(fieldSymbol.dclName, fieldSymbol);
+                findClass(fieldSymbol.type.value);
+            }
+
+            //TODO later constructors
 
             mustBeInterface |= !start.isClass();
 
@@ -328,7 +342,7 @@ public class PkgClassResolver {
             List<Set<PkgClassResolver>> resolvedSets = new LinkedList<Set<PkgClassResolver>>();
 
             if(start.superName != null){
-                building = getClass(start.superName, true);
+                building = findClass(start.superName);
                 copyInfo(building, visited, resolvedSets, mustBeInterface);
             }
 
@@ -336,7 +350,7 @@ public class PkgClassResolver {
 
             for(String impl : start.impls){
                 if(alreadyImps.contains(impl)) throw new DuplicateDeclarationException(impl, fullName);
-                building = getClass(impl, false);
+                building = findClass(impl);
                 if(building == null) throw new UndeclaredException(start.superName, fullName);
                 copyInfo(building, visited, resolvedSets, mustBeInterface);
             }
@@ -351,9 +365,9 @@ public class PkgClassResolver {
 
             start.accept(new TypeResolverVisitor(this));
             linkLocalNamesToDcl();
+            isBuilt = true;
         }else{
             for(String s : assignableTo) visited.add(PkgClassInfo.instance.getSymbol(s));
-            isBuilt = true;
         }
     }
 
@@ -370,6 +384,6 @@ public class PkgClassResolver {
     }
 
     public PkgClassResolver getSuper() throws UndeclaredException{
-        return getClass(start.superName, true);
+        return findClass(start.superName);
     }
 }
