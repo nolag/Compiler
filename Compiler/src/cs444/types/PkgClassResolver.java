@@ -390,11 +390,11 @@ public class PkgClassResolver {
             Set<String> alreadyImps = new HashSet<String>();
 
             for(String impl : start.impls){
-                if(alreadyImps.contains(impl)) throw new DuplicateDeclarationException(impl, fullName);
                 building = findClass(impl);
                 if(building == null) throw new UndeclaredException(start.superName, fullName);
+                if(alreadyImps.contains(building.fullName)) throw new DuplicateDeclarationException(impl, fullName);
                 copyInfo(building, visited, resolvedSets, true, false);
-                alreadyImps.add(impl);
+                alreadyImps.add(building.fullName);
             }
 
             for(Set<PkgClassResolver> pkgSet : resolvedSets) visited.addAll(pkgSet);

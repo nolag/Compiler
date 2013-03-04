@@ -23,7 +23,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			// if (!fileName.equals("Je_4_ImplementTwice_SimpleName")) continue;
+			// if (!fileName.equals("Je_4_ImplementTwice_QualifiedName")) continue;
 			//System.out.println( path + fileName);
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
