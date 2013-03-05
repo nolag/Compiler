@@ -125,12 +125,12 @@ public class PkgClassResolver {
     private void addAll(String firstPart, Map<String, PkgClassResolver> entryMap) throws DuplicateDeclarationException{
         if(imported.contains(firstPart)) return;
         for(Entry<String, PkgClassResolver> entry : PkgClassInfo.instance.getNamespaceParts(firstPart)){
-            if(namedMap.containsKey(entry)) continue;
             String ename = entry.getKey();
+            if(namedMap.containsKey(ename)) continue;
             //According to trying in java, this is fine as long as you don't go to use it, so don't let them use it.
             //if(entryMap.containsKey(ename)) throw new DuplicateDeclarationException(ename, start.dclName);
             if(entryMap.containsKey(ename)) entryMap.put(ename, badResolve);
-            entryMap.put(ename, entry.getValue());
+            else entryMap.put(ename, entry.getValue());
         }
         imported.add(firstPart);
     }
