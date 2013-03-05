@@ -103,7 +103,7 @@ public class PkgClassResolver {
     }
 
     private PkgClassResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
-        namedMap.put(start.name, this);
+        namedMap.put(start.dclName, this);
         this.start = start;
         String myName = name = start.dclName;
         Iterator<NameSymbol> pkg = start.pkgImports.iterator();
@@ -338,7 +338,7 @@ public class PkgClassResolver {
 
                     String typeName = name.value.substring(name.value.lastIndexOf(".") + 1, name.value.length());
 
-                    if(namedMap.containsKey(name.value) && namedMap.get(name.value) != resolver)
+                    if(namedMap.containsKey(typeName) && namedMap.get(typeName) != resolver)
                         throw new DuplicateDeclarationException(name.value, start.dclName);
 
                     namedMap.put(name.value, resolver);
