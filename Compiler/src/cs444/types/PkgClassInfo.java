@@ -21,6 +21,9 @@ public class PkgClassInfo {
 
     public void addClassOrInterface(AInterfaceOrClassSymbol symbol) throws DuplicateDeclarationException, UndeclaredException, ClashException{
         PkgClassResolver resolver = PkgClassResolver.getResolver(symbol);
+        if(nameSpaces.containsKey(resolver.fullName)){
+            throw new ClashException("package " + resolver.fullName, "class " + resolver.fullName);
+        }
 
         Map<String, PkgClassResolver> nameSpc = nameSpaces.get(resolver.pkg);
         if(nameSpc != null && nameSpc.containsKey(resolver.name)) throw new DuplicateDeclarationException(resolver.fullName, resolver.fullName);
