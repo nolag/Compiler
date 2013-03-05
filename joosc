@@ -1,2 +1,2 @@
 #!/bin/bash
-java -cp Compiler/bin cs444.Compiler $1
+java -cp Compiler/bin cs444.Compiler "$@"
