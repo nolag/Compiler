@@ -431,6 +431,10 @@ public class PkgClassResolver {
                         PkgClassResolver hasResolver = hasMethod.resolver;
                         if(hasResolver.findClass(hasMethod.type.value) != methodSymbol.resolver.findClass(methodSymbol.type.value))
                                 throw new UndeclaredException(uniqueName, fullName);
+
+                        //only public interfaces in JOOS
+                        if(hasMethod.getProtectionLevel() != ProtectionLevel.PUBLIC)
+                            throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is public, but overrided is not");
                     }
                 }
 
