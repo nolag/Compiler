@@ -17,6 +17,7 @@ import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
+import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
@@ -49,6 +50,8 @@ public class PkgClassResolver {
     private final Set<String> assignableTo = new HashSet<String>();
     private final Set<String> imported = new HashSet<String>();
 
+    private final Map<String, ConstructorSymbol> constructors = new HashMap<String, ConstructorSymbol>();
+
     public final String name;
     public final String fullName;
     public final String pkg;
@@ -69,10 +72,11 @@ public class PkgClassResolver {
         return sb.toString();
     }
 
-    private static String generateUniqueName(AMethodSymbol methodSymbol){
+    //name in caes it's this and not the dcl name
+    private static String generateUniqueName(MethodOrConstructorSymbol methodSymbol, String name){
         List<String> types = new LinkedList<String>();
         for(DclSymbol param : methodSymbol.params) types.add(param.type.value);
-        return generateUniqueName(methodSymbol.dclName, types);
+        return generateUniqueName(name, types);
     }
 
     public static PkgClassResolver getResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
@@ -259,7 +263,7 @@ public class PkgClassResolver {
                 start.children.add(0, dcl);
             }else if(child instanceof AMethodSymbol){
                 AMethodSymbol methodSymbol = (AMethodSymbol) child;
-                String uniqueName = generateUniqueName(methodSymbol);
+                String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
                 AMethodSymbol has = methodMap.get(uniqueName);
                 has = has == null ? smethodMap.get(uniqueName) : has;
                 AMethodSymbol is = has == null ? methodSymbol : has;
@@ -292,7 +296,7 @@ public class PkgClassResolver {
         if(obj == this) return;
         obj.build();
         for(AMethodSymbol methodSymbol : obj.start.getMethods()){
-            String uniqueName = generateUniqueName(methodSymbol);
+            String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
             AMethodSymbol has = methodMap.get(uniqueName);
             has = has == null ? smethodMap.get(uniqueName) : has;
             AMethodSymbol is = has == null ? methodSymbol : has;
@@ -353,7 +357,7 @@ public class PkgClassResolver {
             addAll("java.lang", staredMap);
 
             for (AMethodSymbol methodSymbol : start.getMethods()){
-                String uniqueName = generateUniqueName(methodSymbol);
+                String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
                 if(methodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
                 if(smethodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
 
@@ -373,7 +377,12 @@ public class PkgClassResolver {
                 fieldSymbol.resolve = this;
             }
 
-            //TODO later constructors
+            for(ConstructorSymbol constructorSymbol : start.getConstructors()){
+                String uniqueName = generateUniqueName(constructorSymbol, "this");
+                if(constructors.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
+                constructors.put(uniqueName, constructorSymbol);
+                constructorSymbol.resolver = this;
+            }
 
             mustBeInterface |= !start.isClass();
 
@@ -429,5 +438,12 @@ public class PkgClassResolver {
 
     public PkgClassResolver getSuper() throws UndeclaredException{
         return findClass(start.superName);
+    }
+
+    public ConstructorSymbol getConstructor(List<String> types) throws UndeclaredException{
+        String name = generateUniqueName("this", types);
+        ConstructorSymbol cs = constructors.get(name);
+        if(cs == null) throw new UndeclaredException(name, fullName);
+        return cs;
     }
 }
