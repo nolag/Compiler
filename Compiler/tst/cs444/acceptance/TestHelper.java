@@ -23,7 +23,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("Je_4_AbstractMethod_Declared")) continue;
+			//if (!fileName.equals("Je_4_ProtectedOverride_Exception_Clone")) continue;
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
 			    List<String> sourceFiles = getAllFiles(file);

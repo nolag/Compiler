@@ -310,10 +310,15 @@ public class PkgClassResolver {
             AMethodSymbol has = methodMap.get(uniqueName);
             has = has == null ? smethodMap.get(uniqueName) : has;
             AMethodSymbol is = has == null ? methodSymbol : has;
-            //If it has it move it to the front so that it's in the correct place for the super's this
-            if(has != null){
+
+            if (start.isClass()){
+                //If it has it move it to the front so that it's in the correct place for the super's this
                 start.children.remove(has);
-                if (start.isClass()) start.children.add(0, is);
+                start.children.add(0, is);
+                methodMap.put(uniqueName, is);
+            }
+
+            if(has != null){
                 if(is.isStatic() != methodSymbol.isStatic())
                     throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is static and not static");
                 if(methodSymbol.getImplementationLevel() == ImplementationLevel.FINAL && has != null)
@@ -418,8 +423,7 @@ public class PkgClassResolver {
                 //Interfaces must be implemented, unless this is abstract
                 if(start.getImplementationLevel() == ImplementationLevel.ABSTRACT){
                     copyInfo(building, visited, resolvedSets, true, false);
-                }
-                else{
+                }else{
                     Set<PkgClassResolver> cpySet = new HashSet<PkgClassResolver>(visited);
                     building.build(cpySet, true, false);
                     resolvedSets.add(cpySet);

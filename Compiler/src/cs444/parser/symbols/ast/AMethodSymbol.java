@@ -10,5 +10,4 @@ public abstract class AMethodSymbol extends MethodOrConstructorSymbol{
             throws IllegalModifierException, UnsupportedException {
         super(nodeName, header, from, body, type);
     }
-
 }
