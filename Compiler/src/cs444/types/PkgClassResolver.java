@@ -30,7 +30,7 @@ import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
 
 public class PkgClassResolver {
-    private static final String DEFAULT_PKG = "";
+    private static final String DEFAULT_PKG = "!default";
     private static final String LANG = "java.lang";
     private static final String OBJECT = LANG + ".Object";
 
@@ -105,19 +105,18 @@ public class PkgClassResolver {
     private PkgClassResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
         namedMap.put(start.dclName, this);
         this.start = start;
-        String myName = name = start.dclName;
+        name = start.dclName;
         Iterator<NameSymbol> pkg = start.pkgImports.iterator();
         String mypkg = DEFAULT_PKG;
 
         if(pkg.hasNext()){
             NameSymbol first = pkg.next();
             if(first.type == NameSymbol.Type.PACKAGE){
-                myName = first.value + "." + myName;
                 mypkg = first.value;
             }
         }
 
-        fullName = myName;
+        fullName = mypkg + "." + name;
         this.pkg = mypkg;
         isFinal = start.getImplementationLevel() == ImplementationLevel.FINAL;
     }
