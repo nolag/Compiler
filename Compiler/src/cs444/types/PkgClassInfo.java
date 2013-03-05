@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
+import cs444.types.exceptions.ClashException;
 import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.UndeclaredException;
 
@@ -18,7 +19,7 @@ public class PkgClassInfo {
         addInitialSymbols();
     }
 
-    public void addClassOrInterface(AInterfaceOrClassSymbol symbol) throws DuplicateDeclarationException, UndeclaredException{
+    public void addClassOrInterface(AInterfaceOrClassSymbol symbol) throws DuplicateDeclarationException, UndeclaredException, ClashException{
         PkgClassResolver resolver = PkgClassResolver.getResolver(symbol);
 
         if(nameSpaces.containsKey(resolver.fullName))throw new DuplicateDeclarationException(resolver.fullName, resolver.fullName);
@@ -31,20 +32,31 @@ public class PkgClassInfo {
         StringBuilder sb = new StringBuilder();
 
         for(int i = 0; i < innerPkgs.length; i++){
-            sb.append(innerPkgs[i]);
-
-            pkgs = nameSpaces.get(sb.toString());
+            String newNameSpace = sb.toString() + innerPkgs[i];
+            pkgs = nameSpaces.get(newNameSpace);
 
             if(pkgs == null){
+                if(pkgClashWithType(sb.toString(), innerPkgs[i])){
+                    throw new ClashException("package " + newNameSpace, "class " + newNameSpace);
+                }
+
                 pkgs = new HashMap<String, PkgClassResolver>();
-                nameSpaces.put(sb.toString(), pkgs);
+                nameSpaces.put(newNameSpace, pkgs);
             }
 
-            sb.append(".");
+            sb.append(innerPkgs[i] + ".");
         }
 
         pkgs.put(resolver.name, resolver);
         symbolMap.put(resolver.fullName, resolver);
+    }
+
+    private boolean pkgClashWithType(String pkgNamePrefix, String pkgNameSuffix) {
+        if (pkgNamePrefix.equals("")) return false;
+
+        String outerPkgName = pkgNamePrefix.substring(0, pkgNamePrefix.length()-1);
+        Map<String, PkgClassResolver> nameSpc = nameSpaces.get(outerPkgName);
+        return (nameSpc != null && nameSpc.containsKey(pkgNameSuffix));
     }
 
     public PkgClassResolver getSymbol(String name){
