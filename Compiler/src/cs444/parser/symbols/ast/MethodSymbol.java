@@ -6,9 +6,12 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 
 
 public class MethodSymbol extends AMethodSymbol {
-    public MethodSymbol(MethodHeader header, ANonTerminal modifiersParent, TypeSymbol type, ANonTerminal body)
+    final ClassSymbol parent;
+
+    public MethodSymbol(MethodHeader header, ANonTerminal modifiersParent, TypeSymbol type, ANonTerminal body, ClassSymbol parent)
         throws IllegalModifierException, UnsupportedException {
         super("Method", header, modifiersParent, body, type);
+        this.parent = parent;
     }
 
     @Override
@@ -21,6 +24,9 @@ public class MethodSymbol extends AMethodSymbol {
         	throw new UnsupportedException("Abstract or Native method with a body");
         if(!hasBody() && !isNative() && implLvl != ImplementationLevel.ABSTRACT)
         	throw new UnsupportedException("Only Abstract or Native methods don't require a body");
+
+        if(implLvl == ImplementationLevel.ABSTRACT && parent.getImplementationLevel() != ImplementationLevel.ABSTRACT)
+            throw new UnsupportedException("Abstract classes in a non-abstract class");
 
         super.validate();
     }

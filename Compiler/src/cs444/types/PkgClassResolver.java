@@ -312,9 +312,8 @@ public class PkgClassResolver {
             AMethodSymbol is = has == null ? methodSymbol : has;
             //If it has it move it to the front so that it's in the correct place for the super's this
             if(has != null){
-                start.children.remove(is);
-                start.children.add(0, is);
-
+                start.children.remove(has);
+                if (start.isClass()) start.children.add(0, is);
                 if(is.isStatic() != methodSymbol.isStatic())
                     throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is static and not static");
                 if(methodSymbol.getImplementationLevel() == ImplementationLevel.FINAL && has != null)

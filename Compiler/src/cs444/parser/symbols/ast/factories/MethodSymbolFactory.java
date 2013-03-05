@@ -28,7 +28,7 @@ public class MethodSymbolFactory extends ASTSymbolFactory{
                 MethodHeader methodHeader = MethodHeaderFactory.buildForRegularMethod((ANonTerminal) methDeclaration.firstOrDefault("MethodHeader"));
                 ANonTerminal methodBody = (ANonTerminal) methDeclaration.firstOrDefault("MethodBody");
 
-                MethodSymbol method = new MethodSymbol(methodHeader, getModifiersParent(methDeclaration), methodHeader.type, methodBody);
+                MethodSymbol method = new MethodSymbol(methodHeader, getModifiersParent(methDeclaration), methodHeader.type, methodBody, parent);
                 method.validate();
 
                 parent.children.add(method);
