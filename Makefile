@@ -1,9 +1,5 @@
 BXX = ant												# builder
 
-PROJ = Lexer
-BIN_PATH = ${PROJ}/bin
-CLASS = cs444.lexer.Compiler
-
 all: run_generator build_compiler
 
 run_generator:

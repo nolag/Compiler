@@ -67,7 +67,10 @@ public class Program {
         }
 
         try {
-            writer = createFileAndWriter("../Compiler/JoosRules.txt");
+            createCompilerBin();
+
+            writer = createFileAndWriter("../Compiler/bin/JoosRules.txt");
+
             ParserGenerator.generate(writer);
         } catch (IOException e) {
 
@@ -79,5 +82,15 @@ public class Program {
         }
 
         System.out.println("DONE");
+    }
+
+    private static void createCompilerBin() {
+        File theDir = new File("../Compiler/bin");
+        if (!theDir.exists()){
+          boolean result = theDir.mkdir();
+          if(!result){
+             System.out.println("Failed creating directory");
+           }
+        }
     }
 }

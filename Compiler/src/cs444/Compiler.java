@@ -5,8 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URISyntaxException;
+import java.net.URL;
 
-import cs444.ast.PrettyPrinter;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
@@ -25,6 +26,7 @@ public class Compiler {
 
     /**
      * @param args
+     * @throws URISyntaxException 
      * @throws Exception
      */
     public static void main(String[] args){
@@ -32,7 +34,6 @@ public class Compiler {
     }
 
     public static int compile(String[] files, boolean printErrors) {
-
         if (files.length == 0){
             System.err.println("ERROR: At least a file should be passed.");
             printUsage();
@@ -86,13 +87,21 @@ public class Compiler {
 
     private static ANonTerminal parse(Reader reader)
             throws FileNotFoundException, IOException, LexerException,
-            UnexpectedTokenException {
+            UnexpectedTokenException, URISyntaxException {
         ANonTerminal parseTree;
 
         Lexer lexer = new Lexer(reader);
-        Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
+
+        Parser parser = new Parser(new TextReadingRules(getJoosRuleFile()));
 
         parseTree = parser.parse(lexer);
         return parseTree;
+    }
+
+    private static File getJoosRuleFile() throws URISyntaxException {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL url = classLoader.getResource("JoosRules.txt");
+        File file = new File(url.toURI());
+        return file;
     }
 }
