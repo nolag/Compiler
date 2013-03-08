@@ -1,0 +1,22 @@
+package cs444.parser.symbols.ast.expressions;
+
+import cs444.parser.symbols.ANonTerminal;
+import cs444.parser.symbols.ISymbol;
+
+public abstract class UnaryOpExprSymbol extends ANonTerminal{
+
+    protected UnaryOpExprSymbol(String name, ISymbol on){
+        super(name);
+        children.add(on);
+    }
+
+    @Override
+    public boolean empty() {
+        return false;
+    }
+
+    @Override
+    public boolean isCollapsable() {
+        return false;
+    }
+}

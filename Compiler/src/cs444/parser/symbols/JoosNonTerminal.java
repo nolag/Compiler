@@ -10,8 +10,16 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String ARGUMENT_LIST = "ARGUMENTLIST";
     public static final String DIM_EXPR = "DIMEXPR";
     public static final String BLOCK = "BLOCK";
+
+    public static final String UNARY_EXPRESSION = "UNARYEXPRESSION";
+
+    public static final Set<String> unaryExpressions = new HashSet<String>();
+    public static final Set<String> binExpressions = new HashSet<String>();
+
     public static final Set<String> noCollapse = new HashSet<String>();
     public static final Set<String> specialNoDie = new HashSet<String>();
+    public static final Set<String> primativeNumbers = new HashSet<String>();
+    public static final Set<String> otherPrimatives = new HashSet<String>();
 
     static{
         noCollapse.add("MODIFIERS");
@@ -39,8 +47,29 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add(BLOCK);
         noCollapse.add(DIM_EXPR);
         noCollapse.add(ARGUMENT_LIST);
+
         specialNoDie.add("EMPTYSTATEMENT");
         specialNoDie.add(BLOCK);
+
+
+        primativeNumbers.add("byte");
+        primativeNumbers.add("char");
+        primativeNumbers.add("short");
+        primativeNumbers.add("int");
+
+        otherPrimatives.add("void");
+        otherPrimatives.add("boolean");
+
+        unaryExpressions.add("POSTFIXEXPRESSION");
+        unaryExpressions.add(UNARY_EXPRESSION);
+
+        binExpressions.add("MULTIPLICATIVEEXPRESSION");
+        binExpressions.add("ADDITIVEEXPRESSION");
+        binExpressions.add("RELATIONALEXPRESSION");
+        binExpressions.add("EQUALITYEXPRESSION");
+        binExpressions.add("ASSIGNMENTEXPRESSION");
+        binExpressions.add("CONDITIONALANDEXPRESSION");
+        binExpressions.add("INCLUSIVEOREXPRESSION");
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {

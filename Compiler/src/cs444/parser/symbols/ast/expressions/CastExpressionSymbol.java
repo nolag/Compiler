@@ -28,8 +28,8 @@ public class CastExpressionSymbol extends ANonTerminal{
 
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
+        castExprType.accept(visitor);
+        operandExpression.accept(visitor);
         visitor.visit(this);
-        this.castExprType.accept(visitor);
-        this.operandExpression.accept(visitor);
     }
 }

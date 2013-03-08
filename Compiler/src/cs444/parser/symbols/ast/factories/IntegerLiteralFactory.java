@@ -7,6 +7,7 @@ import cs444.lexer.Token;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 
@@ -18,7 +19,7 @@ public class IntegerLiteralFactory extends ASTSymbolFactory{
             return new IntegerLiteralSymbol((ATerminal) from, false);
         }
 
-        if(!"UNARYEXPRESSION".equalsIgnoreCase(from.getName())) return from;
+        if(!JoosNonTerminal.UNARY_EXPRESSION.equalsIgnoreCase(from.getName())) return from;
 
         ANonTerminal nonTerm = (ANonTerminal) from;
 
@@ -45,7 +46,7 @@ public class IntegerLiteralFactory extends ASTSymbolFactory{
         }
 
         nonTerm.children.removeAll(remove);
-
+        if(nonTerm.children.size() == 1) return nonTerm.children.get(0);
         return from;
     }
 }

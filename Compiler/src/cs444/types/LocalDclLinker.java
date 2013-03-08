@@ -3,6 +3,7 @@ package cs444.types;
 import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
 import cs444.parser.symbols.JoosNonTerminal;
+import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
@@ -37,14 +38,14 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void open(JoosNonTerminal aNonTerminal){
+    public void open(NonTerminal aNonTerminal){
         if (aNonTerminal.getName().equals(JoosNonTerminal.BLOCK)){
             pushNewScope();
         }
     }
 
     @Override
-    public void close(JoosNonTerminal aNonTerminal){
+    public void close(NonTerminal aNonTerminal){
         if (aNonTerminal.getName().equals(JoosNonTerminal.BLOCK)){
             popCurrentScope();
         }

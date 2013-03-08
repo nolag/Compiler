@@ -1,7 +1,5 @@
 package cs444.parser.symbols.ast;
 
-import cs444.CompilerException;
-import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
@@ -35,10 +33,5 @@ public class InterfaceMethodSymbol extends AMethodSymbol{
     @Override
     public ImplementationLevel defaultImplementationLevel() {
         return ImplementationLevel.ABSTRACT;
-    }
-
-    @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
-        visitor.visit(this);
     }
 }

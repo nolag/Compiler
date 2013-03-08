@@ -34,12 +34,30 @@ import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.NameSymbol.Type;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
+import cs444.parser.symbols.ast.expressions.AddExprSymbol;
+import cs444.parser.symbols.ast.expressions.AndExprSymbol;
+import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
+import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
+import cs444.parser.symbols.ast.expressions.EqExprSymbol;
+import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
+import cs444.parser.symbols.ast.expressions.LeExprSymbol;
+import cs444.parser.symbols.ast.expressions.LtExprSymbol;
+import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
+import cs444.parser.symbols.ast.expressions.NeExprSymbol;
+import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
+import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
+import cs444.parser.symbols.ast.expressions.OrExprSymbol;
+import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
+import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
+import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 import cs444.parser.symbols.ast.factories.IntegerLiteralFactory;
 import cs444.parser.symbols.ast.factories.ListedSymbolFactory;
 import cs444.parser.symbols.ast.factories.OneChildFactory;
 import cs444.parser.symbols.ast.factories.StringLiteralFactory;
+import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
+import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public class ParserTest {
 
@@ -288,9 +306,8 @@ public class ParserTest {
         children[0] = new Terminal(new Token(Token.Type.MINUS, "-"));
         children[1] = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483648"));
         JoosNonTerminal nonTerm = new JoosNonTerminal("UNARYEXPRESSION", children);
-        ANonTerminal converted = (ANonTerminal)fact.convertAll(nonTerm);
-        assertEquals(-2147483648, ((IntegerLiteralSymbol)converted.children.get(0)).intVal);
-        assertEquals(1, converted.children.size());
+        ISymbol converted = fact.convertAll(nonTerm);
+        assertEquals(-2147483648, ((IntegerLiteralSymbol)converted).intVal);
     }
 
     @Test(expected = OutOfRangeException.class)
@@ -435,6 +452,100 @@ public class ParserTest {
         assertSmallClassMethods(classSymbol.getMethods().iterator());
 
         assertSmallClassConstructors(classSymbol.getConstructors().iterator());
+    }
+
+    @Test
+    public void unaryOpReduceTest() throws OutOfRangeException, UnsupportedException, IllegalModifierException{
+        ISymbol number = new Terminal(new Token(Token.Type.DECIMAL_INTEGER_LITERAL, "2147483647"));
+        ISymbol neg = new Terminal(new Token(Token.Type.MINUS, "-"));
+        ISymbol neg2 = new Terminal(new Token(Token.Type.MINUS, "-"));
+        ISymbol not = new Terminal(new Token(Token.Type.EXCLAMATION, "!"));
+
+        ANonTerminal unary = new JoosNonTerminal(JoosNonTerminal.UNARY_EXPRESSION, new ISymbol [] {neg, number});
+        ANonTerminal unary2 = new JoosNonTerminal(JoosNonTerminal.UNARY_EXPRESSION, new ISymbol [] {neg2, unary});
+        ISymbol head = new JoosNonTerminal("POSTFIXEXPRESSION", new ISymbol[] {not, unary2});
+
+        for(ASTSymbolFactory fact : JoosASTBuilder.simplifications) head = fact.convertAll(head);
+
+        assertTrue(head instanceof NotOpExprSymbol);
+        head = ((ANonTerminal) head).firstOrDefault(NegOpExprSymbol.myName);
+        assertTrue(head instanceof NegOpExprSymbol);
+        head = ((ANonTerminal) head).firstOrDefault(IntegerLiteralSymbol.myName);
+        assertTrue(head instanceof IntegerLiteralSymbol);
+        assertEquals(-2147483647, ((IntegerLiteralSymbol) head).intVal);
+    }
+
+    /*This test would not type check, but is testing the factory.  The test was easier to make this way.
+     * Type checking binary operators will happen with JOOS.
+    */
+    @Test
+    public void binaryOpReduceTest() throws OutOfRangeException, UnsupportedException, IllegalModifierException{
+        ISymbol mult = new Terminal(new Token(Token.Type.STAR, "*"));
+        ISymbol div = new Terminal(new Token(Token.Type.SLASH, "/"));
+        ISymbol rem = new Terminal(new Token(Token.Type.PCT, "%"));
+        ISymbol sub = new Terminal(new Token(Token.Type.MINUS, "-"));
+        ISymbol add = new Terminal(new Token(Token.Type.PLUS, "+"));
+        ISymbol lt = new Terminal(new Token(Token.Type.LT, "<"));
+        ISymbol le = new Terminal(new Token(Token.Type.LE, "<="));
+        ISymbol gt = new Terminal(new Token(Token.Type.GT, ">"));
+        ISymbol ge = new Terminal(new Token(Token.Type.GE, ">="));
+        ISymbol inst = new Terminal(new Token(Token.Type.INSTANCEOF, "instanceof"));
+        ISymbol eq = new Terminal(new Token(Token.Type.EQ, "=="));
+        ISymbol ne = new Terminal(new Token(Token.Type.NE, "!="));
+        ISymbol becomes = new Terminal(new Token(Token.Type.BECOMES, "="));
+        ISymbol and = new Terminal(new Token(Token.Type.DAMPERSAND, "&&"));
+        ISymbol or = new Terminal(new Token(Token.Type.DPIPE, "||"));
+
+        ISymbol b1 = new Terminal(new Token(Token.Type.BOOLEAN, "true"));
+        ISymbol b2 = new Terminal(new Token(Token.Type.BOOLEAN, "true"));
+
+        ANonTerminal multt = new JoosNonTerminal ("MULTIPLICATIVEEXPRESSION",new ISymbol [] {b1, mult, b2});
+        ANonTerminal divt = new JoosNonTerminal ("MULTIPLICATIVEEXPRESSION",new ISymbol [] {b1, div, multt});
+        ANonTerminal remt = new JoosNonTerminal ("MULTIPLICATIVEEXPRESSION",new ISymbol [] {b1, rem, divt});
+        ANonTerminal subt = new JoosNonTerminal ("ADDITIVEEXPRESSION",new ISymbol [] {b1, sub, remt});
+        ANonTerminal addt = new JoosNonTerminal ("ADDITIVEEXPRESSION",new ISymbol [] {b1, add, subt});
+        ANonTerminal get= new JoosNonTerminal ("RELATIONALEXPRESSION",new ISymbol [] {addt, ge, b2});
+        ANonTerminal let = new JoosNonTerminal ("RELATIONALEXPRESSION",new ISymbol [] {b1, le, get});
+        ANonTerminal gtt = new JoosNonTerminal ("RELATIONALEXPRESSION",new ISymbol [] {let, gt, b2});
+        ANonTerminal ltt = new JoosNonTerminal ("RELATIONALEXPRESSION",new ISymbol [] {b1, lt, gtt});
+        ANonTerminal instt = new JoosNonTerminal ("RELATIONALEXPRESSION",new ISymbol [] {b1, inst, ltt});
+        ANonTerminal eqt = new JoosNonTerminal ("EQUALITYEXPRESSION",new ISymbol [] {b1, eq, instt});
+        ANonTerminal net = new JoosNonTerminal ("EQUALITYEXPRESSION",new ISymbol [] {b1, ne, eqt});
+        ANonTerminal becomest = new JoosNonTerminal ("ASSIGNMENTEXPRESSION",new ISymbol [] {b1, becomes, net});
+        ANonTerminal andt = new JoosNonTerminal ("CONDITIONALANDEXPRESSION",new ISymbol [] {b1, and, becomest});
+        ANonTerminal ort =  new JoosNonTerminal("INCLUSIVEOREXPRESSION", new ISymbol [] {b1, or, andt});
+
+        ANonTerminal head = ort;
+        for(ASTSymbolFactory fact : JoosASTBuilder.simplifications) head = (ANonTerminal)fact.convertAll(head);
+        assertTrue(head instanceof OrExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof AndExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof AssignmentExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof NeExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof EqExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof InstanceOfExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof LtExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof LtExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof LeExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof LeExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof AddExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof SubtractExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof RemainderExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof DivideExprSymbol);
+        head = (ANonTerminal)head.children.get(1);
+        assertTrue(head instanceof MultiplyExprSymbol);
     }
 
     private void assertSmallClassDeclaration(ClassSymbol classSymbol) {

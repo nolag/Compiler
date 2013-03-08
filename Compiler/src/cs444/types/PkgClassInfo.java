@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.types.exceptions.ClashException;
 import cs444.types.exceptions.DuplicateDeclarationException;
@@ -76,12 +77,8 @@ public class PkgClassInfo {
     }
 
     private void addInitialSymbols() {
-        symbolMap.put("boolean", PkgClassResolver.getPrimativeResolver("boolean"));
-        symbolMap.put("byte", PkgClassResolver.getPrimativeResolver("byte"));
-        symbolMap.put("short", PkgClassResolver.getPrimativeResolver("short"));
-        symbolMap.put("int", PkgClassResolver.getPrimativeResolver("int"));
-        symbolMap.put("char", PkgClassResolver.getPrimativeResolver("char"));
-        symbolMap.put("void", PkgClassResolver.getPrimativeResolver("void"));
+        for(String type : JoosNonTerminal.primativeNumbers) symbolMap.put(type, PkgClassResolver.getPrimativeResolver(type));
+        for(String type : JoosNonTerminal.otherPrimatives) symbolMap.put(type, PkgClassResolver.getPrimativeResolver(type));
     }
 
     // NOTE: this method is for tests only
