@@ -8,6 +8,7 @@ public class NameSymbol extends ATerminal{
     public static enum Type { ID_SYMBOL, PACKAGE, IMPORT, STAR_IMPORT };
 
     public final Type type;
+    private DclSymbol dclNode = null;
 
     public NameSymbol(String value, Type type) {
         super("Name", value);
@@ -21,5 +22,13 @@ public class NameSymbol extends ATerminal{
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.visit(this);
+    }
+
+    public void setDclNode(DclSymbol node){
+        this.dclNode = node;
+    }
+
+    public TypeSymbol getType(){
+        return this.dclNode.type;
     }
 }

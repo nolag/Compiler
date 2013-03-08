@@ -7,6 +7,7 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.types.exceptions.DuplicateDeclarationException;
+import cs444.types.exceptions.UndefinedSymbolException;
 
 public class LocalDclLinker extends EmptyVisitor {
     private LocalScope currentScope;
@@ -58,7 +59,9 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void visit(NameSymbol nameSymbol){
-        // TODO: store a reference to the DclSymbol node that this name refers to. Required for A3
+    public void visit(NameSymbol nameSymbol) throws UndefinedSymbolException{
+        DclSymbol dclNode = currentScope.find(nameSymbol.value);
+        // TODO: if dclNode is null => search in global scope. If null => raise UndefinedSymbolException
+        nameSymbol.setDclNode(dclNode);
     }
 }

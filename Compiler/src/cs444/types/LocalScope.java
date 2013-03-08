@@ -29,4 +29,14 @@ public class LocalScope {
         if (parent == null) return false;
         return parent.isDeclared(name);
     }
+
+    public DclSymbol find(String varName) {
+        DclSymbol dclNode;
+
+        if ((dclNode = environment.get(varName)) != null) return dclNode;
+
+        if (parent != null) return parent.find(varName);
+
+        return null;
+    }
 }
