@@ -391,7 +391,7 @@ public class ParserTest {
 
     @Test
     public void testEmptyClass() throws Exception{
-        Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
+        Parser parser = new Parser(new TextReadingRules());
         Reader reader = new FileReader("CompleteCompUnit.java");
         Lexer lexer = new Lexer(reader);
         ANonTerminal start = parser.parse(lexer);
@@ -416,7 +416,7 @@ public class ParserTest {
 
     @Test
     public void testSmallClass() throws Exception{
-        Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
+        Parser parser = new Parser(new TextReadingRules());
         Reader reader = new FileReader("CompWithMethods.java");
         Lexer lexer = new Lexer(reader);
         ANonTerminal start = parser.parse(lexer);

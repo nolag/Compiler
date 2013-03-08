@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URISyntaxException;
 
 import org.junit.Test;
 
@@ -20,14 +21,14 @@ public class JoosRulesTest {
     @Test
     public void testParseEmptyPackage() throws IOException,
                                             LexerException,
-                                            UnexpectedTokenException {
+                                            UnexpectedTokenException, URISyntaxException {
         parseTreeForFile("EmptyPackage");
     }
 
     @Test
     public void testParseCompleteCompUnit() throws IOException,
                                                    LexerException,
-                                                   UnexpectedTokenException {
+                                                   UnexpectedTokenException, URISyntaxException {
         parseTreeForFile("CompleteCompUnit");
     }
 
@@ -70,18 +71,18 @@ public class JoosRulesTest {
     }
 
     private void parseTreeFor(String code) throws IOException, LexerException,
-                                                  UnexpectedTokenException {
-        Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
+                                                  UnexpectedTokenException, URISyntaxException {
+        Parser parser = new Parser(new TextReadingRules());
         parser.parse(new Lexer(new StringReader(code)));
     }
 
     private ISymbol parseTreeForFile(String fileName) throws IOException,
                                                              LexerException,
-                                                             UnexpectedTokenException{
+                                                             UnexpectedTokenException, URISyntaxException{
         String filePath =  fileName + ".java";
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         Lexer lexer = new Lexer(reader);
-        Parser parser = new Parser(new TextReadingRules(new File("JoosRules.txt")));
+        Parser parser = new Parser(new TextReadingRules());
 
         return parser.parse(lexer);
     }

@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
@@ -92,16 +91,9 @@ public class Compiler {
 
         Lexer lexer = new Lexer(reader);
 
-        Parser parser = new Parser(new TextReadingRules(getJoosRuleFile()));
+        Parser parser = new Parser(new TextReadingRules());
 
         parseTree = parser.parse(lexer);
         return parseTree;
-    }
-
-    private static File getJoosRuleFile() throws URISyntaxException {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL url = classLoader.getResource("JoosRules.txt");
-        File file = new File(url.toURI());
-        return file;
     }
 }

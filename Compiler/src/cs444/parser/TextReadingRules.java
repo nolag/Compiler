@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,8 +16,15 @@ import cs444.parser.symbols.factories.NonTerminalFactory;
 public class TextReadingRules implements IParserRule{
     private final File readFrom;
 
-    public TextReadingRules(File readFrom){
-        this.readFrom = readFrom;
+    public TextReadingRules() throws URISyntaxException{
+        this.readFrom = getJoosRuleFile();
+    }
+
+    private static File getJoosRuleFile() throws URISyntaxException {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL url = classLoader.getResource("JoosRules.txt");
+        File file = new File(url.toURI());
+        return file;
     }
 
     private Map<String, SymbolState> getRule(Map<Integer, Map<String, SymbolState>> rules, int number){
