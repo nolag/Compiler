@@ -284,7 +284,14 @@ public class PkgClassResolver {
                     if(methodSymbol.getImplementationLevel() == ImplementationLevel.FINAL && has != null)
                         throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is final, but overrided");
                     if(methodSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC && is.getProtectionLevel() != ProtectionLevel.PUBLIC)
-                        throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is public, but overrided is not");
+                        if (has.getImplementationLevel() == ImplementationLevel.ABSTRACT &&
+                          has.resolver != this && !building.start.isClass()){
+                            // replace "is" for methodSymbol
+                            replaceMethod(methodSymbol, is);
+                            continue;
+                        }else{
+                            throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is public, but overrided is not");
+                        }
                     if(methodSymbol.getProtectionLevel() == ProtectionLevel.PROTECTED
                             && is.getProtectionLevel() != ProtectionLevel.PUBLIC && is.getProtectionLevel() != ProtectionLevel.PROTECTED)
                         throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is protected, but overrided is not protected or public");
@@ -299,6 +306,17 @@ public class PkgClassResolver {
                 }
             }
         }
+    }
+
+    private void replaceMethod(AMethodSymbol newMethod, AMethodSymbol oldMethod)
+            throws UndeclaredException {
+        String oldUniqueName = generateUniqueName(oldMethod, oldMethod.dclName);
+        methodMap.remove(oldUniqueName);
+        start.children.remove(oldUniqueName);
+
+        String newUniqueName = generateUniqueName(newMethod, newMethod.dclName);
+        methodMap.put(newUniqueName, newMethod);
+        start.children.add(newMethod);
     }
 
     public void verifyObject() throws CompilerException{
