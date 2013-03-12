@@ -12,7 +12,6 @@ public class J1_1_AmbiguousName_AccessResultFromMethod{
     }
 
     public J1_1_AmbiguousName_AccessResultFromMethod inc(){
-        a.b().c.test("lol");
 	return new J1_1_AmbiguousName_AccessResultFromMethod(i+1);
     }
 

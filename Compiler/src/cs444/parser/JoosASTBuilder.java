@@ -8,6 +8,7 @@ import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 import cs444.parser.symbols.ast.factories.ClassInterfaceFactory;
 import cs444.parser.symbols.ast.factories.ConstructorSymbolFactory;
+import cs444.parser.symbols.ast.factories.FieldAccessSymbolFactory;
 import cs444.parser.symbols.ast.factories.FieldSymbolFactory;
 import cs444.parser.symbols.ast.factories.IntegerLiteralFactory;
 import cs444.parser.symbols.ast.factories.InterfaceMethodSymbolFactory;
@@ -31,7 +32,7 @@ import cs444.types.exceptions.InvalidFileNameException;
 public class JoosASTBuilder implements IASTBuilder {
     public static final Iterable<ASTSymbolFactory> simplifications = Arrays.asList(new ASTSymbolFactory [] {
             new ListedSymbolFactory(), new OneChildFactory(), new NameSymbolFactory(), new TypeSymbolFactory(),
-            new ClassInterfaceFactory(), new FieldSymbolFactory(), new MethodSymbolFactory(),
+            new ClassInterfaceFactory(), new FieldSymbolFactory(), new MethodSymbolFactory(), new FieldAccessSymbolFactory(),
             new LocalDclFactory(), new InterfaceMethodSymbolFactory(), new ConstructorSymbolFactory(),
             new MethodInvokeSymbolFactory(), new IntegerLiteralFactory(), new StringLiteralFactory(), new UniOpExprFactory(),
             new BinOpFactory(), new CastExpressionFactory(), new CreationExprFactory(),});

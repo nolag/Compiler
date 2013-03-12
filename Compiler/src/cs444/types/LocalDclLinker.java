@@ -11,8 +11,8 @@ import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
-import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
@@ -172,5 +172,17 @@ public class LocalDclLinker extends EmptyVisitor {
     public void prepare(MethodInvokeSymbol invoke) throws CompilerException {
         currentTypes.push(new ArrayDeque<Typeable>());
         useCurrentForLookup.push(true);
+    }
+
+    @Override
+    public void open(FieldAccessSymbol access){
+        currentTypes.push(new ArrayDeque<Typeable>());
+        useCurrentForLookup.push(true);
+    }
+
+    @Override
+    public void close(FieldAccessSymbol access){
+        currentTypes.pop();
+        useCurrentForLookup.pop();
     }
 }

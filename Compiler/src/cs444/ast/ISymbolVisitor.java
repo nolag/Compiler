@@ -6,8 +6,9 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.MethodInvokeSymbol;
+import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
+import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
@@ -40,6 +41,7 @@ public interface ISymbolVisitor {
     void open(final CreationExpression creationExpression) throws CompilerException;
     void open(final NonTerminal aNonTerminal) throws CompilerException;
     void open(final MethodInvokeSymbol invoke) throws CompilerException;
+    void open(final FieldAccessSymbol field) throws CompilerException;
 
     void close(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException;
     void close(final DclSymbol dclSymbol) throws CompilerException;
@@ -47,6 +49,7 @@ public interface ISymbolVisitor {
     void close(final NonTerminal aNonTerminal) throws CompilerException;
     void close(final CreationExpression creationExpression) throws CompilerException;
     void close(final MethodInvokeSymbol invoke) throws CompilerException;
+    void close(final FieldAccessSymbol field) throws CompilerException;
 
     void visit(final TypeSymbol typeSymbol) throws CompilerException;
     void visit(final NameSymbol nameSymbol) throws CompilerException;
