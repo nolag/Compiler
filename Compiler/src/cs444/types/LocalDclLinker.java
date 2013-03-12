@@ -114,9 +114,10 @@ public class LocalDclLinker extends EmptyVisitor {
             params.add(0, mod.getType().getTypeDclNode().fullName);
         }
 
-        AMethodSymbol method = resolver.findMethod(invoke.methodName, isStatic, params);
-        invoke.setLookup(invoke.getLookup().addWith(method));
-        currentTypes.peek().add(method);
+//        TODO: bring these  one back
+        // AMethodSymbol method = resolver.findMethod(invoke.methodName, isStatic, params);
+       // invoke.setLookup(invoke.getLookup().addWith(method));
+       // currentTypes.peek().add(method);
     }
 
     private void pushNewScope(boolean isStatic) {

@@ -102,7 +102,7 @@ public class PrettyPrinter implements ISymbolVisitor {
 
     @Override
     public void visit(NameSymbol nameSymbol){
-        print("symbol: " + nameSymbol.value);
+        print("Name Symbol: " + nameSymbol.value);
     }
 
     @Override

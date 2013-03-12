@@ -36,11 +36,12 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
 
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
-        visitor.prepare(this);
-        for(ISymbol child : children) child.accept(visitor);
-        visitor.open(this);
-        for(ISymbol param : params) param.accept(visitor);
-        visitor.close(this);
+        // TODO: uncomment this later
+//        visitor.prepare(this);
+//        for(ISymbol child : children) child.accept(visitor);
+//        visitor.open(this);
+//        for(ISymbol param : params) param.accept(visitor);
+//        visitor.close(this);
     }
 
     @Override

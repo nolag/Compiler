@@ -82,7 +82,8 @@ public abstract class APkgClassResolver {
         if(retVal == null){
             if(notFrom.containsKey(name)) throw new ImplicitStaticConversionException(name);
             //will throw undeclared if it's not a class
-            return DclSymbol.getClassSymbol(name, getClass(name, true));
+            APkgClassResolver klass = getClass(name, false);
+            return (klass == null)? null : DclSymbol.getClassSymbol(name, klass);
         }
 
         //If it is not assignable to this and it's protected see if there is a hidden one.
@@ -119,10 +120,12 @@ public abstract class APkgClassResolver {
             pkgResolver = getClass(nameParts[0], false);
 
             //At least one must be a field
-            for(; pkgResolver == null && i < nameParts.length - 2; i++){
+            for(; pkgResolver == null && i < nameParts.length - 1; i++){
                 sb.append("." + nameParts[i]);
                 pkgResolver = getClass(sb.toString(), false);
             }
+            dcl = pkgResolver.getDcl(nameParts[i], true, this);
+            i++;
         }
 
         if(pkgResolver == null) throw new UndeclaredException(name, fullName);
