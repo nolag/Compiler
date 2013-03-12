@@ -1,9 +1,8 @@
 package cs444.parser.symbols.ast.expressions;
 
-import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 
-public abstract class UnaryOpExprSymbol extends ANonTerminal{
+public abstract class UnaryOpExprSymbol extends BaseExprSymbol{
 
     protected UnaryOpExprSymbol(String name, ISymbol on){
         super(name);
