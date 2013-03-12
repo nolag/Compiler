@@ -126,7 +126,7 @@ public abstract class APkgClassResolver {
                 sb.append("." + nameParts[i]);
                 pkgResolver = getClass(sb.toString(), false);
             }
-            dcl = pkgResolver.getDcl(nameParts[i], true, this);
+            if(pkgResolver != null) dcl = pkgResolver.getDcl(nameParts[i], true, this);
             i++;
         }
 

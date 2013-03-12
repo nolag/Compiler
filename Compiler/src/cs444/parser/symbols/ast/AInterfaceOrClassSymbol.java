@@ -51,6 +51,18 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         return methodSymbols;
     }
 
+    public Iterable<AMethodSymbol> getUninheritedMethods() {
+        List<AMethodSymbol> methodSymbols = new LinkedList<AMethodSymbol>();
+
+        for(AMethodSymbol method : this.getMethods()){
+            if ((method instanceof MethodSymbol) && ((MethodSymbol) method).parent == this){
+                methodSymbols.add((AMethodSymbol)method);
+            }
+        }
+
+        return methodSymbols;
+    }
+
     public Iterable<ConstructorSymbol> getConstructors(){
         List<ConstructorSymbol> constructorSymbols = new LinkedList<ConstructorSymbol>();
 

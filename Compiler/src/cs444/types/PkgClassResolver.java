@@ -358,7 +358,7 @@ public class PkgClassResolver extends APkgClassResolver {
     @Override
     public void linkLocalNamesToDcl() throws CompilerException {
         if(start == null) return;
-        for(AMethodSymbol method : start.getMethods()){
+        for(AMethodSymbol method : start.getUninheritedMethods()){
             method.resolveLocalVars(fullName);
         }
 
