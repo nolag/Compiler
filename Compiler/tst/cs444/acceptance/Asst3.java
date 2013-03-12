@@ -17,4 +17,9 @@ public class Asst3 {
     public void testMarmosetInvalidTestCases() throws IOException, InterruptedException{
         TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a3/invalid/", 42,  false);
     }
+
+    @Test
+    public void testAaa(){
+        System.out.println(cs444.Compiler.compile(new String []{"Object.java"}, true));
+    }
 }
