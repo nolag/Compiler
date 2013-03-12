@@ -134,7 +134,7 @@ public abstract class APkgClassResolver {
             if(dcl.type.isArray) pkgResolver = pkgResolver.getArrayVersion();
             dcl = pkgResolver.getDcl(nameParts[i], dcl.type.isClass, pkgClass);
             dclList.add(dcl);
-            pkgResolver = getClass(dcl.type.value, true);
+            pkgResolver = pkgResolver.getClass(dcl.type.value, true);
         }
 
         return dclList;
