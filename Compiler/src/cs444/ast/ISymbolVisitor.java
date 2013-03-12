@@ -7,6 +7,7 @@ import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
+import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
@@ -70,6 +71,7 @@ public interface ISymbolVisitor {
     void visit(final EOrExprSymbol op) throws CompilerException;
     void visit(final LeExprSymbol op) throws CompilerException;
     void visit(final InstanceOfExprSymbol op) throws CompilerException;
+    void visit(final IntegerLiteralSymbol intLiteral) throws CompilerException;
 
     void visit(final ISymbol symbol) throws CompilerException;
 }

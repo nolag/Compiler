@@ -7,6 +7,7 @@ import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
+import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
@@ -136,4 +137,7 @@ public class EmptyVisitor implements ISymbolVisitor {
 
     @Override
     public void prepare(MethodInvokeSymbol invode) throws CompilerException { }
+
+    @Override
+    public void visit(IntegerLiteralSymbol intLiteral) throws CompilerException { }
 }

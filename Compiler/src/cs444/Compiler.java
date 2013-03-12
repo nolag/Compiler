@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
+import cs444.ast.PrettyPrinter;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
@@ -54,6 +55,8 @@ public class Compiler {
                 parseTree = (ANonTerminal)builder.build(new File(fileName).getName(), parseTree);
 
                 PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
+
+                // if (fileName.equals(files[0])) parseTree.accept(new PrettyPrinter());
             }
         }catch(Exception e){
             if (printErrors) e.printStackTrace();
