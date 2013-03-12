@@ -39,7 +39,7 @@ public class TestHelper {
 					failFiles.add(path + fileName);
 				}
 				totalTests++;
-			} else if (file.isDirectory()) {
+			} else if (file.isDirectory() && !fileName.toLowerCase().endsWith(".skip")) {
 			    List<String> sourceFiles = getAllFiles(file);
 
 				String[] array = new String[sourceFiles.size()];
