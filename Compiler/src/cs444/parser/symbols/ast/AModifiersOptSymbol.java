@@ -129,8 +129,14 @@ public abstract class AModifiersOptSymbol extends ANonTerminal implements Typeab
             throw new UnsupportedException("Package private protection for fields, constructors, and methods");
     }
 
+    @Override
     public TypeSymbol getType(){
         return type;
+    }
+
+    @Override
+    public void setType(TypeSymbol type){
+        this.type = type;
     }
 
     public abstract ProtectionLevel defaultProtectionLevel();

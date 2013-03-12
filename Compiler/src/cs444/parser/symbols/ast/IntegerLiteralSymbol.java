@@ -7,7 +7,7 @@ import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 
-public class IntegerLiteralSymbol extends ATerminal{
+public class IntegerLiteralSymbol extends TypeableTerminal{
     public static final String myName = "IntegerLiteral";
     private static final BigInteger MAX = BigInteger.valueOf(Integer.MAX_VALUE);
     private static final BigInteger MIN = BigInteger.valueOf(Integer.MIN_VALUE);

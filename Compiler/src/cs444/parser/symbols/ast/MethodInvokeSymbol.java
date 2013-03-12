@@ -60,4 +60,7 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
     public TypeSymbol getType() {
         return link.getType();
     }
+
+    @Override
+    public void setType(TypeSymbol type) { }
 }

@@ -36,4 +36,7 @@ public class NameSymbol extends ATerminal implements Typeable{
     public TypeSymbol getType(){
         return this.dclNode.lastDcl.getType();
     }
+
+    @Override
+    public void setType(TypeSymbol type) { }
 }
