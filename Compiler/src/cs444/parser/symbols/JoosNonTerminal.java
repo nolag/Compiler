@@ -7,6 +7,7 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 
 public class JoosNonTerminal extends NonTerminal{
+    public static final String DIMS = "DIMS";
     public static final String ARGUMENT_LIST = "ARGUMENTLIST";
     public static final String DIM_EXPR = "DIMEXPR";
     public static final String BLOCK = "BLOCK";
@@ -58,6 +59,7 @@ public class JoosNonTerminal extends NonTerminal{
         specialNoDie.add("EMPTYSTATEMENT");
         specialNoDie.add(BLOCK);
         specialNoDie.add(RETURN);
+        specialNoDie.add(DIMS);
 
 
         primativeNumbers.add("byte");

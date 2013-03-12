@@ -5,6 +5,10 @@ import java.util.Set;
 
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.JoosNonTerminal;
+import cs444.parser.symbols.Terminal;
+import cs444.parser.symbols.ast.NameSymbol;
+import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
@@ -32,18 +36,32 @@ public class CastExpressionFactory extends ASTSymbolFactory{
         }
         ANonTerminal castExpr = (ANonTerminal) from;
 
-        if (castExpr.children.size() != 2)
+        boolean isArray = false;
+        if (castExpr.children.size() == 3 && castExpr.children.get(1).getName().equalsIgnoreCase(JoosNonTerminal.DIMS)){
+            isArray = true;
+        }
+
+        if (castExpr.children.size() != 2 && !isArray)
             throw new UnsupportedException("Cast expression doesn't have two operands");
 
         ISymbol castType = castExpr.children.get(0);
-
         String firstChild = castType.getName();
         if (!validCastTypes.contains(firstChild)){
             throw new UnsupportedException("Something other than Name or primitive type in Cast Expression.");
         }
 
+        TypeSymbol type;
+        if (castType instanceof NameSymbol){
+            type = new TypeSymbol(((NameSymbol) castType).value, isArray, false);
+        }else if (castType instanceof Terminal){
+            type = new TypeSymbol(((Terminal) castType).value, isArray, false);
+        }else{
+            throw new UnsupportedException("Cast Expression has invalid cast type.");
+        }
+
+
         ISymbol operandExpression = castExpr.children.get(1);
 
-        return new CastExpressionSymbol(CAST_EXPRESSION, castType, operandExpression);
+        return new CastExpressionSymbol(CAST_EXPRESSION, type, operandExpression);
     }
 }

@@ -35,7 +35,7 @@ public class JoosASTBuilder implements IASTBuilder {
             new ClassInterfaceFactory(), new FieldSymbolFactory(), new MethodSymbolFactory(), new FieldAccessSymbolFactory(),
             new LocalDclFactory(), new InterfaceMethodSymbolFactory(), new ConstructorSymbolFactory(),
             new MethodInvokeSymbolFactory(), new IntegerLiteralFactory(), new StringLiteralFactory(), new UniOpExprFactory(),
-            new BinOpFactory(), new CastExpressionFactory(), new CreationExprFactory(),});
+            new BinOpFactory(), new CreationExprFactory(), new CastExpressionFactory()});
 
     public ISymbol build(String fileName, ANonTerminal start) throws OutOfRangeException, UnsupportedException, IllegalModifierException, InvalidFileNameException {
     	for(ASTSymbolFactory astSymbol : simplifications){
