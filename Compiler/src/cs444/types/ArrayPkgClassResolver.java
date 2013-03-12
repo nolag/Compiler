@@ -3,6 +3,7 @@ package cs444.types;
 import java.util.Set;
 
 import cs444.CompilerException;
+import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.types.exceptions.UndeclaredException;
@@ -18,6 +19,12 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         super(getArrayName(resolver.fullName), resolver.pkg, true);
         this.resolver = resolver;
         build(null, false, false);
+        for(String s : resolver.assignableTo){
+            assignableTo.add(getArrayName(s));
+        }
+
+        assignableTo.add(OBJECT);
+
         PkgClassInfo.instance.symbolMap.put(fullName, this);
     }
 
@@ -50,6 +57,15 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         }catch (CompilerException ce){
             ce.printStackTrace();
         }
+        try{
+            PkgClassResolver obj = (PkgClassResolver) getClass(OBJECT, true);
+            for(AMethodSymbol m : obj.start.getMethods()){
+                String uniqueName;
+                uniqueName = generateUniqueName(m, m.dclName);
+                if(m.isStatic()) smethodMap.put(uniqueName, m);
+                else methodMap.put(uniqueName, m);
+            }
+        }catch(Exception e){ }
     }
 
     @Override

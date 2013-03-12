@@ -38,6 +38,8 @@ public abstract class APkgClassResolver {
     protected final Map<String, AMethodSymbol> methodMap = new HashMap<String, AMethodSymbol>();
     protected final Map<String, AMethodSymbol> smethodMap = new HashMap<String, AMethodSymbol>();
 
+    public static enum Castable { DOWN_CAST, UP_CAST, NOT_CASTABLE };
+
     protected APkgClassResolver(String name, String pkg, boolean isFinal){
         this.name = name;
         this.pkg = pkg;
@@ -168,6 +170,12 @@ public abstract class APkgClassResolver {
         APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(ArrayPkgClassResolver.getArrayName(fullName));
         if(resolver != null) return resolver;
         return new ArrayPkgClassResolver(this);
+    }
+
+    public Castable getCastablility(APkgClassResolver other){
+        if(assignableTo.contains(other.fullName)) return Castable.DOWN_CAST;
+        if(other.assignableTo.contains(fullName)) return Castable.UP_CAST;
+        return Castable.NOT_CASTABLE;
     }
 
     public abstract APkgClassResolver findClass(String name) throws UndeclaredException;
