@@ -18,4 +18,10 @@ public abstract class TypeableTerminal extends ATerminal implements Typeable{
     public void setType(TypeSymbol type){
         this.type = type;
     }
+
+    @Override
+    public boolean empty() {
+        return false;
+    }
+
 }

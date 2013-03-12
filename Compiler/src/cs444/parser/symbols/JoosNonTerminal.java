@@ -17,6 +17,16 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String METHOD_INVOCATION = "METHODINVOCATION";
 
     public static final String RETURN = "RETURNSTATEMENT";
+    public static final String NULL = "null";
+    public static final String SUPER = "super";
+    public static final String THIS = "this";
+    public static final String TRUE_VALUE = "true";
+    public static final String FALSE_VALUE = "true";
+    public static final String BOOLEAN = "bool";
+    public static final String STRING = "java.lang.String";
+    public static final String CHAR = "char";
+    public static final String INTEGER = "int";
+
 
     public static final Set<String> whiles = new HashSet<String>();
 
@@ -69,6 +79,7 @@ public class JoosNonTerminal extends NonTerminal{
 
         otherPrimatives.add("void");
         otherPrimatives.add("boolean");
+        otherPrimatives.add("null");
 
         unaryExpressions.add("POSTFIXEXPRESSION");
         unaryExpressions.add(UNARY_EXPRESSION);

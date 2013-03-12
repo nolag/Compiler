@@ -11,13 +11,20 @@ import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
+import cs444.parser.symbols.ast.BooleanLiteralSymbol;
+import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
+import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
+import cs444.parser.symbols.ast.NullSymbol;
+import cs444.parser.symbols.ast.SuperSymbol;
+import cs444.parser.symbols.ast.ThisSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
+import cs444.parser.symbols.ast.TypeableTerminal;
 import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
@@ -184,5 +191,44 @@ public class LocalDclLinker extends EmptyVisitor {
     public void close(FieldAccessSymbol access){
         currentTypes.pop();
         useCurrentForLookup.pop();
+    }
+
+    private void simpleVistorHelper(TypeableTerminal tt, String visitorType){
+        APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(visitorType);
+        TypeSymbol type = new TypeSymbol(resolver.fullName, false, false);
+        type.setTypeDclNode(resolver);
+        currentTypes.peek().add(tt);
+    }
+
+    @Override
+    public void visit(NullSymbol nullSymbol) {
+        simpleVistorHelper(nullSymbol, JoosNonTerminal.NULL);
+    }
+
+    @Override
+    public void visit(IntegerLiteralSymbol intSymbol) {
+        simpleVistorHelper(intSymbol, JoosNonTerminal.INTEGER);
+
+    }
+
+    @Override
+    public void visit(CharacterLiteralSymbol characterSymbol) {
+        simpleVistorHelper(characterSymbol, JoosNonTerminal.CHAR);
+    }
+
+    @Override
+    public void visit(BooleanLiteralSymbol boolSymbol){
+        simpleVistorHelper(boolSymbol, JoosNonTerminal.BOOLEAN);
+    }
+
+    @Override
+    public void visit(ThisSymbol thisSymbol) {
+        simpleVistorHelper(thisSymbol, enclosingClassName);
+    }
+
+    @Override
+    public void visit(SuperSymbol superSymbol) throws CompilerException {
+        APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(enclosingClassName);
+        simpleVistorHelper(superSymbol, resolver.getSuperName());
     }
 }

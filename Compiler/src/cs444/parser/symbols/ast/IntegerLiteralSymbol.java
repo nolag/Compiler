@@ -21,10 +21,6 @@ public class IntegerLiteralSymbol extends TypeableTerminal{
         intVal = bigInt.intValue();
     }
 
-    public boolean empty() {
-        return false;
-    }
-
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.visit(this);
