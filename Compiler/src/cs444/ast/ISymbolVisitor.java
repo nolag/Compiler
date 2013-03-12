@@ -12,6 +12,7 @@ import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
@@ -31,9 +32,11 @@ import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.OrExprSymbol;
 import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
+import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
 public interface ISymbolVisitor {
     void prepare(final MethodInvokeSymbol invode) throws CompilerException;
+    void prepareCondition(Typeable condition);
 
     void open(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException;
     void open(final DclSymbol dclSymbol) throws CompilerException;
@@ -42,6 +45,7 @@ public interface ISymbolVisitor {
     void open(final NonTerminal aNonTerminal) throws CompilerException;
     void open(final MethodInvokeSymbol invoke) throws CompilerException;
     void open(final FieldAccessSymbol field) throws CompilerException;
+    void open(WhileExprSymbol whileExprSymbol);
 
     void close(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException;
     void close(final DclSymbol dclSymbol) throws CompilerException;
@@ -50,6 +54,7 @@ public interface ISymbolVisitor {
     void close(final CreationExpression creationExpression) throws CompilerException;
     void close(final MethodInvokeSymbol invoke) throws CompilerException;
     void close(final FieldAccessSymbol field) throws CompilerException;
+    void close(final WhileExprSymbol whileExprSymbol) throws CompilerException;
 
     void visit(final TypeSymbol typeSymbol) throws CompilerException;
     void visit(final NameSymbol nameSymbol) throws CompilerException;

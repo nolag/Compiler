@@ -12,6 +12,7 @@ import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
@@ -31,6 +32,7 @@ import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.OrExprSymbol;
 import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
+import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
 public class EmptyVisitor implements ISymbolVisitor {
 
@@ -147,4 +149,13 @@ public class EmptyVisitor implements ISymbolVisitor {
 
     @Override
     public void close(FieldAccessSymbol field) throws CompilerException { }
+
+    @Override
+    public void prepareCondition(Typeable condition) { }
+
+    @Override
+    public void open(WhileExprSymbol whileExprSymbol) { }
+
+    @Override
+    public void close(WhileExprSymbol whileExprSymbol) throws CompilerException { }
 }

@@ -17,6 +17,8 @@ public class JoosNonTerminal extends NonTerminal{
 
     public static final String RETURN = "RETURNSTATEMENT";
 
+    public static final Set<String> whiles = new HashSet<String>();
+
     public static final Set<String> unaryExpressions = new HashSet<String>();
     public static final Set<String> binExpressions = new HashSet<String>();
 
