@@ -37,6 +37,7 @@ import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.OrExprSymbol;
 import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
+import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
@@ -292,5 +293,10 @@ public class PrettyPrinter implements ISymbolVisitor {
     @Override
     public void visit(CharacterLiteralSymbol characterSymbol) throws CompilerException {
         print("Character: " + characterSymbol.charVal);
+    }
+
+    @Override
+    public void visit(ReturnExprSymbol returnSymbol) throws CompilerException {
+        print("Return :");
     }
 }

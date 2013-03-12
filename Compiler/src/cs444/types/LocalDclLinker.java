@@ -25,6 +25,7 @@ import cs444.parser.symbols.ast.ThisSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.TypeableTerminal;
+import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
@@ -230,5 +231,11 @@ public class LocalDclLinker extends EmptyVisitor {
     public void visit(SuperSymbol superSymbol) throws CompilerException {
         APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(enclosingClassName);
         simpleVistorHelper(superSymbol, resolver.getSuperName());
+    }
+
+    @Override
+    public void visit(ReturnExprSymbol returnSymbol) throws CompilerException {
+        // TODO
+
     }
 }

@@ -37,6 +37,7 @@ import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.OrExprSymbol;
 import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
+import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
@@ -92,6 +93,7 @@ public interface ISymbolVisitor {
     void visit(final SuperSymbol thisSymbol) throws CompilerException;
     void visit(final StringLiteralSymbol stringSymbol) throws CompilerException;
     void visit(final CharacterLiteralSymbol characterSymbol) throws CompilerException;
+    void visit(final ReturnExprSymbol returnSymbol) throws CompilerException;
 
     void visit(final ISymbol symbol) throws CompilerException;
 }
