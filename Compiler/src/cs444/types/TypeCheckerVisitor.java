@@ -7,6 +7,7 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
@@ -257,6 +258,18 @@ public class TypeCheckerVisitor implements ISymbolVisitor {
 
     @Override
     public void visit(IntegerLiteralSymbol intLiteral) throws CompilerException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void open(FieldAccessSymbol field) throws CompilerException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void close(FieldAccessSymbol field) throws CompilerException {
         // TODO Auto-generated method stub
         
     }
