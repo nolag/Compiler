@@ -6,6 +6,7 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
@@ -82,14 +83,14 @@ public class PrettyPrinter implements ISymbolVisitor {
 
     @Override
     public void open(CreationExpression creationExpression)
-            throws CompilerException {
+            {
         print("new");
         level++;
     }
 
     @Override
     public void close(CreationExpression creationExpression)
-            throws CompilerException {
+            {
         level--;
     }
 
@@ -99,7 +100,7 @@ public class PrettyPrinter implements ISymbolVisitor {
     }
 
     @Override
-    public void visit(NameSymbol nameSymbol) throws CompilerException {
+    public void visit(NameSymbol nameSymbol){
         print("symbol: " + nameSymbol.value);
     }
 
@@ -118,92 +119,106 @@ public class PrettyPrinter implements ISymbolVisitor {
     }
 
     @Override
-    public void visit(NegOpExprSymbol op) throws CompilerException {
+    public void visit(NegOpExprSymbol op) {
         System.out.printf("%" + (2*level + 1) + "s\n", "-");
     }
 
     @Override
-    public void visit(NotOpExprSymbol op) throws CompilerException {
+    public void visit(NotOpExprSymbol op){
         System.out.printf("%" + (2*level + 1) + "s\n", "!");
     }
 
     @Override
-    public void visit(MultiplyExprSymbol op) throws CompilerException {
+    public void visit(MultiplyExprSymbol op){
         System.out.printf("%" + (2*level + 1) + "s\n", "*");
     }
 
     @Override
-    public void visit(AssignmentExprSymbol op) throws CompilerException {
+    public void visit(AssignmentExprSymbol op){
         System.out.printf("%" + (2*level + 1) + "s\n", "=");
     }
 
     @Override
-    public void visit(DivideExprSymbol op) throws CompilerException {
+    public void visit(DivideExprSymbol op){
         System.out.printf("%" + (2*level + 1) + "s\n", "//");
     }
 
     @Override
-    public void visit(RemainderExprSymbol op) throws CompilerException {
+    public void visit(RemainderExprSymbol op) {
         System.out.printf("%" + (2*level + 1) + "s\n", "%");
     }
 
     @Override
-    public void visit(AddExprSymbol op) throws CompilerException {
+    public void visit(AddExprSymbol op){
         System.out.printf("%" + (2*level + 1) + "s\n", "+");
     }
 
     @Override
-    public void visit(SubtractExprSymbol op) throws CompilerException {
+    public void visit(SubtractExprSymbol op) {
         System.out.printf("%" + (2*level + 1) + "s\n", "-");
     }
 
     @Override
-    public void visit(LtExprSymbol op) throws CompilerException {
+    public void visit(LtExprSymbol op) {
         System.out.printf("%" + (2*level + 1) + "s\n", "<");
     }
 
     @Override
-    public void visit(EqExprSymbol op) throws CompilerException {
+    public void visit(EqExprSymbol op) {
         System.out.printf("%" + (2*level + 2) + "s\n", "==");
     }
 
     @Override
-    public void visit(NeExprSymbol op) throws CompilerException {
+    public void visit(NeExprSymbol op) {
         System.out.printf("%" + (2*level + 2) + "s\n", "!=");
     }
 
     @Override
-    public void visit(AndExprSymbol op) throws CompilerException {
+    public void visit(AndExprSymbol op) {
         System.out.printf("%" + (2*level + 2) + "s\n", "&&");
     }
 
     @Override
-    public void visit(OrExprSymbol op) throws CompilerException {
+    public void visit(OrExprSymbol op) {
         System.out.printf("%" + (2*level + 2) + "s\n", "||");
     }
 
     @Override
-    public void visit(LeExprSymbol op) throws CompilerException {
+    public void visit(LeExprSymbol op) {
         System.out.printf("%" + (2*level + 2) + "s\n", "<=");
     }
 
     @Override
-    public void visit(InstanceOfExprSymbol op) throws CompilerException {
+    public void visit(InstanceOfExprSymbol op) {
         System.out.printf("%" + (2*level + "instanceof".length()) + "s\n", "instanceof");
     }
 
     @Override
-    public void visit(CastExpressionSymbol symbol) throws CompilerException {
+    public void visit(CastExpressionSymbol symbol) {
         System.out.printf("%" + (2*level + 4) + "s\n", "CAST");
     }
 
     @Override
-    public void visit(EAndExprSymbol op) throws CompilerException {
+    public void visit(EAndExprSymbol op) {
         System.out.printf("%" + (2*level + 1) + "s\n", "&");
     }
 
     @Override
-    public void visit(EOrExprSymbol op) throws CompilerException {
+    public void visit(EOrExprSymbol op) {
         System.out.printf("%" + (2*level + 1) + "s\n", "|");
     }
+
+    @Override
+    public void open(MethodInvokeSymbol invoke) {
+        print("method call: " + invoke.methodName);
+        level++;
+    }
+
+    @Override
+    public void close(MethodInvokeSymbol invoke) {
+        level--;
+    }
+
+    @Override
+    public void prepare(MethodInvokeSymbol invode) throws CompilerException { }
 }

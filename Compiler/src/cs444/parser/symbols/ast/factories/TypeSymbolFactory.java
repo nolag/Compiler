@@ -16,7 +16,7 @@ public class TypeSymbolFactory extends ASTSymbolFactory{
            && !from.getName().equalsIgnoreCase("void")) return from;
 
         if (from.getName().equalsIgnoreCase("void")){
-            return new TypeSymbol("void", false);
+            return new TypeSymbol("void", false, false);
         }
 
         ANonTerminal nonTerm = (ANonTerminal) from;
@@ -34,7 +34,7 @@ public class TypeSymbolFactory extends ASTSymbolFactory{
         ATerminal primitive = (ATerminal)typeChild;
         String name = primitive.value;
 
-        return new TypeSymbol(name, isArray);
+        return new TypeSymbol(name, isArray, false);
     }
 
 }

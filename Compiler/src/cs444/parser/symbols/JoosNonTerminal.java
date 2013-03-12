@@ -13,6 +13,10 @@ public class JoosNonTerminal extends NonTerminal{
 
     public static final String UNARY_EXPRESSION = "UNARYEXPRESSION";
 
+    public static final String METHOD_INVOCATION = "METHODINVOCATION";
+
+    public static final String RETURN = "RETURNSTATEMENT";
+
     public static final Set<String> unaryExpressions = new HashSet<String>();
     public static final Set<String> binExpressions = new HashSet<String>();
 
@@ -42,14 +46,16 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add("INTERFACEMEMBERDECLARATIONS");
         noCollapse.add("CLASSBODYDECLARATIONS");
         noCollapse.add("BRACKETPRIMARY");
-        noCollapse.add("METHODINVOCATION");
+        noCollapse.add(METHOD_INVOCATION);
         noCollapse.add("IMPORTDECLARATIONS");
         noCollapse.add(BLOCK);
         noCollapse.add(DIM_EXPR);
         noCollapse.add(ARGUMENT_LIST);
+        noCollapse.add(RETURN);
 
         specialNoDie.add("EMPTYSTATEMENT");
         specialNoDie.add(BLOCK);
+        specialNoDie.add(RETURN);
 
 
         primativeNumbers.add("byte");

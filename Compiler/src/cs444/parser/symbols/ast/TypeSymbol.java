@@ -3,22 +3,24 @@ package cs444.parser.symbols.ast;
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ATerminal;
-import cs444.types.PkgClassResolver;
+import cs444.types.APkgClassResolver;
 
 public class TypeSymbol extends ATerminal{
     public boolean isArray;
-    private PkgClassResolver typeResolver;
+    public final boolean isClass;
+    private APkgClassResolver typeResolver;
 
-    public TypeSymbol(String value, boolean isArray) {
+    public TypeSymbol(String value, boolean isArray, boolean isClass) {
         super("Type", value);
         this.isArray = isArray;
+        this.isClass = isClass;
     }
 
-    public PkgClassResolver getTypeDclNode() {
+    public APkgClassResolver getTypeDclNode() {
         return typeResolver;
     }
 
-    public void setTypeDclNode(PkgClassResolver typeDclNode) {
+    public void setTypeDclNode(APkgClassResolver typeDclNode) {
         this.typeResolver = typeDclNode;
     }
 
