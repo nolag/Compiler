@@ -164,6 +164,10 @@ public abstract class APkgClassResolver {
 
     public abstract APkgClassResolver getSuper() throws UndeclaredException;
 
+    public String getSuperName()throws UndeclaredException{
+        return getSuper().fullName;
+    }
+
     public abstract APkgClassResolver accessor() throws CompilerException;
 
     public APkgClassResolver getArrayVersion(){

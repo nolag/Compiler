@@ -5,12 +5,18 @@ import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
+import cs444.parser.symbols.ast.BooleanLiteralSymbol;
+import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
+import cs444.parser.symbols.ast.NullSymbol;
+import cs444.parser.symbols.ast.StringLiteralSymbol;
+import cs444.parser.symbols.ast.SuperSymbol;
+import cs444.parser.symbols.ast.ThisSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.AddExprSymbol;
@@ -158,4 +164,22 @@ public class EmptyVisitor implements ISymbolVisitor {
 
     @Override
     public void close(WhileExprSymbol whileExprSymbol) throws CompilerException { }
+
+    @Override
+    public void visit(NullSymbol nullSymbol) throws CompilerException { }
+
+    @Override
+    public void visit(BooleanLiteralSymbol boolSymbol) throws CompilerException { }
+
+    @Override
+    public void visit(ThisSymbol thisSymbol) throws CompilerException { }
+
+    @Override
+    public void visit(SuperSymbol thisSymbol) throws CompilerException { }
+
+    @Override
+    public void visit(StringLiteralSymbol stringSymbol) throws CompilerException { }
+
+    @Override
+    public void visit(CharacterLiteralSymbol characterSymbol) throws CompilerException { }
 }

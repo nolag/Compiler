@@ -31,11 +31,6 @@ public class CharacterLiteralSymbol extends TypeableTerminal {
 	}
 
 	@Override
-	public boolean empty() {
-		return false;
-	}
-
-	@Override
 	public void accept(ISymbolVisitor visitor) throws CompilerException {
 	    visitor.visit(this);
 	}
