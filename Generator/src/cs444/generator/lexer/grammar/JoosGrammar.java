@@ -12,7 +12,7 @@ public class JoosGrammar extends LexicalGrammar {
 
         // Traditional comment pattern: /\*([^*]|(\*+[^*/]))*\*+/
         // http://ostermiller.org/findcomment.html
-        
+
         addPattern("COMMENT", NFA.concatenate(
             NFA.literal("/*"),
             NFA.zeroOrMore(
@@ -22,7 +22,7 @@ public class JoosGrammar extends LexicalGrammar {
                 		NFA.oneOrMore(NFA.literal("*")),
                 		anythingButStarOrSlash()
                 	)
-                )	
+                )
             ),
             NFA.oneOrMore(NFA.literal("*")),
             NFA.literal("/")
@@ -64,7 +64,7 @@ public class JoosGrammar extends LexicalGrammar {
         addPattern("CASE", NFA.literal("case"), Type.VALID);
         addPattern("ENUM", NFA.literal("enum"), Type.VALID);
         addPattern("INSTANCEOF", NFA.literal("instanceof"), Type.VALID);
-        addPattern("RETURN", NFA.literal("return"), Type.VALID);
+        addPattern("RETURN", NFA.literal("return"), Type.SYNTAX_ONLY);
         addPattern("TRANSIENT", NFA.literal("transient"), Type.VALID);
         addPattern("CATCH", NFA.literal("catch"), Type.VALID);
         addPattern("EXTENDS", NFA.literal("extends"), Type.SYNTAX_ONLY);
@@ -163,7 +163,7 @@ public class JoosGrammar extends LexicalGrammar {
 		return NFA.union(NFA.acceptRange((char)0, (char)41),
 				NFA.acceptRange((char)43, (char)127));
 	}
-	
+
 	private NFA escapeSequence() {
         // escapeSequence -> \b|\t|\n|\f|\r|\"|\'|\\|(OctalEscape)
         // http://docs.oracle.com/javase/specs/jls/se5.0/html/lexical.html#101089

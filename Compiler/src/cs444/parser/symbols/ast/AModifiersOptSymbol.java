@@ -9,7 +9,7 @@ import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
-public abstract class AModifiersOptSymbol extends ANonTerminal{
+public abstract class AModifiersOptSymbol extends ANonTerminal implements Typeable{
     private boolean hasPublic;
     private boolean hasProtected;
     private boolean hasPrivate;
@@ -127,6 +127,10 @@ public abstract class AModifiersOptSymbol extends ANonTerminal{
     public void validate() throws UnsupportedException{
         if(getProtectionLevel() == ProtectionLevel.NOT_VALID)
             throw new UnsupportedException("Package private protection for fields, constructors, and methods");
+    }
+
+    public TypeSymbol getType(){
+        return type;
     }
 
     public abstract ProtectionLevel defaultProtectionLevel();

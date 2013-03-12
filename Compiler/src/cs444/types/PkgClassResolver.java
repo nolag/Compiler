@@ -1,6 +1,5 @@
 package cs444.types;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,72 +18,53 @@ import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.exceptions.CircularDependancyException;
 import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.IllegalExtendsException;
 import cs444.types.exceptions.IllegalMethodOverloadException;
-import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
 import cs444.types.exceptions.UnimplementedException;
 
-public class PkgClassResolver {
-    private static final String DEFAULT_PKG = "!default";
-    private static final String LANG = "java.lang";
-    private static final String OBJECT = LANG + ".Object";
-
-    private final AInterfaceOrClassSymbol start;
-
-    private final Map<String, AMethodSymbol> methodMap = new HashMap<String, AMethodSymbol>();
-    private final Map<String, AMethodSymbol> smethodMap = new HashMap<String, AMethodSymbol>();
-    private final Map<String, DclSymbol> fieldMap = new HashMap<String, DclSymbol>();
-    private final Map<String, DclSymbol> sfieldMap = new HashMap<String, DclSymbol>();
-
-    private final Map<String, DclSymbol> hfieldMap = new HashMap<String, DclSymbol>();
-    private final Map<String, DclSymbol> hsfieldMap = new HashMap<String, DclSymbol>();
-
-    private final Map<String, PkgClassResolver> namedMap = new HashMap<String, PkgClassResolver>();
+public class PkgClassResolver extends APkgClassResolver {
+    protected final AInterfaceOrClassSymbol start;
     private final Map<String, PkgClassResolver> samepkgMap = new HashMap<String, PkgClassResolver>();
     private final Map<String, PkgClassResolver> staredMap = new HashMap<String, PkgClassResolver>();
-    private final Set<String> assignableTo = new HashSet<String>();
     private final Set<String> imported = new HashSet<String>();
-
     private final Map<String, ConstructorSymbol> constructors = new HashMap<String, ConstructorSymbol>();
-
-    public final String name;
-    public final String fullName;
-    public final String pkg;
-    private final boolean isFinal;
-
-    private boolean isBuilt = false;
-
+    protected boolean isBuilt = false;
     public static final PkgClassResolver badResolve = new PkgClassResolver("!invalid");
+    private static final Map<AInterfaceOrClassSymbol, PkgClassResolver> resolverMap = new HashMap<AInterfaceOrClassSymbol, PkgClassResolver>();
 
-    private static final Map<AInterfaceOrClassSymbol, PkgClassResolver> resolverMap =
-            new HashMap<AInterfaceOrClassSymbol, PkgClassResolver>();
+    private static String getPkg(AInterfaceOrClassSymbol start){
+        String mypkg = DEFAULT_PKG;
+        Iterator<NameSymbol> pkg = start.pkgImports.iterator();
 
-    private static String generateUniqueName(String name, Iterable<String> types){
-        StringBuilder sb = new StringBuilder(name + "-");
-
-        for (String type : types) sb.append(type + "*");
-
-        return sb.toString();
-    }
-
-    //name in caes it's this and not the dcl name
-    private static String generateUniqueName(MethodOrConstructorSymbol methodSymbol, String name) throws UndeclaredException{
-        List<String> types = new LinkedList<String>();
-        PkgClassResolver resolver = methodSymbol.resolver;
-        for(DclSymbol param : methodSymbol.params){
-            String type = resolver.getClass(param.type.value, true).fullName;
-            types.add(type);
+        if(pkg.hasNext()){
+            NameSymbol first = pkg.next();
+            if(first.type == NameSymbol.Type.PACKAGE){
+                mypkg = first.value;
+            }
         }
-        return generateUniqueName(name, types);
+        return mypkg;
     }
 
-    public static PkgClassResolver getResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
+    private PkgClassResolver(String name) {
+        super(name, null, true);
+        this.start = null;
+        isBuilt = true;
+        assignableTo.add(fullName);
+    }
+
+    private PkgClassResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
+        super(start.dclName, getPkg(start), start.getImplementationLevel() == ImplementationLevel.FINAL);
+        namedMap.put(start.dclName, this);
+        this.start = start;
+        assignableTo.add(fullName);
+    }
+
+    public static PkgClassResolver getResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException {
         PkgClassResolver resolver = resolverMap.get(start);
 
         if(resolver == null){
@@ -95,40 +75,11 @@ public class PkgClassResolver {
         return resolver;
     }
 
-    public static PkgClassResolver getPrimativeResolver(String name){
+    public static PkgClassResolver getPrimativeResolver(String name) {
         return new PkgClassResolver(name);
     }
 
-    private PkgClassResolver(String name) {
-        this.start = null;
-        isBuilt = true;
-        fullName = this.name = name;
-        pkg = null;
-        isFinal = true;
-        assignableTo.add(fullName);
-    }
-
-    private PkgClassResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
-        namedMap.put(start.dclName, this);
-        this.start = start;
-        name = start.dclName;
-        Iterator<NameSymbol> pkg = start.pkgImports.iterator();
-        String mypkg = DEFAULT_PKG;
-
-        if(pkg.hasNext()){
-            NameSymbol first = pkg.next();
-            if(first.type == NameSymbol.Type.PACKAGE){
-                mypkg = first.value;
-            }
-        }
-
-        fullName = mypkg + "." + name;
-        this.pkg = mypkg;
-        isFinal = start.getImplementationLevel() == ImplementationLevel.FINAL;
-        assignableTo.add(fullName);
-    }
-
-    private void addAll(String firstPart, Map<String, PkgClassResolver> entryMap) throws DuplicateDeclarationException{
+    private void addAll(String firstPart, Map<String, PkgClassResolver> entryMap) throws DuplicateDeclarationException {
         if(imported.contains(firstPart)) return;
         for(Entry<String, PkgClassResolver> entry : PkgClassInfo.instance.getNamespaceParts(firstPart)){
             String ename = entry.getKey();
@@ -141,83 +92,9 @@ public class PkgClassResolver {
         imported.add(firstPart);
     }
 
-    private DclSymbol getDcl(String name, boolean isStatic, PkgClassResolver pkgClass)
-            throws UndeclaredException, ImplicitStaticConversionException{
-
-        Map<String, DclSymbol> getFrom = isStatic ? sfieldMap : fieldMap;
-
-        DclSymbol retVal = getFrom.get(name);
-
-        //If it is not assignable to this and it's protected see if there is a hidden one.
-        if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName)){
-            getFrom = isStatic ? hsfieldMap : hfieldMap;
-            retVal = getFrom.get(name);
-        }
-
-        return retVal;
-    }
-
-    public List<DclSymbol> findDcl(String name, boolean isStatic, PkgClassResolver pkgClass)
-            throws UndeclaredException, ImplicitStaticConversionException {
-
-        if(start == null) throw new UndeclaredException(name, "primatives");
-
-        String [] nameParts = name.split("\\.");
-
-        DclSymbol retVal;
-        if(nameParts.length == 1){
-            retVal = getDcl(name, isStatic, pkgClass);
-            if(retVal == null) throw new UndeclaredException(name, start.dclName);
-            return  Arrays.asList(new DclSymbol []{ retVal });
-        }
-
-        DclSymbol dcl = getDcl(nameParts[0], isStatic, pkgClass);
-        List<DclSymbol> dclList = new LinkedList<DclSymbol>();
-
-        PkgClassResolver pkgResolver = null;
-
-        int i = 1;
-
-        if(dcl != null){
-            dclList.add(dcl);
-            pkgResolver = getClass(dcl.type.value, true);
-        }else{
-            StringBuilder sb = new StringBuilder(nameParts[0]);
-            pkgResolver = getClass(nameParts[0], false);
-
-            //At least one must be a field
-            for(; pkgResolver == null && i < nameParts.length - 2; i++){
-                sb.append("." + nameParts[i]);
-                pkgResolver = getClass(sb.toString(), false);
-            }
-        }
-
-        if(pkgResolver == null) throw new UndeclaredException(name, start.dclName);
-
-        for(; i < nameParts.length; i++){
-            dcl = pkgResolver.getDcl(nameParts[i], isStatic, pkgClass);
-            dclList.add(dcl);
-            pkgResolver = getClass(dcl.type.value, true);
-        }
-
-        return dclList;
-    }
-
-    public AMethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes, PkgClassResolver pkgClass) throws UndeclaredException{
-        if(start == null) throw new UndeclaredException(name, "primatives");
-        final Map<String, AMethodSymbol> getFrom = isStatic ? smethodMap : methodMap;
-        AMethodSymbol retVal = getFrom.get(generateUniqueName(name, paramTypes));
-
-        if(retVal == null) throw new UndeclaredException(name, start.dclName);
-
-        if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName))
-            throw new UndeclaredException(name, start.dclName);
-
-        return retVal;
-    }
-
-    public PkgClassResolver getClass(String name, boolean die) throws UndeclaredException{
-        PkgClassResolver retVal = null;
+    @Override
+    public APkgClassResolver getClass(String name, boolean die) throws UndeclaredException {
+        APkgClassResolver retVal = null;
         if(namedMap.containsKey(name)) retVal = namedMap.get(name);
         else if(samepkgMap.containsKey(name)) retVal =  samepkgMap.get(name);
         else if(staredMap.containsKey(name)) retVal =  staredMap.get(name);
@@ -227,7 +104,8 @@ public class PkgClassResolver {
         return retVal;
     }
 
-    public PkgClassResolver findClass(String name) throws UndeclaredException {
+    @Override
+    public APkgClassResolver findClass(String name) throws UndeclaredException {
         String [] nameParts = name.split("\\.");
         StringBuilder sb = new StringBuilder();
 
@@ -243,8 +121,41 @@ public class PkgClassResolver {
         return getClass(name, true);
     }
 
-    private void copyInfo(PkgClassResolver building, Set<PkgClassResolver> visited,
-            List<Set<PkgClassResolver>> resolvedSets, boolean mustBeInterface, boolean mustBeClass) throws CompilerException{
+    public void verifyObject() throws CompilerException {
+        PkgClassResolver obj = (PkgClassResolver) getClass(OBJECT, true);
+        if(obj == this) return;
+        obj.build();
+        for(AMethodSymbol methodSymbol : obj.start.getMethods()){
+            String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
+            AMethodSymbol has = methodMap.get(uniqueName);
+            has = has == null ? smethodMap.get(uniqueName) : has;
+            AMethodSymbol is = has == null ? methodSymbol : has;
+
+            if (start.isClass()){
+                //If it has it move it to the front so that it's in the correct place for the super's this
+                start.children.remove(has);
+                start.children.add(0, is);
+                methodMap.put(uniqueName, is);
+            }
+
+            if(has != null){
+                if(is.isStatic() != methodSymbol.isStatic())
+                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is static and not static");
+                if(methodSymbol.getImplementationLevel() == ImplementationLevel.FINAL && has != null)
+                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is final, but overrided");
+                if(methodSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC && is.getProtectionLevel() != ProtectionLevel.PUBLIC)
+                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is public, but overrided is not");
+                if(methodSymbol.getProtectionLevel() == ProtectionLevel.PROTECTED
+                        && is.getProtectionLevel() != ProtectionLevel.PUBLIC && is.getProtectionLevel() != ProtectionLevel.PROTECTED)
+                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is protected, but overrided is not protected or public");
+                //covarient return types not allowed in JOOS, it was added in java 5
+                if(methodSymbol.resolver.getClass(is.type.value, true) != obj.getClass(methodSymbol.type.value, true))
+                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "return types don't match");
+            }
+        }
+    }
+
+    private void copyInfo(PkgClassResolver building, Set<PkgClassResolver> visited, List<Set<PkgClassResolver>> resolvedSets, boolean mustBeInterface, boolean mustBeClass) throws CompilerException {
 
         if(building.isFinal) throw new IllegalExtendsException(start.superName);
         Set<PkgClassResolver> cpySet = new HashSet<PkgClassResolver>(visited);
@@ -301,41 +212,8 @@ public class PkgClassResolver {
         }
     }
 
-    public void verifyObject() throws CompilerException{
-        PkgClassResolver obj = getClass(OBJECT, true);
-        if(obj == this) return;
-        obj.build();
-        for(AMethodSymbol methodSymbol : obj.start.getMethods()){
-            String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
-            AMethodSymbol has = methodMap.get(uniqueName);
-            has = has == null ? smethodMap.get(uniqueName) : has;
-            AMethodSymbol is = has == null ? methodSymbol : has;
-
-            if (start.isClass()){
-                //If it has it move it to the front so that it's in the correct place for the super's this
-                start.children.remove(has);
-                start.children.add(0, is);
-                methodMap.put(uniqueName, is);
-            }
-
-            if(has != null){
-                if(is.isStatic() != methodSymbol.isStatic())
-                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is static and not static");
-                if(methodSymbol.getImplementationLevel() == ImplementationLevel.FINAL && has != null)
-                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is final, but overrided");
-                if(methodSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC && is.getProtectionLevel() != ProtectionLevel.PUBLIC)
-                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is public, but overrided is not");
-                if(methodSymbol.getProtectionLevel() == ProtectionLevel.PROTECTED
-                        && is.getProtectionLevel() != ProtectionLevel.PUBLIC && is.getProtectionLevel() != ProtectionLevel.PROTECTED)
-                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is protected, but overrided is not protected or public");
-                //covarient return types not allowed in JOOS, it was added in java 5
-                if(methodSymbol.resolver.getClass(is.type.value, true) != obj.getClass(methodSymbol.type.value, true))
-                    throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "return types don't match");
-            }
-        }
-    }
-
-    private void build(Set<PkgClassResolver> visited, boolean mustBeInterface, boolean mustBeClass) throws CompilerException{
+    @Override
+    protected void build(Set<PkgClassResolver> visited, boolean mustBeInterface, boolean mustBeClass) throws CompilerException {
 
         if(visited.contains(this)) throw new CircularDependancyException(start.dclName);
         if(mustBeInterface && start.isClass()) throw new UnsupportedException("Interface extending a class");
@@ -349,7 +227,7 @@ public class PkgClassResolver {
 
                 switch(name.type){
                 case IMPORT:
-                    PkgClassResolver resolver = PkgClassInfo.instance.getSymbol(name.value);
+                    PkgClassResolver resolver = (PkgClassResolver)PkgClassInfo.instance.getSymbol(name.value);
                     if(resolver == null) throw new UndeclaredException(name.value, start.dclName);
 
                     String typeName = name.value.substring(name.value.lastIndexOf(".") + 1, name.value.length());
@@ -373,24 +251,24 @@ public class PkgClassResolver {
             addAll("java.lang", staredMap);
 
             for (AMethodSymbol methodSymbol : start.getMethods()){
-                methodSymbol.resolver = this;
+                methodSymbol.resolver = methodSymbol.type.isArray ? getArrayVersion() : this;
                 String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
                 if(methodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
                 if(smethodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
 
                 final Map<String, AMethodSymbol> addTo = methodSymbol.isStatic() ? smethodMap : methodMap;
                 addTo.put(uniqueName, methodSymbol);
-                findClass(methodSymbol.type.value);
+                methodSymbol.type.setTypeDclNode(findClass(methodSymbol.type.value));
             }
 
             for(DclSymbol fieldSymbol : start.getFields()){
                 if(fieldMap.containsKey(fieldSymbol.dclName) || sfieldMap.containsKey(fieldSymbol.dclName))
                     throw new UndeclaredException(fieldSymbol.dclName, start.dclName);
 
-                fieldSymbol.resolve = this;
+                fieldSymbol.type.setTypeDclNode(fieldSymbol.type.isArray ? getArrayVersion() : this);
                 final Map<String, DclSymbol> addTo = fieldSymbol.isStatic() ? sfieldMap : fieldMap;
                 addTo.put(fieldSymbol.dclName, fieldSymbol);
-                findClass(fieldSymbol.type.value);
+                fieldSymbol.type.setTypeDclNode(findClass(fieldSymbol.type.value));
             }
 
             for(ConstructorSymbol constructorSymbol : start.getConstructors()){
@@ -407,7 +285,7 @@ public class PkgClassResolver {
             List<Set<PkgClassResolver>> resolvedSets = new LinkedList<Set<PkgClassResolver>>();
 
             if(start.superName != null){
-                building = findClass(start.superName);
+                building = (PkgClassResolver)findClass(start.superName);
                 copyInfo(building, visited, resolvedSets, false, true);
                 assignableTo.addAll(building.assignableTo);
             }else{
@@ -417,7 +295,7 @@ public class PkgClassResolver {
             Set<String> alreadyImps = new HashSet<String>();
 
             for(String impl : start.impls){
-                building = findClass(impl);
+                building = (PkgClassResolver) findClass(impl);
                 if(alreadyImps.contains(building.fullName)) throw new DuplicateDeclarationException(impl, fullName);
 
                 //Interfaces must be implemented, unless this is abstract
@@ -433,7 +311,7 @@ public class PkgClassResolver {
                         //No method can be static in an interface.
                         if(!methodMap.containsKey(uniqueName)) throw new UndeclaredException(uniqueName, fullName);
                         AMethodSymbol hasMethod = methodMap.get(uniqueName);
-                        PkgClassResolver hasResolver = hasMethod.resolver;
+                        APkgClassResolver hasResolver = hasMethod.resolver;
                         if(hasResolver.findClass(hasMethod.type.value) != methodSymbol.resolver.findClass(methodSymbol.type.value))
                                 throw new UndeclaredException(uniqueName, fullName);
 
@@ -454,33 +332,38 @@ public class PkgClassResolver {
             assignableTo.add(OBJECT);
 
             start.accept(new TypeResolverVisitor(this));
-            linkLocalNamesToDcl();
             isBuilt = true;
         }else{
-            for(String s : assignableTo) visited.add(PkgClassInfo.instance.getSymbol(s));
+            for(String s : assignableTo) visited.add((PkgClassResolver)PkgClassInfo.instance.getSymbol(s));
         }
     }
 
-    private void linkLocalNamesToDcl() throws CompilerException {
-        for (ISymbol child : start.children) {
-            if (child instanceof MethodOrConstructorSymbol){
-                ((MethodOrConstructorSymbol) child).resolveLocalVars(fullName);
-            }
+    @Override
+    public void linkLocalNamesToDcl() throws CompilerException {
+        if(start == null) return;
+        for(AMethodSymbol method : start.getMethods()){
+            method.resolveLocalVars(fullName);
+        }
+
+        for(ConstructorSymbol consturctor : start.getConstructors()){
+            consturctor.resolveLocalVars(fullName);
         }
     }
 
-    public void build() throws CompilerException{
-        build(new HashSet<PkgClassResolver>(), false, false);
-    }
-
-    public PkgClassResolver getSuper() throws UndeclaredException{
+    @Override
+    public APkgClassResolver getSuper() throws UndeclaredException {
         return findClass(start.superName);
     }
 
-    public ConstructorSymbol getConstructor(List<String> types) throws UndeclaredException{
+    public ConstructorSymbol getConstructor(List<String> types) throws UndeclaredException {
         String name = generateUniqueName("this", types);
         ConstructorSymbol cs = constructors.get(name);
         if(cs == null) throw new UndeclaredException(name, fullName);
         return cs;
+    }
+
+    @Override
+    public APkgClassResolver accessor() throws UndeclaredException{
+        throw new UndeclaredException("Accessors", this.fullName);
     }
 }

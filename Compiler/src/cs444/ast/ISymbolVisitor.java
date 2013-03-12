@@ -6,6 +6,7 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
@@ -30,17 +31,21 @@ import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 
 public interface ISymbolVisitor {
+    void prepare(final MethodInvokeSymbol invode) throws CompilerException;
+
     void open(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException;
     void open(final DclSymbol dclSymbol) throws CompilerException;
     void open(final MethodOrConstructorSymbol method) throws CompilerException;
     void open(final CreationExpression creationExpression) throws CompilerException;
     void open(final NonTerminal aNonTerminal) throws CompilerException;
+    void open(final MethodInvokeSymbol invoke) throws CompilerException;
 
     void close(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException;
     void close(final DclSymbol dclSymbol) throws CompilerException;
     void close(final MethodOrConstructorSymbol method) throws CompilerException;
     void close(final NonTerminal aNonTerminal) throws CompilerException;
     void close(final CreationExpression creationExpression) throws CompilerException;
+    void close(final MethodInvokeSymbol invoke) throws CompilerException;
 
     void visit(final TypeSymbol typeSymbol) throws CompilerException;
     void visit(final NameSymbol nameSymbol) throws CompilerException;

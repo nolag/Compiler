@@ -1,5 +1,6 @@
 package cs444.types;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,7 +13,7 @@ import cs444.types.exceptions.UndeclaredException;
 
 public class PkgClassInfo {
     private final Map<String, Map<String, PkgClassResolver>> nameSpaces = new HashMap<String, Map<String, PkgClassResolver>>();
-    private final Map<String, PkgClassResolver> symbolMap = new HashMap<String, PkgClassResolver>();
+    public final Map<String, APkgClassResolver> symbolMap = new HashMap<String, APkgClassResolver>();
 
     public static final PkgClassInfo instance = new PkgClassInfo();
 
@@ -64,11 +65,11 @@ public class PkgClassInfo {
         return (nameSpc != null && nameSpc.containsKey(pkgNameSuffix));
     }
 
-    public PkgClassResolver getSymbol(String name){
+    public APkgClassResolver getSymbol(String name){
         return symbolMap.get(name);
     }
 
-    public Iterable<PkgClassResolver> getSymbols(){
+    public Collection<APkgClassResolver> getSymbols(){
         return symbolMap.values();
     }
 

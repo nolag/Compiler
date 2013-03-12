@@ -6,12 +6,20 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
-import cs444.types.PkgClassResolver;
+import cs444.types.APkgClassResolver;
 
 
 public class DclSymbol extends AModifiersOptSymbol{
     private final boolean isLocal;
-    public PkgClassResolver resolve;
+
+    public static DclSymbol getClassSymbol(String fullName, APkgClassResolver resolver){
+        DclSymbol retVal = null;
+        try{
+            retVal = new DclSymbol(fullName, null, new TypeSymbol(fullName, false, true), null, false);
+            retVal.type.setTypeDclNode(resolver);
+        }catch (Exception e){ }
+        return retVal;
+    }
 
     public DclSymbol(String dclName, ANonTerminal from, TypeSymbol type, ANonTerminal initVal, boolean isLocal)
             throws IllegalModifierException, UnsupportedException {

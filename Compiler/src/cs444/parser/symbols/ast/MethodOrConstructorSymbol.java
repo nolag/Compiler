@@ -6,12 +6,12 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
+import cs444.types.APkgClassResolver;
 import cs444.types.LocalDclLinker;
-import cs444.types.PkgClassResolver;
 
 public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
 
-    public PkgClassResolver resolver;
+    public APkgClassResolver resolver;
 
     public final Iterable<DclSymbol> params;
 
