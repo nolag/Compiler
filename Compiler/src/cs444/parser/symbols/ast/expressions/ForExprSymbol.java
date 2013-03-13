@@ -24,7 +24,11 @@ public class ForExprSymbol extends BaseExprSymbol {
     public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
         visitor.prepareCondition(getCondition());
+//        TODO: don't think we need this
  //       visitor.visit(this);
+        for (ISymbol child : children) {
+            child.accept(visitor);
+        }
         visitor.close(this);
     }
 }

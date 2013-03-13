@@ -23,7 +23,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("J1_interfaceassignable")) continue;
+			// if (!fileName.equals("Je_2_Locals_Overlapping_ForInitializer.java")) continue;
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
 			    List<String> sourceFiles = getAllFiles(file);
