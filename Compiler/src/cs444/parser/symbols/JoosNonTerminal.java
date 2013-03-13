@@ -26,7 +26,7 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String THIS = "this";
     public static final String TRUE_VALUE = "true";
     public static final String FALSE_VALUE = "true";
-    public static final String BOOLEAN = "bool";
+    public static final String BOOLEAN = "boolean";
     public static final String STRING = "java.lang.String";
     public static final String CHAR = "char";
     public static final String INTEGER = "int";

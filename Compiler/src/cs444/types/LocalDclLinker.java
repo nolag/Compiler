@@ -25,7 +25,9 @@ import cs444.parser.symbols.ast.ThisSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.TypeableTerminal;
+import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
+import cs444.types.APkgClassResolver.Castable;
 import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.IllegalCastAssignmentException;
 import cs444.types.exceptions.ImplicitStaticConversionException;
@@ -237,15 +239,41 @@ public class LocalDclLinker extends EmptyVisitor {
         simpleVistorHelper(superSymbol, resolver.getSuperName());
     }
 
+    public void bothBooleanHelper() throws IllegalCastAssignmentException, UndeclaredException{
+        TypeSymbol second = currentTypes.peek().pop().getType();
+        Typeable firtTypeable = currentTypes.peek().pop();
+        TypeSymbol first = firtTypeable.getType();
+        APkgClassResolver booleanType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.BOOLEAN);
+
+        if(booleanType.getCastablility(first.getTypeDclNode()) == Castable.NOT_CASTABLE){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            throw new IllegalCastAssignmentException(enclosingClassName, where, first.value, currentMC.type.value);
+        }
+
+        if(booleanType.getCastablility(second.getTypeDclNode()) == Castable.NOT_CASTABLE){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            throw new IllegalCastAssignmentException(enclosingClassName, where, first.value, currentMC.type.value);
+        }
+
+        currentTypes.peek().push(firtTypeable);
+    }
+
+    @Override
+    public void visit(AndExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
+        //TODO when I have > < and others uncomment.
+        //bothBooleanHelper()
+    }
+
     @Override
     public void visit(ReturnExprSymbol returnSymbol) throws IllegalCastAssignmentException, UndeclaredException {
-        /*TODO when everything else works, uncomment this. TypeSymbol currentType;
-        if(!returnSymbol.children.isEmpty()) currentType = currentTypes.peek().peek().getType();
+        //TODO when everything else works uncomment
+        /*TypeSymbol currentType;
+        if(!returnSymbol.children.isEmpty()) currentType = currentTypes.peek().getLast().getType();
         else currentType = TypeSymbol.voidType;
         returnSymbol.setType(currentType);
         if(currentMC.type.getTypeDclNode().getCastablility(currentType.getTypeDclNode()) != Castable.DOWN_CAST){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
             throw new IllegalCastAssignmentException(enclosingClassName, where, currentType.value, currentMC.type.value);
-        }*/
+        }//*/
     }
 }
