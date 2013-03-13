@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cs444.CompilerException;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.DclSymbol;
@@ -46,6 +47,11 @@ public abstract class APkgClassResolver {
         if(pkg == null) fullName = name;
         else fullName = pkg + "." + name;
         this.isFinal = isFinal;
+        assignableTo.add(fullName);
+        assignableTo.add(OBJECT);
+
+        List<String> alsoAssignsTo = JoosNonTerminal.defaultAssignables.get(name);
+        if(alsoAssignsTo != null) assignableTo.addAll(alsoAssignsTo);
     }
 
     protected static String generateUniqueName(String name, Iterable<String> types) {

@@ -23,8 +23,6 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
             assignableTo.add(getArrayName(s));
         }
 
-        assignableTo.add(OBJECT);
-
         PkgClassInfo.instance.symbolMap.put(fullName, this);
     }
 

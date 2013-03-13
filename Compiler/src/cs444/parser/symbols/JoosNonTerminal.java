@@ -1,6 +1,10 @@
 package cs444.parser.symbols;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import cs444.CompilerException;
@@ -27,6 +31,7 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String CHAR = "char";
     public static final String INTEGER = "int";
 
+    public static final Map<String, List<String>> defaultAssignables = new HashMap<String, List<String>>();
 
     public static final Set<String> whiles = new HashSet<String>();
 
@@ -91,6 +96,12 @@ public class JoosNonTerminal extends NonTerminal{
         binExpressions.add("ASSIGNMENTEXPRESSION");
         binExpressions.add("CONDITIONALANDEXPRESSION");
         binExpressions.add("INCLUSIVEOREXPRESSION");
+
+        List<String> byteCharAssign = Arrays.asList(new String [] {"int", "short"});
+        List<String> shortAssign = Arrays.asList(new String [] {"int"});
+        defaultAssignables.put("byte", byteCharAssign);
+        defaultAssignables.put("char", byteCharAssign);
+        defaultAssignables.put("short", shortAssign);
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {

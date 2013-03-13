@@ -19,6 +19,7 @@ import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
+import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.exceptions.CircularDependancyException;
 import cs444.types.exceptions.DuplicateDeclarationException;
@@ -54,14 +55,12 @@ public class PkgClassResolver extends APkgClassResolver {
         super(name, null, true);
         this.start = null;
         isBuilt = true;
-        assignableTo.add(fullName);
     }
 
     private PkgClassResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
         super(start.dclName, getPkg(start), start.getImplementationLevel() == ImplementationLevel.FINAL);
         namedMap.put(start.dclName, this);
         this.start = start;
-        assignableTo.add(fullName);
     }
 
     public static PkgClassResolver getResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException {
@@ -293,6 +292,12 @@ public class PkgClassResolver extends APkgClassResolver {
                 String uniqueName = generateUniqueName(constructorSymbol, "this");
                 if(constructors.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
                 constructors.put(uniqueName, constructorSymbol);
+                TypeSymbol voidType = TypeSymbol.voidType;
+
+                if(voidType.getTypeDclNode() == null)
+                    voidType.setTypeDclNode(PkgClassInfo.instance.getSymbol("void"));
+
+                constructorSymbol.setType(voidType);
             }
 
             mustBeInterface |= !start.isClass();

@@ -27,11 +27,13 @@ import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.TypeableTerminal;
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.types.exceptions.DuplicateDeclarationException;
+import cs444.types.exceptions.IllegalCastAssignmentException;
 import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
 
 public class LocalDclLinker extends EmptyVisitor {
     private LocalScope currentScope;
+    private MethodOrConstructorSymbol currentMC;
     private final String enclosingClassName; // used for exception message
 
     private final Stack<Deque<Typeable>> currentTypes = new Stack<Deque<Typeable>>();
@@ -47,15 +49,17 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void open(MethodOrConstructorSymbol methodSymbol){
         pushNewScope(methodSymbol.isStatic());
+        currentMC = methodSymbol;
     }
 
     @Override
     public void close(MethodOrConstructorSymbol methodSymbol){
         popCurrentScope();
+        currentMC = null;
     }
 
     @Override
-    public void close(DclSymbol dclSymbol) throws CompilerException {
+    public void close(DclSymbol dclSymbol) throws DuplicateDeclarationException {
         // in close because we cannot used this variable inside its initializer
         String varName = dclSymbol.dclName;
         if (currentScope.isDeclared(varName)) throw new DuplicateDeclarationException(varName, enclosingClassName);
@@ -77,7 +81,7 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void open(MethodInvokeSymbol invoke) throws CompilerException {
+    public void open(MethodInvokeSymbol invoke) throws UndeclaredException, ImplicitStaticConversionException {
 
         Deque<Typeable> currentSymbols = currentTypes.pop();
 
@@ -103,7 +107,7 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void close(MethodInvokeSymbol invoke) throws CompilerException {
+    public void close(MethodInvokeSymbol invoke) {
         APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(enclosingClassName);
         boolean isStatic = currentScope.isStatic;
         Deque<Typeable>currentSymbols = currentTypes.pop();
@@ -177,7 +181,7 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void prepare(MethodInvokeSymbol invoke) throws CompilerException {
+    public void prepare(MethodInvokeSymbol invoke) {
         currentTypes.push(new ArrayDeque<Typeable>());
         useCurrentForLookup.push(true);
     }
@@ -234,8 +238,14 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void visit(ReturnExprSymbol returnSymbol) throws CompilerException {
-        // TODO
-
+    public void visit(ReturnExprSymbol returnSymbol) throws IllegalCastAssignmentException, UndeclaredException {
+        /*TODO when everything else works, uncomment this. TypeSymbol currentType;
+        if(!returnSymbol.children.isEmpty()) currentType = currentTypes.peek().peek().getType();
+        else currentType = TypeSymbol.voidType;
+        returnSymbol.setType(currentType);
+        if(currentMC.type.getTypeDclNode().getCastablility(currentType.getTypeDclNode()) != Castable.DOWN_CAST){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            throw new IllegalCastAssignmentException(enclosingClassName, where, currentType.value, currentMC.type.value);
+        }*/
     }
 }

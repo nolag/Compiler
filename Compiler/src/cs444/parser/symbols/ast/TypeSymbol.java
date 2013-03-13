@@ -10,6 +10,8 @@ public class TypeSymbol extends ATerminal{
     public final boolean isClass;
     private APkgClassResolver typeResolver;
 
+    public static final TypeSymbol voidType = new TypeSymbol("void", false, false);
+
     public TypeSymbol(String value, boolean isArray, boolean isClass) {
         super("Type", value);
         this.isArray = isArray;
