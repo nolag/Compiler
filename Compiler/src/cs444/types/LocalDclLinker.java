@@ -26,9 +26,11 @@ import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.TypeableTerminal;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
+import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.parser.symbols.ast.expressions.EAndExprSymbol;
 import cs444.parser.symbols.ast.expressions.EOrExprSymbol;
 import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
+import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.OrExprSymbol;
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
@@ -313,7 +315,22 @@ public class LocalDclLinker extends EmptyVisitor {
         APkgClassResolver booleanType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.BOOLEAN);
         if(booleanType.getCastablility(was.getTypeDclNode()) == Castable.NOT_CASTABLE){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new IllegalCastAssignmentException(enclosingClassName, where, was.value, currentMC.type.value);
+            String name1 = was.isArray ? ArrayPkgClassResolver.getArrayName(was.value) : was.value;
+            String name2 = currentMC.type.isArray ? ArrayPkgClassResolver.getArrayName(currentMC.type.value) : currentMC.type.value;
+            throw new IllegalCastAssignmentException(enclosingClassName, where, name1, name2);
+        }*/
+    }
+
+    @Override
+    public void visit(NegOpExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
+        //TODO when I have > < and others uncomment.
+        /*TypeSymbol was = currentTypes.peek().peek().getType();
+        APkgClassResolver intType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.INTEGER);
+        if(intType.getCastablility(was.getTypeDclNode()) == Castable.NOT_CASTABLE){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            String name1 = was.isArray ? ArrayPkgClassResolver.getArrayName(was.value) : was.value;
+            String name2 = currentMC.type.isArray ? ArrayPkgClassResolver.getArrayName(currentMC.type.value) : currentMC.type.value;
+            throw new IllegalCastAssignmentException(enclosingClassName, where, name1, name2);
         }*/
     }
 
@@ -335,6 +352,21 @@ public class LocalDclLinker extends EmptyVisitor {
             new IllegalInstanceOfException(enclosingClassName, where, rhs.value, currentMC.type.value);*/
     }
 
+    @Override
+    public void visit(CastExpressionSymbol symbol) throws IllegalCastAssignmentException, UndeclaredException {
+        /*TODO
+        TypeSymbol isType = currentTypes.peek().pop().getType();
+        Typeable to = currentTypes.peek().pop();
+        TypeSymbol toType = to.getType();
+
+        if(toType.getTypeDclNode().getCastablility(isType.getTypeDclNode()) == Castable.NOT_CASTABLE){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            String name1 = isType.isArray ? ArrayPkgClassResolver.getArrayName(isType.value) : isType.value;
+            String name2 = toType.isArray ? ArrayPkgClassResolver.getArrayName(toType.value) : toType.value;
+            throw new IllegalCastAssignmentException(enclosingClassName, where, name1, name2);
+        }
+        */
+    }
 
     @Override
     public void visit(ReturnExprSymbol returnSymbol) throws IllegalCastAssignmentException, UndeclaredException {
@@ -345,7 +377,10 @@ public class LocalDclLinker extends EmptyVisitor {
         returnSymbol.setType(currentType);
         if(currentMC.type.getTypeDclNode().getCastablility(currentType.getTypeDclNode()) != Castable.DOWN_CAST){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new IllegalCastAssignmentException(enclosingClassName, where, currentType.value, currentMC.type.value);
+
+            String currentType = currentType.isArray ? ArrayPkgClassResolver.getArrayName(currentType.value) : currentType.value;
+            String name2 = currentMC.type.isArray ? ArrayPkgClassResolver.getArrayName(currentMC.type.value) : currentMC.type.value;
+            throw new IllegalCastAssignmentException(enclosingClassName, where, name1, name2);
         }//*/
     }
 }
