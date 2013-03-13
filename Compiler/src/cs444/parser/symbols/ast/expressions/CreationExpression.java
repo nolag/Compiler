@@ -9,7 +9,6 @@ import cs444.parser.symbols.ast.TypeSymbol;
 
 public class CreationExpression extends BaseExprSymbol{
     public final TypeSymbol createType;
-    public final boolean arrayCreationExpression;
 
     public CreationExpression(TypeSymbol type, List<ISymbol> args) {
         super("InstanceCreationExpression");
@@ -17,7 +16,6 @@ public class CreationExpression extends BaseExprSymbol{
         this.setType(type);
         this.createType = type;
         this.children.addAll(args);
-        this.arrayCreationExpression = false;
     }
 
     @Override
