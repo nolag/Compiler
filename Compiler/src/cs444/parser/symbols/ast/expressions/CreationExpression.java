@@ -8,13 +8,10 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 
 public class CreationExpression extends BaseExprSymbol{
-    public final TypeSymbol createType;
-
     public CreationExpression(TypeSymbol type, List<ISymbol> args) {
         super("InstanceCreationExpression");
 
         this.setType(type);
-        this.createType = type;
         this.children.addAll(args);
     }
 
