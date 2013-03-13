@@ -28,6 +28,7 @@ import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 import cs444.parser.symbols.ast.expressions.EAndExprSymbol;
 import cs444.parser.symbols.ast.expressions.EOrExprSymbol;
 import cs444.parser.symbols.ast.expressions.EqExprSymbol;
+import cs444.parser.symbols.ast.expressions.ForExprSymbol;
 import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
 import cs444.parser.symbols.ast.expressions.LeExprSymbol;
 import cs444.parser.symbols.ast.expressions.LtExprSymbol;
@@ -298,5 +299,16 @@ public class PrettyPrinter implements ISymbolVisitor {
     @Override
     public void visit(ReturnExprSymbol returnSymbol) throws CompilerException {
         print("Return :");
+    }
+
+    @Override
+    public void open(ForExprSymbol forExprSymbol) throws CompilerException {
+        print("for");
+        level++;
+    }
+
+    @Override
+    public void close(ForExprSymbol forExprSymbol) throws CompilerException {
+        level--;
     }
 }
