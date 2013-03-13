@@ -11,6 +11,8 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 
 public class JoosNonTerminal extends NonTerminal{
+    public static final String FORUPDATE = "FORUPDATE";
+    public static final String FORINIT = "FORINIT";
     public static final String DIMS = "DIMS";
     public static final String ARGUMENT_LIST = "ARGUMENTLIST";
     public static final String DIM_EXPR = "DIMEXPR";
@@ -21,6 +23,7 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String METHOD_INVOCATION = "METHODINVOCATION";
 
     public static final String RETURN = "RETURNSTATEMENT";
+    public static final String EMPTYSTATEMENT= "EMPTYSTATEMENT";
     public static final String NULL = "null";
     public static final String SUPER = "super";
     public static final String THIS = "this";
@@ -75,6 +78,8 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add(DIM_EXPR);
         noCollapse.add(ARGUMENT_LIST);
         noCollapse.add(RETURN);
+        noCollapse.add(FORINIT);
+        noCollapse.add(FORUPDATE);
 
         specialNoDie.add("EMPTYSTATEMENT");
         specialNoDie.add(BLOCK);
@@ -108,8 +113,8 @@ public class JoosNonTerminal extends NonTerminal{
         binExpressions.add("CONDITIONALANDEXPRESSION");
         binExpressions.add("INCLUSIVEOREXPRESSION");
 
-        fors.add("ForStatement");
-        fors.add("ForStatementNoShortIf");
+        fors.add("FORSTATEMENT");
+        fors.add("FORSTATEMENTNOSHORTIF");
 
         List<String> byteCharAssign = Arrays.asList(new String [] {"int", "short"});
         List<String> shortAssign = Arrays.asList(new String [] {"int"});
