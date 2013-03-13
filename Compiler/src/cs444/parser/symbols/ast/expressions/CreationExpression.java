@@ -2,11 +2,10 @@ package cs444.parser.symbols.ast.expressions;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
-import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 
-public class CreationExpression extends ANonTerminal{
+public class CreationExpression extends BaseExprSymbol{
     public final TypeSymbol type;
     public final Iterable<ISymbol> args;
 

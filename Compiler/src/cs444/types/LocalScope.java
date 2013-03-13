@@ -7,15 +7,17 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.exceptions.DuplicateDeclarationException;
 
 public class LocalScope {
-    final LocalScope parent;
+    public final LocalScope parent;
+    public final boolean isStatic;
     private final Map<String, DclSymbol> environment = new HashMap<String, DclSymbol>();
 
     public LocalScope(){
-        this(null);
+        this(null, false);
     }
 
-    public LocalScope(LocalScope parent) {
+    public LocalScope(LocalScope parent, boolean isStatic) {
         this.parent = parent;
+        this.isStatic = isStatic;
     }
 
     public void add(String name, DclSymbol node) throws DuplicateDeclarationException{

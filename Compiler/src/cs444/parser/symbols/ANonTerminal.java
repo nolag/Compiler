@@ -42,6 +42,16 @@ public abstract class ANonTerminal implements ISymbol{
         return null;
     }
 
+    public ISymbol lastOrDefault(String ... names){
+        ISymbol last = null;
+        for(ISymbol child : children){
+            for(String name : names){
+                if(child.getName().equalsIgnoreCase(name)) last = child;
+            }
+        }
+        return last;
+    }
+
     public Iterable<ISymbol> getAll(String ... names){
         List<ISymbol> validChildren = new LinkedList<ISymbol>();
         for(ISymbol child : children){

@@ -1,6 +1,9 @@
 public class AccessStaticFields {
   public AccessStaticFields() {}
+
+  protected static int f;
+
   public int m() {
-    return java.util.Calendar.MONDAY;
+    return AccessStaticFields.f;
   }
 }

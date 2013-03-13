@@ -15,7 +15,8 @@ public class TypeResolverVisitor extends EmptyVisitor {
     @Override
     public void visit(TypeSymbol typeSymbol) throws CompilerException {
         if (typeSymbol.getTypeDclNode() == null && typeSymbol.value != "void"){
-            typeSymbol.setTypeDclNode(classResolver.findClass(typeSymbol.value));
+            APkgClassResolver resolver = classResolver.findClass(typeSymbol.value);
+            typeSymbol.setTypeDclNode(typeSymbol.isArray ? resolver.getArrayVersion() : resolver);
         }
     }
 }

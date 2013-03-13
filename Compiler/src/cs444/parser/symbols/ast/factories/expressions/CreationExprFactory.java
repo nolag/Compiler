@@ -31,7 +31,7 @@ public class CreationExprFactory  extends ASTSymbolFactory{
 
         ANonTerminal expr = (ANonTerminal) from;
 
-        TypeSymbol type = new TypeSymbol(getTypeValue(expr), false);
+        TypeSymbol type = new TypeSymbol(getTypeValue(expr), false, false);
 
         ISymbol arrayDimExpr;
         if (haveDimExpression(expr)){

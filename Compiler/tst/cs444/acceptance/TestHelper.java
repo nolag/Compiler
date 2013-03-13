@@ -23,7 +23,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("J1_supermethod_override11")) continue;
+			//if (!fileName.equals("J1_interfaceassignable")) continue;
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
 			    List<String> sourceFiles = getAllFiles(file);
@@ -39,7 +39,7 @@ public class TestHelper {
 					failFiles.add(path + fileName);
 				}
 				totalTests++;
-			} else if (file.isDirectory()) {
+			} else if (file.isDirectory() && !fileName.toLowerCase().endsWith(".skip")) {
 			    List<String> sourceFiles = getAllFiles(file);
 
 				String[] array = new String[sourceFiles.size()];

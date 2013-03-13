@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URISyntaxException;
+import java.util.LinkedList;
+import java.util.List;
 
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
@@ -16,8 +18,8 @@ import cs444.parser.TextReadingRules;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.exceptions.UnexpectedTokenException;
+import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassInfo;
-import cs444.types.PkgClassResolver;
 
 public class Compiler {
 
@@ -25,7 +27,7 @@ public class Compiler {
 
     /**
      * @param args
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      * @throws Exception
      */
     public static void main(String[] args){
@@ -53,7 +55,7 @@ public class Compiler {
 
                 PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
 
-                // parseTree.accept(new PrettyPrinter());
+                // if (fileName.equals(files[0])) parseTree.accept(new PrettyPrinter());
             }
         }catch(Exception e){
             if (printErrors) e.printStackTrace();
@@ -68,11 +70,22 @@ public class Compiler {
             }
         }
 
-        for(PkgClassResolver resolver : PkgClassInfo.instance.getSymbols()){
+        //Make a copy, the symbols can add more for arrays.
+        List<APkgClassResolver> resolvers = new LinkedList<APkgClassResolver>(PkgClassInfo.instance.getSymbols());
+        for(APkgClassResolver resolver : resolvers){
             try {
                 resolver.build();
             } catch (Exception e) {
                 if(printErrors) e.printStackTrace();
+                return COMPILER_ERROR_CODE;
+            }
+        }
+
+        for(APkgClassResolver resolver : resolvers){
+            try {
+                resolver.linkLocalNamesToDcl();
+            } catch (CompilerException e) {
+                if (printErrors) e.printStackTrace();
                 return COMPILER_ERROR_CODE;
             }
         }

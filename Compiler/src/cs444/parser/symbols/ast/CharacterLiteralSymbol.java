@@ -4,7 +4,7 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ATerminal;
 
-public class CharacterLiteralSymbol extends ATerminal {
+public class CharacterLiteralSymbol extends TypeableTerminal {
 
 	public final char charVal;
 
@@ -19,7 +19,7 @@ public class CharacterLiteralSymbol extends ATerminal {
 
 			char escapeChar = value.charAt(idx + 1);
 			if (StringEscapeUtils.isOctalDigit(escapeChar)) {
-				
+
 				String octal = value.substring(idx + 1, value.length() - 1);
 				cvalue = StringEscapeUtils.octalEscape(octal);
 			} else {
@@ -28,11 +28,6 @@ public class CharacterLiteralSymbol extends ATerminal {
 		}
 
 		this.charVal = cvalue;
-	}
-
-	@Override
-	public boolean empty() {
-		return false;
 	}
 
 	@Override
