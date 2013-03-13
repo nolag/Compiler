@@ -29,6 +29,7 @@ import cs444.parser.symbols.ast.expressions.EAndExprSymbol;
 import cs444.parser.symbols.ast.expressions.EOrExprSymbol;
 import cs444.parser.symbols.ast.expressions.EqExprSymbol;
 import cs444.parser.symbols.ast.expressions.ForExprSymbol;
+import cs444.parser.symbols.ast.expressions.IfExprSymbol;
 import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
 import cs444.parser.symbols.ast.expressions.LeExprSymbol;
 import cs444.parser.symbols.ast.expressions.LtExprSymbol;
@@ -55,6 +56,7 @@ public interface ISymbolVisitor {
     void open(final FieldAccessSymbol field) throws CompilerException;
     void open(WhileExprSymbol whileExprSymbol) throws CompilerException;
     void open(ForExprSymbol forExprSymbol) throws CompilerException;
+    void open(IfExprSymbol ifExprSymbol) throws CompilerException;
 
     void close(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException;
     void close(final DclSymbol dclSymbol) throws CompilerException;
@@ -65,6 +67,7 @@ public interface ISymbolVisitor {
     void close(final FieldAccessSymbol field) throws CompilerException;
     void close(final WhileExprSymbol whileExprSymbol) throws CompilerException;
     void close(ForExprSymbol forExprSymbol) throws CompilerException;
+    void close(IfExprSymbol ifExprSymbol) throws CompilerException;
 
     void visit(final TypeSymbol typeSymbol) throws CompilerException;
     void visit(final NameSymbol nameSymbol) throws CompilerException;
