@@ -13,7 +13,7 @@ import cs444.types.PkgClassInfo;
 
 public class TestHelper {
 
-	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors) throws IOException, InterruptedException {
+	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors, boolean includeStdLib) throws IOException, InterruptedException {
 		File folder = new File(path);
 
 		int totalTests = 0;
@@ -26,7 +26,7 @@ public class TestHelper {
 			//if (!fileName.equals("J1_interfaceassignable")) continue;
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
-			    List<String> sourceFiles = getAllFiles(file);
+			    List<String> sourceFiles = getAllFiles(file, includeStdLib);
 
 				String[] array = new String[sourceFiles.size()];
 				for (int i = 0; i < array.length; i++)
@@ -40,7 +40,7 @@ public class TestHelper {
 				}
 				totalTests++;
 			} else if (file.isDirectory() && !fileName.toLowerCase().endsWith(".skip")) {
-			    List<String> sourceFiles = getAllFiles(file);
+			    List<String> sourceFiles = getAllFiles(file, includeStdLib);
 
 				String[] array = new String[sourceFiles.size()];
 				for (int i = 0; i < array.length; i++)
@@ -64,13 +64,19 @@ public class TestHelper {
 		assertEquals("Compiler return unexpected return code compiling " + failures + " files. Expected return code was: " + expectedReturnCode, 0, failures);
 	}
 
-	private static ArrayList<String> getAllFiles(File root) {
+	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors) throws IOException, InterruptedException {
+	    assertReturnCodeForFiles(path, expectedReturnCode, printErrors, true);
+	}
+
+	private static ArrayList<String> getAllFiles(File root, boolean includeStdLib) {
 
 		ArrayList<String> result = new ArrayList<String>();
 		Stack<File> toVisit = new Stack<File>();
 
-		File stdLib = new File("JoosPrograms/StdLib");
-        toVisit.push(stdLib);
+		if(includeStdLib){
+		    File stdLib = new File("JoosPrograms/StdLib");
+		    toVisit.push(stdLib);
+		}
 
 		toVisit.push(root);
 
