@@ -31,17 +31,20 @@ public class CreationExprFactory  extends ASTSymbolFactory{
 
         ANonTerminal expr = (ANonTerminal) from;
 
-        TypeSymbol type = new TypeSymbol(getTypeValue(expr), false, false);
+        boolean isArray = haveDimExpression(expr);
 
-        ISymbol arrayDimExpr;
-        if (haveDimExpression(expr)){
-            arrayDimExpr = ((ANonTerminal) expr.children.get(2)).children.get(0);
-            return new CreationExpression(type, arrayDimExpr);
+        List<ISymbol> args;
+
+        if(isArray){
+            args = new LinkedList<ISymbol>();
+            args.add(((ANonTerminal) expr.children.get(2)).children.get(0));
         }else{
             ANonTerminal argumentList = (ANonTerminal) expr.firstOrDefault(JoosNonTerminal.ARGUMENT_LIST);
-            List<ISymbol> args = getArguments(argumentList);
-            return new CreationExpression(type, args);
+            args = getArguments(argumentList);
         }
+
+        TypeSymbol type = new TypeSymbol(getTypeValue(expr), isArray, false);
+        return new CreationExpression(type, args);
     }
 
     private String getTypeValue(ANonTerminal expr) {
@@ -59,6 +62,7 @@ public class CreationExprFactory  extends ASTSymbolFactory{
 
     private List<ISymbol> getArguments(ANonTerminal argumentList) {
         List<ISymbol> args = new LinkedList<ISymbol>();
+
         if(argumentList != null){
             for (ISymbol argument : argumentList.children) {
                 args.add(argument);
