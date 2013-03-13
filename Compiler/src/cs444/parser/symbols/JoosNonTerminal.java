@@ -34,6 +34,8 @@ public class JoosNonTerminal extends NonTerminal{
     public static final Map<String, List<String>> defaultAssignables = new HashMap<String, List<String>>();
 
     public static final Set<String> whiles = new HashSet<String>();
+    public static final Set<String> notAllowedForInstanceOfLHS = new HashSet<String>();
+    public static final Set<String> notAllowedForInstanceOfRHS = new HashSet<String>();
 
     public static final Set<String> unaryExpressions = new HashSet<String>();
     public static final Set<String> binExpressions = new HashSet<String>();
@@ -78,13 +80,19 @@ public class JoosNonTerminal extends NonTerminal{
 
 
         primativeNumbers.add("byte");
-        primativeNumbers.add("char");
+        primativeNumbers.add(CHAR);
         primativeNumbers.add("short");
-        primativeNumbers.add("int");
+        primativeNumbers.add(INTEGER);
+        notAllowedForInstanceOfLHS.addAll(primativeNumbers);
 
         otherPrimatives.add("void");
-        otherPrimatives.add("boolean");
-        otherPrimatives.add("null");
+        otherPrimatives.add(BOOLEAN);
+        notAllowedForInstanceOfLHS.addAll(otherPrimatives);
+
+        //null is special, so it is allowed for insance of
+        otherPrimatives.add(NULL);
+        notAllowedForInstanceOfLHS.addAll(notAllowedForInstanceOfLHS);
+        notAllowedForInstanceOfRHS.add("null");
 
         unaryExpressions.add("POSTFIXEXPRESSION");
         unaryExpressions.add(UNARY_EXPRESSION);
@@ -102,6 +110,9 @@ public class JoosNonTerminal extends NonTerminal{
         defaultAssignables.put("byte", byteCharAssign);
         defaultAssignables.put("char", byteCharAssign);
         defaultAssignables.put("short", shortAssign);
+
+        whiles.add("WHILESTATEMENT");
+        whiles.add("WHILESTATEMENTNOSHORTIF");
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {

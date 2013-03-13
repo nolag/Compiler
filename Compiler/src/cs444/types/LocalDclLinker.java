@@ -26,10 +26,16 @@ import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.TypeableTerminal;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
+import cs444.parser.symbols.ast.expressions.EAndExprSymbol;
+import cs444.parser.symbols.ast.expressions.EOrExprSymbol;
+import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
+import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
+import cs444.parser.symbols.ast.expressions.OrExprSymbol;
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.types.APkgClassResolver.Castable;
 import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.IllegalCastAssignmentException;
+import cs444.types.exceptions.IllegalInstanceOfException;
 import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
 
@@ -109,7 +115,7 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void close(MethodInvokeSymbol invoke) {
+    public void close(MethodInvokeSymbol invoke) throws UndeclaredException {
         APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(enclosingClassName);
         boolean isStatic = currentScope.isStatic;
         Deque<Typeable>currentSymbols = currentTypes.pop();
@@ -125,7 +131,15 @@ public class LocalDclLinker extends EmptyVisitor {
         List<String> params = new LinkedList<String>();
 
         for(Typeable mod : currentSymbols){
-            params.add(0, mod.getType().getTypeDclNode().fullName);
+            TypeSymbol type = mod.getType();
+            //If it's a class this would be like the argument is String.  There is no local String.
+            if(type.isClass)
+                throw new UndeclaredException("Class arguments", APkgClassResolver.generateUniqueName(currentMC, currentMC.dclName));
+
+            String name = type.getTypeDclNode().fullName;
+            if(type.isArray) name = ArrayPkgClassResolver.getArrayName(name);
+            //TODO check if this is backwards, may have changed from stack.
+            params.add(0, name);
         }
 
 //        TODO: bring these  one back
@@ -245,6 +259,16 @@ public class LocalDclLinker extends EmptyVisitor {
         TypeSymbol first = firtTypeable.getType();
         APkgClassResolver booleanType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.BOOLEAN);
 
+        if(first.isArray || second.isArray){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            throw new IllegalCastAssignmentException(enclosingClassName, where, ArrayPkgClassResolver.getArrayName(first.value), currentMC.type.value);
+        }
+
+        if(first.isClass || second.isClass){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            throw new IllegalCastAssignmentException(enclosingClassName, where, "Class types", currentMC.type.value);
+        }
+
         if(booleanType.getCastablility(first.getTypeDclNode()) == Castable.NOT_CASTABLE){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
             throw new IllegalCastAssignmentException(enclosingClassName, where, first.value, currentMC.type.value);
@@ -263,6 +287,54 @@ public class LocalDclLinker extends EmptyVisitor {
         //TODO when I have > < and others uncomment.
         //bothBooleanHelper()
     }
+
+    @Override
+    public void visit(OrExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
+        //TODO when I have > < and others uncomment.
+        //bothBooleanHelper()
+    }
+
+    @Override
+    public void visit(EAndExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
+        //TODO when I have > < and others uncomment.
+        //bothBooleanHelper()
+    }
+
+    @Override
+    public void visit(EOrExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
+        //TODO when I have > < and others uncomment.
+        //bothBooleanHelper()
+    }
+
+    @Override
+    public void visit(NotOpExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
+        //TODO when I have > < and others uncomment.
+        /*TypeSymbol was = currentTypes.peek().peek().getType();
+        APkgClassResolver booleanType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.BOOLEAN);
+        if(booleanType.getCastablility(was.getTypeDclNode()) == Castable.NOT_CASTABLE){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            throw new IllegalCastAssignmentException(enclosingClassName, where, was.value, currentMC.type.value);
+        }*/
+    }
+
+    @Override
+    public void visit(InstanceOfExprSymbol op) throws IllegalInstanceOfException, UndeclaredException {
+        /*TypeSymbol rhs = currentTypes.peek().pop().getType();
+        TypeSymbol lhs = currentTypes.peek().pop().getType();
+        String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+        if(rhs.isClass || lhs.isClass)
+            throw new IllegalInstanceOfException(enclosingClassName, where, "Classes:", currentMC.type.value);
+
+
+
+
+        if(!lhs.isArray && JoosNonTerminal.notAllowedForInstanceOfLHS.contains(lhs.value))
+            new IllegalInstanceOfException(enclosingClassName, where, lhs.value, currentMC.type.value);
+
+        if(!rhs.isArray && JoosNonTerminal.notAllowedForInstanceOfRHS.contains(rhs.value))
+            new IllegalInstanceOfException(enclosingClassName, where, rhs.value, currentMC.type.value);*/
+    }
+
 
     @Override
     public void visit(ReturnExprSymbol returnSymbol) throws IllegalCastAssignmentException, UndeclaredException {

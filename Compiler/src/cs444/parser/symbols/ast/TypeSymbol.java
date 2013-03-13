@@ -3,6 +3,7 @@ package cs444.parser.symbols.ast;
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ATerminal;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.types.APkgClassResolver;
 
 public class TypeSymbol extends ATerminal{
@@ -10,7 +11,8 @@ public class TypeSymbol extends ATerminal{
     public final boolean isClass;
     private APkgClassResolver typeResolver;
 
-    public static final TypeSymbol voidType = new TypeSymbol("void", false, false);
+    public static final TypeSymbol voidType = new TypeSymbol(JoosNonTerminal.NULL, false, false);
+    public static final TypeSymbol boolType = new TypeSymbol(JoosNonTerminal.BOOLEAN, false, false);
 
     public TypeSymbol(String value, boolean isArray, boolean isClass) {
         super("Type", value);
