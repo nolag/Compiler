@@ -14,7 +14,9 @@ public class WhileExprFactory extends ASTSymbolFactory{
     @Override
     protected ISymbol convert(ISymbol from) throws OutOfRangeException, UnsupportedException, IllegalModifierException {
         if(!JoosNonTerminal.whiles.contains(from.getName())) return from;
+
         ANonTerminal nonTerms = (ANonTerminal) from;
+        nonTerms.children.remove(0);  // remove word "while"
         return new WhileExprSymbol(nonTerms.children);
     }
 }

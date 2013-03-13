@@ -25,8 +25,9 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String SUPER = "super";
     public static final String THIS = "this";
     public static final String TRUE_VALUE = "true";
-    public static final String FALSE_VALUE = "true";
+    public static final String FALSE_VALUE = "false";
     public static final String BOOLEAN = "boolean";
+
     public static final String STRING = "java.lang.String";
     public static final String CHAR = "char";
     public static final String INTEGER = "int";
@@ -36,6 +37,8 @@ public class JoosNonTerminal extends NonTerminal{
     public static final Set<String> whiles = new HashSet<String>();
     public static final Set<String> notAllowedForInstanceOfLHS = new HashSet<String>();
     public static final Set<String> notAllowedForInstanceOfRHS = new HashSet<String>();
+
+    public static final Set<String> fors = new HashSet<String>();
 
     public static final Set<String> unaryExpressions = new HashSet<String>();
     public static final Set<String> binExpressions = new HashSet<String>();
@@ -104,6 +107,9 @@ public class JoosNonTerminal extends NonTerminal{
         binExpressions.add("ASSIGNMENTEXPRESSION");
         binExpressions.add("CONDITIONALANDEXPRESSION");
         binExpressions.add("INCLUSIVEOREXPRESSION");
+
+        fors.add("ForStatement");
+        fors.add("ForStatementNoShortIf");
 
         List<String> byteCharAssign = Arrays.asList(new String [] {"int", "short"});
         List<String> shortAssign = Arrays.asList(new String [] {"int"});

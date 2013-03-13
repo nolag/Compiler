@@ -26,6 +26,7 @@ import cs444.parser.symbols.ast.factories.expressions.CastExpressionFactory;
 import cs444.parser.symbols.ast.factories.expressions.CreationExprFactory;
 import cs444.parser.symbols.ast.factories.expressions.ReturnExprFractory;
 import cs444.parser.symbols.ast.factories.expressions.UniOpExprFactory;
+import cs444.parser.symbols.ast.factories.expressions.WhileExprFactory;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
@@ -37,7 +38,8 @@ public class JoosASTBuilder implements IASTBuilder {
             new ClassInterfaceFactory(), new FieldSymbolFactory(), new MethodSymbolFactory(), new FieldAccessSymbolFactory(),
             new LocalDclFactory(), new InterfaceMethodSymbolFactory(), new ConstructorSymbolFactory(),
             new MethodInvokeSymbolFactory(), new IntegerLiteralFactory(), new StringLiteralFactory(), new SimpleTerminalFactory(),
-            new ReturnExprFractory(), new UniOpExprFactory(), new BinOpFactory(), new CreationExprFactory(), new CastExpressionFactory()});
+            new ReturnExprFractory(), new UniOpExprFactory(), new BinOpFactory(), new CreationExprFactory(), new CastExpressionFactory(),
+            new WhileExprFactory()});
 
     public ISymbol build(String fileName, ANonTerminal start) throws OutOfRangeException, UnsupportedException, IllegalModifierException, InvalidFileNameException {
     	for(ASTSymbolFactory astSymbol : simplifications){

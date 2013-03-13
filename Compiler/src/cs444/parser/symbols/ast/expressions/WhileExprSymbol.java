@@ -11,7 +11,7 @@ public class WhileExprSymbol extends BaseExprSymbol {
 
     public WhileExprSymbol(List<ISymbol> children) {
         super("While");
-        children.addAll(children);
+        this.children.addAll(children);
     }
 
     public Typeable getCondition(){
