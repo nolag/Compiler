@@ -40,9 +40,9 @@ public class ForExprFactory extends ASTSymbolFactory{
     }
 
     private void extractChild(ISymbol child) {
-        if (child.getName().equals(JoosNonTerminal.FORINIT)){
+        if (child.getName().equals(JoosNonTerminal.FOR_INIT)){
             forInit = ((JoosNonTerminal)child).children.get(0);
-        }else if(child.getName().equals(JoosNonTerminal.FORUPDATE)){
+        }else if(child.getName().equals(JoosNonTerminal.FOR_UPDATE)){
             forUpdate = ((JoosNonTerminal)child).children.get(0);
         }else{
             forCondition = child;

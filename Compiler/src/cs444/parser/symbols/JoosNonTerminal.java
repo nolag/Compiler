@@ -11,14 +11,16 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 
 public class JoosNonTerminal extends NonTerminal{
-    public static final String FORUPDATE = "FORUPDATE";
-    public static final String FORINIT = "FORINIT";
+    public static final String IF_THEN_STATEMENT = "IFTHENSTATEMENT";
+    public static final String FOR_UPDATE = "FORUPDATE";
+    public static final String FOR_INIT = "FORINIT";
     public static final String DIMS = "DIMS";
     public static final String ARGUMENT_LIST = "ARGUMENTLIST";
     public static final String DIM_EXPR = "DIMEXPR";
     public static final String BLOCK = "BLOCK";
 
     public static final String UNARY_EXPRESSION = "UNARYEXPRESSION";
+    public static final String UNARY_EXPRESSION_NOT_PLUS_MINUS = "UNARYEXPRESSIONNOTPLUSMINUS";
 
     public static final String METHOD_INVOCATION = "METHODINVOCATION";
 
@@ -42,6 +44,7 @@ public class JoosNonTerminal extends NonTerminal{
     public static final Set<String> notAllowedForInstanceOfRHS = new HashSet<String>();
 
     public static final Set<String> fors = new HashSet<String>();
+    public static final Set<String> ifs= new HashSet<String>();
 
     public static final Set<String> unaryExpressions = new HashSet<String>();
     public static final Set<String> binExpressions = new HashSet<String>();
@@ -78,8 +81,8 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add(DIM_EXPR);
         noCollapse.add(ARGUMENT_LIST);
         noCollapse.add(RETURN);
-        noCollapse.add(FORINIT);
-        noCollapse.add(FORUPDATE);
+        noCollapse.add(FOR_INIT);
+        noCollapse.add(FOR_UPDATE);
 
         specialNoDie.add("EMPTYSTATEMENT");
         specialNoDie.add(BLOCK);
@@ -104,6 +107,7 @@ public class JoosNonTerminal extends NonTerminal{
 
         unaryExpressions.add("POSTFIXEXPRESSION");
         unaryExpressions.add(UNARY_EXPRESSION);
+        unaryExpressions.add(UNARY_EXPRESSION_NOT_PLUS_MINUS);
 
         binExpressions.add("MULTIPLICATIVEEXPRESSION");
         binExpressions.add("ADDITIVEEXPRESSION");
@@ -115,6 +119,10 @@ public class JoosNonTerminal extends NonTerminal{
 
         fors.add("FORSTATEMENT");
         fors.add("FORSTATEMENTNOSHORTIF");
+
+        ifs.add(IF_THEN_STATEMENT);
+        ifs.add("IFTHENELSESTATEMENT");
+        ifs.add("IFTHENELSESTATEMENTNOSHORTIF");
 
         List<String> byteCharAssign = Arrays.asList(new String [] {"int", "short"});
         List<String> shortAssign = Arrays.asList(new String [] {"int"});

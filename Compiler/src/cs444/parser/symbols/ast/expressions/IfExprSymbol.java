@@ -1,25 +1,29 @@
 package cs444.parser.symbols.ast.expressions;
 
-import java.util.List;
-
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.Typeable;
 
-public class WhileExprSymbol extends BaseExprSymbol {
+public class IfExprSymbol extends BaseExprSymbol {
 
-    public WhileExprSymbol(List<ISymbol> children) {
-        super("While");
-        this.children.addAll(children);
+    public IfExprSymbol(ISymbol condition, ISymbol ifBody, ISymbol elseBody) {
+        this(condition, ifBody);
+        this.children.add(elseBody);
+    }
+
+    public IfExprSymbol(ISymbol condition, ISymbol ifBody) {
+        super("If");
+        this.children.add(condition);
+        this.children.add(ifBody);
     }
 
     public Typeable getCondition(){
         return (Typeable) getConditionSymbol();
     }
 
-    public ANonTerminal getBody() {
+    public ANonTerminal getifBody() {
         return (ANonTerminal) children.get(1);
     }
 
@@ -31,10 +35,9 @@ public class WhileExprSymbol extends BaseExprSymbol {
     public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
         visitor.prepareCondition(getCondition());
-        // TODO: Dont think we need this:
-        // visitor.visit(this);
-        this.getConditionSymbol().accept(visitor);
-        getBody().accept(visitor);
+        for (ISymbol child : children) {
+            child.accept(visitor);
+        }
         visitor.close(this);
     }
 }
