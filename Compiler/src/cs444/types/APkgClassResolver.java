@@ -12,6 +12,7 @@ import cs444.CompilerException;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
+import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
@@ -39,6 +40,7 @@ public abstract class APkgClassResolver {
     protected final Map<String, DclSymbol> hsfieldMap = new HashMap<String, DclSymbol>();
     protected final Map<String, AMethodSymbol> methodMap = new HashMap<String, AMethodSymbol>();
     protected final Map<String, AMethodSymbol> smethodMap = new HashMap<String, AMethodSymbol>();
+    protected final Map<String, ConstructorSymbol> constructors = new HashMap<String, ConstructorSymbol>();
 
     public static enum Castable { UP_CAST, DOWN_CAST, NOT_CASTABLE };
 
@@ -198,6 +200,13 @@ public abstract class APkgClassResolver {
         if(assignableTo.contains(other.fullName)) return Castable.DOWN_CAST;
         if(other.assignableTo.contains(fullName)) return Castable.UP_CAST;
         return Castable.NOT_CASTABLE;
+    }
+
+    public ConstructorSymbol getConstructor(List<String> types) throws UndeclaredException {
+        String name = generateUniqueName("this", types);
+        ConstructorSymbol cs = constructors.get(name);
+        if(cs == null) throw new UndeclaredException(name, fullName);
+        return cs;
     }
 
     public abstract APkgClassResolver findClass(String name) throws UndeclaredException;

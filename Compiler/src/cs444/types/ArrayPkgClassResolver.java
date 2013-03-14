@@ -1,10 +1,17 @@
 package cs444.types;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import cs444.CompilerException;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
+import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.MethodHeader;
+import cs444.parser.symbols.ast.NameSymbol;
+import cs444.parser.symbols.ast.NameSymbol.Type;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.types.exceptions.UndeclaredException;
 
@@ -15,7 +22,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         return name + "[]";
     }
 
-    protected ArrayPkgClassResolver(APkgClassResolver resolver) {
+    public ArrayPkgClassResolver(APkgClassResolver resolver) {
         super(getArrayName(resolver.fullName), resolver.pkg, true);
         this.resolver = resolver;
         build(null, false, false);
@@ -24,6 +31,17 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         }
 
         PkgClassInfo.instance.symbolMap.put(fullName, this);
+
+        try{
+            List<DclSymbol> dcls = new LinkedList<DclSymbol>();
+            dcls.add(new DclSymbol("i", null, TypeSymbol.getPrimative(JoosNonTerminal.INTEGER), true));
+            TypeSymbol ts = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
+            NameSymbol name = new NameSymbol(JoosNonTerminal.THIS, Type.ID_SYMBOL);
+            MethodHeader header = new MethodHeader(name, ts, dcls);
+            //ANonTerminal from, ANonTerminal body
+            ConstructorSymbol cs = new ConstructorSymbol(header, null, null);
+            constructors.put(generateUniqueName(cs, "this"), cs);
+        }catch (Exception e){ }
     }
 
     @Override

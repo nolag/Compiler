@@ -11,6 +11,8 @@ public class ConstructorSymbol extends MethodOrConstructorSymbol{
         super("ConstructorDeclaration", header, from, body, null);
     }
 
+
+
     @Override
     public void validate() throws UnsupportedException {
         if(getImplementationLevel() != ImplementationLevel.NORMAL) throw new UnsupportedException("Unimlemented and final constructors");

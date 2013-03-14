@@ -34,7 +34,6 @@ public class PkgClassResolver extends APkgClassResolver {
     private final Map<String, PkgClassResolver> samepkgMap = new HashMap<String, PkgClassResolver>();
     private final Map<String, PkgClassResolver> staredMap = new HashMap<String, PkgClassResolver>();
     private final Set<String> imported = new HashSet<String>();
-    private final Map<String, ConstructorSymbol> constructors = new HashMap<String, ConstructorSymbol>();
     protected boolean isBuilt = false;
     public static final PkgClassResolver badResolve = new PkgClassResolver("!invalid");
     private static final Map<AInterfaceOrClassSymbol, PkgClassResolver> resolverMap = new HashMap<AInterfaceOrClassSymbol, PkgClassResolver>();
@@ -377,13 +376,6 @@ public class PkgClassResolver extends APkgClassResolver {
     @Override
     public APkgClassResolver getSuper() throws UndeclaredException {
         return findClass(start.superName);
-    }
-
-    public ConstructorSymbol getConstructor(List<String> types) throws UndeclaredException {
-        String name = generateUniqueName("this", types);
-        ConstructorSymbol cs = constructors.get(name);
-        if(cs == null) throw new UndeclaredException(name, fullName);
-        return cs;
     }
 
     @Override
