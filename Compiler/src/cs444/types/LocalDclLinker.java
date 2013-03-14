@@ -62,9 +62,6 @@ import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
 
 public class LocalDclLinker extends EmptyVisitor {
-    //TODO remove this when linking is done for everything
-    public static boolean checkTypes = false;
-
     private LocalScope currentScope;
     private MethodOrConstructorSymbol currentMC;
     private final String enclosingClassName; // used for exception message
@@ -167,11 +164,9 @@ public class LocalDclLinker extends EmptyVisitor {
             params.add(name);
         }
 
-if(checkTypes){
         AMethodSymbol method = resolver.findMethod(invoke.methodName, isStatic, params);
         invoke.setLookup(invoke.getLookup().addWith(method));
         currentTypes.peek().add(method);
-}
     }
 
     private void pushNewScope(boolean isStatic) {
@@ -332,37 +327,27 @@ if(checkTypes){
 
     @Override
     public void visit(AndExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
-if(checkTypes){
         bothBooleanHelper();
-}
     }
 
     @Override
     public void visit(OrExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
-if(checkTypes){
         bothBooleanHelper();
-}
     }
 
     @Override
     public void visit(EAndExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
-if(checkTypes){
         bothBooleanHelper();
-}
     }
 
     @Override
     public void visit(EOrExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
-if(checkTypes){
         bothBooleanHelper();
-}
     }
 
     @Override
     public void visit(NotOpExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
-if(checkTypes){
         assertIsBoolean();
-}
     }
 
     private void assertIsBoolean() throws UndeclaredException,
@@ -378,69 +363,50 @@ if(checkTypes){
 
     @Override
     public void open(IfExprSymbol expr){
-if(checkTypes){
         currentTypes.add(new ArrayDeque<Typeable>());
-}
     }
 
     @Override
     public void close(IfExprSymbol expr) throws UndeclaredException, IllegalCastAssignmentException{
-if(checkTypes){
         assertIsBoolean();
         currentTypes.pop();
-}
     }
 
     @Override
     public void open(WhileExprSymbol expr){
-if(checkTypes){
         currentTypes.add(new ArrayDeque<Typeable>());
-}
     }
 
     @Override
     public void close(WhileExprSymbol expr) throws UndeclaredException, IllegalCastAssignmentException{
-if(checkTypes){
         assertIsBoolean();
         currentTypes.pop();
-}
     }
 
     @Override
     public void open(ForExprSymbol expr){
-if(checkTypes){
         pushNewScope(currentScope.isStatic);
         currentTypes.add(new ArrayDeque<Typeable>());
-}
     }
 
     @Override
-    public void afterClause(ForExprSymbol forExprSymbol)
-            throws CompilerException {
-if(checkTypes){
+    public void afterClause(ForExprSymbol forExprSymbol){
         currentTypes.peek().clear();
-}
     }
 
     @Override
-    public void afterCondition(ForExprSymbol forExprSymbol)
-            throws CompilerException {
-if(checkTypes){
+    public void afterCondition(ForExprSymbol forExprSymbol)throws CompilerException {
         assertIsBoolean();
-}
     }
 
     @Override
     public void close(ForExprSymbol expr) throws UndeclaredException, IllegalCastAssignmentException{
-if(checkTypes){
         currentTypes.pop();
         popCurrentScope();
-}
     }
 
     @Override
     public void visit(NegOpExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
-if(checkTypes){
         TypeSymbol was = currentTypes.peek().peek().getType();
         APkgClassResolver intType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.INTEGER);
         if(intType.getCastablility(was.getTypeDclNode()) == Castable.NOT_CASTABLE){
@@ -449,12 +415,10 @@ if(checkTypes){
             String name2 = currentMC.type.isArray ? ArrayPkgClassResolver.getArrayName(currentMC.type.value) : currentMC.type.value;
             throw new IllegalCastAssignmentException(enclosingClassName, where, name1, name2);
         }
-}
     }
 
     @Override
     public void visit(InstanceOfExprSymbol op) throws IllegalInstanceOfException, UndeclaredException {
-if(checkTypes){
         TypeSymbol rhs = currentTypes.peek().removeLast().getType();
         TypeSymbol lhs = currentTypes.peek().removeLast().getType();
         String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
@@ -470,7 +434,6 @@ if(checkTypes){
         if(!rhs.isArray && JoosNonTerminal.notAllowedForInstanceOfRHS.contains(rhs.value))
             throw new IllegalInstanceOfException(enclosingClassName, where, rhs.value, currentMC.type.value);
         currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN));
-}
     }
 
     private void castOrAssign(boolean secondIsClass, boolean allowDownCast) throws IllegalCastAssignmentException, UndeclaredException {
@@ -488,18 +451,15 @@ if(checkTypes){
 
     @Override
     public void visit(CastExpressionSymbol symbol) throws IllegalCastAssignmentException, UndeclaredException {
-if(checkTypes){
         castOrAssign(true, true);
         //cast is to a class, make sure it's not a class after the cast
         Deque<Typeable> currentDeque = currentTypes.peek();
         TypeSymbol type = currentDeque.removeLast().getType();
         currentDeque.add(type.getNonClassVersion());
-}
     }
 
     @Override
     public void close(ReturnExprSymbol returnSymbol) throws IllegalCastAssignmentException, UndeclaredException {
-if(checkTypes){
         TypeSymbol currentType;
         if(!returnSymbol.children.isEmpty()) currentType = currentTypes.peek().getLast().getType();
         else currentType = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
@@ -511,7 +471,6 @@ if(checkTypes){
             String name2 = currentMC.type.isArray ? ArrayPkgClassResolver.getArrayName(currentMC.type.value) : currentMC.type.value;
             throw new IllegalCastAssignmentException(enclosingClassName, where, name1, name2);
         }
-}
     }
 
     @Override
@@ -521,9 +480,7 @@ if(checkTypes){
 
     @Override
     public void visit(AssignmentExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
-if(checkTypes){
         castOrAssign(false, false);
-}
     }
 
     private void eqNeHelper() throws IllegalCastAssignmentException, UndeclaredException{
@@ -534,82 +491,61 @@ if(checkTypes){
 
     @Override
     public void visit(EqExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
-if(checkTypes){
         eqNeHelper();
-}
     }
 
     @Override
     public void visit(NeExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException  {
-if(checkTypes){
         eqNeHelper();
-}
     }
 
     @Override
     public void visit(LtExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-if(checkTypes){
         bothIntHelper(JoosNonTerminal.BOOLEAN);
-}
     }
 
     @Override
     public void visit(LeExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-if(checkTypes){
         bothIntHelper(JoosNonTerminal.BOOLEAN);
-}
     }
 
     @Override
     public void visit(AddExprSymbol op) throws BadOperandsTypeException, UndeclaredException {
-if(checkTypes){
         if (isNumeric(currentTypes.peek().peek().getType(), false)){
             bothIntHelper(JoosNonTerminal.INTEGER);
         }else{
             bothStringHelper(JoosNonTerminal.STRING);
         }
-}
     }
 
     @Override
     public void visit(SubtractExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-if(checkTypes){
         bothIntHelper(JoosNonTerminal.INTEGER);
-}
     }
 
     @Override
     public void visit(MultiplyExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-if(checkTypes){
         bothIntHelper(JoosNonTerminal.INTEGER);
-}
     }
 
     @Override
     public void visit(DivideExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-if(checkTypes){
         bothIntHelper(JoosNonTerminal.INTEGER);
-}
     }
 
     @Override
     public void visit(RemainderExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-if(checkTypes){
         bothIntHelper(JoosNonTerminal.INTEGER);
-}
     }
 
     @Override
     public void open(CreationExpression create){
-if(checkTypes){
         useCurrentForLookup.push(false);
         currentTypes.push(new ArrayDeque<Typeable>());
-}
     }
 
     @Override
     public void close(CreationExpression create) throws UndeclaredException{
-if(checkTypes){
         useCurrentForLookup.pop();
         Deque<Typeable> currentSymbols = currentTypes.pop();
         APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(enclosingClassName);
@@ -635,12 +571,10 @@ if(checkTypes){
 
         resolver.getConstructor(params);
         currentTypes.peek().add(create);
-}
     }
 
     @Override
     public void visit(ArrayAccessExprSymbol array) throws CompilerException{
-if(checkTypes){
         TypeSymbol value = currentTypes.peek().removeLast().getType();
         TypeSymbol in = currentTypes.peek().removeLast().getType();
 
@@ -656,7 +590,6 @@ if(checkTypes){
         TypeSymbol retType = new TypeSymbol(value.value, false, false);
         retType.setTypeDclNode(in.getTypeDclNode().accessor());
         currentTypes.peek().add(retType);
-}
     }
 
     private void bothIntHelper(String returnType) throws BadOperandsTypeException, UndeclaredException{

@@ -6,7 +6,6 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
-import cs444.types.LocalDclLinker;
 import cs444.types.LookupLink;
 
 public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
@@ -41,7 +40,6 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
 
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
-if(LocalDclLinker.checkTypes){
         visitor.prepare(this);
         int i = 0;
         if(hasFirst){
@@ -54,9 +52,6 @@ if(LocalDclLinker.checkTypes){
             param.accept(visitor);
         }
         visitor.close(this);
-}else{
-        for(ISymbol child : children) child.accept(visitor);
-}
     }
 
     @Override

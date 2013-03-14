@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import cs444.types.LocalDclLinker;
 import cs444.types.PkgClassInfo;
 
 public class Asst3 {
@@ -29,13 +28,7 @@ public class Asst3 {
 
     @Test
     public void a3Testing() throws IOException, InterruptedException{
-        LocalDclLinker.checkTypes = true;
-        try{
-            TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/valid/", 0, true, false);
-
-            TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/invalid/", 42, false, false);
-        }finally{
-            LocalDclLinker.checkTypes = false;
-        }
+        TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/valid/", 0, true, false);
+        TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/invalid/", 42, false, false);
     }
 }
