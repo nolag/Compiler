@@ -40,6 +40,7 @@ import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.OrExprSymbol;
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
+import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.types.APkgClassResolver.Castable;
 import cs444.types.exceptions.BadOperandsTypeException;
 import cs444.types.exceptions.DuplicateDeclarationException;
@@ -463,6 +464,13 @@ if(checkTypes){
     public void visit(LeExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
 if(checkTypes){
         bothIntHelper(JoosNonTerminal.BOOLEAN);
+}
+    }
+
+    @Override
+    public void visit(SubtractExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
+if(checkTypes){
+        bothIntHelper(JoosNonTerminal.INTEGER);
 }
     }
 
