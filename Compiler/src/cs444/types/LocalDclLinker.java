@@ -124,7 +124,7 @@ public class LocalDclLinker extends EmptyVisitor {
         if(invoke.lookupFirst != null){
             DclSymbol dcl = null;
             if(invoke.children.isEmpty()) dcl = currentScope.find(invoke.lookupFirst);
-            if(dcl == null)dcl = resolver.getDcl(invoke.lookupFirst, isStatic, resolver, isStatic);
+            if(dcl == null)dcl = resolver.getDcl(invoke.lookupFirst, isStatic, resolver, currentSymbols.isEmpty());
             currentSymbols.add(dcl);
             resolver = dcl.type.getTypeDclNode();
             isStatic = dcl.type.isClass;

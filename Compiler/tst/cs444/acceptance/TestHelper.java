@@ -32,10 +32,11 @@ public class TestHelper {
 				for (int i = 0; i < array.length; i++)
 					array[i] = sourceFiles.get(i);
 
+				//TODO uncomment
 				if (compileAndTest(array, printErrors) == expectedReturnCode) {
-					System.out.print(".");
+					//System.out.print(".");
 				}else{
-					System.out.print("F");
+					//System.out.print("F");
 					failFiles.add(path + fileName);
 				}
 				totalTests++;
@@ -46,10 +47,11 @@ public class TestHelper {
 				for (int i = 0; i < array.length; i++)
 					array[i] = sourceFiles.get(i);
 
+				//TODO uncomment
 				if (compileAndTest(array, printErrors) == expectedReturnCode) {
-					System.out.print(".");
+					//System.out.print(".");
 				} else {
-					System.out.print("F");
+					//System.out.print("F");
 					failFiles.add(path + fileName);
 				}
 				totalTests++;
@@ -99,15 +101,17 @@ public class TestHelper {
 		System.out.println("\nNumber of tests: " + totalTests);
 		if(filesSkipped > 0) System.out.println("Number of files skipped: " + filesSkipped);
 		if (failFiles.size() != 0){
-			System.out.println("Unexpected return code compiling these files: ");
+		    System.out.println("Failed " + failFiles.size());
+		    /*TODO uncomment System.out.println("Unexpected return code compiling these files: ");
 			for (String fileName: failFiles) {
 				System.out.println("\t" + fileName);
-			}
+			}*/
 		}
 	}
 
 	private static int compileAndTest(String[] files, boolean printErrors) throws IOException, InterruptedException {
 	    PkgClassInfo.instance.clear();
-	    return Compiler.compile(files, printErrors);
+	    //return Compiler.compile(files, printErrors);
+	    return Compiler.compile(files, false);
 	}
 }

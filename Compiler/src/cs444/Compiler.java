@@ -84,7 +84,7 @@ public class Compiler {
         for(APkgClassResolver resolver : resolvers){
             try {
                 resolver.linkLocalNamesToDcl();
-            } catch (CompilerException e) {
+            } catch (Exception e) {
                 if (printErrors) e.printStackTrace();
                 return COMPILER_ERROR_CODE;
             }
