@@ -269,8 +269,8 @@ if(checkTypes){
     }
 
     @Override
-    public void visit(StringLiteralSymbol boolSymbol){
-        simpleVistorHelper(boolSymbol, JoosNonTerminal.STRING);
+    public void visit(StringLiteralSymbol stringSymbol){
+        simpleVistorHelper(stringSymbol, JoosNonTerminal.STRING);
     }
 
     @Override
