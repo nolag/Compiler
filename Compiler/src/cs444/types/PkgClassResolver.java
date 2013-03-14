@@ -236,6 +236,8 @@ public class PkgClassResolver extends APkgClassResolver {
         if(mustBeInterface && start.isClass()) throw new UnsupportedException("Interface extending a class");
         if(mustBeClass && !start.isClass()) throw new UnsupportedException("Class extending interface");
 
+        Set<PkgClassResolver> notImpls = new HashSet<PkgClassResolver>(visited);
+
         visited.add(this);
 
         if(!isBuilt){
@@ -351,8 +353,7 @@ public class PkgClassResolver extends APkgClassResolver {
             for(Set<PkgClassResolver> pkgSet : resolvedSets) visited.addAll(pkgSet);
 
             for(PkgClassResolver resolver : visited) assignableTo.add(resolver.fullName);
-            //Java specific
-            assignableTo.add(OBJECT);
+            for(PkgClassResolver resolver : notImpls) assignableTo.remove(resolver.fullName);
 
             start.accept(new TypeResolverVisitor(this));
             isBuilt = true;

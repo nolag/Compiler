@@ -3,10 +3,10 @@ public class CorrectAssignmentsAndCasts {
     public int i = 10;
     public boolean j = false;
     public CorrectAssignmentsAndCasts me = null;
-    //public short s = (short) 10;
+    public short s = (short) 10;
     public CorrectAssignmentsAndCasts() {
         i = 100;
-        //s = (short) i;
+        s = (short) i;
         me = this;
         me = null;
     }

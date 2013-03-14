@@ -49,10 +49,12 @@ public abstract class APkgClassResolver {
         else fullName = pkg + "." + name;
         this.isFinal = isFinal;
         assignableTo.add(fullName);
-        assignableTo.add(OBJECT);
+        if(!isPrimative()) assignableTo.add(OBJECT);
 
         List<String> alsoAssignsTo = JoosNonTerminal.defaultAssignables.get(name);
-        if(alsoAssignsTo != null) assignableTo.addAll(alsoAssignsTo);
+        if(alsoAssignsTo != null){
+            assignableTo.addAll(alsoAssignsTo);
+        }
     }
 
     protected static String generateUniqueName(String name, Iterable<String> types) {
@@ -186,13 +188,15 @@ public abstract class APkgClassResolver {
     protected abstract boolean isPrimative();
 
     public Castable getCastablility(APkgClassResolver other){
+        if(other == this) return Castable.DOWN_CAST;
+
         //everyone can return null, but
         if(other == TypeSymbol.getPrimative(JoosNonTerminal.NULL).getTypeDclNode() && !isPrimative()){
             return Castable.DOWN_CAST;
         }
 
-        if(assignableTo.contains(other.fullName)) return Castable.DOWN_CAST;
-        if(other.assignableTo.contains(fullName)) return Castable.UP_CAST;
+        if(assignableTo.contains(other.fullName)) return Castable.UP_CAST;
+        if(other.assignableTo.contains(fullName)) return Castable.DOWN_CAST;
         return Castable.NOT_CASTABLE;
     }
 

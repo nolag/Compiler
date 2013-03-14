@@ -388,7 +388,7 @@ if(checkTypes){
         //cast is to a class, make sure it's not a class after the cast
         Deque<Typeable> currentDeque = currentTypes.peek();
         TypeSymbol type = currentDeque.removeLast().getType();
-        currentDeque.push(type.getNonClassVersion());
+        currentDeque.add(type.getNonClassVersion());
 }
     }
 
