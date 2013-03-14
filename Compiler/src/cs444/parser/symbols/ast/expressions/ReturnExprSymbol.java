@@ -13,6 +13,6 @@ public class ReturnExprSymbol extends BaseExprSymbol{
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
         if(!children.isEmpty()) children.get(0).accept(visitor);
-        visitor.visit(this);
+        visitor.close(this);
     }
 }

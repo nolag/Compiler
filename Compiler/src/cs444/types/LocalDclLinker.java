@@ -385,9 +385,16 @@ if(checkTypes){
 }
     }
 
-    //TODO need to make new scope for return so locals are not on the top.
     @Override
-    public void visit(ReturnExprSymbol returnSymbol) throws IllegalCastAssignmentException, UndeclaredException {
+    public void open(ReturnExprSymbol returnSymbol){
+if(checkTypes){
+        useCurrentForLookup.add(false);
+        currentTypes.push(new ArrayDeque<Typeable>());
+}
+    }
+
+    @Override
+    public void close(ReturnExprSymbol returnSymbol) throws IllegalCastAssignmentException, UndeclaredException {
 if(checkTypes){
         TypeSymbol currentType;
         if(!returnSymbol.children.isEmpty()) currentType = currentTypes.peek().getLast().getType();
@@ -400,6 +407,8 @@ if(checkTypes){
             String name2 = currentMC.type.isArray ? ArrayPkgClassResolver.getArrayName(currentMC.type.value) : currentMC.type.value;
             throw new IllegalCastAssignmentException(enclosingClassName, where, name1, name2);
         }
+        useCurrentForLookup.pop();
+        currentTypes.pop();
 }
     }
 

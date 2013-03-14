@@ -45,7 +45,7 @@ public class JoosNonTerminal extends NonTerminal{
     public static final Set<String> notAllowedForInstanceOfRHS = new HashSet<String>();
 
     public static final Set<String> fors = new HashSet<String>();
-    public static final Set<String> ifs= new HashSet<String>();
+    public static final Set<String> ifs = new HashSet<String>();
 
     public static final Set<String> unaryExpressions = new HashSet<String>();
     public static final Set<String> binExpressions = new HashSet<String>();
@@ -54,6 +54,7 @@ public class JoosNonTerminal extends NonTerminal{
     public static final Set<String> specialNoDie = new HashSet<String>();
     public static final Set<String> primativeNumbers = new HashSet<String>();
     public static final Set<String> otherPrimatives = new HashSet<String>();
+
 
     static{
         noCollapse.add("MODIFIERS");

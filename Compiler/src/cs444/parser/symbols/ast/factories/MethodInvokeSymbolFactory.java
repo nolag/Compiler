@@ -1,6 +1,7 @@
 package cs444.parser.symbols.ast.factories;
 
 import java.util.Collections;
+import java.util.List;
 
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
@@ -21,7 +22,7 @@ public class MethodInvokeSymbolFactory extends ASTSymbolFactory{
 
         ANonTerminal argList = (ANonTerminal) nonTerm.firstOrDefault(JoosNonTerminal.ARGUMENT_LIST);
 
-        Iterable<ISymbol> args = Collections.emptyList();
+        List<ISymbol> args = Collections.emptyList();
         if(argList != null) args = argList.children;
 
         ISymbol before = nonTerm.children.get(0);

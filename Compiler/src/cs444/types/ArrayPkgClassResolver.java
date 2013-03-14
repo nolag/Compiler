@@ -73,4 +73,9 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
 
     @Override
     public void linkLocalNamesToDcl() throws CompilerException { }
+
+    @Override
+    protected boolean isPrimative() {
+        return false;
+    }
 }

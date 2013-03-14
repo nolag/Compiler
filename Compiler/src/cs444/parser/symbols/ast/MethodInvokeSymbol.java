@@ -1,19 +1,22 @@
 package cs444.parser.symbols.ast;
 
+import java.util.List;
+
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
+import cs444.types.LocalDclLinker;
 import cs444.types.LookupLink;
 
 public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
-    public final Iterable<ISymbol> params;
+    public final boolean hasFirst;
     public final String methodName;
     public final String lookupFirst;
 
     private LookupLink link;
 
-    public MethodInvokeSymbol(String name, Iterable<ISymbol> params, ISymbol on) {
+    public MethodInvokeSymbol(String name, List<ISymbol> params, ISymbol on) {
         super("Method Invoke");
         if(on != null)children.add(on);
         String [] parts = name.split("\\.");
@@ -24,7 +27,9 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
         }else{
             lookupFirst = null;
         }
-        this.params = params;
+
+        children.addAll(params);
+        hasFirst = on != null;
 
         methodName = parts[parts.length - 1];
     }
@@ -36,12 +41,22 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
 
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
-        // TODO: uncomment this later
-//        visitor.prepare(this);
+if(LocalDclLinker.checkTypes){
+        visitor.prepare(this);
+        int i = 0;
+        if(hasFirst){
+            children.get(0).accept(visitor);
+            i++;
+        }
+        visitor.open(this);
+        for(; i < children.size(); i++){
+            ISymbol param = children.get(i);
+            param.accept(visitor);
+        }
+        visitor.close(this);
+}else{
         for(ISymbol child : children) child.accept(visitor);
-//        visitor.open(this);
-//        for(ISymbol param : params) param.accept(visitor);
-//        visitor.close(this);
+}
     }
 
     @Override

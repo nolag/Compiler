@@ -14,6 +14,7 @@ import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
+import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
 
@@ -182,7 +183,14 @@ public abstract class APkgClassResolver {
         return new ArrayPkgClassResolver(this);
     }
 
+    protected abstract boolean isPrimative();
+
     public Castable getCastablility(APkgClassResolver other){
+        //everyone can return null, but
+        if(other == TypeSymbol.getPrimative(JoosNonTerminal.NULL).getTypeDclNode() && !isPrimative()){
+            return Castable.DOWN_CAST;
+        }
+
         if(assignableTo.contains(other.fullName)) return Castable.DOWN_CAST;
         if(other.assignableTo.contains(fullName)) return Castable.UP_CAST;
         return Castable.NOT_CASTABLE;

@@ -4,8 +4,44 @@ import cs444.CompilerException;
 import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.NonTerminal;
-import cs444.parser.symbols.ast.*;
-import cs444.parser.symbols.ast.expressions.*;
+import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
+import cs444.parser.symbols.ast.BooleanLiteralSymbol;
+import cs444.parser.symbols.ast.CharacterLiteralSymbol;
+import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.FieldAccessSymbol;
+import cs444.parser.symbols.ast.IntegerLiteralSymbol;
+import cs444.parser.symbols.ast.MethodInvokeSymbol;
+import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
+import cs444.parser.symbols.ast.NameSymbol;
+import cs444.parser.symbols.ast.NullSymbol;
+import cs444.parser.symbols.ast.StringLiteralSymbol;
+import cs444.parser.symbols.ast.SuperSymbol;
+import cs444.parser.symbols.ast.ThisSymbol;
+import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.ast.Typeable;
+import cs444.parser.symbols.ast.expressions.AddExprSymbol;
+import cs444.parser.symbols.ast.expressions.AndExprSymbol;
+import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
+import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
+import cs444.parser.symbols.ast.expressions.CreationExpression;
+import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
+import cs444.parser.symbols.ast.expressions.EAndExprSymbol;
+import cs444.parser.symbols.ast.expressions.EOrExprSymbol;
+import cs444.parser.symbols.ast.expressions.EqExprSymbol;
+import cs444.parser.symbols.ast.expressions.ForExprSymbol;
+import cs444.parser.symbols.ast.expressions.IfExprSymbol;
+import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
+import cs444.parser.symbols.ast.expressions.LeExprSymbol;
+import cs444.parser.symbols.ast.expressions.LtExprSymbol;
+import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
+import cs444.parser.symbols.ast.expressions.NeExprSymbol;
+import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
+import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
+import cs444.parser.symbols.ast.expressions.OrExprSymbol;
+import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
+import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
+import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
+import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
 public class PrettyPrinter implements ISymbolVisitor {
 
@@ -262,7 +298,10 @@ public class PrettyPrinter implements ISymbolVisitor {
     }
 
     @Override
-    public void visit(ReturnExprSymbol returnSymbol) throws CompilerException {
+    public void close(ReturnExprSymbol returnSymbol) throws CompilerException { }
+
+    @Override
+    public void open(ReturnExprSymbol retSymbol) throws CompilerException {
         print("Return :");
     }
 

@@ -57,6 +57,7 @@ public interface ISymbolVisitor {
     void open(WhileExprSymbol whileExprSymbol) throws CompilerException;
     void open(ForExprSymbol forExprSymbol) throws CompilerException;
     void open(IfExprSymbol ifExprSymbol) throws CompilerException;
+    void open(ReturnExprSymbol retSymbol) throws CompilerException;
 
     void close(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException;
     void close(final DclSymbol dclSymbol) throws CompilerException;
@@ -68,6 +69,7 @@ public interface ISymbolVisitor {
     void close(final WhileExprSymbol whileExprSymbol) throws CompilerException;
     void close(ForExprSymbol forExprSymbol) throws CompilerException;
     void close(IfExprSymbol ifExprSymbol) throws CompilerException;
+    void close(final ReturnExprSymbol returnSymbol) throws CompilerException;
 
     void visit(final TypeSymbol typeSymbol) throws CompilerException;
     void visit(final NameSymbol nameSymbol) throws CompilerException;
@@ -99,7 +101,6 @@ public interface ISymbolVisitor {
     void visit(final SuperSymbol thisSymbol) throws CompilerException;
     void visit(final StringLiteralSymbol stringSymbol) throws CompilerException;
     void visit(final CharacterLiteralSymbol characterSymbol) throws CompilerException;
-    void visit(final ReturnExprSymbol returnSymbol) throws CompilerException;
 
     void visit(final ISymbol symbol) throws CompilerException;
 }

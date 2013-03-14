@@ -389,4 +389,9 @@ public class PkgClassResolver extends APkgClassResolver {
     public APkgClassResolver accessor() throws UndeclaredException{
         throw new UndeclaredException("Accessors", this.fullName);
     }
+
+    @Override
+    protected boolean isPrimative() {
+        return start == null;
+    }
 }
