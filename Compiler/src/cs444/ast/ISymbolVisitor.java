@@ -8,6 +8,7 @@ import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.EmptyStatementSymbol;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
@@ -102,6 +103,7 @@ public interface ISymbolVisitor {
     void visit(final SuperSymbol thisSymbol) throws CompilerException;
     void visit(final StringLiteralSymbol stringSymbol) throws CompilerException;
     void visit(final CharacterLiteralSymbol characterSymbol) throws CompilerException;
+    void visit(final EmptyStatementSymbol emptySymbol) throws CompilerException;
 
     void visit(final ISymbol symbol) throws CompilerException;
 }

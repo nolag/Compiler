@@ -8,6 +8,7 @@ import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.EmptyStatementSymbol;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
@@ -206,4 +207,8 @@ public class EmptyVisitor implements ISymbolVisitor {
 
     @Override
     public void prepare(FieldAccessSymbol fieldAccessSymbol) { }
+
+    @Override
+    public void visit(EmptyStatementSymbol emptySymbol)
+            throws CompilerException { }
 }

@@ -15,6 +15,7 @@ import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.EmptyStatementSymbol;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
@@ -34,6 +35,8 @@ import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 import cs444.parser.symbols.ast.expressions.EAndExprSymbol;
 import cs444.parser.symbols.ast.expressions.EOrExprSymbol;
 import cs444.parser.symbols.ast.expressions.EqExprSymbol;
+import cs444.parser.symbols.ast.expressions.ForExprSymbol;
+import cs444.parser.symbols.ast.expressions.IfExprSymbol;
 import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
 import cs444.parser.symbols.ast.expressions.LeExprSymbol;
 import cs444.parser.symbols.ast.expressions.LtExprSymbol;
@@ -45,6 +48,7 @@ import cs444.parser.symbols.ast.expressions.OrExprSymbol;
 import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
+import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 import cs444.types.APkgClassResolver.Castable;
 import cs444.types.exceptions.BadOperandsTypeException;
 import cs444.types.exceptions.DuplicateDeclarationException;
@@ -274,6 +278,11 @@ if(checkTypes){
     }
 
     @Override
+    public void visit(EmptyStatementSymbol emptySymbol){
+        simpleVistorHelper(emptySymbol, JoosNonTerminal.VOID);
+    }
+
+    @Override
     public void visit(ThisSymbol thisSymbol) {
         simpleVistorHelper(thisSymbol, enclosingClassName);
     }
@@ -343,14 +352,66 @@ if(checkTypes){
     @Override
     public void visit(NotOpExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
 if(checkTypes){
+        assertIsBoolean();
+}
+    }
+
+    private void assertIsBoolean() throws UndeclaredException,
+            IllegalCastAssignmentException {
         TypeSymbol was = currentTypes.peek().peek().getType();
         APkgClassResolver booleanType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.BOOLEAN);
         if(booleanType.getCastablility(was.getTypeDclNode()) == Castable.NOT_CASTABLE){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
             String name1 = was.isArray ? ArrayPkgClassResolver.getArrayName(was.value) : was.value;
-            String name2 = currentMC.type.isArray ? ArrayPkgClassResolver.getArrayName(currentMC.type.value) : currentMC.type.value;
-            throw new IllegalCastAssignmentException(enclosingClassName, where, name1, name2);
+            throw new IllegalCastAssignmentException(enclosingClassName, where, name1, "boolean");
         }
+    }
+
+    @Override
+    public void open(IfExprSymbol expr){
+if(checkTypes){
+        currentTypes.add(new ArrayDeque<Typeable>());
+}
+    }
+
+    @Override
+    public void close(IfExprSymbol expr) throws UndeclaredException, IllegalCastAssignmentException{
+if(checkTypes){
+        assertIsBoolean();
+        currentTypes.pop();
+}
+    }
+
+    @Override
+    public void open(WhileExprSymbol expr){
+if(checkTypes){
+        currentTypes.add(new ArrayDeque<Typeable>());
+}
+    }
+
+    @Override
+    public void close(WhileExprSymbol expr) throws UndeclaredException, IllegalCastAssignmentException{
+if(checkTypes){
+        assertIsBoolean();
+        currentTypes.pop();
+}
+    }
+
+    @Override
+    public void open(ForExprSymbol expr){
+if(checkTypes){
+        pushNewScope(currentScope.isStatic);
+        currentTypes.add(new ArrayDeque<Typeable>());
+}
+    }
+
+    @Override
+    public void close(ForExprSymbol expr) throws UndeclaredException, IllegalCastAssignmentException{
+if(checkTypes){
+        currentTypes.peek().pop();   // drop type of ForInit
+        assertIsBoolean();
+        currentTypes.pop();
+        popCurrentScope();
 }
     }
 
@@ -414,14 +475,6 @@ if(checkTypes){
     }
 
     @Override
-    public void open(ReturnExprSymbol returnSymbol){
-if(checkTypes){
-        useCurrentForLookup.add(false);
-        currentTypes.push(new ArrayDeque<Typeable>());
-}
-    }
-
-    @Override
     public void close(ReturnExprSymbol returnSymbol) throws IllegalCastAssignmentException, UndeclaredException {
 if(checkTypes){
         TypeSymbol currentType;
@@ -435,8 +488,6 @@ if(checkTypes){
             String name2 = currentMC.type.isArray ? ArrayPkgClassResolver.getArrayName(currentMC.type.value) : currentMC.type.value;
             throw new IllegalCastAssignmentException(enclosingClassName, where, name1, name2);
         }
-        useCurrentForLookup.pop();
-        currentTypes.pop();
 }
     }
 
