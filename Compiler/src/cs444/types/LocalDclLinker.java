@@ -31,6 +31,7 @@ import cs444.parser.symbols.ast.TypeableTerminal;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
+import cs444.parser.symbols.ast.expressions.CreationExpression;
 import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 import cs444.parser.symbols.ast.expressions.EAndExprSymbol;
 import cs444.parser.symbols.ast.expressions.EOrExprSymbol;
@@ -157,8 +158,8 @@ public class LocalDclLinker extends EmptyVisitor {
                 throw new UndeclaredException("Class arguments", APkgClassResolver.generateUniqueName(currentMC, currentMC.dclName));
 
             String name = type.getTypeDclNode().fullName;
-            if(type.isArray) name = ArrayPkgClassResolver.getArrayName(name);
-            params.add(0, name);
+            //if(type.isArray) name = ArrayPkgClassResolver.getArrayName(name);
+            params.add(name);
         }
 
 if(checkTypes){
@@ -562,6 +563,43 @@ if(checkTypes){
     public void visit(RemainderExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
 if(checkTypes){
         bothIntHelper(JoosNonTerminal.INTEGER);
+}
+    }
+
+    @Override
+    public void open(CreationExpression create){
+if(checkTypes){
+        useCurrentForLookup.push(false);
+        currentTypes.push(new ArrayDeque<Typeable>());
+}
+    }
+
+    @Override
+    public void close(CreationExpression create) throws UndeclaredException{
+if(checkTypes){
+        useCurrentForLookup.pop();
+        Deque<Typeable> currentSymbols = currentTypes.pop();
+        APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(enclosingClassName);
+        resolver = resolver.getClass(create.getType().value, true);
+
+        List<String> params = new LinkedList<String>();
+
+        currentSymbols.pop();
+
+        for(Typeable mod : currentSymbols){
+            TypeSymbol type = mod.getType();
+            //If it's a class this would be like the argument is String.  There is no local String.
+            if(type.isClass)
+                throw new UndeclaredException("Class arguments", APkgClassResolver.generateUniqueName(currentMC, currentMC.dclName));
+
+            String name = type.getTypeDclNode().fullName;
+            //if(type.isArray) name = ArrayPkgClassResolver.getArrayName(name);
+            params.add(name);
+        }
+
+
+        resolver.getConstructor(params);
+        currentTypes.peek().add(create);
 }
     }
 

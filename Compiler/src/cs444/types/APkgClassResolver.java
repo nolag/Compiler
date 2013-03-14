@@ -72,6 +72,7 @@ public abstract class APkgClassResolver {
         APkgClassResolver resolver = methodSymbol.resolver;
         for(DclSymbol param : methodSymbol.params){
             String type = resolver.getClass(param.type.value, true).fullName;
+            if(param.getType().isArray) type = ArrayPkgClassResolver.getArrayName(type);
             types.add(type);
         }
         return generateUniqueName(name, types);
@@ -159,9 +160,10 @@ public abstract class APkgClassResolver {
 
     protected AMethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes, APkgClassResolver pkgClass) throws UndeclaredException {
         final Map<String, AMethodSymbol> getFrom = isStatic ? smethodMap : methodMap;
-        AMethodSymbol retVal = getFrom.get(generateUniqueName(name, paramTypes));
+        String uniqueName = generateUniqueName(name, paramTypes);
+        AMethodSymbol retVal = getFrom.get(uniqueName);
 
-        if(retVal == null) throw new UndeclaredException(name, fullName);
+        if(retVal == null) throw new UndeclaredException(uniqueName, fullName);
 
         if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName))
             throw new UndeclaredException(name, fullName);

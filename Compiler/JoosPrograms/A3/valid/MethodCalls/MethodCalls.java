@@ -20,15 +20,19 @@ public class MethodCalls {
         return me;
     }
     
-    public int getIntVal(){
-        return me.getMyVal(10);
+    public int getVal(){
+        return me.getVal(10);
     }
     
-    public int getIntVal(int i){
-        return me.getMyVal(i, 10);
+    public int getVal(int i){
+        return me.getVal();
     }
     
-    public boolean getIntVal(boolean b){
-        return mc().getMyVal(getMyVal(b));
+    public boolean getVal(boolean b){
+        return mc().getVal(getVal(b));
+    }
+    
+    public boolean getVal(boolean [] b, int i){
+        return mc().getVal(getVal(b, i));
     }
 }
