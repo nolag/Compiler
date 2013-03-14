@@ -45,6 +45,7 @@ import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
 public interface ISymbolVisitor {
     void prepare(final MethodInvokeSymbol invode) throws CompilerException;
+    void prepare(FieldAccessSymbol fieldAccessSymbol);
     void prepareCondition(Typeable condition);
 
     void open(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException;

@@ -326,4 +326,7 @@ public class PrettyPrinter implements ISymbolVisitor {
     public void close(IfExprSymbol ifExprSymbol) throws CompilerException {
         level--;
     }
+
+    @Override
+    public void prepare(FieldAccessSymbol fieldAccessSymbol) { }
 }

@@ -203,4 +203,7 @@ public class EmptyVisitor implements ISymbolVisitor {
 
     @Override
     public void open(ReturnExprSymbol retSymbol) throws CompilerException { }
+
+    @Override
+    public void prepare(FieldAccessSymbol fieldAccessSymbol) { }
 }

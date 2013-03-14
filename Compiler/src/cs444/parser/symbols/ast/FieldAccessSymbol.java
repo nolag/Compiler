@@ -4,6 +4,7 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
+import cs444.types.LocalDclLinker;
 
 public class FieldAccessSymbol extends ANonTerminal implements Typeable {
 
@@ -22,10 +23,13 @@ public class FieldAccessSymbol extends ANonTerminal implements Typeable {
 
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
-        //TODO
-        /*visitor.open(this);
-        for(ISymbol symbol : children) symbol.accept(visitor);
-        visitor.close(this);*/
+if(LocalDclLinker.checkTypes){
+        visitor.prepare(this);
+        children.get(0).accept(visitor);
+        visitor.open(this);
+        children.get(1).accept(visitor);
+        visitor.close(this);
+}
     }
 
     @Override

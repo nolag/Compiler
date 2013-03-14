@@ -220,15 +220,22 @@ if(checkTypes){
     }
 
     @Override
-    public void open(FieldAccessSymbol access){
+    public void prepare(FieldAccessSymbol fieldAccessSymbol) {
         currentTypes.push(new ArrayDeque<Typeable>());
+        useCurrentForLookup.push(false);
+    }
+
+    @Override
+    public void open(FieldAccessSymbol access){
+        useCurrentForLookup.pop();
         useCurrentForLookup.push(true);
     }
 
     @Override
     public void close(FieldAccessSymbol access){
-        currentTypes.pop();
+        Deque<Typeable> typeableDeque = currentTypes.pop();
         useCurrentForLookup.pop();
+        currentTypes.peek().add(typeableDeque.getLast());
     }
 
     private void simpleVistorHelper(TypeableTerminal tt, String visitorType){
@@ -412,7 +419,7 @@ if(checkTypes){
         if(!returnSymbol.children.isEmpty()) currentType = currentTypes.peek().getLast().getType();
         else currentType = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
         returnSymbol.setType(currentType);
-        if(currentMC.type.getTypeDclNode().getCastablility(currentType.getTypeDclNode()) != Castable.UP_CAST){
+        if(currentMC.type.getTypeDclNode().getCastablility(currentType.getTypeDclNode()) != Castable.UP_CAST  || currentType.isClass){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
 
             String name1 = currentType.isArray ? ArrayPkgClassResolver.getArrayName(currentType.value) : currentType.value;
