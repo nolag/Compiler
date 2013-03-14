@@ -33,6 +33,8 @@ import cs444.parser.symbols.ast.expressions.EAndExprSymbol;
 import cs444.parser.symbols.ast.expressions.EOrExprSymbol;
 import cs444.parser.symbols.ast.expressions.EqExprSymbol;
 import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
+import cs444.parser.symbols.ast.expressions.LeExprSymbol;
+import cs444.parser.symbols.ast.expressions.LtExprSymbol;
 import cs444.parser.symbols.ast.expressions.NeExprSymbol;
 import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
@@ -42,6 +44,7 @@ import cs444.types.APkgClassResolver.Castable;
 import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.IllegalCastAssignmentException;
 import cs444.types.exceptions.IllegalInstanceOfException;
+import cs444.types.exceptions.BadOperandsTypeException;
 import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
 
@@ -446,5 +449,47 @@ if(checkTypes){
 if(checkTypes){
         eqNeHelper();
 }
+    }
+
+    @Override
+    public void visit(LtExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
+if(checkTypes){
+        bothIntHelper(JoosNonTerminal.BOOLEAN);
+}
+    }
+
+    @Override
+    public void visit(LeExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
+if(checkTypes){
+        bothIntHelper(JoosNonTerminal.BOOLEAN);
+}
+    }
+
+    private void bothIntHelper(String returnType) throws BadOperandsTypeException, UndeclaredException{
+        TypeSymbol second = currentTypes.peek().removeLast().getType();
+        TypeSymbol first = currentTypes.peek().removeLast().getType();
+        APkgClassResolver intType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.INTEGER);
+
+        if(first.isArray || second.isArray){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            throw new BadOperandsTypeException(enclosingClassName, where, ArrayPkgClassResolver.getArrayName(first.value), currentMC.type.value);
+        }
+
+        if(first.isClass || second.isClass){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            throw new BadOperandsTypeException(enclosingClassName, where, "Class types", currentMC.type.value);
+        }
+
+        if(intType.getCastablility(first.getTypeDclNode()) == Castable.NOT_CASTABLE){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            throw new BadOperandsTypeException(enclosingClassName, where, first.value, currentMC.type.value);
+        }
+
+        if(intType.getCastablility(second.getTypeDclNode()) == Castable.NOT_CASTABLE){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            throw new BadOperandsTypeException(enclosingClassName, where, first.value, currentMC.type.value);
+        }
+
+        currentTypes.peek().add(TypeSymbol.getPrimative(returnType));
     }
 }
