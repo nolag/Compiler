@@ -3,8 +3,9 @@ public class ArithOper{
 
     public void doStuff(){
         int a = 1 - 5;
-        byte b= 2 * 2;
-        char c = 10 / 2;
+        int b = 2 * 2;
+        int c = 10 / 2;
         int d = 21 % 20;
+        a = b = 8 * 8;
     }
 }
