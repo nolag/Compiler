@@ -5,6 +5,7 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
@@ -26,10 +27,10 @@ public class LocalDclFactory extends ASTSymbolFactory{
         if(type.isArray && isArray) throw new UnsupportedException("Arrays of arrays");
         if(isArray) type.isArray = true;
 
-        DclSymbol field =  new DclSymbol(name.value, dcl, type, initVal, true);
-        field.validate();
+        DclSymbol localDcl =  new DclSymbol(name.value, dcl, type, true);
+        localDcl.validate();
 
-        return field;
+        return new AssignmentExprSymbol(localDcl, initVal);
     }
 
 }

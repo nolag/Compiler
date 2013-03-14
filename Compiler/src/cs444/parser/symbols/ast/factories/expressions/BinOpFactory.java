@@ -28,7 +28,7 @@ public class BinOpFactory extends ASTSymbolFactory{
 
     @Override
     protected ISymbol convert(ISymbol from) throws OutOfRangeException, UnsupportedException, IllegalModifierException {
-        if(!JoosNonTerminal.binExpressions.contains(from.getName().toUpperCase())) return from;
+        if(!JoosNonTerminal.binExpressions.contains(from.getName())) return from;
 
         ANonTerminal nonTerm = (ANonTerminal) from;
         ISymbol left = nonTerm.children.get(0);

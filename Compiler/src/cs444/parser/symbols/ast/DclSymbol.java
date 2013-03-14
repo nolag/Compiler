@@ -23,9 +23,13 @@ public class DclSymbol extends AModifiersOptSymbol{
 
     public DclSymbol(String dclName, ANonTerminal from, TypeSymbol type, ANonTerminal initVal, boolean isLocal)
             throws IllegalModifierException, UnsupportedException {
-
-        super("Dcl", dclName, from, type);
+        this(dclName, from, type, isLocal);
         if(initVal != null) children.addAll(initVal.children);
+    }
+
+    public DclSymbol(String dclName, ANonTerminal from, TypeSymbol type, boolean isLocal) 
+            throws IllegalModifierException, UnsupportedException {
+        super("Dcl", dclName, from, type);
         this.isLocal = isLocal;
     }
 

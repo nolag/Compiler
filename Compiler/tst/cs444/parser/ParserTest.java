@@ -598,7 +598,7 @@ public class ParserTest {
             if(method.dclName.equals("getValue")){
                 ANonTerminal block = (NonTerminal) method.firstOrDefault("Block");
                 block = (ANonTerminal) block.firstOrDefault("BLOCKSTATEMENTS");
-                assertSmallClassLocalVars(block.getAll("Dcl").iterator());
+                assertSmallClassLocalVars(block.getAll("Assignment").iterator());
             }
         }
 
@@ -612,7 +612,8 @@ public class ParserTest {
         String [] names = { "n", "j" };
 
         for(int i = 0; i < 2; i++){
-            DclSymbol symbol = (DclSymbol)members.next();
+            AssignmentExprSymbol assigSymbol = (AssignmentExprSymbol)members.next();
+            DclSymbol symbol = (DclSymbol)assigSymbol.children.get(0);
             assertEquals(names[i], symbol.dclName);
             assertEquals(isArray[i], symbol.type.isArray);
             assertEquals(types[i], symbol.type.value);
