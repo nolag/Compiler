@@ -514,7 +514,11 @@ public class LocalDclLinker extends EmptyVisitor {
         if (isNumeric(currentTypes.peek().peek().getType(), false)){
             bothIntHelper(JoosNonTerminal.INTEGER);
         }else{
-            bothStringHelper(JoosNonTerminal.STRING);
+            currentTypes.peek().removeLast().getType(); // remove second
+            TypeSymbol first = currentTypes.peek().removeLast().getType();
+            isCastable(first, JoosNonTerminal.STRING, true);
+
+            currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.STRING));
         }
     }
 
@@ -597,15 +601,6 @@ public class LocalDclLinker extends EmptyVisitor {
         TypeSymbol first = currentTypes.peek().removeLast().getType();
         isNumeric(first, true);
         isNumeric(second, true);
-
-        currentTypes.peek().add(TypeSymbol.getPrimative(returnType));
-    }
-
-    private void bothStringHelper(String returnType) throws BadOperandsTypeException, UndeclaredException{
-        TypeSymbol second = currentTypes.peek().removeLast().getType();
-        TypeSymbol first = currentTypes.peek().removeLast().getType();
-        isCastable(first, JoosNonTerminal.STRING, true);
-        isCastable(second, JoosNonTerminal.STRING, true);
 
         currentTypes.peek().add(TypeSymbol.getPrimative(returnType));
     }
