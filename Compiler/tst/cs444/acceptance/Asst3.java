@@ -30,9 +30,12 @@ public class Asst3 {
     @Test
     public void a3Testing() throws IOException, InterruptedException{
         LocalDclLinker.checkTypes = true;
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/valid/", 0, true, false);
+        try{
+            TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/valid/", 0, true, false);
 
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/invalid/", 42, false, false);
-        LocalDclLinker.checkTypes = false;
+            TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/invalid/", 42, false, false);
+        }finally{
+            LocalDclLinker.checkTypes = false;
+        }
     }
 }

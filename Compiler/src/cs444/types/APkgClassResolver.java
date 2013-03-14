@@ -83,7 +83,7 @@ public abstract class APkgClassResolver {
         build(new HashSet<PkgClassResolver>(), false, false);
     }
 
-    protected DclSymbol getDcl(String name, boolean isStatic, APkgClassResolver pkgClass) throws UndeclaredException, ImplicitStaticConversionException {
+    public DclSymbol getDcl(String name, boolean isStatic, APkgClassResolver pkgClass, boolean allowClass) throws UndeclaredException, ImplicitStaticConversionException {
 
         Map<String, DclSymbol> getFrom = isStatic ? sfieldMap : fieldMap;
         Map<String, DclSymbol> notFrom = isStatic ? fieldMap : sfieldMap;
@@ -92,11 +92,11 @@ public abstract class APkgClassResolver {
 
         if(retVal == null){
             if(notFrom.containsKey(name)) throw new ImplicitStaticConversionException(name);
-            //will throw undeclared if it's not a class
-            APkgClassResolver klass = getClass(name, false);
+            APkgClassResolver klass = allowClass ? getClass(name, false) : null;
             return (klass == null)? null : DclSymbol.getClassSymbol(name, klass);
         }
 
+        //TODO protected is useable by pkg
         //If it is not assignable to this and it's protected see if there is a hidden one.
         if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName)){
             getFrom = isStatic ? hsfieldMap : hfieldMap;
@@ -106,17 +106,17 @@ public abstract class APkgClassResolver {
         return retVal;
     }
 
-    protected List<DclSymbol> findDcl(String name, boolean isStatic, APkgClassResolver pkgClass) throws UndeclaredException, ImplicitStaticConversionException {
+    public List<DclSymbol> findDcl(String name, boolean isStatic, APkgClassResolver pkgClass, boolean allowClass) throws UndeclaredException, ImplicitStaticConversionException {
         String [] nameParts = name.split("\\.");
 
         DclSymbol retVal;
         if(nameParts.length == 1){
-            retVal = getDcl(name, isStatic, pkgClass);
+            retVal = getDcl(name, isStatic, pkgClass, allowClass);
             if(retVal == null) throw new UndeclaredException(name, fullName);
             return  Arrays.asList(new DclSymbol []{ retVal });
         }
 
-        DclSymbol dcl = getDcl(nameParts[0], isStatic, pkgClass);
+        DclSymbol dcl = getDcl(nameParts[0], isStatic, pkgClass, allowClass);
         List<DclSymbol> dclList = new LinkedList<DclSymbol>();
 
         APkgClassResolver pkgResolver = null;
@@ -135,7 +135,7 @@ public abstract class APkgClassResolver {
                 sb.append("." + nameParts[i]);
                 pkgResolver = getClass(sb.toString(), false);
             }
-            if(pkgResolver != null) dcl = pkgResolver.getDcl(nameParts[i], true, this);
+            if(pkgResolver != null) dcl = pkgResolver.getDcl(nameParts[i], true, this, false);
             i++;
         }
 
@@ -143,7 +143,8 @@ public abstract class APkgClassResolver {
 
         for(; i < nameParts.length; i++){
             if(dcl.type.isArray) pkgResolver = pkgResolver.getArrayVersion();
-            dcl = pkgResolver.getDcl(nameParts[i], dcl.type.isClass, pkgClass);
+            dcl = pkgResolver.getDcl(nameParts[i], dcl.type.isClass, pkgClass, false);
+            if(dcl == null) throw new UndeclaredException(name, fullName);
             dclList.add(dcl);
             pkgResolver = pkgResolver.getClass(dcl.type.value, true);
         }
@@ -151,8 +152,8 @@ public abstract class APkgClassResolver {
         return dclList;
     }
 
-    public List<DclSymbol> findDcl(String name, boolean isStatic) throws UndeclaredException, ImplicitStaticConversionException {
-        return findDcl(name, isStatic, this);
+    public List<DclSymbol> findDcl(String name, boolean isStatic, boolean allowClass) throws UndeclaredException, ImplicitStaticConversionException {
+        return findDcl(name, isStatic, this, allowClass);
     }
 
     protected AMethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes, APkgClassResolver pkgClass) throws UndeclaredException {

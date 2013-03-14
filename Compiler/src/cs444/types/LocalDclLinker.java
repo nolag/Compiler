@@ -41,10 +41,10 @@ import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.OrExprSymbol;
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.types.APkgClassResolver.Castable;
+import cs444.types.exceptions.BadOperandsTypeException;
 import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.IllegalCastAssignmentException;
 import cs444.types.exceptions.IllegalInstanceOfException;
-import cs444.types.exceptions.BadOperandsTypeException;
 import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
 
@@ -112,10 +112,9 @@ public class LocalDclLinker extends EmptyVisitor {
         if(invoke.lookupFirst != null){
             DclSymbol dcl = null;
             if(invoke.children.isEmpty()) dcl = currentScope.find(invoke.lookupFirst);
-            if(dcl == null)dcl = resolver.getDcl(invoke.lookupFirst, isStatic, resolver);
+            if(dcl == null)dcl = resolver.getDcl(invoke.lookupFirst, isStatic, resolver, isStatic);
             currentSymbols.add(dcl);
             resolver = dcl.type.getTypeDclNode();
-            //TODO it is possible that the above was not static but this is, this is a bigger issue in lookup dcl maybe?
             isStatic = dcl.type.isClass;
         }
 
@@ -184,7 +183,7 @@ if(checkTypes){
 
             }else{
                 APkgClassResolver resolver = dclNode.type.getTypeDclNode();
-                List<DclSymbol> restList = resolver.findDcl(nameSymbol.value.substring(lookupNames[0].length() + 1), false);
+                List<DclSymbol> restList = resolver.findDcl(nameSymbol.value.substring(lookupNames[0].length() + 1), false, false);
                 dclList = new LinkedList<Typeable>(restList);
                 dclList.add(0, dclNode);
 
@@ -194,13 +193,15 @@ if(checkTypes){
             APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(enclosingClassName);
             boolean isStatic = currentScope.isStatic;
             Typeable currentSymbol = useCurrentForLookup.peek() ? currentTypes.peek().getLast() : null;
+            boolean allowClass = true;
 
             if(currentSymbol != null){
                 resolver = currentSymbol.getType().getTypeDclNode();
                 isStatic = currentSymbol.getType().isClass;
+                allowClass = false;
             }
 
-            List<Typeable> modOp = new LinkedList<Typeable>(resolver.findDcl(nameSymbol.value, isStatic));
+            List<Typeable> modOp = new LinkedList<Typeable>(resolver.findDcl(nameSymbol.value, isStatic, allowClass));
             link = new LookupLink(modOp);
         }
 
