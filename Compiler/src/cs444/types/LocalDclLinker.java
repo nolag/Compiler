@@ -21,6 +21,7 @@ import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.NullSymbol;
+import cs444.parser.symbols.ast.StringLiteralSymbol;
 import cs444.parser.symbols.ast.SuperSymbol;
 import cs444.parser.symbols.ast.ThisSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
@@ -265,6 +266,11 @@ if(checkTypes){
     @Override
     public void visit(BooleanLiteralSymbol boolSymbol){
         simpleVistorHelper(boolSymbol, JoosNonTerminal.BOOLEAN);
+    }
+
+    @Override
+    public void visit(StringLiteralSymbol boolSymbol){
+        simpleVistorHelper(boolSymbol, JoosNonTerminal.STRING);
     }
 
     @Override

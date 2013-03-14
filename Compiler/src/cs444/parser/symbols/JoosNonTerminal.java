@@ -56,6 +56,8 @@ public class JoosNonTerminal extends NonTerminal{
     public static final Set<String> primativeNumbers = new HashSet<String>();
     public static final Set<String> otherPrimatives = new HashSet<String>();
 
+    public static final Set<String> nonPrimativeOperativeTypes = new HashSet<String>();
+
 
     static{
         noCollapse.add("MODIFIERS");
@@ -138,6 +140,8 @@ public class JoosNonTerminal extends NonTerminal{
 
         whiles.add("WHILESTATEMENT");
         whiles.add("WHILESTATEMENTNOSHORTIF");
+
+        nonPrimativeOperativeTypes.add(STRING);
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {

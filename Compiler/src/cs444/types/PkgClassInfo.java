@@ -56,6 +56,11 @@ public class PkgClassInfo {
 
         pkgs.put(resolver.name, resolver);
         symbolMap.put(resolver.fullName, resolver);
+
+
+        if(JoosNonTerminal.nonPrimativeOperativeTypes.contains(resolver.fullName)){
+            TypeSymbol.getPrimative(resolver.fullName).setTypeDclNode(resolver);
+        }
     }
 
     private boolean pkgClashWithType(String pkgNamePrefix, String pkgNameSuffix) {
