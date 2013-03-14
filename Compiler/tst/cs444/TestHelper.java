@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.StringReader;
 
 import cs444.lexer.Lexer;
+import cs444.lexer.LexerException;
 import cs444.lexer.Token;
 import cs444.lexer.Token.Type;
 
@@ -17,9 +18,7 @@ public class TestHelper {
 
 		Token token = scanner.getNextToken();
 		assertToken(tokenType, string, token);
-		token = scanner.getNextToken();
-		assertToken(Token.Type.EOF, "", token);
-		assertNull(scanner.getNextToken());
+		assertEndOfInput(scanner);
 	}
 
 	// Used mainly to test the scanner throws exceptions for lexically invalid strings
@@ -47,5 +46,11 @@ public class TestHelper {
 		while (null != (token = scanner.getNextToken())) {
 			System.out.println(token.toString());
 		}
+	}
+
+	public static void assertEndOfInput(Lexer scanner) throws LexerException, IOException {
+		assertToken(Token.Type.WHITESPACE, "\n", scanner.getNextToken());
+		assertToken(Token.Type.EOF, "", scanner.getNextToken());
+		assertNull(scanner.getNextToken());
 	}
 }

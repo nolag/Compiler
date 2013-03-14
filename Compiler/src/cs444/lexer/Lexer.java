@@ -7,6 +7,7 @@ public class Lexer implements ILexer{
     private final Reader reader;
 	private boolean emittedLastToken;
 	private boolean emittedEOF;
+	private boolean insertedNewLine;
     private int nextChar;
     private IDFA dfa;
 
@@ -33,7 +34,16 @@ public class Lexer implements ILexer{
                     		lexeme + (char)nextChar + ".");
             } else {
                 lexeme += (char)nextChar;
-                nextChar = reader.read();
+                if (!insertedNewLine) {
+                	nextChar = reader.read();
+                	if (nextChar == -1) {
+                		nextChar = '\n';
+                		insertedNewLine = true;
+                	}
+                } else {
+                	nextChar = -1;
+                }
+                
                 state = dfa.getState(previewState);
             }
         }
