@@ -371,18 +371,21 @@ if(checkTypes){
     @Override
     public void visit(InstanceOfExprSymbol op) throws IllegalInstanceOfException, UndeclaredException {
 if(checkTypes){
-        TypeSymbol rhs = currentTypes.peek().pop().getType();
-        TypeSymbol lhs = currentTypes.peek().pop().getType();
+        TypeSymbol rhs = currentTypes.peek().removeLast().getType();
+        TypeSymbol lhs = currentTypes.peek().removeLast().getType();
         String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-        if(rhs.isClass || lhs.isClass)
+        if(lhs.isClass)
             throw new IllegalInstanceOfException(enclosingClassName, where, "Classes:", currentMC.type.value);
 
+        if(!rhs.isClass)
+            throw new IllegalInstanceOfException(enclosingClassName, where, "non class:", currentMC.type.value);
+
         if(!lhs.isArray && JoosNonTerminal.notAllowedForInstanceOfLHS.contains(lhs.value))
-            new IllegalInstanceOfException(enclosingClassName, where, lhs.value, currentMC.type.value);
+            throw new IllegalInstanceOfException(enclosingClassName, where, lhs.value, currentMC.type.value);
 
         if(!rhs.isArray && JoosNonTerminal.notAllowedForInstanceOfRHS.contains(rhs.value))
-            new IllegalInstanceOfException(enclosingClassName, where, rhs.value, currentMC.type.value);
-        currentTypes.peek().push(TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN));
+            throw new IllegalInstanceOfException(enclosingClassName, where, rhs.value, currentMC.type.value);
+        currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN));
 }
     }
 
