@@ -369,12 +369,12 @@ if(checkTypes){
 }
     }
 
-    private void castOrAssign(boolean secondIsClass, boolean allowUpCast) throws IllegalCastAssignmentException, UndeclaredException {
+    private void castOrAssign(boolean secondIsClass, boolean allowDownCast) throws IllegalCastAssignmentException, UndeclaredException {
         TypeSymbol isType = currentTypes.peek().removeLast().getType();
         TypeSymbol toType = currentTypes.peek().getLast().getType();
 
         Castable castType = toType.getTypeDclNode().getCastablility(isType.getTypeDclNode());
-        if(castType == Castable.NOT_CASTABLE  || toType.isClass != secondIsClass || (castType == Castable.UP_CAST && !allowUpCast)){
+        if(castType == Castable.NOT_CASTABLE  || toType.isClass != secondIsClass || (castType == Castable.DOWN_CAST && !allowDownCast)){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
             String name1 = isType.isArray ? ArrayPkgClassResolver.getArrayName(isType.value) : isType.value;
             String name2 = toType.isArray ? ArrayPkgClassResolver.getArrayName(toType.value) : toType.value;
@@ -408,7 +408,7 @@ if(checkTypes){
         if(!returnSymbol.children.isEmpty()) currentType = currentTypes.peek().getLast().getType();
         else currentType = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
         returnSymbol.setType(currentType);
-        if(currentMC.type.getTypeDclNode().getCastablility(currentType.getTypeDclNode()) != Castable.DOWN_CAST){
+        if(currentMC.type.getTypeDclNode().getCastablility(currentType.getTypeDclNode()) != Castable.UP_CAST){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
 
             String name1 = currentType.isArray ? ArrayPkgClassResolver.getArrayName(currentType.value) : currentType.value;

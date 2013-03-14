@@ -40,7 +40,7 @@ public abstract class APkgClassResolver {
     protected final Map<String, AMethodSymbol> methodMap = new HashMap<String, AMethodSymbol>();
     protected final Map<String, AMethodSymbol> smethodMap = new HashMap<String, AMethodSymbol>();
 
-    public static enum Castable { DOWN_CAST, UP_CAST, NOT_CASTABLE };
+    public static enum Castable { UP_CAST, DOWN_CAST, NOT_CASTABLE };
 
     protected APkgClassResolver(String name, String pkg, boolean isFinal){
         this.name = name;
@@ -96,7 +96,6 @@ public abstract class APkgClassResolver {
             return (klass == null)? null : DclSymbol.getClassSymbol(name, klass);
         }
 
-        //TODO protected is useable by pkg
         //If it is not assignable to this and it's protected see if there is a hidden one.
         if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName)){
             getFrom = isStatic ? hsfieldMap : hfieldMap;
@@ -189,15 +188,15 @@ public abstract class APkgClassResolver {
     protected abstract boolean isPrimative();
 
     public Castable getCastablility(APkgClassResolver other){
-        if(other == this) return Castable.DOWN_CAST;
+        if(other == this) return Castable.UP_CAST;
 
         //everyone can return null, but
         if(other == TypeSymbol.getPrimative(JoosNonTerminal.NULL).getTypeDclNode() && !isPrimative()){
-            return Castable.DOWN_CAST;
+            return Castable.UP_CAST;
         }
 
-        if(assignableTo.contains(other.fullName)) return Castable.UP_CAST;
-        if(other.assignableTo.contains(fullName)) return Castable.DOWN_CAST;
+        if(assignableTo.contains(other.fullName)) return Castable.DOWN_CAST;
+        if(other.assignableTo.contains(fullName)) return Castable.UP_CAST;
         return Castable.NOT_CASTABLE;
     }
 
