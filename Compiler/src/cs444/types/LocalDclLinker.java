@@ -29,16 +29,19 @@ import cs444.parser.symbols.ast.TypeableTerminal;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
+import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 import cs444.parser.symbols.ast.expressions.EAndExprSymbol;
 import cs444.parser.symbols.ast.expressions.EOrExprSymbol;
 import cs444.parser.symbols.ast.expressions.EqExprSymbol;
 import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
 import cs444.parser.symbols.ast.expressions.LeExprSymbol;
 import cs444.parser.symbols.ast.expressions.LtExprSymbol;
+import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
 import cs444.parser.symbols.ast.expressions.NeExprSymbol;
 import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
 import cs444.parser.symbols.ast.expressions.OrExprSymbol;
+import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.types.APkgClassResolver.Castable;
@@ -469,6 +472,27 @@ if(checkTypes){
 
     @Override
     public void visit(SubtractExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
+if(checkTypes){
+        bothIntHelper(JoosNonTerminal.INTEGER);
+}
+    }
+
+    @Override
+    public void visit(MultiplyExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
+if(checkTypes){
+        bothIntHelper(JoosNonTerminal.INTEGER);
+}
+    }
+
+    @Override
+    public void visit(DivideExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
+if(checkTypes){
+        bothIntHelper(JoosNonTerminal.INTEGER);
+}
+    }
+
+    @Override
+    public void visit(RemainderExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
 if(checkTypes){
         bothIntHelper(JoosNonTerminal.INTEGER);
 }
