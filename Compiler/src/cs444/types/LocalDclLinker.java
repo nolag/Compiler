@@ -415,10 +415,24 @@ if(checkTypes){
     }
 
     @Override
+    public void afterClause(ForExprSymbol forExprSymbol)
+            throws CompilerException {
+if(checkTypes){
+        currentTypes.peek().clear();
+}
+    }
+
+    @Override
+    public void afterCondition(ForExprSymbol forExprSymbol)
+            throws CompilerException {
+if(checkTypes){
+        assertIsBoolean();
+}
+    }
+
+    @Override
     public void close(ForExprSymbol expr) throws UndeclaredException, IllegalCastAssignmentException{
 if(checkTypes){
-        currentTypes.peek().pop();   // drop type of ForInit
-        assertIsBoolean();
         currentTypes.pop();
         popCurrentScope();
 }

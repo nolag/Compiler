@@ -342,4 +342,12 @@ public class PrettyPrinter implements ISymbolVisitor {
     public void visit(ArrayAccessExprSymbol arrayAccess) throws CompilerException {
         print("Array access");
     }
+
+    @Override
+    public void afterClause(ForExprSymbol forExprSymbol)
+            throws CompilerException { }
+
+    @Override
+    public void afterCondition(ForExprSymbol forExprSymbol)
+            throws CompilerException { }
 }

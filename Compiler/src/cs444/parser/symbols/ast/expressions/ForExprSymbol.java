@@ -17,18 +17,32 @@ public class ForExprSymbol extends BaseExprSymbol {
     }
 
     public Typeable getCondition(){
-        return (Typeable) children.get(1);
+        return (Typeable) getConditionExpr();
+    }
+
+    public ISymbol getForInit(){
+        return children.get(0);
+    }
+
+    public ISymbol getConditionExpr(){
+        return children.get(1);
+    }
+
+    public ISymbol getForUpdate(){
+        return children.get(2);
     }
 
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
         visitor.prepareCondition(getCondition());
-//        TODO: don't think we need this
- //       visitor.visit(this);
-        for (ISymbol child : children) {
-            child.accept(visitor);
-        }
+        getForInit().accept(visitor);
+        visitor.afterClause(this);
+        getConditionExpr().accept(visitor);
+        visitor.afterCondition(this);
+        visitor.afterClause(this);
+        getForUpdate().accept(visitor);
+        visitor.afterClause(this);
         visitor.close(this);
     }
 }

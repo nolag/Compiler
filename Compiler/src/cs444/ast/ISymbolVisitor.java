@@ -74,6 +74,9 @@ public interface ISymbolVisitor {
     void close(IfExprSymbol ifExprSymbol) throws CompilerException;
     void close(final ReturnExprSymbol returnSymbol) throws CompilerException;
 
+    void afterClause(ForExprSymbol forExprSymbol) throws CompilerException;
+    void afterCondition(ForExprSymbol forExprSymbol) throws CompilerException;
+
     void visit(final TypeSymbol typeSymbol) throws CompilerException;
     void visit(final NameSymbol nameSymbol) throws CompilerException;
     void visit(final ATerminal terminal) throws CompilerException;

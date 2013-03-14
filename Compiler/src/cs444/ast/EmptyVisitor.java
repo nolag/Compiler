@@ -214,4 +214,12 @@ public class EmptyVisitor implements ISymbolVisitor {
 
     @Override
     public void visit(ArrayAccessExprSymbol arrayAccess) throws CompilerException { }
+
+    @Override
+    public void afterClause(ForExprSymbol forExprSymbol)
+            throws CompilerException { }
+
+    @Override
+    public void afterCondition(ForExprSymbol forExprSymbol)
+            throws CompilerException { }
 }
