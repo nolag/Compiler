@@ -55,7 +55,7 @@ public class Compiler {
 
                 PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
 
-                // if (fileName.equals(files[0])) parseTree.accept(new PrettyPrinter());
+                //if (fileName.contains("Boolean")) parseTree.accept(new PrettyPrinter());
             }
         }catch(Exception e){
             if (printErrors) e.printStackTrace();

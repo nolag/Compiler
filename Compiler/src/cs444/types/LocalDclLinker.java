@@ -11,10 +11,33 @@ import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
-import cs444.parser.symbols.ast.*;
-import cs444.parser.symbols.ast.expressions.*;
-
-
+import cs444.parser.symbols.ast.AMethodSymbol;
+import cs444.parser.symbols.ast.BooleanLiteralSymbol;
+import cs444.parser.symbols.ast.CharacterLiteralSymbol;
+import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.FieldAccessSymbol;
+import cs444.parser.symbols.ast.IntegerLiteralSymbol;
+import cs444.parser.symbols.ast.MethodInvokeSymbol;
+import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
+import cs444.parser.symbols.ast.NameSymbol;
+import cs444.parser.symbols.ast.NullSymbol;
+import cs444.parser.symbols.ast.SuperSymbol;
+import cs444.parser.symbols.ast.ThisSymbol;
+import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.ast.Typeable;
+import cs444.parser.symbols.ast.TypeableTerminal;
+import cs444.parser.symbols.ast.expressions.AndExprSymbol;
+import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
+import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
+import cs444.parser.symbols.ast.expressions.EAndExprSymbol;
+import cs444.parser.symbols.ast.expressions.EOrExprSymbol;
+import cs444.parser.symbols.ast.expressions.EqExprSymbol;
+import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
+import cs444.parser.symbols.ast.expressions.NeExprSymbol;
+import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
+import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
+import cs444.parser.symbols.ast.expressions.OrExprSymbol;
+import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.types.APkgClassResolver.Castable;
 import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.IllegalCastAssignmentException;
@@ -80,7 +103,7 @@ public class LocalDclLinker extends EmptyVisitor {
         Deque<Typeable> currentSymbols = currentTypes.pop();
 
         APkgClassResolver resolver = currentSymbols.isEmpty() ?
-                PkgClassInfo.instance.getSymbol(enclosingClassName) : currentSymbols.peek().getType().getTypeDclNode();
+                PkgClassInfo.instance.getSymbol(enclosingClassName) : currentSymbols.peekLast().getType().getTypeDclNode();
 
         boolean isStatic = invoke.children.isEmpty() ? currentScope.isStatic : false;
         if(invoke.lookupFirst != null){
@@ -241,9 +264,8 @@ if(checkTypes){
     }
 
     public void bothBooleanHelper() throws IllegalCastAssignmentException, UndeclaredException{
-        TypeSymbol second = currentTypes.peek().pop().getType();
-        Typeable firtTypeable = currentTypes.peek().pop();
-        TypeSymbol first = firtTypeable.getType();
+        TypeSymbol second = currentTypes.peek().removeLast().getType();
+        TypeSymbol first = currentTypes.peek().removeLast().getType();
         APkgClassResolver booleanType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.BOOLEAN);
 
         if(first.isArray || second.isArray){
@@ -266,7 +288,7 @@ if(checkTypes){
             throw new IllegalCastAssignmentException(enclosingClassName, where, first.value, currentMC.type.value);
         }
 
-        currentTypes.peek().push(firtTypeable);
+        currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN));
     }
 
     @Override
@@ -339,7 +361,7 @@ if(checkTypes){
 
         if(!rhs.isArray && JoosNonTerminal.notAllowedForInstanceOfRHS.contains(rhs.value))
             new IllegalInstanceOfException(enclosingClassName, where, rhs.value, currentMC.type.value);
-        //TODO simpleVistorHelper(boolSymbol, JoosNonTerminal.BOOLEAN);
+        currentTypes.peek().push(TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN));
 }
     }
 
@@ -363,12 +385,13 @@ if(checkTypes){
 }
     }
 
+    //TODO need to make new scope for return so locals are not on the top.
     @Override
     public void visit(ReturnExprSymbol returnSymbol) throws IllegalCastAssignmentException, UndeclaredException {
 if(checkTypes){
         TypeSymbol currentType;
         if(!returnSymbol.children.isEmpty()) currentType = currentTypes.peek().getLast().getType();
-        else currentType = TypeSymbol.voidType;
+        else currentType = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
         returnSymbol.setType(currentType);
         if(currentMC.type.getTypeDclNode().getCastablility(currentType.getTypeDclNode()) != Castable.DOWN_CAST){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);

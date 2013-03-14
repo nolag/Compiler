@@ -32,6 +32,7 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String TRUE_VALUE = "true";
     public static final String FALSE_VALUE = "false";
     public static final String BOOLEAN = "boolean";
+    public static final String VOID = "void";
 
     public static final String STRING = "java.lang.String";
     public static final String CHAR = "char";
@@ -96,14 +97,14 @@ public class JoosNonTerminal extends NonTerminal{
         primativeNumbers.add(INTEGER);
         notAllowedForInstanceOfLHS.addAll(primativeNumbers);
 
-        otherPrimatives.add("void");
+        otherPrimatives.add(VOID);
         otherPrimatives.add(BOOLEAN);
         notAllowedForInstanceOfLHS.addAll(otherPrimatives);
 
         //null is special, so it is allowed for insance of
         otherPrimatives.add(NULL);
         notAllowedForInstanceOfLHS.addAll(notAllowedForInstanceOfLHS);
-        notAllowedForInstanceOfRHS.add("null");
+        notAllowedForInstanceOfRHS.add(NULL);
 
         unaryExpressions.add("POSTFIXEXPRESSION");
         unaryExpressions.add(UNARY_EXPRESSION);
@@ -116,6 +117,8 @@ public class JoosNonTerminal extends NonTerminal{
         binExpressions.add("ASSIGNMENTEXPRESSION");
         binExpressions.add("CONDITIONALANDEXPRESSION");
         binExpressions.add("INCLUSIVEOREXPRESSION");
+        binExpressions.add("CONDITIONALOREXPRESSION");
+        binExpressions.add("ANDEXPRESSION");
 
         fors.add("FORSTATEMENT");
         fors.add("FORSTATEMENTNOSHORTIF");

@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
+import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.types.exceptions.ClashException;
 import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.UndeclaredException;
@@ -78,8 +79,17 @@ public class PkgClassInfo {
     }
 
     private void addInitialSymbols() {
-        for(String type : JoosNonTerminal.primativeNumbers) symbolMap.put(type, PkgClassResolver.getPrimativeResolver(type));
-        for(String type : JoosNonTerminal.otherPrimatives) symbolMap.put(type, PkgClassResolver.getPrimativeResolver(type));
+        for(String type : JoosNonTerminal.primativeNumbers){
+            APkgClassResolver resolver = PkgClassResolver.getPrimativeResolver(type);
+            symbolMap.put(type, resolver);
+            TypeSymbol.getPrimative(type).setTypeDclNode(resolver);
+        }
+
+        for(String type : JoosNonTerminal.otherPrimatives){
+            APkgClassResolver resolver = PkgClassResolver.getPrimativeResolver(type);
+            symbolMap.put(type, resolver);
+            TypeSymbol.getPrimative(type).setTypeDclNode(resolver);
+        }
     }
 
     // NOTE: this method is for tests only

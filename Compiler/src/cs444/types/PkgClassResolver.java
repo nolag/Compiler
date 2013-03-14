@@ -12,6 +12,7 @@ import java.util.Set;
 
 import cs444.CompilerException;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
@@ -292,7 +293,7 @@ public class PkgClassResolver extends APkgClassResolver {
                 String uniqueName = generateUniqueName(constructorSymbol, "this");
                 if(constructors.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
                 constructors.put(uniqueName, constructorSymbol);
-                TypeSymbol voidType = TypeSymbol.voidType;
+                TypeSymbol voidType = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
 
                 if(voidType.getTypeDclNode() == null)
                     voidType.setTypeDclNode(PkgClassInfo.instance.getSymbol("void"));
