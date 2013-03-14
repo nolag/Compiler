@@ -103,6 +103,7 @@ public class LocalDclLinker extends EmptyVisitor {
     public void open(NonTerminal aNonTerminal){
         if (aNonTerminal.getName().equals(JoosNonTerminal.BLOCK)){
             pushNewScope(currentScope.isStatic);
+            currentTypes.add(new ArrayDeque<Typeable>());
         }
     }
 
@@ -110,6 +111,7 @@ public class LocalDclLinker extends EmptyVisitor {
     public void close(NonTerminal aNonTerminal){
         if (aNonTerminal.getName().equals(JoosNonTerminal.BLOCK)){
             popCurrentScope();
+            currentTypes.pop();
         }
     }
 
