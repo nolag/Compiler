@@ -2,6 +2,7 @@ public class ArithOper{
     public ArithOper(){ }
 
     public void doStuff(){
+        int s = 1 + 2;
         int a = 1 - 5;
         int b = 2 * 2;
         int c = 10 / 2;

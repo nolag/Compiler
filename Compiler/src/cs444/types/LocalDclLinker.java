@@ -28,6 +28,7 @@ import cs444.parser.symbols.ast.ThisSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.TypeableTerminal;
+import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
@@ -246,8 +247,11 @@ if(checkTypes){
         currentTypes.peek().add(typeableDeque.getLast());
     }
 
-    private void simpleVistorHelper(TypeableTerminal tt, String visitorType){
+    private void simpleVistorHelper(TypeableTerminal tt, String visitorType) throws UndeclaredException{
         APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(visitorType);
+        if (resolver == null) {
+            throw new UndeclaredException(visitorType, PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName));
+        }
         TypeSymbol type = new TypeSymbol(resolver.fullName, false, false);
         type.setTypeDclNode(resolver);
         tt.setType(type);
@@ -255,38 +259,38 @@ if(checkTypes){
     }
 
     @Override
-    public void visit(NullSymbol nullSymbol) {
+    public void visit(NullSymbol nullSymbol) throws UndeclaredException {
         simpleVistorHelper(nullSymbol, JoosNonTerminal.NULL);
     }
 
     @Override
-    public void visit(IntegerLiteralSymbol intSymbol) {
+    public void visit(IntegerLiteralSymbol intSymbol) throws UndeclaredException {
         simpleVistorHelper(intSymbol, JoosNonTerminal.INTEGER);
 
     }
 
     @Override
-    public void visit(CharacterLiteralSymbol characterSymbol) {
+    public void visit(CharacterLiteralSymbol characterSymbol) throws UndeclaredException {
         simpleVistorHelper(characterSymbol, JoosNonTerminal.CHAR);
     }
 
     @Override
-    public void visit(BooleanLiteralSymbol boolSymbol){
+    public void visit(BooleanLiteralSymbol boolSymbol) throws UndeclaredException{
         simpleVistorHelper(boolSymbol, JoosNonTerminal.BOOLEAN);
     }
 
     @Override
-    public void visit(StringLiteralSymbol stringSymbol){
+    public void visit(StringLiteralSymbol stringSymbol) throws UndeclaredException{
         simpleVistorHelper(stringSymbol, JoosNonTerminal.STRING);
     }
 
     @Override
-    public void visit(EmptyStatementSymbol emptySymbol){
+    public void visit(EmptyStatementSymbol emptySymbol) throws CompilerException{
         simpleVistorHelper(emptySymbol, JoosNonTerminal.VOID);
     }
 
     @Override
-    public void visit(ThisSymbol thisSymbol) {
+    public void visit(ThisSymbol thisSymbol) throws UndeclaredException {
         simpleVistorHelper(thisSymbol, enclosingClassName);
     }
 
@@ -527,42 +531,53 @@ if(checkTypes){
     }
 
     @Override
-    public void visit(LtExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
+    public void visit(LtExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
 if(checkTypes){
         bothIntHelper(JoosNonTerminal.BOOLEAN);
 }
     }
 
     @Override
-    public void visit(LeExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
+    public void visit(LeExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
 if(checkTypes){
         bothIntHelper(JoosNonTerminal.BOOLEAN);
 }
     }
 
     @Override
-    public void visit(SubtractExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
+    public void visit(AddExprSymbol op) throws BadOperandsTypeException, UndeclaredException {
+if(checkTypes){
+        if (isNumeric(currentTypes.peek().peek().getType(), false)){
+            bothIntHelper(JoosNonTerminal.INTEGER);
+        }else{
+            bothStringHelper(JoosNonTerminal.STRING);
+        }
+}
+    }
+
+    @Override
+    public void visit(SubtractExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
 if(checkTypes){
         bothIntHelper(JoosNonTerminal.INTEGER);
 }
     }
 
     @Override
-    public void visit(MultiplyExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
+    public void visit(MultiplyExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
 if(checkTypes){
         bothIntHelper(JoosNonTerminal.INTEGER);
 }
     }
 
     @Override
-    public void visit(DivideExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
+    public void visit(DivideExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
 if(checkTypes){
         bothIntHelper(JoosNonTerminal.INTEGER);
 }
     }
 
     @Override
-    public void visit(RemainderExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
+    public void visit(RemainderExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
 if(checkTypes){
         bothIntHelper(JoosNonTerminal.INTEGER);
 }
@@ -631,28 +646,45 @@ if(checkTypes){
     private void bothIntHelper(String returnType) throws BadOperandsTypeException, UndeclaredException{
         TypeSymbol second = currentTypes.peek().removeLast().getType();
         TypeSymbol first = currentTypes.peek().removeLast().getType();
-        APkgClassResolver intType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.INTEGER);
-
-        if(first.isArray || second.isArray){
-            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new BadOperandsTypeException(enclosingClassName, where, ArrayPkgClassResolver.getArrayName(first.value), currentMC.type.value);
-        }
-
-        if(first.isClass || second.isClass){
-            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new BadOperandsTypeException(enclosingClassName, where, "Class types", currentMC.type.value);
-        }
-
-        if(intType.getCastablility(first.getTypeDclNode()) == Castable.NOT_CASTABLE){
-            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new BadOperandsTypeException(enclosingClassName, where, first.value, currentMC.type.value);
-        }
-
-        if(intType.getCastablility(second.getTypeDclNode()) == Castable.NOT_CASTABLE){
-            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new BadOperandsTypeException(enclosingClassName, where, first.value, currentMC.type.value);
-        }
+        isNumeric(first, true);
+        isNumeric(second, true);
 
         currentTypes.peek().add(TypeSymbol.getPrimative(returnType));
+    }
+
+    private void bothStringHelper(String returnType) throws BadOperandsTypeException, UndeclaredException{
+        TypeSymbol second = currentTypes.peek().removeLast().getType();
+        TypeSymbol first = currentTypes.peek().removeLast().getType();
+        isCastable(first, JoosNonTerminal.STRING, true);
+        isCastable(second, JoosNonTerminal.STRING, true);
+
+        currentTypes.peek().add(TypeSymbol.getPrimative(returnType));
+    }
+
+    private boolean isNumeric(TypeSymbol type, boolean die)
+            throws UndeclaredException, BadOperandsTypeException {
+
+        return isCastable(type, JoosNonTerminal.INTEGER, die);
+    }
+
+    private boolean isCastable(TypeSymbol type, String to, boolean die)
+            throws UndeclaredException, BadOperandsTypeException {
+
+        if(type.isArray || type.isClass){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            if (die) throw new BadOperandsTypeException(enclosingClassName, where, ArrayPkgClassResolver.getArrayName(type.value), currentMC.type.value);
+            return false;
+        }
+
+        APkgClassResolver intType = PkgClassInfo.instance.getSymbol(to);
+        if (intType == null) {
+            throw new UndeclaredException(to, PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName));
+        }
+        if(intType.getCastablility(type.getTypeDclNode()) == Castable.NOT_CASTABLE){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            if (die) throw new BadOperandsTypeException(enclosingClassName, where, type.value, currentMC.type.value);
+            return false;
+        }
+        return true;
     }
 }
