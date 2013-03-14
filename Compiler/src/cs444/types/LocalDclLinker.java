@@ -547,7 +547,11 @@ if(checkTypes){
     @Override
     public void visit(AddExprSymbol op) throws BadOperandsTypeException, UndeclaredException {
 if(checkTypes){
-        bothIntHelper(JoosNonTerminal.INTEGER);
+        if (isNumeric(currentTypes.peek().peek().getType(), false)){
+            bothIntHelper(JoosNonTerminal.INTEGER);
+        }else{
+            bothStringHelper(JoosNonTerminal.STRING);
+        }
 }
     }
 
@@ -642,28 +646,45 @@ if(checkTypes){
     private void bothIntHelper(String returnType) throws BadOperandsTypeException, UndeclaredException{
         TypeSymbol second = currentTypes.peek().removeLast().getType();
         TypeSymbol first = currentTypes.peek().removeLast().getType();
-        APkgClassResolver intType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.INTEGER);
-
-        if(first.isArray || second.isArray){
-            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new BadOperandsTypeException(enclosingClassName, where, ArrayPkgClassResolver.getArrayName(first.value), currentMC.type.value);
-        }
-
-        if(first.isClass || second.isClass){
-            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new BadOperandsTypeException(enclosingClassName, where, "Class types", currentMC.type.value);
-        }
-
-        if(intType.getCastablility(first.getTypeDclNode()) == Castable.NOT_CASTABLE){
-            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new BadOperandsTypeException(enclosingClassName, where, first.value, currentMC.type.value);
-        }
-
-        if(intType.getCastablility(second.getTypeDclNode()) == Castable.NOT_CASTABLE){
-            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new BadOperandsTypeException(enclosingClassName, where, first.value, currentMC.type.value);
-        }
+        isNumeric(first, true);
+        isNumeric(second, true);
 
         currentTypes.peek().add(TypeSymbol.getPrimative(returnType));
+    }
+
+    private void bothStringHelper(String returnType) throws BadOperandsTypeException, UndeclaredException{
+        TypeSymbol second = currentTypes.peek().removeLast().getType();
+        TypeSymbol first = currentTypes.peek().removeLast().getType();
+        isCastable(first, JoosNonTerminal.STRING, true);
+        isCastable(second, JoosNonTerminal.STRING, true);
+
+        currentTypes.peek().add(TypeSymbol.getPrimative(returnType));
+    }
+
+    private boolean isNumeric(TypeSymbol type, boolean die)
+            throws UndeclaredException, BadOperandsTypeException {
+
+        return isCastable(type, JoosNonTerminal.INTEGER, die);
+    }
+
+    private boolean isCastable(TypeSymbol type, String to, boolean die)
+            throws UndeclaredException, BadOperandsTypeException {
+
+        if(type.isArray || type.isClass){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            if (die) throw new BadOperandsTypeException(enclosingClassName, where, ArrayPkgClassResolver.getArrayName(type.value), currentMC.type.value);
+            return false;
+        }
+
+        APkgClassResolver intType = PkgClassInfo.instance.getSymbol(to);
+        if (intType == null) {
+            throw new UndeclaredException(to, PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName));
+        }
+        if(intType.getCastablility(type.getTypeDclNode()) == Castable.NOT_CASTABLE){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            if (die) throw new BadOperandsTypeException(enclosingClassName, where, type.value, currentMC.type.value);
+            return false;
+        }
+        return true;
     }
 }
