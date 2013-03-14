@@ -22,6 +22,7 @@ import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
+import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
@@ -335,5 +336,10 @@ public class PrettyPrinter implements ISymbolVisitor {
     public void visit(EmptyStatementSymbol emptySymbol)
             throws CompilerException {
         print("<empty>");
+    }
+
+    @Override
+    public void visit(ArrayAccessExprSymbol arrayAccess) throws CompilerException {
+        print("Array access");
     }
 }

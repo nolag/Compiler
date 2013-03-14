@@ -40,8 +40,11 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
             MethodHeader header = new MethodHeader(name, ts, dcls);
             //ANonTerminal from, ANonTerminal body
             ConstructorSymbol cs = new ConstructorSymbol(header, null, null);
+            cs.resolver = this;
             constructors.put(generateUniqueName(cs, JoosNonTerminal.THIS), cs);
-        }catch (Exception e){ }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -22,6 +22,7 @@ import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
+import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
@@ -46,8 +47,8 @@ import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
 public interface ISymbolVisitor {
     void prepare(final MethodInvokeSymbol invode) throws CompilerException;
-    void prepare(FieldAccessSymbol fieldAccessSymbol);
-    void prepareCondition(Typeable condition);
+    void prepare(FieldAccessSymbol fieldAccessSymbol) throws CompilerException;
+    void prepareCondition(Typeable condition) throws CompilerException;
 
     void open(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException;
     void open(final DclSymbol dclSymbol) throws CompilerException;
@@ -104,6 +105,7 @@ public interface ISymbolVisitor {
     void visit(final StringLiteralSymbol stringSymbol) throws CompilerException;
     void visit(final CharacterLiteralSymbol characterSymbol) throws CompilerException;
     void visit(final EmptyStatementSymbol emptySymbol) throws CompilerException;
+    void visit(final ArrayAccessExprSymbol arrayAccess) throws CompilerException;
 
     void visit(final ISymbol symbol) throws CompilerException;
 }

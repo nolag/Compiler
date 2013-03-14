@@ -22,6 +22,7 @@ import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
+import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
@@ -164,7 +165,7 @@ public class EmptyVisitor implements ISymbolVisitor {
     public void prepareCondition(Typeable condition) { }
 
     @Override
-    public void open(WhileExprSymbol whileExprSymbol) { }
+    public void open(WhileExprSymbol whileExprSymbol) throws CompilerException { }
 
     @Override
     public void close(WhileExprSymbol whileExprSymbol) throws CompilerException { }
@@ -206,9 +207,11 @@ public class EmptyVisitor implements ISymbolVisitor {
     public void open(ReturnExprSymbol retSymbol) throws CompilerException { }
 
     @Override
-    public void prepare(FieldAccessSymbol fieldAccessSymbol) { }
+    public void prepare(FieldAccessSymbol fieldAccessSymbol) throws CompilerException { }
 
     @Override
-    public void visit(EmptyStatementSymbol emptySymbol)
-            throws CompilerException { }
+    public void visit(EmptyStatementSymbol emptySymbol) throws CompilerException { }
+
+    @Override
+    public void visit(ArrayAccessExprSymbol arrayAccess) throws CompilerException { }
 }

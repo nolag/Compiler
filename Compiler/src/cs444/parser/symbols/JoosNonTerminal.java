@@ -27,6 +27,7 @@ public class JoosNonTerminal extends NonTerminal{
 
     public static final String RETURN = "RETURNSTATEMENT";
     public static final String EMPTYSTATEMENT= "EMPTYSTATEMENT";
+    public static final String ARRAY_ACCESS = "ARRAYACCESS";
     public static final String NULL = "null";
     public static final String SUPER = "super";
     public static final String THIS = "this";

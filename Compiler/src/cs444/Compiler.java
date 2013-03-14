@@ -55,7 +55,7 @@ public class Compiler {
 
                 PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
 
-                //if (fileName.contains("Make")) parseTree.accept(new PrettyPrinter());
+                //if (fileName.contains("MethodCalls")) parseTree.accept(new PrettyPrinter());
             }
         }catch(Exception e){
             if (printErrors) e.printStackTrace();

@@ -60,6 +60,5 @@ public class TypeSymbol extends ATerminal implements Typeable{
         TypeSymbol newType = new TypeSymbol(value, false, isArray);
         newType.typeResolver = typeResolver;
         return newType;
-
     }
 }

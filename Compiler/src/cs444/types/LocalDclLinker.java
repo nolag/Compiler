@@ -29,6 +29,7 @@ import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.TypeableTerminal;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
+import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
@@ -50,6 +51,7 @@ import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
+import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.APkgClassResolver.Castable;
 import cs444.types.exceptions.BadOperandsTypeException;
 import cs444.types.exceptions.DuplicateDeclarationException;
@@ -580,7 +582,9 @@ if(checkTypes){
         useCurrentForLookup.pop();
         Deque<Typeable> currentSymbols = currentTypes.pop();
         APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(enclosingClassName);
-        resolver = resolver.getClass(create.getType().value, true);
+        TypeSymbol typeSymbol = create.getType();
+        resolver = resolver.getClass(typeSymbol.value, true);
+        if(typeSymbol.isArray) resolver = resolver.getArrayVersion();
 
         List<String> params = new LinkedList<String>();
 
@@ -600,6 +604,27 @@ if(checkTypes){
 
         resolver.getConstructor(params);
         currentTypes.peek().add(create);
+}
+    }
+
+    @Override
+    public void visit(ArrayAccessExprSymbol array) throws CompilerException{
+if(checkTypes){
+        TypeSymbol value = currentTypes.peek().removeLast().getType();
+        TypeSymbol in = currentTypes.peek().removeLast().getType();
+
+        if(in.isClass)
+            throw new UnsupportedException("Array access for calsses in " + currentMC.dclName + " " + enclosingClassName);
+
+        APkgClassResolver valueResolver = value.getTypeDclNode();
+        APkgClassResolver intResovler = TypeSymbol.getPrimative(JoosNonTerminal.INTEGER).getTypeDclNode();
+
+        if(valueResolver.getCastablility(intResovler) != Castable.UP_CAST || value.isClass || value.isArray)
+            throw new UnsupportedException("Array access with non int " + value.getType().value + " " + currentMC.dclName + " " + enclosingClassName);
+
+        TypeSymbol retType = new TypeSymbol(value.value, false, false);
+        retType.setTypeDclNode(in.getTypeDclNode().accessor());
+        currentTypes.peek().add(retType);
 }
     }
 
