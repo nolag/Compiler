@@ -23,6 +23,7 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String UNARY_EXPRESSION_NOT_PLUS_MINUS = "UNARYEXPRESSIONNOTPLUSMINUS";
 
     public static final String METHOD_INVOCATION = "METHODINVOCATION";
+    public static final String ASSIGNMENT = "ASSIGNMENT";
 
     public static final String RETURN = "RETURNSTATEMENT";
     public static final String EMPTYSTATEMENT= "EMPTYSTATEMENT";
@@ -85,6 +86,7 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add(RETURN);
         noCollapse.add(FOR_INIT);
         noCollapse.add(FOR_UPDATE);
+        noCollapse.add(ASSIGNMENT);
 
         specialNoDie.add("EMPTYSTATEMENT");
         specialNoDie.add(BLOCK);
@@ -119,7 +121,7 @@ public class JoosNonTerminal extends NonTerminal{
         binExpressions.add("CONDITIONALANDEXPRESSION");
         binExpressions.add("INCLUSIVEOREXPRESSION");
         binExpressions.add("CONDITIONALOREXPRESSION");
-        binExpressions.add("ANDEXPRESSION");
+        binExpressions.add("ASSIGNMENT");
 
         fors.add("FORSTATEMENT");
         fors.add("FORSTATEMENTNOSHORTIF");

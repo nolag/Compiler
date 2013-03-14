@@ -52,9 +52,9 @@ public class CastExpressionFactory extends ASTSymbolFactory{
 
         TypeSymbol type;
         if (castType instanceof NameSymbol){
-            type = new TypeSymbol(((NameSymbol) castType).value, isArray, false);
+            type = new TypeSymbol(((NameSymbol) castType).value, isArray, true);
         }else if (castType instanceof Terminal){
-            type = new TypeSymbol(((Terminal) castType).value, isArray, false);
+            type = new TypeSymbol(((Terminal) castType).value, isArray, true);
         }else{
             throw new UnsupportedException("Cast Expression has invalid cast type.");
         }

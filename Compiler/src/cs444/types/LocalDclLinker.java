@@ -366,8 +366,8 @@ if(checkTypes){
     }
 
     private void castOrAssign(boolean secondIsClass, boolean allowUpCast) throws IllegalCastAssignmentException, UndeclaredException {
-        TypeSymbol isType = currentTypes.peek().pop().getType();
-        TypeSymbol toType = currentTypes.peek().peek().getType();
+        TypeSymbol isType = currentTypes.peek().removeLast().getType();
+        TypeSymbol toType = currentTypes.peek().getLast().getType();
 
         Castable castType = toType.getTypeDclNode().getCastablility(isType.getTypeDclNode());
         if(castType == Castable.NOT_CASTABLE  || toType.isClass != secondIsClass || (castType == Castable.UP_CAST && !allowUpCast)){
@@ -382,6 +382,10 @@ if(checkTypes){
     public void visit(CastExpressionSymbol symbol) throws IllegalCastAssignmentException, UndeclaredException {
 if(checkTypes){
         castOrAssign(true, true);
+        //cast is to a class, make sure it's not a class after the cast
+        Deque<Typeable> currentDeque = currentTypes.peek();
+        TypeSymbol type = currentDeque.removeLast().getType();
+        currentDeque.push(type.getNonClassVersion());
 }
     }
 
@@ -413,6 +417,11 @@ if(checkTypes){
     }
 
     @Override
+    public void visit(TypeSymbol type){
+        currentTypes.peek().add(type);
+    }
+
+    @Override
     public void visit(AssignmentExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
 if(checkTypes){
         castOrAssign(false, false);
@@ -421,7 +430,8 @@ if(checkTypes){
 
     private void eqNeHelper() throws IllegalCastAssignmentException, UndeclaredException{
          castOrAssign(false, true);
-         currentTypes.peek().pop();
+         currentTypes.peek().removeLast();
+         currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN));
     }
 
     @Override
