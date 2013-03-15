@@ -352,7 +352,7 @@ public class LocalDclLinker extends EmptyVisitor {
 
     private void assertIsBoolean() throws UndeclaredException,
             IllegalCastAssignmentException {
-        TypeSymbol was = currentTypes.peek().peek().getType();
+        TypeSymbol was = currentTypes.peek().getLast().getType();
         APkgClassResolver booleanType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.BOOLEAN);
         if(booleanType.getCastablility(was.getTypeDclNode()) == Castable.NOT_CASTABLE){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
@@ -407,7 +407,7 @@ public class LocalDclLinker extends EmptyVisitor {
 
     @Override
     public void visit(NegOpExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
-        TypeSymbol was = currentTypes.peek().peek().getType();
+        TypeSymbol was = currentTypes.peek().getLast().getType();
         APkgClassResolver intType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.INTEGER);
         if(intType.getCastablility(was.getTypeDclNode()) == Castable.NOT_CASTABLE){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
@@ -511,7 +511,7 @@ public class LocalDclLinker extends EmptyVisitor {
 
     @Override
     public void visit(AddExprSymbol op) throws BadOperandsTypeException, UndeclaredException {
-        if (isNumeric(currentTypes.peek().peek().getType(), false)){
+        if (isNumeric(currentTypes.peek().getLast().getType(), false)){
             bothIntHelper(JoosNonTerminal.INTEGER);
         }else{
             currentTypes.peek().removeLast().getType(); // remove second
