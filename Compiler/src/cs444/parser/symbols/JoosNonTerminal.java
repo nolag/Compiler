@@ -136,10 +136,10 @@ public class JoosNonTerminal extends NonTerminal{
         ifs.add("IFTHENELSESTATEMENTNOSHORTIF");
 
         List<String> byteCharAssign = Arrays.asList(new String [] {"int", "short"});
-        List<String> shortAssign = Arrays.asList(new String [] {"int"});
+        List<String> assignToint = Arrays.asList(new String [] {"int"});
         defaultAssignables.put("byte", byteCharAssign);
-        defaultAssignables.put("char", byteCharAssign);
-        defaultAssignables.put("short", shortAssign);
+        defaultAssignables.put("char", assignToint);
+        defaultAssignables.put("short", assignToint);
 
         whiles.add("WHILESTATEMENT");
         whiles.add("WHILESTATEMENTNOSHORTIF");

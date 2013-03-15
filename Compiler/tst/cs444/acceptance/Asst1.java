@@ -21,13 +21,14 @@ public class Asst1 {
     }
 
     @Test
-    public void testMarmosetTestCases() throws IOException, InterruptedException {
+    public void testMarmosetValidCases() throws IOException, InterruptedException{
         String path = "JoosPrograms/MarmosetPrograms/a1/valid/";
-
         TestHelper.assertReturnCodeForFiles(path, 0,  true);
+    }
 
-        path = "JoosPrograms/MarmosetPrograms/a1/invalid/";
-
+    @Test
+    public void testMarmosetInvalidCases() throws IOException, InterruptedException {
+        String path = "JoosPrograms/MarmosetPrograms/a1/invalid/";
         TestHelper.assertReturnCodeForFiles(path, 42, false);
     }
 }
