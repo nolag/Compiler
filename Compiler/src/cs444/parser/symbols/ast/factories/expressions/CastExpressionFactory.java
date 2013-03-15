@@ -16,7 +16,7 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public class CastExpressionFactory extends ASTSymbolFactory{
 
-    private static final String CAST_EXPRESSION = "CastExpression";
+    private static final String CAST_EXPRESSION = "CASTEXPRESSION";
 
     private static final Set<String> validCastTypes= new HashSet<String>();
 
@@ -31,7 +31,7 @@ public class CastExpressionFactory extends ASTSymbolFactory{
 
     @Override
     protected ISymbol convert(ISymbol from) throws UnsupportedException, IllegalModifierException {
-        if(!from.getName().equalsIgnoreCase(CAST_EXPRESSION)){
+        if(!from.getName().equals(CAST_EXPRESSION)){
             return from;
         }
         ANonTerminal castExpr = (ANonTerminal) from;
@@ -62,6 +62,6 @@ public class CastExpressionFactory extends ASTSymbolFactory{
 
         ISymbol operandExpression = castExpr.children.get(1);
 
-        return new CastExpressionSymbol(CAST_EXPRESSION, type, operandExpression);
+        return new CastExpressionSymbol(type, operandExpression);
     }
 }

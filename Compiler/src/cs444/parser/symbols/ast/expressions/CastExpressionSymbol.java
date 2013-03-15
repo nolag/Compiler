@@ -6,12 +6,11 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 
 public class CastExpressionSymbol extends BaseExprSymbol{
-    public final TypeSymbol castExprType;
 
-    public CastExpressionSymbol(String value, TypeSymbol castExprType,
+    public CastExpressionSymbol(TypeSymbol castExprType,
                                 ISymbol operandExpression) {
         super("CastExpression");
-        this.castExprType = castExprType;
+        this.setType(castExprType);
         this.children.add(operandExpression);
     }
 
@@ -31,7 +30,7 @@ public class CastExpressionSymbol extends BaseExprSymbol{
 
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
-        castExprType.accept(visitor);
+        this.getType().accept(visitor);
         for (ISymbol child : children) {
             child.accept(visitor);
         }
