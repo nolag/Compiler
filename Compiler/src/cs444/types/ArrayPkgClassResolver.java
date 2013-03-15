@@ -42,9 +42,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         super(getArrayName(resolver.name), resolver.pkg, true);
         this.resolver = resolver;
         build(null, false, false);
-        for(String s : resolver.assignableTo){
-            assignableTo.add(getArrayName(s));
-        }
+        for(String s : resolver.assignableTo) assignableTo.add(getArrayName(s));
 
         PkgClassInfo.instance.symbolMap.put(fullName, this);
 
@@ -62,6 +60,8 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
             e.printStackTrace();
         }
         addLenght();
+
+        for(String s : JoosNonTerminal.arraysExtend) assignableTo.add(s);
     }
 
     @Override

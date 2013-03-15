@@ -3,6 +3,8 @@ package cs444.parser.symbols;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,6 +64,7 @@ public class JoosNonTerminal extends NonTerminal{
 
     public static final Set<String> nonPrimativeOperativeTypes = new HashSet<String>();
 
+    public static final List<String> arraysExtend = new LinkedList<String>();
 
     static{
         noCollapse.add("MODIFIERS");
@@ -152,6 +155,8 @@ public class JoosNonTerminal extends NonTerminal{
         whiles.add("WHILESTATEMENTNOSHORTIF");
 
         nonPrimativeOperativeTypes.add(STRING);
+        arraysExtend.add("java.lang.Cloneable");
+        arraysExtend.add("java.io.Serializable");
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {
