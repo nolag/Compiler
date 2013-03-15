@@ -561,11 +561,8 @@ public class LocalDclLinker extends EmptyVisitor {
         if(in.isClass)
             throw new UnsupportedException("Array access for calsses in " + currentMC.dclName + " " + enclosingClassName);
 
-        APkgClassResolver valueResolver = value.getTypeDclNode();
-        APkgClassResolver intResovler = TypeSymbol.getPrimative(JoosNonTerminal.INTEGER).getTypeDclNode();
-
-        if(valueResolver.getCastablility(intResovler) != Castable.UP_CAST || value.isClass || value.isArray)
-            throw new UnsupportedException("Array access with non int " + value.getType().value + " " + currentMC.dclName + " " + enclosingClassName);
+        if(!isNumeric(value, false))
+            throw new UnsupportedException("Array access with non numeric " + value.getType().value + " " + currentMC.dclName + " " + enclosingClassName);
 
         TypeSymbol retType = new TypeSymbol(value.value, false, false);
         retType.setTypeDclNode(in.getTypeDclNode().accessor());

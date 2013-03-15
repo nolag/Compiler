@@ -41,6 +41,7 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String CHAR = "char";
     public static final String INTEGER = "int";
     public static final String SHORT = "short";
+    public static final String BYTE = "byte";
 
     public static final String LENGTH = "length";
 

@@ -16,6 +16,8 @@ import cs444.parser.symbols.ast.MethodHeader;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.NameSymbol.Type;
 import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.exceptions.IllegalModifierException;
+import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.exceptions.UndeclaredException;
 
 public class ArrayPkgClassResolver extends APkgClassResolver {
@@ -47,21 +49,34 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         PkgClassInfo.instance.symbolMap.put(fullName, this);
 
         try{
-            List<DclSymbol> dcls = new LinkedList<DclSymbol>();
-            dcls.add(new DclSymbol("i", null, TypeSymbol.getPrimative(JoosNonTerminal.INTEGER), true));
             TypeSymbol ts = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
             NameSymbol name = new NameSymbol(JoosNonTerminal.THIS, Type.ID_SYMBOL);
-            MethodHeader header = new MethodHeader(name, ts, dcls);
-            //ANonTerminal from, ANonTerminal body
-            ConstructorSymbol cs = new ConstructorSymbol(header, null, null);
-            cs.resolver = this;
-            constructors.put(generateUniqueName(cs, JoosNonTerminal.THIS), cs);
+
+            String [] indexTypes = { JoosNonTerminal.INTEGER, JoosNonTerminal.CHAR, JoosNonTerminal.BYTE, JoosNonTerminal.SHORT };
+
+            for (String indType : indexTypes) {
+                addArrayConstructorFor(indType, ts, name);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
         addLenght();
 
         for(String s : JoosNonTerminal.arraysExtend) assignableTo.add(s);
+    }
+
+    private void addArrayConstructorFor(String indType, TypeSymbol ts,
+            NameSymbol name) throws IllegalModifierException,
+            UnsupportedException, UndeclaredException {
+        List<DclSymbol> dcls = new LinkedList<DclSymbol>();
+        dcls = new LinkedList<DclSymbol>();
+        dcls.add(new DclSymbol("i", null, TypeSymbol.getPrimative(indType), true));
+        MethodHeader header = new MethodHeader(name, ts, dcls);
+
+        //ANonTerminal from, ANonTerminal body
+        ConstructorSymbol cs = new ConstructorSymbol(header, null, null);
+        cs.resolver = this;
+        constructors.put(generateUniqueName(cs, JoosNonTerminal.THIS), cs);
     }
 
     @Override
