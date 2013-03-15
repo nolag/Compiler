@@ -55,7 +55,7 @@ public class Compiler {
 
                 PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
 
-                //if (fileName.contains("MethodCalls")) parseTree.accept(new PrettyPrinter());
+                if (fileName.contains("J1_ArrayAccess_Cast")) parseTree.accept(new cs444.ast.PrettyPrinter());
             }
         }catch(Exception e){
             if (printErrors) e.printStackTrace();
