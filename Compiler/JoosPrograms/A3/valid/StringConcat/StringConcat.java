@@ -3,6 +3,6 @@ public class StringConcat{
 
     public String doStuff(){
         String s = "b " + "c ";
-        return "a " + s + true;
+        return "a " + 1 + s + true;
     }
 }

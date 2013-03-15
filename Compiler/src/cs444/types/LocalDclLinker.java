@@ -505,11 +505,14 @@ public class LocalDclLinker extends EmptyVisitor {
 
     @Override
     public void visit(AddExprSymbol op) throws BadOperandsTypeException, UndeclaredException {
-        if (isNumeric(currentTypes.peek().getLast().getType(), false)){
-            bothIntHelper(JoosNonTerminal.INTEGER);
+        TypeSymbol second = currentTypes.peek().removeLast().getType();
+        TypeSymbol first = currentTypes.peek().removeLast().getType();
+
+        if (isNumeric(first, false)){
+            isNumeric(second, true);
+
+            currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.INTEGER));
         }else{
-            currentTypes.peek().removeLast().getType(); // remove second
-            TypeSymbol first = currentTypes.peek().removeLast().getType();
             isCastable(first, JoosNonTerminal.STRING, true);
 
             currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.STRING));
