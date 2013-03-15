@@ -11,6 +11,7 @@ import java.util.Set;
 import cs444.CompilerException;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
+import cs444.parser.symbols.ast.AModifiersOptSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
@@ -101,6 +102,8 @@ public abstract class APkgClassResolver {
         if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName)){
             getFrom = isStatic ? hsfieldMap : hfieldMap;
             retVal = getFrom.get(name);
+        }else{
+            verifyCanRead(retVal, pkgClass);
         }
 
         return retVal;
@@ -166,10 +169,14 @@ public abstract class APkgClassResolver {
 
         if(retVal == null) throw new UndeclaredException(uniqueName, fullName);
 
-        if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName))
-            throw new UndeclaredException(name, fullName);
+        verifyCanRead(retVal, pkgClass);
 
         return retVal;
+    }
+
+    private void verifyCanRead(AModifiersOptSymbol retVal, APkgClassResolver pkgClass) throws UndeclaredException{
+        if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName) && !pkgClass.pkg.equals(pkg))
+            throw new UndeclaredException(name, fullName);
     }
 
     public AMethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes) throws UndeclaredException {
