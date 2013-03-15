@@ -24,7 +24,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			// if (!fileName.equals("J1_implicitstringconcatenation.java")) continue;
+			//if (!fileName.equals("J1_ifThenElse.java")) continue;
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
 			    List<String> sourceFiles = getAllFiles(file, includeStdLib);
