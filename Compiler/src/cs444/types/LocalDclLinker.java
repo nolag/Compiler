@@ -120,10 +120,11 @@ public class LocalDclLinker extends EmptyVisitor {
         APkgClassResolver resolver = currentSymbols.isEmpty() ?
                 PkgClassInfo.instance.getSymbol(enclosingClassName) : currentSymbols.peekLast().getType().getTypeDclNode();
 
-        boolean isStatic = invoke.children.isEmpty() ? currentScope.isStatic : false;
+        boolean isStatic = invoke.lookupFirst == null ? currentScope.isStatic : false;
         if(invoke.lookupFirst != null){
             DclSymbol dcl = null;
-            if(invoke.children.size() <= 1) dcl = currentScope.find(invoke.lookupFirst);
+            //if(invoke.children.size() <= 1) dcl = currentScope.find(invoke.lookupFirst);
+            dcl = currentScope.find(invoke.lookupFirst);
             if(dcl == null){
                 List<DclSymbol> dcls = resolver.findDcl(invoke.lookupFirst, isStatic, resolver, currentSymbols.isEmpty());
                 dcl = dcls.get(dcls.size() - 1);
