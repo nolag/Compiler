@@ -186,7 +186,9 @@ public abstract class APkgClassResolver {
     public APkgClassResolver getArrayVersion(){
         APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(ArrayPkgClassResolver.getArrayName(fullName));
         if(resolver != null) return resolver;
-        return new ArrayPkgClassResolver(this);
+        resolver = new ArrayPkgClassResolver(this);
+        PkgClassInfo.instance.putSymbol(resolver);
+        return resolver;
     }
 
     protected abstract boolean isPrimative();

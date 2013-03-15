@@ -75,6 +75,10 @@ public class PkgClassInfo {
         return symbolMap.get(name);
     }
 
+    public void putSymbol(APkgClassResolver resolver){
+        symbolMap.put(resolver.fullName, resolver);
+    }
+
     public Collection<APkgClassResolver> getSymbols(){
         return symbolMap.values();
     }
