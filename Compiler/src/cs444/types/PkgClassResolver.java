@@ -281,7 +281,7 @@ public class PkgClassResolver extends APkgClassResolver {
 
             for(DclSymbol fieldSymbol : start.getFields()){
                 if(fieldMap.containsKey(fieldSymbol.dclName) || sfieldMap.containsKey(fieldSymbol.dclName))
-                    throw new UndeclaredException(fieldSymbol.dclName, start.dclName);
+                    throw new UndeclaredException(fieldSymbol.dclName, fullName);
 
                 fieldSymbol.type.setTypeDclNode(fieldSymbol.type.isArray ? getArrayVersion() : this);
                 final Map<String, DclSymbol> addTo = fieldSymbol.isStatic() ? sfieldMap : fieldMap;

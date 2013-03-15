@@ -133,15 +133,18 @@ public abstract class APkgClassResolver {
             pkgResolver = getClass(nameParts[0], false);
 
             //At least one must be a field
-            for(; pkgResolver == null && i < nameParts.length - 1; i++){
+            int maxSearch = allowClass ? nameParts.length : nameParts.length - 1;
+            for(; pkgResolver == null && i < maxSearch; i++){
                 sb.append("." + nameParts[i]);
                 pkgResolver = getClass(sb.toString(), false);
             }
-            if(pkgResolver != null) dcl = pkgResolver.getDcl(nameParts[i], true, this, false);
+            if(pkgResolver != null && i != nameParts.length) dcl = pkgResolver.getDcl(nameParts[i], true, this, false);
+            else if(pkgResolver != null) dcl = DclSymbol.getClassSymbol(pkgResolver.fullName, pkgResolver);
             i++;
         }
 
         if(pkgResolver == null) throw new UndeclaredException(name, fullName);
+        dclList.add(dcl);
 
         for(; i < nameParts.length; i++){
             if(dcl.type.isArray) pkgResolver = pkgResolver.getArrayVersion();
