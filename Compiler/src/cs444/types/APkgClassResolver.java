@@ -51,7 +51,7 @@ public abstract class APkgClassResolver {
         else fullName = pkg + "." + name;
         this.isFinal = isFinal;
         assignableTo.add(fullName);
-        if(!isPrimative()) assignableTo.add(OBJECT);
+        assignableTo.add(OBJECT);
 
         List<String> alsoAssignsTo = JoosNonTerminal.defaultAssignables.get(name);
         if(alsoAssignsTo != null){
