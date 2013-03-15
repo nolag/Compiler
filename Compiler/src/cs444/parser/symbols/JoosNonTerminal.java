@@ -40,6 +40,8 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String CHAR = "char";
     public static final String INTEGER = "int";
 
+    public static final String LENGTH = "length";
+
     public static final Map<String, List<String>> defaultAssignables = new HashMap<String, List<String>>();
 
     public static final Set<String> whiles = new HashSet<String>();

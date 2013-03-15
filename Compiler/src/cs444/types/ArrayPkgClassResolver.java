@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Set;
 
 import cs444.CompilerException;
+import cs444.lexer.Token;
+import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
+import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
@@ -17,9 +20,22 @@ import cs444.types.exceptions.UndeclaredException;
 
 public class ArrayPkgClassResolver extends APkgClassResolver {
     private final APkgClassResolver resolver;
+    private static DclSymbol length;
 
     public static String getArrayName(String name){
         return name + "[]";
+    }
+
+    private void addLenght(){
+        try {
+            if(length == null){
+                JoosNonTerminal mods = new JoosNonTerminal("Modifiers", new ISymbol [] { new Terminal(new Token(Token.Type.PUBLIC, "public"))});
+                length = new DclSymbol(JoosNonTerminal.LENGTH, mods, TypeSymbol.getPrimative(JoosNonTerminal.INTEGER), false);
+            }
+            fieldMap.put(JoosNonTerminal.LENGTH, length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public ArrayPkgClassResolver(APkgClassResolver resolver) {
@@ -45,6 +61,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         }catch (Exception e){
             e.printStackTrace();
         }
+        addLenght();
     }
 
     @Override
