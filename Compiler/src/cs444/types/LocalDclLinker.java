@@ -160,7 +160,6 @@ public class LocalDclLinker extends EmptyVisitor {
                 throw new UndeclaredException("Class arguments", APkgClassResolver.generateUniqueName(currentMC, currentMC.dclName));
 
             String name = type.getTypeDclNode().fullName;
-            //if(type.isArray) name = ArrayPkgClassResolver.getArrayName(name);
             params.add(name);
         }
 
@@ -438,8 +437,8 @@ public class LocalDclLinker extends EmptyVisitor {
         Castable castType = toType.getTypeDclNode().getCastablility(isType.getTypeDclNode());
         if(castType == Castable.NOT_CASTABLE  || toType.isClass != secondIsClass || (castType == Castable.DOWN_CAST && !allowDownCast)){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            String name1 = isType.isArray ? ArrayPkgClassResolver.getArrayName(isType.value) : isType.value;
-            String name2 = toType.isArray ? ArrayPkgClassResolver.getArrayName(toType.value) : toType.value;
+            String name1 = isType.getTypeDclNode().fullName;
+            String name2 = toType.getTypeDclNode().fullName;
             throw new IllegalCastAssignmentException(enclosingClassName, where, name1, name2);
         }
     }
@@ -563,7 +562,6 @@ public class LocalDclLinker extends EmptyVisitor {
                 throw new UndeclaredException("Class arguments", APkgClassResolver.generateUniqueName(currentMC, currentMC.dclName));
 
             String name = type.getTypeDclNode().fullName;
-            //if(type.isArray) name = ArrayPkgClassResolver.getArrayName(name);
             params.add(name);
         }
 

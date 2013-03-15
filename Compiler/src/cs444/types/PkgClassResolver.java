@@ -30,7 +30,7 @@ import cs444.types.exceptions.UndeclaredException;
 import cs444.types.exceptions.UnimplementedException;
 
 public class PkgClassResolver extends APkgClassResolver {
-    protected final AInterfaceOrClassSymbol start;
+    protected  AInterfaceOrClassSymbol start;
     private final Map<String, PkgClassResolver> samepkgMap = new HashMap<String, PkgClassResolver>();
     private final Map<String, PkgClassResolver> staredMap = new HashMap<String, PkgClassResolver>();
     private final Set<String> imported = new HashSet<String>();
@@ -235,8 +235,6 @@ public class PkgClassResolver extends APkgClassResolver {
         if(mustBeInterface && start.isClass()) throw new UnsupportedException("Interface extending a class");
         if(mustBeClass && !start.isClass()) throw new UnsupportedException("Class extending interface");
 
-        Set<PkgClassResolver> notImpls = new HashSet<PkgClassResolver>(visited);
-
         visited.add(this);
 
         if(!isBuilt){
@@ -276,7 +274,9 @@ public class PkgClassResolver extends APkgClassResolver {
 
                 final Map<String, AMethodSymbol> addTo = methodSymbol.isStatic() ? smethodMap : methodMap;
                 addTo.put(uniqueName, methodSymbol);
-                methodSymbol.type.setTypeDclNode(findClass(methodSymbol.type.value));
+                APkgClassResolver mresolver = findClass(methodSymbol.type.value);
+                if(methodSymbol.type.isArray) mresolver = mresolver.getArrayVersion();
+                methodSymbol.type.setTypeDclNode(mresolver);
             }
 
             for(DclSymbol fieldSymbol : start.getFields()){
@@ -286,7 +286,9 @@ public class PkgClassResolver extends APkgClassResolver {
                 fieldSymbol.type.setTypeDclNode(fieldSymbol.type.isArray ? getArrayVersion() : this);
                 final Map<String, DclSymbol> addTo = fieldSymbol.isStatic() ? sfieldMap : fieldMap;
                 addTo.put(fieldSymbol.dclName, fieldSymbol);
-                fieldSymbol.type.setTypeDclNode(findClass(fieldSymbol.type.value));
+                APkgClassResolver fresolver = findClass(fieldSymbol.type.value);
+                if(fieldSymbol.type.isArray) fresolver = fresolver.getArrayVersion();
+                fieldSymbol.type.setTypeDclNode(fresolver);
             }
 
             for(ConstructorSymbol constructorSymbol : start.getConstructors()){
@@ -351,9 +353,6 @@ public class PkgClassResolver extends APkgClassResolver {
 
             for(Set<PkgClassResolver> pkgSet : resolvedSets) visited.addAll(pkgSet);
 
-            for(PkgClassResolver resolver : visited) assignableTo.add(resolver.fullName);
-            for(PkgClassResolver resolver : notImpls) assignableTo.remove(resolver.fullName);
-
             start.accept(new TypeResolverVisitor(this));
             isBuilt = true;
         }else{
@@ -385,6 +384,6 @@ public class PkgClassResolver extends APkgClassResolver {
 
     @Override
     protected boolean isPrimative() {
-        return start == null;
+        return JoosNonTerminal.primativeNumbers.contains(fullName) || JoosNonTerminal.otherPrimatives.contains(fullName);
     }
 }

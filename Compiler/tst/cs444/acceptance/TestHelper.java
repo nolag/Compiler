@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -94,6 +95,7 @@ public class TestHelper {
 			}
 		}
 
+		Collections.sort(result, Collections.reverseOrder());
 		return result;
 	}
 
