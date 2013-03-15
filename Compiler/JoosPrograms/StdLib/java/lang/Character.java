@@ -6,4 +6,7 @@ public final class Character {
     }
     public Character() {
     }
+    public String toString() {
+        return String.valueOf(value);
+    }
 }

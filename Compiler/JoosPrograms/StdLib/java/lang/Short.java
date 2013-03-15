@@ -9,4 +9,7 @@ public final class Short extends Number {
     }
     public Short() {
     }
+    public String toString() {
+        return String.valueOf(value);
+    }
 }

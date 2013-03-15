@@ -79,7 +79,6 @@ public class String {
     public boolean equals(Object o) {
         if(o == null) return false;
         if(!(o instanceof String)) return false;
-        return Arrays.equals(chars, chars);
         return Arrays.equals(chars, ((String)o).chars);
     }
     public String substring(int i, int j) {

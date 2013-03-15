@@ -1,10 +1,10 @@
 package java.lang;
-public final class Byte {
-    public byte value;
-    public Byte(byte i) {
+public final class Boolean {
+    public boolean value;
+    public Boolean(boolean i) {
         value = i;
     }
-    public Byte() {
+    public Boolean() {
     }
     public String toString() {
         return String.valueOf(value);
