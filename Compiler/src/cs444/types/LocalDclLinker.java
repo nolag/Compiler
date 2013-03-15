@@ -299,51 +299,33 @@ public class LocalDclLinker extends EmptyVisitor {
         simpleVistorHelper(superSymbol, resolver.getSuperName());
     }
 
-    public void bothBooleanHelper() throws IllegalCastAssignmentException, UndeclaredException{
+    public void bothBooleanHelper() throws UndeclaredException, BadOperandsTypeException{
         TypeSymbol second = currentTypes.peek().removeLast().getType();
         TypeSymbol first = currentTypes.peek().removeLast().getType();
-        APkgClassResolver booleanType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.BOOLEAN);
 
-        if(first.isArray || second.isArray){
-            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new IllegalCastAssignmentException(enclosingClassName, where, ArrayPkgClassResolver.getArrayName(first.value), currentMC.type.value);
-        }
-
-        if(first.isClass || second.isClass){
-            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new IllegalCastAssignmentException(enclosingClassName, where, "Class types", currentMC.type.value);
-        }
-
-        if(booleanType.getCastablility(first.getTypeDclNode()) == Castable.NOT_CASTABLE){
-            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new IllegalCastAssignmentException(enclosingClassName, where, first.value, currentMC.type.value);
-        }
-
-        if(booleanType.getCastablility(second.getTypeDclNode()) == Castable.NOT_CASTABLE){
-            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            throw new IllegalCastAssignmentException(enclosingClassName, where, first.value, currentMC.type.value);
-        }
+        assertIsBoolean(first);
+        assertIsBoolean(second);
 
         currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN));
     }
 
     @Override
-    public void visit(AndExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
+    public void visit(AndExprSymbol op) throws UndeclaredException, BadOperandsTypeException {
         bothBooleanHelper();
     }
 
     @Override
-    public void visit(OrExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
+    public void visit(OrExprSymbol op) throws BadOperandsTypeException, UndeclaredException {
         bothBooleanHelper();
     }
 
     @Override
-    public void visit(EAndExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
+    public void visit(EAndExprSymbol op) throws BadOperandsTypeException, UndeclaredException {
         bothBooleanHelper();
     }
 
     @Override
-    public void visit(EOrExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
+    public void visit(EOrExprSymbol op) throws BadOperandsTypeException, UndeclaredException {
         bothBooleanHelper();
     }
 
