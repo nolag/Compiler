@@ -24,7 +24,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("J1_ShortCharInit2.java")) continue;
+			// if (!fileName.equals("Je_6_BinopExp_LogicalBitwise.java")) continue;
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
 			    List<String> sourceFiles = getAllFiles(file, includeStdLib);
@@ -93,7 +93,6 @@ public class TestHelper {
 			}
 		}
 
-		Collections.sort(result, Collections.reverseOrder());
 		return result;
 	}
 
@@ -102,10 +101,9 @@ public class TestHelper {
 		if(filesSkipped > 0) System.out.println("Number of files skipped: " + filesSkipped);
 		if (failFiles.size() != 0){
 		    System.out.println("Failed " + failFiles.size());
-		    /*TODO uncomment System.out.println("Unexpected return code compiling these files: ");
 			for (String fileName: failFiles) {
 				System.out.println("\t" + fileName);
-			}*/
+			}
 		}
 	}
 
