@@ -53,10 +53,8 @@ public abstract class APkgClassResolver {
         assignableTo.add(fullName);
         assignableTo.add(OBJECT);
 
-        List<String> alsoAssignsTo = JoosNonTerminal.defaultAssignables.get(name);
-        if(alsoAssignsTo != null){
-            assignableTo.addAll(alsoAssignsTo);
-        }
+        Set<String> alsoAssignsTo = JoosNonTerminal.defaultAssignables.get(name);
+        if(alsoAssignsTo != null) assignableTo.addAll(alsoAssignsTo);
     }
 
     protected static String generateUniqueName(String name, Iterable<String> types) {
@@ -200,9 +198,12 @@ public abstract class APkgClassResolver {
         if(other == this) return Castable.UP_CAST;
 
         //everyone can return null, but
-        if(other == TypeSymbol.getPrimative(JoosNonTerminal.NULL).getTypeDclNode() && !isPrimative()){
+        if(other == TypeSymbol.getPrimative(JoosNonTerminal.NULL).getTypeDclNode() && !isPrimative())
             return Castable.UP_CAST;
-        }
+
+        Set<String> special = JoosNonTerminal.specialAssignables.get(fullName);
+        if(special != null && special.contains(other.fullName))
+            return Castable.DOWN_CAST;
 
         if(assignableTo.contains(other.fullName)) return Castable.DOWN_CAST;
         if(other.assignableTo.contains(fullName)) return Castable.UP_CAST;

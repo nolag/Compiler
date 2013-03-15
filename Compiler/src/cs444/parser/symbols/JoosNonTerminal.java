@@ -3,7 +3,6 @@ package cs444.parser.symbols;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,10 +38,12 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String STRING = "java.lang.String";
     public static final String CHAR = "char";
     public static final String INTEGER = "int";
+    public static final String SHORT = "short";
 
     public static final String LENGTH = "length";
 
-    public static final Map<String, List<String>> defaultAssignables = new HashMap<String, List<String>>();
+    public static final Map<String, Set<String>> defaultAssignables = new HashMap<String, Set<String>>();
+    public static final Map<String, Set<String>> specialAssignables = new HashMap<String, Set<String>>();
 
     public static final Set<String> whiles = new HashSet<String>();
     public static final Set<String> notAllowedForInstanceOfLHS = new HashSet<String>();
@@ -135,11 +136,16 @@ public class JoosNonTerminal extends NonTerminal{
         ifs.add("IFTHENELSESTATEMENT");
         ifs.add("IFTHENELSESTATEMENTNOSHORTIF");
 
-        List<String> byteCharAssign = Arrays.asList(new String [] {"int", "short"});
-        List<String> assignToint = Arrays.asList(new String [] {"int"});
+        Set<String> byteCharAssign = new HashSet<String>(Arrays.asList(new String [] {INTEGER, SHORT}));
+        Set<String> assignToint = new HashSet<String>(Arrays.asList(new String [] {INTEGER}));
         defaultAssignables.put("byte", byteCharAssign);
         defaultAssignables.put("char", assignToint);
         defaultAssignables.put("short", assignToint);
+
+        Set<String> alsoToShort = new HashSet<String>(Arrays.asList(new String [] {CHAR}));
+        Set<String> alsoToChar = new HashSet<String>(Arrays.asList(new String [] {SHORT}));
+        specialAssignables.put(SHORT, alsoToShort);
+        specialAssignables.put(CHAR, alsoToChar);
 
         whiles.add("WHILESTATEMENT");
         whiles.add("WHILESTATEMENTNOSHORTIF");

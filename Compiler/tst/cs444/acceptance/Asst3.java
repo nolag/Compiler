@@ -2,7 +2,6 @@ package cs444.acceptance;
 
 import java.io.IOException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import cs444.types.PkgClassInfo;
