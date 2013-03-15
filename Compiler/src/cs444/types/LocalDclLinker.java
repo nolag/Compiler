@@ -548,8 +548,7 @@ public class LocalDclLinker extends EmptyVisitor {
             params.add(name);
         }
 
-
-        resolver.getConstructor(params);
+        resolver.getConstructor(params, PkgClassInfo.instance.getSymbol(enclosingClassName));
         currentTypes.peek().add(create);
     }
 
