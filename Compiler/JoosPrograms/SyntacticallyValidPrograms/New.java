@@ -3,6 +3,6 @@ public class New {
 
     public New m2() {
         String[] s = new String[10];
-        return new New(1, 2, "a");
+        return new New(1, 2, 'a');
     }
 }

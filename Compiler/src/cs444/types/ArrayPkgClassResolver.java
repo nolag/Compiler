@@ -39,7 +39,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     public ArrayPkgClassResolver(APkgClassResolver resolver) {
-        super(getArrayName(resolver.fullName), resolver.pkg, true);
+        super(getArrayName(resolver.name), resolver.pkg, true);
         this.resolver = resolver;
         build(null, false, false);
         for(String s : resolver.assignableTo){
