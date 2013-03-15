@@ -210,7 +210,8 @@ public class PrettyPrinter implements ISymbolVisitor {
 
     @Override
     public void visit(CastExpressionSymbol symbol) {
-        System.out.printf("%" + (2*level + 4) + "s\n", "CAST");
+        System.out.printf("%" + (2*level + 4) + "s", "CAST");
+        System.out.printf(" Type: " + symbol.getType().value + "\n");
     }
 
     @Override

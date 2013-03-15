@@ -14,7 +14,6 @@ public class Asst3 {
         TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a3/valid/", 0, true);
     }
 
-    @Ignore("Implementation not working yet")
     @Test
     public void testMarmosetInvalidTestCases() throws IOException, InterruptedException{
         TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a3/invalid/", 42,  false);
