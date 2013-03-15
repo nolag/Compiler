@@ -377,7 +377,16 @@ public class LocalDclLinker extends EmptyVisitor {
     private void assertIfWhileCondIsBoolean() throws UndeclaredException,
             BadOperandsTypeException {
         TypeSymbol was = currentTypes.peek().peek().getType();
-        isCastable(was, JoosNonTerminal.BOOLEAN, true);
+
+        if(was.isArray || was.isClass){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            throw new BadOperandsTypeException(enclosingClassName, where, ArrayPkgClassResolver.getArrayName(was.value), currentMC.type.value);
+        }
+
+        if(!was.value.equals(JoosNonTerminal.BOOLEAN)){
+            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+            throw new BadOperandsTypeException(enclosingClassName, where, was.value, currentMC.type.value);
+        }
     }
 
     @Override
@@ -511,8 +520,8 @@ public class LocalDclLinker extends EmptyVisitor {
         TypeSymbol second = currentTypes.peek().removeLast().getType();
         TypeSymbol first = currentTypes.peek().removeLast().getType();
 
-        if ((isCastable(first, JoosNonTerminal.STRING, false) && second.value != JoosNonTerminal.VOID)
-                || (isCastable(second, JoosNonTerminal.STRING, false) && first.value != JoosNonTerminal.VOID)){
+        if ((isCastable(first, JoosNonTerminal.STRING, false) && !second.value.equals(JoosNonTerminal.VOID))
+                || (isCastable(second, JoosNonTerminal.STRING, false) && !first.value.equals(JoosNonTerminal.VOID))){
             currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.STRING));
         }else{
             isNumeric(first, true);
