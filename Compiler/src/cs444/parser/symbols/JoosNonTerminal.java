@@ -151,6 +151,7 @@ public class JoosNonTerminal extends NonTerminal{
         Set<String> alsoToChar = new HashSet<String>(Arrays.asList(new String [] {SHORT}));
         specialAssignables.put(SHORT, alsoToShort);
         specialAssignables.put(CHAR, alsoToChar);
+        specialAssignables.put(BYTE, alsoToShort);
 
         whiles.add("WHILESTATEMENT");
         whiles.add("WHILESTATEMENTNOSHORTIF");
