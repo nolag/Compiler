@@ -346,19 +346,8 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void visit(NotOpExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
-        assertIsBoolean();
-    }
-
-    private void assertIsBoolean() throws UndeclaredException,
-            IllegalCastAssignmentException {
-        TypeSymbol was = currentTypes.peek().getLast().getType();
-        APkgClassResolver booleanType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.BOOLEAN);
-        if(booleanType.getCastablility(was.getTypeDclNode()) == Castable.NOT_CASTABLE){
-            String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            String name1 = was.isArray ? ArrayPkgClassResolver.getArrayName(was.value) : was.value;
-            throw new IllegalCastAssignmentException(enclosingClassName, where, name1, "boolean");
-        }
+    public void visit(NotOpExprSymbol op) throws BadOperandsTypeException, UndeclaredException {
+        assertLastIsBoolean();
     }
 
     @Override
@@ -367,8 +356,8 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void close(IfExprSymbol expr) throws UndeclaredException, IllegalCastAssignmentException{
-        assertIsBoolean();
+    public void close(IfExprSymbol expr) throws BadOperandsTypeException, UndeclaredException{
+        assertIfWhileCondIsBoolean();
         currentTypes.pop();
     }
 
@@ -378,9 +367,15 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void close(WhileExprSymbol expr) throws UndeclaredException, IllegalCastAssignmentException{
-        assertIsBoolean();
+    public void close(WhileExprSymbol expr) throws UndeclaredException, BadOperandsTypeException{
+        assertIfWhileCondIsBoolean();
         currentTypes.pop();
+    }
+
+    private void assertIfWhileCondIsBoolean() throws UndeclaredException,
+            BadOperandsTypeException {
+        TypeSymbol was = currentTypes.peek().peek().getType();
+        isCastable(was, JoosNonTerminal.BOOLEAN, true);
     }
 
     @Override
@@ -396,7 +391,7 @@ public class LocalDclLinker extends EmptyVisitor {
 
     @Override
     public void afterCondition(ForExprSymbol forExprSymbol)throws CompilerException {
-        assertIsBoolean();
+        assertLastIsBoolean();
     }
 
     @Override
@@ -611,6 +606,12 @@ public class LocalDclLinker extends EmptyVisitor {
         return isCastable(type, JoosNonTerminal.INTEGER, die);
     }
 
+    private void assertLastIsBoolean() throws UndeclaredException,
+      BadOperandsTypeException {
+        TypeSymbol was = currentTypes.peek().getLast().getType();
+        isCastable(was, JoosNonTerminal.BOOLEAN, true);
+    }
+
     private boolean isCastable(TypeSymbol type, String to, boolean die)
             throws UndeclaredException, BadOperandsTypeException {
 
@@ -620,11 +621,11 @@ public class LocalDclLinker extends EmptyVisitor {
             return false;
         }
 
-        APkgClassResolver intType = PkgClassInfo.instance.getSymbol(to);
-        if (intType == null) {
+        APkgClassResolver typeResolver = PkgClassInfo.instance.getSymbol(to);
+        if (typeResolver == null) {
             throw new UndeclaredException(to, PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName));
         }
-        if(intType.getCastablility(type.getTypeDclNode()) == Castable.NOT_CASTABLE){
+        if(typeResolver.getCastablility(type.getTypeDclNode()) == Castable.NOT_CASTABLE){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
             if (die) throw new BadOperandsTypeException(enclosingClassName, where, type.value, currentMC.type.value);
             return false;
