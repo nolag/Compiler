@@ -128,6 +128,7 @@ public class JoosNonTerminal extends NonTerminal{
         binExpressions.add("INCLUSIVEOREXPRESSION");
         binExpressions.add("CONDITIONALOREXPRESSION");
         binExpressions.add("ASSIGNMENT");
+        binExpressions.add("ANDEXPRESSION");
 
         fors.add("FORSTATEMENT");
         fors.add("FORSTATEMENTNOSHORTIF");
