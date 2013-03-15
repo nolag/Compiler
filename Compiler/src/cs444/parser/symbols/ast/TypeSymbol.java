@@ -57,7 +57,7 @@ public class TypeSymbol extends ATerminal implements Typeable{
     }
 
     public TypeSymbol getNonClassVersion(){
-        TypeSymbol newType = new TypeSymbol(value, false, isArray);
+        TypeSymbol newType = new TypeSymbol(value, isArray, false);
         newType.typeResolver = typeResolver;
         return newType;
     }

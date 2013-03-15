@@ -559,7 +559,7 @@ public class LocalDclLinker extends EmptyVisitor {
         TypeSymbol in = currentTypes.peek().removeLast().getType();
 
         if(in.isClass)
-            throw new UnsupportedException("Array access for calsses in " + currentMC.dclName + " " + enclosingClassName);
+            throw new UnsupportedException("Array access for classes in " + currentMC.dclName + " " + enclosingClassName);
 
         if(!isNumeric(value, false))
             throw new UnsupportedException("Array access with non numeric " + value.getType().value + " " + currentMC.dclName + " " + enclosingClassName);
