@@ -225,7 +225,7 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void prepare(MethodInvokeSymbol invoke) {
         currentTypes.push(new ArrayDeque<Typeable>());
-        useCurrentForLookup.push(true);
+        useCurrentForLookup.push(false);
     }
 
     @Override
