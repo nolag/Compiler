@@ -24,7 +24,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("ArrayAccess")) continue;
+			// if (!fileName.equals("J1_implicitstringconcatenation.java")) continue;
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
 			    List<String> sourceFiles = getAllFiles(file, includeStdLib);
@@ -33,11 +33,10 @@ public class TestHelper {
 				for (int i = 0; i < array.length; i++)
 					array[i] = sourceFiles.get(i);
 
-				//TODO uncomment
 				if (compileAndTest(array, printErrors) == expectedReturnCode) {
-					//System.out.print(".");
+					System.out.print(".");
 				}else{
-					//System.out.print("F");
+					System.out.print("F");
 					failFiles.add(path + fileName);
 				}
 				totalTests++;
@@ -48,11 +47,10 @@ public class TestHelper {
 				for (int i = 0; i < array.length; i++)
 					array[i] = sourceFiles.get(i);
 
-				//TODO uncomment
 				if (compileAndTest(array, printErrors) == expectedReturnCode) {
-					//System.out.print(".");
+					System.out.print(".");
 				} else {
-					//System.out.print("F");
+					System.out.print("F");
 					failFiles.add(path + fileName);
 				}
 				totalTests++;
