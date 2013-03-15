@@ -60,7 +60,7 @@ public class CastExpressionFactory extends ASTSymbolFactory{
         }
 
 
-        ISymbol operandExpression = castExpr.children.get(1);
+        ISymbol operandExpression = castExpr.children.get(castExpr.children.size() - 1);
 
         return new CastExpressionSymbol(type, operandExpression);
     }
