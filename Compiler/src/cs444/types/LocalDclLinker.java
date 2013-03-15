@@ -511,7 +511,8 @@ public class LocalDclLinker extends EmptyVisitor {
         TypeSymbol second = currentTypes.peek().removeLast().getType();
         TypeSymbol first = currentTypes.peek().removeLast().getType();
 
-        if (isCastable(first, JoosNonTerminal.STRING, false) || isCastable(second, JoosNonTerminal.STRING, false)){
+        if ((isCastable(first, JoosNonTerminal.STRING, false) && second.value != JoosNonTerminal.VOID)
+                || (isCastable(second, JoosNonTerminal.STRING, false) && first.value != JoosNonTerminal.VOID)){
             currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.STRING));
         }else{
             isNumeric(first, true);
