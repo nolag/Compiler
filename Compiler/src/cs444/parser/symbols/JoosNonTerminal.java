@@ -12,6 +12,8 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 
 public class JoosNonTerminal extends NonTerminal{
+    public static final String ARRAY_TYPE = "ARRAYTYPE";
+    public static final String TYPE = "TYPE";
     public static final String IF_THEN_STATEMENT = "IFTHENSTATEMENT";
     public static final String FOR_UPDATE = "FORUPDATE";
     public static final String FOR_INIT = "FORINIT";
@@ -73,8 +75,8 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add("INTERFACETYPELIST");
         noCollapse.add("CLASSTYPE");
         noCollapse.add("TYPEDECLARATION");
-        noCollapse.add("TYPE");
-        noCollapse.add("ARRAYTYPE");
+        noCollapse.add(TYPE);
+        noCollapse.add(ARRAY_TYPE);
         noCollapse.add("VARIABLEINITIALIZER");
         noCollapse.add("VARIABLEDECLARATOR");
         noCollapse.add("CONSTRUCTORDECLARATION");
