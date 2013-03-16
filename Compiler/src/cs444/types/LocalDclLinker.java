@@ -440,7 +440,8 @@ public class LocalDclLinker extends EmptyVisitor {
         if(!returnSymbol.children.isEmpty()) currentType = currentTypes.peek().getLast().getType();
         else currentType = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
         returnSymbol.setType(currentType);
-        if(currentMC.type.getTypeDclNode().getCastablility(currentType.getTypeDclNode()) != Castable.UP_CAST  || currentType.isClass){
+        if(currentMC.type.getTypeDclNode().getCastablility(currentType.getTypeDclNode()) != Castable.UP_CAST  || currentType.isClass
+                || (currentMC.type.value == JoosNonTerminal.VOID && !returnSymbol.children.isEmpty())){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
 
             String name1 = currentType.isArray ? ArrayPkgClassResolver.getArrayName(currentType.value) : currentType.value;
