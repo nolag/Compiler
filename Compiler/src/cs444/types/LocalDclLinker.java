@@ -422,7 +422,8 @@ public class LocalDclLinker extends EmptyVisitor {
         TypeSymbol toType = currentTypes.peek().getLast().getType();
 
         Castable castType = toType.getTypeDclNode().getCastablility(isType.getTypeDclNode());
-        if(castType == Castable.NOT_CASTABLE  || toType.isClass != secondIsClass || (castType == Castable.DOWN_CAST && !allowDownCast)){
+        if(castType == Castable.NOT_CASTABLE  || toType.isClass != secondIsClass || (castType == Castable.DOWN_CAST && !allowDownCast)
+                || isType.value.equals(JoosNonTerminal.VOID) || toType.value.equals(JoosNonTerminal.VOID)){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
             String name1 = isType.getTypeDclNode().fullName;
             String name2 = toType.getTypeDclNode().fullName;
