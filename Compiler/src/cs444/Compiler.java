@@ -55,7 +55,7 @@ public class Compiler {
 
                 PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
 
-                //if (fileName.contains("J1_ArrayAccess_Cast")) parseTree.accept(new cs444.ast.PrettyPrinter());
+                if (fileName.contains("Je_6_ProtectedAccess_InstanceField_NoRelation_External")) parseTree.accept(new cs444.ast.PrettyPrinter());
             }
         }catch(Exception e){
             if (printErrors) e.printStackTrace();

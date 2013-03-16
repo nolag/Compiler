@@ -313,7 +313,7 @@ public class PkgClassResolver extends APkgClassResolver {
             if(start.superName != null){
                 building = (PkgClassResolver)findClass(start.superName);
                 copyInfo(building, visited, resolvedSets, false, true);
-                assignableTo.addAll(building.assignableTo);
+                assignableTo.add(building.fullName);
             }else{
                 verifyObject();
             }
@@ -347,7 +347,7 @@ public class PkgClassResolver extends APkgClassResolver {
                     }
                 }
 
-                assignableTo.addAll(building.assignableTo);
+                assignableTo.add(building.fullName);
                 alreadyImps.add(building.fullName);
             }
 

@@ -126,7 +126,7 @@ public class LocalDclLinker extends EmptyVisitor {
             //if(invoke.children.size() <= 1) dcl = currentScope.find(invoke.lookupFirst);
             dcl = currentScope.find(invoke.lookupFirst);
             if(dcl == null){
-                List<DclSymbol> dcls = resolver.findDcl(invoke.lookupFirst, isStatic, resolver, currentSymbols.isEmpty());
+                List<DclSymbol> dcls = resolver.findDcl(invoke.lookupFirst, isStatic, currentSymbols.isEmpty());
                 dcl = dcls.get(dcls.size() - 1);
             }
             currentSymbols.add(dcl);
@@ -196,7 +196,8 @@ public class LocalDclLinker extends EmptyVisitor {
 
             }else{
                 APkgClassResolver resolver = dclNode.type.getTypeDclNode();
-                List<DclSymbol> restList = resolver.findDcl(nameSymbol.value.substring(lookupNames[0].length() + 1), false, false);
+                APkgClassResolver who = PkgClassInfo.instance.getSymbol(enclosingClassName);
+                List<DclSymbol> restList = resolver.findDcl(nameSymbol.value.substring(lookupNames[0].length() + 1), false, who, false);
                 dclList = new LinkedList<Typeable>(restList);
                 dclList.add(0, dclNode);
 
