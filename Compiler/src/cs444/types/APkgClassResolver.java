@@ -162,7 +162,7 @@ public abstract class APkgClassResolver {
         return findDcl(name, isStatic, this, allowClass);
     }
 
-    private AMethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes, APkgClassResolver pkgClass) throws UndeclaredException {
+    public AMethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes, APkgClassResolver pkgClass) throws UndeclaredException {
         final Map<String, AMethodSymbol> getFrom = isStatic ? smethodMap : methodMap;
         String uniqueName = generateUniqueName(name, paramTypes);
         AMethodSymbol retVal = getFrom.get(uniqueName);
@@ -177,10 +177,6 @@ public abstract class APkgClassResolver {
     private void verifyCanRead(AModifiersOptSymbol retVal, APkgClassResolver pkgClass) throws UndeclaredException{
         if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName) && !pkgClass.pkg.equals(pkg))
             throw new UndeclaredException(name, fullName);
-    }
-
-    public AMethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes) throws UndeclaredException {
-        return findMethod(name, isStatic, paramTypes, this);
     }
 
     public abstract APkgClassResolver getSuper() throws UndeclaredException;

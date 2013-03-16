@@ -167,7 +167,8 @@ public class LocalDclLinker extends EmptyVisitor {
             params.add(name);
         }
 
-        AMethodSymbol method = resolver.findMethod(invoke.methodName, isStatic, params);
+        APkgClassResolver myResolver = PkgClassInfo.instance.getSymbol(enclosingClassName);
+        AMethodSymbol method = resolver.findMethod(invoke.methodName, isStatic, params, myResolver);
         invoke.setLookup(invoke.getLookup().addWith(method));
         currentTypes.peek().add(method);
     }
