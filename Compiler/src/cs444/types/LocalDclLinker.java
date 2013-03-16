@@ -56,6 +56,7 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.APkgClassResolver.Castable;
 import cs444.types.exceptions.BadOperandsTypeException;
 import cs444.types.exceptions.DuplicateDeclarationException;
+import cs444.types.exceptions.ExplicitThisInStaticException;
 import cs444.types.exceptions.IllegalCastAssignmentException;
 import cs444.types.exceptions.IllegalInstanceOfException;
 import cs444.types.exceptions.ImplicitStaticConversionException;
@@ -292,8 +293,12 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void visit(ThisSymbol thisSymbol) throws UndeclaredException {
-        simpleVistorHelper(thisSymbol, enclosingClassName);
+    public void visit(ThisSymbol thisSymbol) throws UndeclaredException, ExplicitThisInStaticException {
+        if (currentScope.isStatic) {
+        	throw new ExplicitThisInStaticException(enclosingClassName, currentMC.dclName);
+        }
+    	
+    	simpleVistorHelper(thisSymbol, enclosingClassName);
     }
 
     @Override
