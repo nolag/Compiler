@@ -43,6 +43,11 @@ public abstract class APkgClassResolver {
     protected final Map<String, AMethodSymbol> smethodMap = new HashMap<String, AMethodSymbol>();
     protected final Map<String, ConstructorSymbol> constructors = new HashMap<String, ConstructorSymbol>();
 
+    private final Map<DclSymbol, Integer> order = new HashMap<DclSymbol, Integer>();
+    private final Map<Integer, DclSymbol> revorder = new HashMap<Integer, DclSymbol>();
+    protected final Set<DclSymbol> addAll = new HashSet<DclSymbol>();
+    private int onField = 0;
+
     public static enum Castable { UP_CAST, DOWN_CAST, NOT_CASTABLE };
 
     protected APkgClassResolver(String name, String pkg, boolean isFinal){
@@ -56,6 +61,12 @@ public abstract class APkgClassResolver {
 
         Set<String> alsoAssignsTo = JoosNonTerminal.defaultAssignables.get(name);
         if(alsoAssignsTo != null) assignableTo.addAll(alsoAssignsTo);
+    }
+
+    protected void addTo(DclSymbol add){
+        order.put(add, onField);
+        revorder.put(onField, add);
+        onField++;
     }
 
     protected static String generateUniqueName(String name, Iterable<String> types) {
@@ -221,7 +232,25 @@ public abstract class APkgClassResolver {
         return cs;
     }
 
+    protected abstract Iterable<DclSymbol> getDcls();
+
+    public void checkFields() throws CompilerException{
+        FieldLinker myLinker = new FieldLinker(fullName);
+        for(DclSymbol dcl : getDcls()){
+            dcl.accept(myLinker);
+        }
+    }
+
     public abstract APkgClassResolver findClass(String name) throws UndeclaredException;
 
     public abstract void linkLocalNamesToDcl() throws CompilerException;
+
+    public List<DclSymbol> findDclOn(String lookupFirst, boolean empty, int on) throws UndeclaredException, ImplicitStaticConversionException {
+        DclSymbol now = revorder.get(on);
+        List<DclSymbol> list = findDcl(lookupFirst, now.isStatic(), empty);
+        DclSymbol dcl = list.get(list.size() - 1);
+        if(order.get(dcl) >= on) throw new UndeclaredException(dcl.dclName, fullName);
+        if(now.isStatic() && !dcl.isStatic()) throw new UndeclaredException(dcl.dclName, fullName);
+        return list;
+    }
 }

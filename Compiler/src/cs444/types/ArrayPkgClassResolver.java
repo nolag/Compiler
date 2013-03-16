@@ -131,4 +131,9 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     protected boolean isPrimative() {
         return false;
     }
+
+    @Override
+    protected Iterable<DclSymbol> getDcls() {
+        return null;
+    }
 }

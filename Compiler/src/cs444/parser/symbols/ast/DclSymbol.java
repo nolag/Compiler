@@ -27,7 +27,7 @@ public class DclSymbol extends AModifiersOptSymbol{
         if(initVal != null) children.addAll(initVal.children);
     }
 
-    public DclSymbol(String dclName, ANonTerminal from, TypeSymbol type, boolean isLocal) 
+    public DclSymbol(String dclName, ANonTerminal from, TypeSymbol type, boolean isLocal)
             throws IllegalModifierException, UnsupportedException {
         super("Dcl", dclName, from, type);
         this.isLocal = isLocal;

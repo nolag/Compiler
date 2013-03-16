@@ -54,8 +54,6 @@ public class Compiler {
                 parseTree = (ANonTerminal)builder.build(new File(fileName).getName(), parseTree);
 
                 PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
-
-                //if (fileName.contains("C.java")) parseTree.accept(new cs444.ast.PrettyPrinter());
             }
         }catch(Exception e){
             if (printErrors) e.printStackTrace();
@@ -86,6 +84,15 @@ public class Compiler {
                 resolver.linkLocalNamesToDcl();
             } catch (Exception e) {
                 if (printErrors) e.printStackTrace();
+                return COMPILER_ERROR_CODE;
+            }
+        }
+
+        //Do field init here
+        for(APkgClassResolver resolver : resolvers){
+            try {
+                resolver.checkFields();
+            } catch (CompilerException e) {
                 return COMPILER_ERROR_CODE;
             }
         }

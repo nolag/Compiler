@@ -173,6 +173,7 @@ public class PkgClassResolver extends APkgClassResolver {
                 if(field == null){
                     Map<String, DclSymbol> addTo = dcl.isStatic() ? sfieldMap : fieldMap;
                     addTo.put(dcl.dclName, dcl);
+                    addAll.add(dcl);
                 }else if(field.getProtectionLevel() != ProtectionLevel.PUBLIC && dcl.getProtectionLevel() == ProtectionLevel.PUBLIC){
                     Map<String, DclSymbol> addTo = dcl.isStatic() ? hfieldMap : hsfieldMap;
                     addTo.put(dcl.dclName, dcl);
@@ -289,6 +290,7 @@ public class PkgClassResolver extends APkgClassResolver {
                 APkgClassResolver fresolver = findClass(fieldSymbol.type.value);
                 if(fieldSymbol.type.isArray) fresolver = fresolver.getArrayVersion();
                 fieldSymbol.type.setTypeDclNode(fresolver);
+                addTo(fieldSymbol);
             }
 
             for(ConstructorSymbol constructorSymbol : start.getConstructors()){
@@ -385,5 +387,11 @@ public class PkgClassResolver extends APkgClassResolver {
     @Override
     protected boolean isPrimative() {
         return JoosNonTerminal.primativeNumbers.contains(fullName) || JoosNonTerminal.otherPrimatives.contains(fullName);
+    }
+
+    @Override
+    protected Iterable<DclSymbol> getDcls() {
+        if(start != null) return start.getFields();
+        return Collections.emptyList();
     }
 }
