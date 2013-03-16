@@ -467,19 +467,33 @@ public class LocalDclLinker extends EmptyVisitor {
         castOrAssign(false, false);
     }
 
-    private void eqNeHelper() throws IllegalCastAssignmentException, UndeclaredException{
-         castOrAssign(false, true);
+    private void eqNeHelper() throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException{
+        TypeSymbol isType = currentTypes.peek().removeLast().getType();
+         TypeSymbol toType = currentTypes.peek().getLast().getType();
+
+         Castable castType = toType.getTypeDclNode().getCastablility(isType.getTypeDclNode());
+         if(castType == Castable.NOT_CASTABLE  || toType.isClass != false || (castType == Castable.DOWN_CAST && !true)
+                 || isType.value.equals(JoosNonTerminal.VOID) || toType.value.equals(JoosNonTerminal.VOID)
+                 || (!isType.value.equals(toType.value) && isType.isArray && JoosNonTerminal.primativeNumbers.contains(toType.value))
+                 || (JoosNonTerminal.primativeNumbers.contains(isType.value) && !JoosNonTerminal.primativeNumbers.contains(toType.value))
+                 || (!JoosNonTerminal.primativeNumbers.contains(isType.value) && JoosNonTerminal.primativeNumbers.contains(toType.value))){      
+             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
+             String name1 = isType.getTypeDclNode().fullName;
+             String name2 = toType.getTypeDclNode().fullName;
+             throw new IllegalCastAssignmentException(enclosingClassName, where, name1, name2);
+         }
+
          currentTypes.peek().removeLast();
          currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN));
     }
 
     @Override
-    public void visit(EqExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
+    public void visit(EqExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException {
         eqNeHelper();
     }
 
     @Override
-    public void visit(NeExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException  {
+    public void visit(NeExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
         eqNeHelper();
     }
 
