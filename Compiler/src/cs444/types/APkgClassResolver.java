@@ -186,7 +186,8 @@ public abstract class APkgClassResolver {
     }
 
     private void verifyCanRead(AModifiersOptSymbol retVal, APkgClassResolver pkgClass) throws UndeclaredException{
-        if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName) && !pkgClass.pkg.equals(pkg))
+        if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName) 
+                && !this.assignableTo.contains(pkgClass.fullName) && !pkgClass.pkg.equals(pkg))
             throw new UndeclaredException(name, fullName);
     }
 
