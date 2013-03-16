@@ -217,10 +217,11 @@ public abstract class APkgClassResolver {
         return Castable.NOT_CASTABLE;
     }
 
-    public ConstructorSymbol getConstructor(List<String> types) throws UndeclaredException {
+    public ConstructorSymbol getConstructor(List<String> types, APkgClassResolver resolver) throws UndeclaredException {
         String name = generateUniqueName("this", types);
         ConstructorSymbol cs = constructors.get(name);
         if(cs == null) throw new UndeclaredException(name, fullName);
+        verifyCanRead(cs, resolver);
         return cs;
     }
 
