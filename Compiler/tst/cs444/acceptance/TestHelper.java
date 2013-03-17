@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -13,7 +14,8 @@ import cs444.types.PkgClassInfo;
 
 public class TestHelper {
 
-	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors, boolean includeStdLib) throws IOException, InterruptedException {
+	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors, boolean includeStdLib,
+	            List<String> ignoreList) throws IOException, InterruptedException {
 		File folder = new File(path);
 
 		int totalTests = 0;
@@ -24,6 +26,12 @@ public class TestHelper {
 
 			// Use this line to test a single file
 			//if (!fileName.equals("Je_16_ProtectedAccess_StaticField_Sub_DeclaredInSub")) continue;
+
+			if (ignoreList.contains(fileName)){
+			    System.out.print("*"); // skip file
+                filesSkipped++;
+                continue;
+			}
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
 			    List<String> sourceFiles = getAllFiles(file, includeStdLib);
@@ -67,6 +75,16 @@ public class TestHelper {
 	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors) throws IOException, InterruptedException {
 	    assertReturnCodeForFiles(path, expectedReturnCode, printErrors, true);
 	}
+
+    public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors, boolean includeStdLib) 
+            throws IOException, InterruptedException {
+        assertReturnCodeForFiles(path, expectedReturnCode, printErrors, includeStdLib, Collections.<String>emptyList());
+    }
+
+    public static void assertReturnCodeForFiles(String path,
+            int expectedReturnCode, boolean printErrors, List<String> ignoreList) throws IOException, InterruptedException {
+        assertReturnCodeForFiles(path, expectedReturnCode, printErrors, true, ignoreList);
+    }
 
 	private static ArrayList<String> getAllFiles(File root, boolean includeStdLib) {
 
