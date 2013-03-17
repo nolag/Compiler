@@ -143,12 +143,17 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void close(MethodInvokeSymbol invoke) throws UndeclaredException {
+    public void close(MethodInvokeSymbol invoke) throws CompilerException {
         APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(enclosingClassName);
-        boolean isStatic = currentScope.isStatic;
         Deque<Typeable>currentSymbols = currentTypes.pop();
 
         LookupLink lookup = invoke.getLookup();
+
+        boolean isStatic = currentScope.isStatic;
+        if (isStatic && lookup.lastDcl == null){
+            throw new CompilerException(enclosingClassName, getMethodName(),
+                    "cannot call a static method without naming the class.");
+        }
 
         if(lookup.lastDcl != null){
             TypeSymbol type = lookup.getType();
