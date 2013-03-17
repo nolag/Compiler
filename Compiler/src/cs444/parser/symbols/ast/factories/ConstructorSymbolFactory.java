@@ -32,11 +32,12 @@ public class ConstructorSymbolFactory extends ASTSymbolFactory{
                 MethodHeader header = MethodHeaderFactory.buildForConstructor((ANonTerminal) constructorDcl.firstOrDefault("ConstructorDeclarator"));
                 ANonTerminal body = (ANonTerminal) constructorDcl.firstOrDefault("ConstructorBody");
 
-                if(!header.name.value.equals(parent.dclName)) throw new UnsupportedException("construcotrs with a different name than their parent");
+                if(!header.name.value.equals(parent.dclName)) throw new UnsupportedException("constructors with a different name than their parent");
 
                 MethodOrConstructorSymbol constructor = new ConstructorSymbol(header, constructorDcl, body);
                 constructor.validate();
                 parent.children.add(constructor);
+
             }
 
             parent.children.removeAll(remove);

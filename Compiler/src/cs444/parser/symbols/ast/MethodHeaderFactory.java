@@ -12,7 +12,7 @@ public class MethodHeaderFactory {
     public static MethodHeader buildForRegularMethod(ANonTerminal methodHeader) throws IllegalModifierException, UnsupportedException{
         NameSymbol name;
         TypeSymbol type;
-        Iterable<DclSymbol> dcls;
+        List<DclSymbol> dcls;
 
         type = (TypeSymbol) methodHeader.firstOrDefault("Type");
 
@@ -30,14 +30,13 @@ public class MethodHeaderFactory {
         NameSymbol name = ((NameSymbol)constructorDeclarator.firstOrDefault("Name"));
 
         ANonTerminal params = (ANonTerminal) constructorDeclarator.firstOrDefault("FormalParameterList");
-        Iterable<DclSymbol> dcls = buildParamsList(params);
+        List<DclSymbol> dcls = buildParamsList(params);
 
         return new MethodHeader(name, null, dcls);
     }
 
-    private static Iterable<DclSymbol> buildParamsList(ANonTerminal params)
+    private static List<DclSymbol> buildParamsList(ANonTerminal params)
             throws IllegalModifierException, UnsupportedException {
-        Iterable<DclSymbol> dcls;
         List<DclSymbol> dclList = new LinkedList<DclSymbol>();
         if(params != null){
             for(ISymbol symbol : params.children){
@@ -47,7 +46,6 @@ public class MethodHeaderFactory {
                 dclList.add(new DclSymbol(pname.value, null, ptype, null, true));
             }
         }
-        dcls = dclList;
-        return dcls;
+        return dclList;
     }
 }

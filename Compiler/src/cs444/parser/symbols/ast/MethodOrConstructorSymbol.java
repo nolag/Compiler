@@ -1,5 +1,7 @@
 package cs444.parser.symbols.ast;
 
+import java.util.List;
+
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
@@ -13,7 +15,7 @@ public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
 
     public APkgClassResolver resolver;
 
-    public final Iterable<DclSymbol> params;
+    public final List<DclSymbol> params;
 
     public MethodOrConstructorSymbol(String nodeName, MethodHeader header,
             ANonTerminal from, ANonTerminal body, TypeSymbol type)

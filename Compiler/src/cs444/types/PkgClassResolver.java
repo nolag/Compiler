@@ -304,6 +304,10 @@ public class PkgClassResolver extends APkgClassResolver {
                     voidType.setTypeDclNode(PkgClassInfo.instance.getSymbol("void"));
 
                 constructorSymbol.setType(voidType);
+
+                if (constructorSymbol.params.isEmpty()){
+                    start.setDefaultConstructor(constructorSymbol);
+                }
             }
 
             mustBeInterface |= !start.isClass();
@@ -315,6 +319,12 @@ public class PkgClassResolver extends APkgClassResolver {
             if(start.superName != null){
                 building = (PkgClassResolver)findClass(start.superName);
                 copyInfo(building, visited, resolvedSets, false, true);
+
+                if (building.start.getDefaultConstructor() == null){
+                    throw new UnsupportedException("class without default constructor since explicit super call is not supported. Class is "
+                            + building.fullName);
+                }
+
                 assignableTo.add(building.fullName);
             }else{
                 verifyObject();

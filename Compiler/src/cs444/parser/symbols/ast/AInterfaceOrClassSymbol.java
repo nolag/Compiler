@@ -14,6 +14,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
     public final Iterable<String> impls;
     public final String superName;
     public final Iterable<NameSymbol> pkgImports;
+    private ConstructorSymbol defaultConstructor;
 
     protected AInterfaceOrClassSymbol(String ruleName, String dclName, ANonTerminal from, Iterable<String> impls, List<ISymbol> body,
             String superName, Iterable<NameSymbol> pkgImports) throws IllegalModifierException, UnsupportedException {
@@ -86,5 +87,13 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
 
     public boolean isAbstract(){
         return hasAbstract;
+    }
+
+    public void setDefaultConstructor(ConstructorSymbol constructor) {
+        this.defaultConstructor = constructor;
+    }
+
+    public ConstructorSymbol getDefaultConstructor() {
+        return this.defaultConstructor;
     }
 }
