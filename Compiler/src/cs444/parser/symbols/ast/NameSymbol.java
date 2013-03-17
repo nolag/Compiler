@@ -33,6 +33,10 @@ public class NameSymbol extends ATerminal implements Typeable{
         return this.dclNode.dcls;
     }
 
+    public DclSymbol getLastLookupDcl(){
+        return (DclSymbol) this.dclNode.lastDcl;
+    }
+
     public TypeSymbol getType(){
         return this.dclNode.lastDcl.getType();
     }

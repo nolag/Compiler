@@ -408,6 +408,6 @@ public class PkgClassResolver extends APkgClassResolver {
     @Override
     protected boolean isAbstract() {
         if (start == null) return false;
-        return start.isAbstract();
+        return start.getImplementationLevel() == ImplementationLevel.ABSTRACT;
     }
 }

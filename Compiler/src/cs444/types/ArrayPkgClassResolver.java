@@ -32,7 +32,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         try {
             if(length == null){
                 JoosNonTerminal mods = new JoosNonTerminal("Modifiers", new ISymbol [] { new Terminal(new Token(Token.Type.PUBLIC, "public"))});
-                length = new DclSymbol(JoosNonTerminal.LENGTH, mods, TypeSymbol.getPrimative(JoosNonTerminal.INTEGER), false);
+                length = new DclSymbol(JoosNonTerminal.LENGTH, mods, TypeSymbol.getPrimative(JoosNonTerminal.INTEGER), false, true);
             }
             fieldMap.put(JoosNonTerminal.LENGTH, length);
         } catch (Exception e) {

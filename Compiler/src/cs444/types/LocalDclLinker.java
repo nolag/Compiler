@@ -468,8 +468,14 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void visit(AssignmentExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException {
+    public void visit(AssignmentExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, UnsupportedException {
         castOrAssign(false, false);
+        Typeable leftHS = currentTypes.peek().getLast();
+
+        if ((leftHS instanceof NameSymbol)){
+            DclSymbol declaration = ((NameSymbol) leftHS).getLastLookupDcl();
+            if (declaration.isFinal) throw new UnsupportedException("left hand side of assignment cannot be final.");
+        }
     }
 
     private void eqNeHelper() throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException{

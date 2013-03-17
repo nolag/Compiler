@@ -14,9 +14,9 @@ public abstract class AModifiersOptSymbol extends ANonTerminal implements Typeab
     private boolean hasProtected;
     private boolean hasPrivate;
 
-    private boolean hasStatic;
+    protected boolean hasStatic;
     protected boolean hasAbstract;
-    private boolean hasFinal;
+    protected boolean hasFinal;
 
     private boolean hasNative;
 
