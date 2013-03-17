@@ -49,6 +49,7 @@ public class DclSymbol extends AModifiersOptSymbol{
 
         if(type.equals("void"))throw new UnsupportedException("void fields");
 
+        if (this.isLocal && children.isEmpty()) throw new UnsupportedException("omitted local initializer");
         super.validate();
     }
 

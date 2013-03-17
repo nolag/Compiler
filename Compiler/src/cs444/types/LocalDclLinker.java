@@ -3,8 +3,10 @@ package cs444.types;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import cs444.CompilerException;
@@ -59,7 +61,6 @@ import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.ExplicitThisInStaticException;
 import cs444.types.exceptions.IllegalCastAssignmentException;
 import cs444.types.exceptions.IllegalInstanceOfException;
-import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
 
 public class LocalDclLinker extends EmptyVisitor {
@@ -90,7 +91,16 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void close(DclSymbol dclSymbol) throws DuplicateDeclarationException {
+    public void open(DclSymbol dclSymbol){
+        currentScope.initializing(dclSymbol.dclName);
+    }
+
+    @Override
+    public void close(DclSymbol dclSymbol) throws DuplicateDeclarationException, UndeclaredException, IllegalCastAssignmentException {
+        TypeSymbol initType = currentTypes.peek().removeLast().getType();
+
+        assertIsAssignable(initType, dclSymbol.getType(), false, false);
+
         // in close because we cannot used this variable inside its initializer
         String varName = dclSymbol.dclName;
         if (currentScope.isDeclared(varName)) throw new DuplicateDeclarationException(varName, enclosingClassName);
@@ -114,7 +124,7 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void open(MethodInvokeSymbol invoke) throws UndeclaredException, ImplicitStaticConversionException {
+    public void open(MethodInvokeSymbol invoke) throws CompilerException {
 
         Deque<Typeable> currentSymbols = currentTypes.pop();
 
@@ -188,7 +198,7 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void visit(NameSymbol nameSymbol) throws UndeclaredException, ImplicitStaticConversionException{
+    public void visit(NameSymbol nameSymbol) throws CompilerException{
         String [] lookupNames = nameSymbol.value.split("\\.");
 
         DclSymbol dclNode = null;
@@ -426,12 +436,19 @@ public class LocalDclLinker extends EmptyVisitor {
         TypeSymbol isType = currentTypes.peek().removeLast().getType();
         TypeSymbol toType = currentTypes.peek().getLast().getType();
 
-        Castable castType = toType.getTypeDclNode().getCastablility(isType.getTypeDclNode());
+        assertIsAssignable(isType, toType, secondIsClass, allowDownCast);
+    }
+
+    private void assertIsAssignable(TypeSymbol type,
+            TypeSymbol toType, boolean secondIsClass,
+            boolean allowDownCast) throws UndeclaredException,
+            IllegalCastAssignmentException {
+        Castable castType = toType.getTypeDclNode().getCastablility(type.getTypeDclNode());
         if(castType == Castable.NOT_CASTABLE  || toType.isClass != secondIsClass || (castType == Castable.DOWN_CAST && !allowDownCast)
-                || isType.value.equals(JoosNonTerminal.VOID) || toType.value.equals(JoosNonTerminal.VOID)
-                || (!isType.value.equals(toType.value) && isType.isArray && JoosNonTerminal.primativeNumbers.contains(toType.value))){
+                || type.value.equals(JoosNonTerminal.VOID) || toType.value.equals(JoosNonTerminal.VOID)
+                || (!type.value.equals(toType.value) && type.isArray && JoosNonTerminal.primativeNumbers.contains(toType.value))){
             String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
-            String name1 = isType.getTypeDclNode().fullName;
+            String name1 = type.getTypeDclNode().fullName;
             String name2 = toType.getTypeDclNode().fullName;
             throw new IllegalCastAssignmentException(enclosingClassName, where, name1, name2);
         }
@@ -469,13 +486,17 @@ public class LocalDclLinker extends EmptyVisitor {
 
     @Override
     public void visit(AssignmentExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, UnsupportedException {
-        castOrAssign(false, false);
-        Typeable leftHS = currentTypes.peek().getLast();
+        Typeable leftHS = currentTypes.peek().removeLast();
+        TypeSymbol rightHSType = currentTypes.peek().removeLast().getType();
+
+        assertIsAssignable(rightHSType, leftHS.getType(), false, false);
 
         if ((leftHS instanceof NameSymbol)){
             DclSymbol declaration = ((NameSymbol) leftHS).getLastLookupDcl();
             if (declaration.isFinal) throw new UnsupportedException("left hand side of assignment cannot be final.");
         }
+
+        currentTypes.peek().add(leftHS);
     }
 
     private void eqNeHelper() throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException{
