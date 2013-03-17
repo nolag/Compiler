@@ -181,12 +181,15 @@ public abstract class APkgClassResolver {
     }
 
     private void verifyCanRead(AModifiersOptSymbol retVal, APkgClassResolver pkgClass) throws UndeclaredException{
-        //can access even private members
         if(pkgClass == this) return;
-        if(retVal.getProtectionLevel() == ProtectionLevel.PUBLIC) return;
         if(retVal.getProtectionLevel() == ProtectionLevel.PRIVATE) throw new UndeclaredException(name, fullName);
+        if(retVal.getProtectionLevel() == ProtectionLevel.PUBLIC) return;
+        if(assignableTo.contains(pkgClass.fullName)) return;
         final APkgClassResolver dclResolver = retVal.dclInResolver;
-        if(!pkgClass.assignableTo.contains(dclResolver.fullName) && !pkgClass.pkg.equals(pkg)) throw new UndeclaredException(name, fullName);
+        if(pkgClass.pkg.equals(dclResolver.pkg)) return;
+        if(pkgClass.assignableTo.contains(dclResolver.fullName) && pkgClass.pkg.startsWith(dclResolver.pkg)) return;
+        if(pkgClass.assignableTo.contains(dclResolver.fullName) && retVal.isStatic()) return;
+        throw new UndeclaredException(name, fullName);
     }
 
     public abstract APkgClassResolver getSuper() throws UndeclaredException;
