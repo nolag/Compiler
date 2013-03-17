@@ -97,7 +97,7 @@ public class FieldLinker extends EmptyVisitor {
     }
 
     @Override
-    public void open(MethodInvokeSymbol invoke) throws UndeclaredException, ImplicitStaticConversionException {
+    public void open(MethodInvokeSymbol invoke) throws CompilerException {
 
         Deque<Typeable> currentSymbols = currentTypes.pop();
 
@@ -164,7 +164,7 @@ public class FieldLinker extends EmptyVisitor {
     }
 
     @Override
-    public void visit(NameSymbol nameSymbol) throws UndeclaredException, ImplicitStaticConversionException{
+    public void visit(NameSymbol nameSymbol) throws CompilerException{
         String [] lookupNames = nameSymbol.value.split("\\.");
 
         DclSymbol dclNode = null;

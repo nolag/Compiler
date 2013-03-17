@@ -19,8 +19,8 @@ public class AssignmentExprSymbol extends BinOpExpr {
 
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
-        children.get(0).accept(visitor);
         children.get(1).accept(visitor);
+        children.get(0).accept(visitor);
         visitor.visit(this);
     }
 
