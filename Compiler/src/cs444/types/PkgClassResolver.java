@@ -394,4 +394,10 @@ public class PkgClassResolver extends APkgClassResolver {
         if(start != null) return start.getFields();
         return Collections.emptyList();
     }
+
+    @Override
+    protected boolean isAbstract() {
+        if (start == null) return false;
+        return start.isAbstract();
+    }
 }

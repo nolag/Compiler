@@ -207,6 +207,7 @@ public abstract class APkgClassResolver {
         return resolver;
     }
 
+    protected abstract boolean isAbstract();
     protected abstract boolean isPrimative();
 
     public Castable getCastablility(APkgClassResolver other){

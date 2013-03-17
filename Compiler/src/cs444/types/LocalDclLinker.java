@@ -162,7 +162,7 @@ public class LocalDclLinker extends EmptyVisitor {
             TypeSymbol type = mod.getType();
             //If it's a class this would be like the argument is String.  There is no local String.
             if(type.isClass)
-                throw new UndeclaredException("Class arguments", APkgClassResolver.generateUniqueName(currentMC, currentMC.dclName));
+                throw new UndeclaredException("Class arguments", getMethodName());
 
             String name = type.getTypeDclNode().fullName;
             params.add(name);
@@ -550,13 +550,19 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void close(CreationExpression create) throws UndeclaredException{
+    public void close(CreationExpression create) throws CompilerException{
         useCurrentForLookup.pop();
         Deque<Typeable> currentSymbols = currentTypes.pop();
         APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(enclosingClassName);
         TypeSymbol typeSymbol = create.getType();
         resolver = resolver.getClass(typeSymbol.value, true);
         if(typeSymbol.isArray) resolver = resolver.getArrayVersion();
+
+        if(resolver.isAbstract()){
+            throw new CompilerException(enclosingClassName,
+                    getMethodName(),
+                    "cannot instantiate abstract type " + typeSymbol.value);
+        }
 
         List<String> params = new LinkedList<String>();
 
@@ -566,7 +572,7 @@ public class LocalDclLinker extends EmptyVisitor {
             TypeSymbol type = mod.getType();
             //If it's a class this would be like the argument is String.  There is no local String.
             if(type.isClass)
-                throw new UndeclaredException("Class arguments", APkgClassResolver.generateUniqueName(currentMC, currentMC.dclName));
+                throw new UndeclaredException("Class arguments", getMethodName());
 
             String name = type.getTypeDclNode().fullName;
             params.add(name);
@@ -640,5 +646,9 @@ public class LocalDclLinker extends EmptyVisitor {
             return false;
         }
         return true;
+    }
+
+    private String getMethodName() throws UndeclaredException {
+        return APkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
     }
 }

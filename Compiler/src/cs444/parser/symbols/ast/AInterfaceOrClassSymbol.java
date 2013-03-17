@@ -83,4 +83,8 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
 
         visitor.close(this);
     }
+
+    public boolean isAbstract(){
+        return hasAbstract;
+    }
 }

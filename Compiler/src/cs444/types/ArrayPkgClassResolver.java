@@ -136,4 +136,9 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     protected Iterable<DclSymbol> getDcls() {
         return null;
     }
+
+    @Override
+    protected boolean isAbstract() {
+        return resolver.isAbstract();
+    }
 }
