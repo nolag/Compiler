@@ -278,6 +278,7 @@ public class PkgClassResolver extends APkgClassResolver {
                 APkgClassResolver mresolver = findClass(methodSymbol.type.value);
                 if(methodSymbol.type.isArray) mresolver = mresolver.getArrayVersion();
                 methodSymbol.type.setTypeDclNode(mresolver);
+                methodSymbol.dclInResolver = this;
             }
 
             for(DclSymbol fieldSymbol : start.getFields()){
@@ -291,6 +292,7 @@ public class PkgClassResolver extends APkgClassResolver {
                 if(fieldSymbol.type.isArray) fresolver = fresolver.getArrayVersion();
                 fieldSymbol.type.setTypeDclNode(fresolver);
                 addTo(fieldSymbol);
+                fieldSymbol.dclInResolver = this;
             }
 
             for(ConstructorSymbol constructorSymbol : start.getConstructors()){
@@ -308,6 +310,7 @@ public class PkgClassResolver extends APkgClassResolver {
                 if (constructorSymbol.params.isEmpty()){
                     start.setDefaultConstructor(constructorSymbol);
                 }
+                constructorSymbol.dclInResolver = this;
             }
 
             mustBeInterface |= !start.isClass();
@@ -321,11 +324,10 @@ public class PkgClassResolver extends APkgClassResolver {
                 copyInfo(building, visited, resolvedSets, false, true);
 
                 if (building.start.getDefaultConstructor() == null){
-                    throw new UnsupportedException("class without default constructor since explicit super call is not supported. Class is "
-                            + building.fullName);
+                    throw new UnsupportedException("class without default constructor.  Explicit super call is not supported." + building.fullName);
                 }
 
-                assignableTo.add(building.fullName);
+                assignableTo.addAll(building.assignableTo);
             }else{
                 verifyObject();
             }
@@ -359,7 +361,7 @@ public class PkgClassResolver extends APkgClassResolver {
                     }
                 }
 
-                assignableTo.add(building.fullName);
+                assignableTo.addAll(building.assignableTo);
                 alreadyImps.add(building.fullName);
             }
 

@@ -109,13 +109,7 @@ public abstract class APkgClassResolver {
             return (klass == null)? null : DclSymbol.getClassSymbol(name, klass);
         }
 
-        //If it is not assignable to this and it's protected see if there is a hidden one.
-        if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName)){
-            getFrom = isStatic ? hsfieldMap : hfieldMap;
-            retVal = getFrom.get(name);
-        }else{
-            verifyCanRead(retVal, pkgClass);
-        }
+        verifyCanRead(retVal, pkgClass);
 
         return retVal;
     }
@@ -127,6 +121,7 @@ public abstract class APkgClassResolver {
         if(nameParts.length == 1){
             retVal = getDcl(name, isStatic, pkgClass, allowClass);
             if(retVal == null) throw new UndeclaredException(name, fullName);
+
             return  Arrays.asList(new DclSymbol []{ retVal });
         }
 
@@ -186,9 +181,12 @@ public abstract class APkgClassResolver {
     }
 
     private void verifyCanRead(AModifiersOptSymbol retVal, APkgClassResolver pkgClass) throws UndeclaredException{
-        if(retVal.getProtectionLevel() == ProtectionLevel.PROTECTED && !pkgClass.assignableTo.contains(fullName) 
-                && !this.assignableTo.contains(pkgClass.fullName) && !pkgClass.pkg.equals(pkg))
-            throw new UndeclaredException(name, fullName);
+        //can access even private members
+        if(pkgClass == this) return;
+        if(retVal.getProtectionLevel() == ProtectionLevel.PUBLIC) return;
+        if(retVal.getProtectionLevel() == ProtectionLevel.PRIVATE) throw new UndeclaredException(name, fullName);
+        final APkgClassResolver dclResolver = retVal.dclInResolver;
+        if(!pkgClass.assignableTo.contains(dclResolver.fullName) && !pkgClass.pkg.equals(pkg)) throw new UndeclaredException(name, fullName);
     }
 
     public abstract APkgClassResolver getSuper() throws UndeclaredException;

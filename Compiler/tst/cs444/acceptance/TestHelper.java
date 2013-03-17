@@ -23,7 +23,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("Je_6_ProtectedAccess_InstanceMethod_SubDeclare_SubVar")) continue;
+			//if (!fileName.equals("Je_6_ProtectedAccess_ClassCreation_Sub")) continue;
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
 			    List<String> sourceFiles = getAllFiles(file, includeStdLib);

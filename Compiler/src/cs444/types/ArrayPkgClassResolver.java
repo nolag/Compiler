@@ -33,6 +33,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
             if(length == null){
                 JoosNonTerminal mods = new JoosNonTerminal("Modifiers", new ISymbol [] { new Terminal(new Token(Token.Type.PUBLIC, "public"))});
                 length = new DclSymbol(JoosNonTerminal.LENGTH, mods, TypeSymbol.getPrimative(JoosNonTerminal.INTEGER), false, true);
+                length.forcePublic();
             }
             fieldMap.put(JoosNonTerminal.LENGTH, length);
         } catch (Exception e) {
@@ -75,6 +76,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
 
         //ANonTerminal from, ANonTerminal body
         ConstructorSymbol cs = new ConstructorSymbol(header, null, null);
+        cs.forcePublic();
         cs.resolver = this;
         constructors.put(generateUniqueName(cs, JoosNonTerminal.THIS), cs);
     }
