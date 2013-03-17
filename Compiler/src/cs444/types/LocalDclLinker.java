@@ -483,11 +483,11 @@ public class LocalDclLinker extends EmptyVisitor {
          TypeSymbol toType = currentTypes.peek().getLast().getType();
 
          Castable castType = toType.getTypeDclNode().getCastablility(isType.getTypeDclNode());
-         if(castType == Castable.NOT_CASTABLE  || toType.isClass != false || (castType == Castable.DOWN_CAST && !true)
+         if(castType == Castable.NOT_CASTABLE  || toType.isClass
                  || isType.value.equals(JoosNonTerminal.VOID) || toType.value.equals(JoosNonTerminal.VOID)
                  || (!isType.value.equals(toType.value) && isType.isArray && JoosNonTerminal.primativeNumbers.contains(toType.value))
                  || (JoosNonTerminal.primativeNumbers.contains(isType.value) && !JoosNonTerminal.primativeNumbers.contains(toType.value))
-                 || (!JoosNonTerminal.primativeNumbers.contains(isType.value) && JoosNonTerminal.primativeNumbers.contains(toType.value))){      
+                 || (!JoosNonTerminal.primativeNumbers.contains(isType.value) && JoosNonTerminal.primativeNumbers.contains(toType.value))){
              String where = PkgClassResolver.generateUniqueName(currentMC, currentMC.dclName);
              String name1 = isType.getTypeDclNode().fullName;
              String name2 = toType.getTypeDclNode().fullName;
@@ -604,7 +604,7 @@ public class LocalDclLinker extends EmptyVisitor {
         if(!isNumeric(value, false))
             throw new UnsupportedException("Array access with non numeric " + value.getType().value + " " + currentMC.dclName + " " + enclosingClassName);
 
-        TypeSymbol retType = new TypeSymbol(value.value, false, false);
+        TypeSymbol retType = new TypeSymbol(in.value, false, false);
         retType.setTypeDclNode(in.getTypeDclNode().accessor());
         currentTypes.peek().add(retType);
     }
