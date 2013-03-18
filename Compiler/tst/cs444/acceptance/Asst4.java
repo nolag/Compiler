@@ -21,13 +21,11 @@ public class Asst4 {
                 "Je_7_Reachability_ForFalse_1.java",
                 "Je_7_Reachability_ForFalse_2.java",
                 "Je_7_Reachability_WhileFalse_ConstantFolding.java",
-                "Je_7_Reachability_WhileFalse_Empty.java",
                 "Je_7_Reachability_WhileTrue_ConstantFolding.java",
                 "Je_7_Return_IfElseIf.java",
                 "Je_7_Return_IfIfNoElseElse.java",
                 "Je_7_Return_IfIfNot.java",
-                "Je_7_Return_MissingInElse.java",
-                "Je_7_Reachability_WhileFalse_IfThenElse.java"));
+                "Je_7_Return_MissingInElse.java"));
 
         TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a4/invalid/", 42,  false, ignoreList);
     }
