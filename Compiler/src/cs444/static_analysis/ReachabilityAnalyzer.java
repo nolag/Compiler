@@ -73,11 +73,10 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
     public void close(MethodOrConstructorSymbol method)
             throws CompilerException {
         boolean outMethod = stack.pop();
-        // TODO: uncomment this after loops are done
-//        MethodOrConstructorSymbol currentMC = context.getCurrentMC();
-//        if (outMethod == MAYBE && !currentMC.isVoid() && !currentMC.isAbstract() && !currentMC.isNative()){
-//            throw new MissingReturnStatement(context.enclosingClassName, context.getMethodName());
-//        }
+        MethodOrConstructorSymbol currentMC = context.getCurrentMC();
+        if (outMethod == MAYBE && !currentMC.isVoid() && !currentMC.isAbstract() && !currentMC.isNative()){
+            throw new MissingReturnStatement(context.enclosingClassName, context.getMethodName());
+        }
         context.setCurrentMC(null);
     }
 
