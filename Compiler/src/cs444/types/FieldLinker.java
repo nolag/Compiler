@@ -56,7 +56,6 @@ import cs444.types.exceptions.BadOperandsTypeException;
 import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.IllegalCastAssignmentException;
 import cs444.types.exceptions.IllegalInstanceOfException;
-import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
 
 public class FieldLinker extends EmptyVisitor {
