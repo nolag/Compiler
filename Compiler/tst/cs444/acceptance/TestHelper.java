@@ -25,7 +25,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			// if (!fileName.equals("Je_6_Assignable_ReturnInElse.java")) continue;
+			// if (!fileName.equals("Je_7_Reachability_AfterReturn_Constructor.java")) continue;
 
 			if (ignoreList.contains(fileName)){
 			    System.out.print("*"); // skip file

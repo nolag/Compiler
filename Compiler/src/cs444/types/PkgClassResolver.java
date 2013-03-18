@@ -392,6 +392,10 @@ public class PkgClassResolver extends APkgClassResolver {
         for(AMethodSymbol method : start.getUninheritedMethods()){
             method.analyzeReachability(fullName);
         }
+
+        for(ConstructorSymbol constructor : start.getConstructors()){
+            constructor.analyzeReachability(fullName);
+        }
     }
 
     @Override
