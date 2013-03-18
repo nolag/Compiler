@@ -47,6 +47,7 @@ import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
+import cs444.static_analysis.exceptions.MissingReturnStatement;
 import cs444.static_analysis.exceptions.UnreachableCode;
 import cs444.types.ContextInfo;
 import cs444.types.exceptions.UndeclaredException;
@@ -71,8 +72,13 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
     @Override
     public void close(MethodOrConstructorSymbol method)
             throws CompilerException {
+        boolean outMethod = stack.pop();
+        // TODO: uncomment this after loops are done
+//        MethodOrConstructorSymbol currentMC = context.getCurrentMC();
+//        if (outMethod == MAYBE && !currentMC.isVoid() && !currentMC.isAbstract() && !currentMC.isNative()){
+//            throw new MissingReturnStatement(context.enclosingClassName, context.getMethodName());
+//        }
         context.setCurrentMC(null);
-        stack.pop();
     }
 
     @Override
@@ -195,12 +201,25 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
 
     @Override
     public void open(WhileExprSymbol whileExprSymbol) throws CompilerException {
+        assertIsReachable(whileExprSymbol.getName());
+        stack.push(stack.peek());
+    }
+
+    @Override
+    public void close(WhileExprSymbol whileExprSymbol) throws CompilerException {
+        boolean outWhileBody = stack.pop();
+        boolean inWhileExpr = stack.pop();
+        stack.push(outWhileBody || inWhileExpr);
+    }
+
+    @Override
+    public void open(ForExprSymbol forExprSymbol) throws CompilerException {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void open(ForExprSymbol forExprSymbol) throws CompilerException {
+    public void close(ForExprSymbol forExprSymbol) throws CompilerException {
         // TODO Auto-generated method stub
         
     }
@@ -239,18 +258,6 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
 
     @Override
     public void close(FieldAccessSymbol field) throws CompilerException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void close(WhileExprSymbol whileExprSymbol) throws CompilerException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void close(ForExprSymbol forExprSymbol) throws CompilerException {
         // TODO Auto-generated method stub
         
     }
