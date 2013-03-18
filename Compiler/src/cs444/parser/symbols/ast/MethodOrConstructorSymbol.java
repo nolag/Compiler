@@ -6,8 +6,10 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
+import cs444.static_analysis.ReachabilityAnalyzer;
 import cs444.types.APkgClassResolver;
 import cs444.types.LocalDclLinker;
 
@@ -63,5 +65,22 @@ public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
         this.accept(new LocalDclLinker(enclosingClassName));
 
         arelocalVarsLinked = true;
+    }
+
+    private boolean reachabilityAnalized = false;
+    public void analyzeReachability(String enclosingClassName) throws CompilerException {
+        if (reachabilityAnalized) return;
+
+        this.accept(new ReachabilityAnalyzer(enclosingClassName));
+
+        reachabilityAnalized = true;
+    }
+
+    public boolean isVoid() {
+        return type.value == JoosNonTerminal.VOID;
+    }
+
+    public boolean isAbstract() {
+        return this.getImplementationLevel() == ImplementationLevel.ABSTRACT;
     }
 }

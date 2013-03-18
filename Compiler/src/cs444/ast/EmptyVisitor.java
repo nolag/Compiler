@@ -222,4 +222,7 @@ public class EmptyVisitor implements ISymbolVisitor {
     @Override
     public void afterCondition(ForExprSymbol forExprSymbol)
             throws CompilerException { }
+
+    @Override
+    public void prepareElseBody(IfExprSymbol ifExpr) throws CompilerException { }
 }

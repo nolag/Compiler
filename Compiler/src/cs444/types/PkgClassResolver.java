@@ -387,6 +387,18 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
+    public void analyzeReachability() throws CompilerException {
+        if(start == null) return;
+        for(AMethodSymbol method : start.getUninheritedMethods()){
+            method.analyzeReachability(fullName);
+        }
+
+        for(ConstructorSymbol constructor : start.getConstructors()){
+            constructor.analyzeReachability(fullName);
+        }
+    }
+
+    @Override
     public APkgClassResolver getSuper() throws UndeclaredException {
         return findClass(start.superName);
     }

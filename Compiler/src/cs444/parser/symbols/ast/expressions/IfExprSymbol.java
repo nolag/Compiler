@@ -31,12 +31,21 @@ public class IfExprSymbol extends BaseExprSymbol {
         return children.get(0);
     }
 
+    public ANonTerminal getElseBody() {
+        if (children.size() < 3) return null;
+        return (ANonTerminal) children.get(2);
+    }
+
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
         visitor.prepareCondition(getCondition());
-        for (ISymbol child : children) {
-            child.accept(visitor);
+        this.getConditionSymbol().accept(visitor);
+        this.getifBody().accept(visitor);
+        ISymbol elseBody = this.getElseBody();
+        if (elseBody != null) {
+            visitor.prepareElseBody(this);
+            elseBody.accept(visitor);
         }
         visitor.close(this);
     }

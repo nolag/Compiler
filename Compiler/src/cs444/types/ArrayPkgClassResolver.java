@@ -130,6 +130,9 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     public void linkLocalNamesToDcl() throws CompilerException { }
 
     @Override
+    public void analyzeReachability() throws CompilerException { }
+
+    @Override
     protected boolean isPrimative() {
         return false;
     }

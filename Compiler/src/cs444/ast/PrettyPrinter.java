@@ -331,6 +331,13 @@ public class PrettyPrinter implements ISymbolVisitor {
     }
 
     @Override
+    public void prepareElseBody(IfExprSymbol ifExprSymbol) throws CompilerException{
+        level--;
+        print("else");
+        level++;
+    }
+
+    @Override
     public void prepare(FieldAccessSymbol fieldAccessSymbol) { }
 
     @Override

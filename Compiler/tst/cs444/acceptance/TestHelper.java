@@ -25,7 +25,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("Je_16_ProtectedAccess_StaticField_Sub_DeclaredInSub")) continue;
+			// if (!fileName.equals("Je_7_Reachability_AfterReturn_Constructor.java")) continue;
 
 			if (ignoreList.contains(fileName)){
 			    System.out.print("*"); // skip file
@@ -126,7 +126,7 @@ public class TestHelper {
 
 	private static int compileAndTest(String[] files, boolean printErrors) throws IOException, InterruptedException {
 	    PkgClassInfo.instance.clear();
-	    //return Compiler.compile(files, printErrors);
-	    return Compiler.compile(files, false);
+	    return Compiler.compile(files, printErrors);
+	    //return Compiler.compile(files, false);
 	}
 }

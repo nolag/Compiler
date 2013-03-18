@@ -9,7 +9,6 @@ public class Asst1 {
     @Test
     public void testValidJoosCode() throws IOException, InterruptedException {
         String path = "JoosPrograms/SyntacticallyValidPrograms/";
-
         TestHelper.assertReturnCodeForFiles(path, 0,  true);
     }
 

@@ -248,6 +248,8 @@ public abstract class APkgClassResolver {
 
     public abstract void linkLocalNamesToDcl() throws CompilerException;
 
+    public abstract void analyzeReachability() throws CompilerException;
+
     public List<DclSymbol> findDclOn(String lookupFirst, boolean empty, int on) throws UndeclaredException, ImplicitStaticConversionException {
         DclSymbol now = revorder.get(on);
         List<DclSymbol> list = findDcl(lookupFirst, now.isStatic(), empty);
