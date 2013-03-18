@@ -19,7 +19,6 @@ public class Asst4 {
         List<String> ignoreList = new LinkedList<String>(Arrays.asList(
                 "Je_7_Reachability_EmptyValueMethod.java",
                 "Je_7_Reachability_ForFalse_1.java",
-                "Je_7_Reachability_ForFalse_2.java",
                 "Je_7_Reachability_WhileFalse_ConstantFolding.java",
                 "Je_7_Reachability_WhileTrue_ConstantFolding.java",
                 "Je_7_Return_IfElseIf.java",

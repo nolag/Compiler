@@ -172,6 +172,58 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
     private void assertIsReachable(String what) throws UnreachableCode, UndeclaredException {
         if(stack.peek() == NO) throw new UnreachableCode(what, context.enclosingClassName, context.getMethodName());
     }
+    @Override
+    public void open(WhileExprSymbol whileExprSymbol) throws CompilerException {
+        assertIsReachable(whileExprSymbol.getName());
+
+        Typeable condition = whileExprSymbol.getCondition();
+        analyzeLoopConditionEntry(condition);
+    }
+
+    @Override
+    public void close(WhileExprSymbol whileExprSymbol) throws CompilerException {
+        boolean outWhileBody = stack.pop();
+        boolean inWhileExpr = stack.pop();
+
+        Typeable condition = whileExprSymbol.getCondition();
+        analyzeLoopConditionExit(condition, inWhileExpr, outWhileBody);
+    }
+
+    @Override
+    public void open(ForExprSymbol forExprSymbol) throws CompilerException {
+        assertIsReachable(forExprSymbol.getName());
+
+        analyzeLoopConditionEntry(forExprSymbol.getCondition());
+    }
+
+    @Override
+    public void close(ForExprSymbol forExprSymbol) throws CompilerException {
+        boolean outForBody = stack.pop();
+        boolean inForExpr = stack.pop();
+        analyzeLoopConditionExit(forExprSymbol.getCondition(), inForExpr, outForBody);
+    }
+
+    private void analyzeLoopConditionEntry(Typeable condition) {
+        if (conditionEvalTo(condition, false)){
+            stack.push(NO);
+        }else{
+            stack.push(stack.peek());
+        }
+    }
+
+    private void analyzeLoopConditionExit(Typeable condition,
+            boolean inLoop, boolean outBody) {
+        if (conditionEvalTo(condition, true)){
+            stack.push(NO);
+        }else{
+            stack.push(outBody || inLoop);
+        }
+    }
+
+    private boolean conditionEvalTo(Typeable condition, boolean to){
+        return condition instanceof BooleanLiteralSymbol &&
+                ((BooleanLiteralSymbol) condition).boolValue == to;
+    }
 
     @Override
     public void prepare(MethodInvokeSymbol invode) throws CompilerException {
@@ -195,46 +247,6 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
     @Override
     public void open(AInterfaceOrClassSymbol aInterfaceOrClassSymbol)
             throws CompilerException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void open(WhileExprSymbol whileExprSymbol) throws CompilerException {
-        assertIsReachable(whileExprSymbol.getName());
-
-        if (conditionEvalTo(whileExprSymbol.getCondition(), false)){
-            stack.push(NO);
-        }else{
-            stack.push(stack.peek());
-        }
-    }
-
-    @Override
-    public void close(WhileExprSymbol whileExprSymbol) throws CompilerException {
-        boolean outWhileBody = stack.pop();
-        boolean inWhileExpr = stack.pop();
-
-        if (conditionEvalTo(whileExprSymbol.getCondition(), true)){
-            stack.push(NO);
-        }else{
-            stack.push(outWhileBody || inWhileExpr);
-        }
-    }
-
-    private boolean conditionEvalTo(Typeable condition, boolean to){
-        return condition instanceof BooleanLiteralSymbol &&
-                ((BooleanLiteralSymbol) condition).boolValue == to;
-    }
-
-    @Override
-    public void open(ForExprSymbol forExprSymbol) throws CompilerException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void close(ForExprSymbol forExprSymbol) throws CompilerException {
         // TODO Auto-generated method stub
         
     }
