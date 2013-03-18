@@ -11,7 +11,11 @@ public class Asst4 {
 
     @Test
     public void testMarmosetValidTestCases() throws IOException, InterruptedException {
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a4/valid/", 0, true);
+        List<String> ignoreList = new LinkedList<String>(Arrays.asList(
+                "J1_7_Reachability_IfAndWhile_Return.java",
+                "J1_unreachableAutomation.java"));
+
+        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a4/valid/", 0, true, ignoreList);
     }
 
     @Test
@@ -23,7 +27,6 @@ public class Asst4 {
                 "Je_7_Reachability_AfterIfReturnElseReturn.java",
                 "Je_7_Reachability_AfterReturnEmptyBlock.java",
                 "Je_7_Reachability_AfterReturn_Constructor.java",
-                "Je_7_Reachability_AfterValueReturn.java",
                 "Je_7_Reachability_AfterVoidReturn.java",
                 "Je_7_Reachability_EmptyValueMethod.java",
                 "Je_7_Reachability_ForFalse_1.java",

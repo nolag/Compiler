@@ -62,6 +62,7 @@ public class Compiler {
             typeCheck(resolvers);
             checkFields(resolvers);
 
+            analyzeReachability(resolvers);
         }catch(Exception e){
             if (printErrors) e.printStackTrace();
             return COMPILER_ERROR_CODE;
@@ -76,6 +77,13 @@ public class Compiler {
         }
 
         return 0;
+    }
+
+    private static void analyzeReachability(List<APkgClassResolver> resolvers)
+            throws CompilerException {
+        for (APkgClassResolver resolver : resolvers) {
+            resolver.analyzeReachability();
+        }
     }
 
     private static void checkFields(List<APkgClassResolver> resolvers)

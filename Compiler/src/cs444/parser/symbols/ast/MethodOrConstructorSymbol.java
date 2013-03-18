@@ -8,6 +8,7 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
+import cs444.static_analysis.ReachabilityAnalyzer;
 import cs444.types.APkgClassResolver;
 import cs444.types.LocalDclLinker;
 
@@ -63,5 +64,14 @@ public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
         this.accept(new LocalDclLinker(enclosingClassName));
 
         arelocalVarsLinked = true;
+    }
+
+    private boolean reachabilityAnalized = false;
+    public void analyzeReachability(String enclosingClassName) throws CompilerException {
+        if (reachabilityAnalized) return;
+
+        this.accept(new ReachabilityAnalyzer(enclosingClassName));
+
+        reachabilityAnalized = true;
     }
 }
