@@ -121,6 +121,48 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
         assertIsReachable(aNonTerminal.getName());
     }
 
+    @Override
+    public void open(CreationExpression creationExpression)
+            throws CompilerException {
+        assertIsReachable(creationExpression.getName());
+    }
+
+    @Override
+    public void open(MethodInvokeSymbol invoke) throws CompilerException {
+        assertIsReachable(invoke.methodName);
+    }
+
+    @Override
+    public void open(FieldAccessSymbol field) throws CompilerException {
+        assertIsReachable(field.getName());
+    }
+
+    @Override
+    public void visit(ATerminal terminal) throws CompilerException {
+        assertIsReachable(terminal.value);
+    }
+
+    @Override
+    public void visit(CastExpressionSymbol symbol) throws CompilerException {
+        assertIsReachable(symbol.getName());
+    }
+
+    @Override
+    public void visit(AssignmentExprSymbol op) throws CompilerException {
+        assertIsReachable(op.getName());
+    }
+
+    @Override
+    public void visit(EmptyStatementSymbol emptySymbol)
+            throws CompilerException {
+        assertIsReachable(emptySymbol.getName());
+    }
+
+    @Override
+    public void visit(ISymbol symbol) throws CompilerException {
+        assertIsReachable(symbol.getName());
+    }
+
     private void assertIsReachable(String what) throws UnreachableCode, UndeclaredException {
         if(stack.peek() == NO) throw new UnreachableCode(what, context.enclosingClassName, context.getMethodName());
     }
@@ -147,25 +189,6 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
     @Override
     public void open(AInterfaceOrClassSymbol aInterfaceOrClassSymbol)
             throws CompilerException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void open(CreationExpression creationExpression)
-            throws CompilerException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void open(MethodInvokeSymbol invoke) throws CompilerException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void open(FieldAccessSymbol field) throws CompilerException {
         // TODO Auto-generated method stub
         
     }
@@ -259,18 +282,6 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
     }
 
     @Override
-    public void visit(ATerminal terminal) throws CompilerException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void visit(CastExpressionSymbol symbol) throws CompilerException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
     public void visit(NegOpExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
         
@@ -284,12 +295,6 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
 
     @Override
     public void visit(MultiplyExprSymbol op) throws CompilerException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void visit(AssignmentExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
         
     }
@@ -417,21 +422,8 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
     }
 
     @Override
-    public void visit(EmptyStatementSymbol emptySymbol)
-            throws CompilerException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
     public void visit(ArrayAccessExprSymbol arrayAccess)
             throws CompilerException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void visit(ISymbol symbol) throws CompilerException {
         // TODO Auto-generated method stub
         
     }
