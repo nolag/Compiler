@@ -55,6 +55,13 @@ public class Compiler {
 
                 PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
             }
+
+            //Make a copy, the symbols can add more for arrays.
+            List<APkgClassResolver> resolvers = new LinkedList<APkgClassResolver>(PkgClassInfo.instance.getSymbols());
+            buildAllResolvers(resolvers);
+            typeCheck(resolvers);
+            checkFields(resolvers);
+
         }catch(Exception e){
             if (printErrors) e.printStackTrace();
             return COMPILER_ERROR_CODE;
@@ -68,36 +75,29 @@ public class Compiler {
             }
         }
 
-        //Make a copy, the symbols can add more for arrays.
-        List<APkgClassResolver> resolvers = new LinkedList<APkgClassResolver>(PkgClassInfo.instance.getSymbols());
-        for(APkgClassResolver resolver : resolvers){
-            try {
-                resolver.build();
-            } catch (Exception e) {
-                if(printErrors) e.printStackTrace();
-                return COMPILER_ERROR_CODE;
-            }
-        }
+        return 0;
+    }
 
-        for(APkgClassResolver resolver : resolvers){
-            try {
-                resolver.linkLocalNamesToDcl();
-            } catch (Exception e) {
-                if (printErrors) e.printStackTrace();
-                return COMPILER_ERROR_CODE;
-            }
-        }
-
+    private static void checkFields(List<APkgClassResolver> resolvers)
+            throws CompilerException {
         //Do field init here
         for(APkgClassResolver resolver : resolvers){
-            try {
-                resolver.checkFields();
-            } catch (CompilerException e) {
-                return COMPILER_ERROR_CODE;
-            }
+            resolver.checkFields();
         }
+    }
 
-        return 0;
+    private static void typeCheck(List<APkgClassResolver> resolvers)
+            throws CompilerException {
+        for(APkgClassResolver resolver : resolvers){
+            resolver.linkLocalNamesToDcl();
+        }
+    }
+
+    private static void buildAllResolvers(List<APkgClassResolver> resolvers)
+            throws CompilerException {
+        for(APkgClassResolver resolver : resolvers){
+            resolver.build();
+        }
     }
 
     private static void printUsage() {
