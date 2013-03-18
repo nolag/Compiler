@@ -116,6 +116,11 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
         }
     }
 
+    @Override
+    public void open(NonTerminal aNonTerminal) throws CompilerException {
+        assertIsReachable(aNonTerminal.getName());
+    }
+
     private void assertIsReachable(String what) throws UnreachableCode, UndeclaredException {
         if(stack.peek() == NO) throw new UnreachableCode(what, context.enclosingClassName, context.getMethodName());
     }
@@ -149,12 +154,6 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
     @Override
     public void open(CreationExpression creationExpression)
             throws CompilerException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void open(NonTerminal aNonTerminal) throws CompilerException {
         // TODO Auto-generated method stub
         
     }
