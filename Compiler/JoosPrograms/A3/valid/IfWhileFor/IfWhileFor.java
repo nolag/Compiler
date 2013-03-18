@@ -7,7 +7,7 @@ public class IfWhileFor{
             a = 2;
         }
 
-        while(true){
+        while(a == 2){
             a = 3 + 1;
         }
 

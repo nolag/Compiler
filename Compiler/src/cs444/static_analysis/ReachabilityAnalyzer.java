@@ -209,7 +209,14 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
     public void close(WhileExprSymbol whileExprSymbol) throws CompilerException {
         boolean outWhileBody = stack.pop();
         boolean inWhileExpr = stack.pop();
-        stack.push(outWhileBody || inWhileExpr);
+
+        Typeable whileCond = whileExprSymbol.getCondition();
+        if (whileCond instanceof BooleanLiteralSymbol &&
+                ((BooleanLiteralSymbol) whileCond).boolValue){
+            stack.push(NO);
+        }else{
+            stack.push(outWhileBody || inWhileExpr);
+        }
     }
 
     @Override
