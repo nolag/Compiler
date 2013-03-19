@@ -39,7 +39,7 @@ public abstract class ASTSymbolFactory{
         int numChildren = nonTerm.children.size();
         for(int i = 0; i < numChildren; i++){
             ISymbol child = nonTerm.children.remove(i);
-            nonTerm.children.add(i, convertAll(child));
+            nonTerm.children.add(i, convertBottomUp(child));
         }
 
         return convert(start);

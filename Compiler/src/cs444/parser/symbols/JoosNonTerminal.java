@@ -12,6 +12,7 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 
 public class JoosNonTerminal extends NonTerminal{
+    public static final String BRACKET_PRIMARY = "BRACKETPRIMARY";
     public static final String ARRAY_TYPE = "ARRAYTYPE";
     public static final String TYPE = "TYPE";
     public static final String IF_THEN_STATEMENT = "IFTHENSTATEMENT";
@@ -89,7 +90,7 @@ public class JoosNonTerminal extends NonTerminal{
         noCollapse.add("CONSTRUCTORDECLARATOR");
         noCollapse.add("INTERFACEMEMBERDECLARATIONS");
         noCollapse.add("CLASSBODYDECLARATIONS");
-        noCollapse.add("BRACKETPRIMARY");
+        noCollapse.add(BRACKET_PRIMARY);
         noCollapse.add(METHOD_INVOCATION);
         noCollapse.add("IMPORTDECLARATIONS");
         noCollapse.add(BLOCK);

@@ -390,6 +390,7 @@ public class PkgClassResolver extends APkgClassResolver {
 
     @Override
     public void reduceToConstantExprs() throws CompilerException {
+        if (start == null) return;
         IASTBuilder builder = new ConstantExprBuilder();
         this.start = (AInterfaceOrClassSymbol) builder.build(start);
     }

@@ -16,9 +16,6 @@ public class Asst4 {
 
     @Test
     public void testMarmosetInvalidTestCases() throws IOException, InterruptedException{
-        List<String> ignoreList = new LinkedList<String>(Arrays.asList(
-                "Je_7_Reachability_ForFalse_1.java"));
-
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a4/invalid/", 42,  false, ignoreList);
+        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a4/invalid/", 42,  false);
     }
 }
