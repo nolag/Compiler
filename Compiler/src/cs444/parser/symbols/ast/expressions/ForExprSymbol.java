@@ -4,6 +4,7 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.Typeable;
+import cs444.parser.symbols.ast.TypeableTerminal;
 
 public class ForExprSymbol extends BaseExprSymbol {
 
@@ -44,5 +45,10 @@ public class ForExprSymbol extends BaseExprSymbol {
         getForUpdate().accept(visitor);
         visitor.afterClause(this);
         visitor.close(this);
+    }
+
+    @Override
+    public TypeableTerminal reduceToLiteral() {
+         return null;
     }
 }

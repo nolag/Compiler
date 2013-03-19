@@ -9,4 +9,12 @@ public abstract class BinOpExpr extends BaseExprSymbol{
         children.add(left);
         children.add(right);
     }
+
+    public ISymbol getLeftOperand(){
+        return children.get(0);
+    }
+
+    public ISymbol getRightOperand(){
+        return children.get(1);
+    }
 }

@@ -18,4 +18,8 @@ public abstract class UnaryOpExprSymbol extends BaseExprSymbol{
     public boolean isCollapsable() {
         return false;
     }
+    
+    public ISymbol getOperand(){
+        return this.children.get(0);
+    }
 }

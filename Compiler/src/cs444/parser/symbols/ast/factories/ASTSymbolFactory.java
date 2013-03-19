@@ -30,6 +30,21 @@ public abstract class ASTSymbolFactory{
         return retVal;
     }
 
+    public ISymbol convertBottomUp(ISymbol start) throws OutOfRangeException, UnsupportedException, IllegalModifierException{
+        if(!ANonTerminal.class.isInstance(start)){
+            return convert(start);
+        }
+
+        ANonTerminal nonTerm = (ANonTerminal) start;
+        int numChildren = nonTerm.children.size();
+        for(int i = 0; i < numChildren; i++){
+            ISymbol child = nonTerm.children.remove(i);
+            nonTerm.children.add(i, convertBottomUp(child));
+        }
+
+        return convert(start);
+    }
+
     /**
      *
      * @param from the symbol to convert to the ast symbol

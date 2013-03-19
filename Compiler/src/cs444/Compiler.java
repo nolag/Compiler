@@ -50,8 +50,8 @@ public class Compiler {
                 reader = new FileReader(fileName);
                 parseTree = parse(reader);
 
-                IASTBuilder builder = new JoosASTBuilder();
-                parseTree = (ANonTerminal)builder.build(new File(fileName).getName(), parseTree);
+                IASTBuilder builder = new JoosASTBuilder(new File(fileName).getName());
+                parseTree = (ANonTerminal)builder.build(parseTree);
 
                 PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
             }
@@ -81,7 +81,9 @@ public class Compiler {
 
     private static void analyzeReachability(List<APkgClassResolver> resolvers)
             throws CompilerException {
+
         for (APkgClassResolver resolver : resolvers) {
+            resolver.reduceToConstantExprs();
             resolver.analyzeReachability();
         }
     }

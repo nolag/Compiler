@@ -5,11 +5,17 @@ import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.JoosNonTerminal;
 
 public class BooleanLiteralSymbol extends TypeableTerminal{
+    private static final String SYM_NAME = "Boolean";
     public final boolean boolValue;
 
     public BooleanLiteralSymbol(String value) {
-        super("Boolean", value);
+        super(SYM_NAME, value);
         boolValue = value.equals(JoosNonTerminal.TRUE_VALUE);
+    }
+
+    public BooleanLiteralSymbol(boolean value) {
+        super(SYM_NAME, String.valueOf(value));
+        this.boolValue = value;
     }
 
     @Override

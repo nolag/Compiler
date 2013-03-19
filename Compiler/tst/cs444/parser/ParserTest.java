@@ -412,8 +412,8 @@ public class ParserTest {
         Lexer lexer = new Lexer(reader);
         ANonTerminal start = parser.parse(lexer);
 
-        IASTBuilder builder = new JoosASTBuilder();
-        start = (ANonTerminal)builder.build("CompleteCompUnit.java", start);
+        IASTBuilder builder = new JoosASTBuilder("CompleteCompUnit.java");
+        start = (ANonTerminal)builder.build(start);
 
         ClassSymbol classSymbol = (ClassSymbol) start;
         assertEquals("CompleteCompUnit", classSymbol.dclName);
@@ -437,8 +437,8 @@ public class ParserTest {
         Lexer lexer = new Lexer(reader);
         ANonTerminal start = parser.parse(lexer);
 
-        IASTBuilder builder = new JoosASTBuilder();
-        start = (ANonTerminal)builder.build("CompWithMethods.java", start);
+        IASTBuilder builder = new JoosASTBuilder("CompWithMethods.java");
+        start = (ANonTerminal)builder.build(start);
 
         assertEquals(9, start.children.size());
 

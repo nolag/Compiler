@@ -32,6 +32,7 @@ import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
+import cs444.parser.symbols.ast.expressions.BinOpExpr;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
 import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
@@ -319,39 +320,43 @@ public class LocalDclLinker extends EmptyVisitor {
         simpleVistorHelper(superSymbol, resolver.getSuperName());
     }
 
-    public void bothBooleanHelper() throws UndeclaredException, BadOperandsTypeException{
+    public void bothBooleanHelper(BinOpExpr op) throws UndeclaredException, BadOperandsTypeException{
         TypeSymbol second = currentTypes.peek().removeLast().getType();
         TypeSymbol first = currentTypes.peek().removeLast().getType();
 
         assertIsBoolean(first);
         assertIsBoolean(second);
 
-        currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN));
+        TypeSymbol boolType = TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN);
+        op.setType(boolType);
+        currentTypes.peek().add(boolType);
     }
 
     @Override
     public void visit(AndExprSymbol op) throws UndeclaredException, BadOperandsTypeException {
-        bothBooleanHelper();
+        bothBooleanHelper(op);
     }
 
     @Override
     public void visit(OrExprSymbol op) throws BadOperandsTypeException, UndeclaredException {
-        bothBooleanHelper();
+        bothBooleanHelper(op);
     }
 
     @Override
     public void visit(EAndExprSymbol op) throws BadOperandsTypeException, UndeclaredException {
-        bothBooleanHelper();
+        bothBooleanHelper(op);
     }
 
     @Override
     public void visit(EOrExprSymbol op) throws BadOperandsTypeException, UndeclaredException {
-        bothBooleanHelper();
+        bothBooleanHelper(op);
     }
 
     @Override
     public void visit(NotOpExprSymbol op) throws BadOperandsTypeException, UndeclaredException {
         assertIsBoolean(currentTypes.peek().getLast().getType());
+        TypeSymbol boolType = TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN);
+        op.setType(boolType);
     }
 
     @Override
@@ -408,6 +413,7 @@ public class LocalDclLinker extends EmptyVisitor {
             String name2 = context.getCurrentMC().type.isArray ? ArrayPkgClassResolver.getArrayName(context.getCurrentMC().type.value) : context.getCurrentMC().type.value;
             throw new IllegalCastAssignmentException(context.enclosingClassName, where, name1, name2);
         }
+        op.setType(TypeSymbol.getPrimative(JoosNonTerminal.INTEGER));
     }
 
     @Override
@@ -426,7 +432,9 @@ public class LocalDclLinker extends EmptyVisitor {
 
         if(!rhs.isArray && JoosNonTerminal.notAllowedForInstanceOfRHS.contains(rhs.value))
             throw new IllegalInstanceOfException(context.enclosingClassName, where, rhs.value, context.getCurrentMC().type.value);
-        currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN));
+        TypeSymbol boolType = TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN);
+        op.setType(boolType);
+        currentTypes.peek().add(boolType);
     }
 
     private void castOrAssign(boolean secondIsClass, boolean allowDownCast) throws IllegalCastAssignmentException, UndeclaredException {
@@ -457,7 +465,9 @@ public class LocalDclLinker extends EmptyVisitor {
         //cast is to a class, make sure it's not a class after the cast
         Deque<Typeable> currentDeque = currentTypes.peek();
         TypeSymbol type = currentDeque.removeLast().getType();
-        currentDeque.add(type.getNonClassVersion());
+        TypeSymbol finalType = type.getNonClassVersion();
+        symbol.setType(finalType);
+        currentDeque.add(finalType);
     }
 
     @Override
@@ -493,10 +503,11 @@ public class LocalDclLinker extends EmptyVisitor {
             if (declaration.isFinal) throw new UnsupportedException("left hand side of assignment cannot be final.");
         }
 
+        op.setType(leftHS.getType());
         currentTypes.peek().add(leftHS);
     }
 
-    private void eqNeHelper() throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException{
+    private void eqNeHelper(BinOpExpr op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException{
         TypeSymbol isType = currentTypes.peek().removeLast().getType();
          TypeSymbol toType = currentTypes.peek().getLast().getType();
 
@@ -513,27 +524,29 @@ public class LocalDclLinker extends EmptyVisitor {
          }
 
          currentTypes.peek().removeLast();
-         currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN));
+         TypeSymbol boolType = TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN);
+         op.setType(boolType);
+         currentTypes.peek().add(boolType);
     }
 
     @Override
     public void visit(EqExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException {
-        eqNeHelper();
+        eqNeHelper(op);
     }
 
     @Override
     public void visit(NeExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, BadOperandsTypeException  {
-        eqNeHelper();
+        eqNeHelper(op);
     }
 
     @Override
     public void visit(LtExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-        bothIntHelper(JoosNonTerminal.BOOLEAN);
+        bothIntHelper(JoosNonTerminal.BOOLEAN, op);
     }
 
     @Override
     public void visit(LeExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-        bothIntHelper(JoosNonTerminal.BOOLEAN);
+        bothIntHelper(JoosNonTerminal.BOOLEAN, op);
     }
 
     @Override
@@ -543,33 +556,37 @@ public class LocalDclLinker extends EmptyVisitor {
 
         if ((isCastable(first, JoosNonTerminal.STRING, false) && !second.value.equals(JoosNonTerminal.VOID))
                 || (isCastable(second, JoosNonTerminal.STRING, false) && !first.value.equals(JoosNonTerminal.VOID))){
-            currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.STRING));
+            TypeSymbol strType = TypeSymbol.getPrimative(JoosNonTerminal.STRING);
+            op.setType(strType);
+            currentTypes.peek().add(strType);
         }else{
             isNumeric(first, true);
             isNumeric(second, true);
 
-            currentTypes.peek().add(TypeSymbol.getPrimative(JoosNonTerminal.INTEGER));
+            TypeSymbol intType = TypeSymbol.getPrimative(JoosNonTerminal.INTEGER);
+            op.setType(intType);
+            currentTypes.peek().add(intType);
         }
     }
 
     @Override
     public void visit(SubtractExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-        bothIntHelper(JoosNonTerminal.INTEGER);
+        bothIntHelper(JoosNonTerminal.INTEGER, op);
     }
 
     @Override
     public void visit(MultiplyExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-        bothIntHelper(JoosNonTerminal.INTEGER);
+        bothIntHelper(JoosNonTerminal.INTEGER, op);
     }
 
     @Override
     public void visit(DivideExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-        bothIntHelper(JoosNonTerminal.INTEGER);
+        bothIntHelper(JoosNonTerminal.INTEGER, op);
     }
 
     @Override
     public void visit(RemainderExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-        bothIntHelper(JoosNonTerminal.INTEGER);
+        bothIntHelper(JoosNonTerminal.INTEGER, op);
     }
 
     @Override
@@ -608,6 +625,7 @@ public class LocalDclLinker extends EmptyVisitor {
         }
 
         resolver.getConstructor(params, PkgClassInfo.instance.getSymbol(context.enclosingClassName));
+        create.setType(typeSymbol);
         currentTypes.peek().add(create);
     }
 
@@ -624,16 +642,19 @@ public class LocalDclLinker extends EmptyVisitor {
 
         TypeSymbol retType = new TypeSymbol(in.value, false, false);
         retType.setTypeDclNode(in.getTypeDclNode().accessor());
+        array.setType(retType);
         currentTypes.peek().add(retType);
     }
 
-    private void bothIntHelper(String returnType) throws BadOperandsTypeException, UndeclaredException{
+    private void bothIntHelper(String returnType, BinOpExpr op) throws BadOperandsTypeException, UndeclaredException{
         TypeSymbol second = currentTypes.peek().removeLast().getType();
         TypeSymbol first = currentTypes.peek().removeLast().getType();
         isNumeric(first, true);
         isNumeric(second, true);
 
-        currentTypes.peek().add(TypeSymbol.getPrimative(returnType));
+        TypeSymbol type = TypeSymbol.getPrimative(returnType);
+        op.setType(type);
+        currentTypes.peek().add(type);
     }
 
     private boolean isNumeric(TypeSymbol type, boolean die)

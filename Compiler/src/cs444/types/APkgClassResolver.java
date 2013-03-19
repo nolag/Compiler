@@ -258,4 +258,6 @@ public abstract class APkgClassResolver {
         if(now.isStatic() && !dcl.isStatic()) throw new UndeclaredException(dcl.dclName, fullName);
         return list;
     }
+
+    public abstract void reduceToConstantExprs() throws CompilerException;
 }

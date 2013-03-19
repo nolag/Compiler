@@ -6,6 +6,7 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.ast.TypeableTerminal;
 
 public class CreationExpression extends BaseExprSymbol{
     public CreationExpression(TypeSymbol type, List<ISymbol> args) {
@@ -34,5 +35,10 @@ public class CreationExpression extends BaseExprSymbol{
     @Override
     public boolean isCollapsable() {
         return false;
+    }
+
+    @Override
+    public TypeableTerminal reduceToLiteral() {
+        return null;
     }
 }

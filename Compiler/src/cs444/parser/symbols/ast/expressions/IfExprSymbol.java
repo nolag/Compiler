@@ -5,6 +5,7 @@ import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.Typeable;
+import cs444.parser.symbols.ast.TypeableTerminal;
 
 public class IfExprSymbol extends BaseExprSymbol {
 
@@ -48,5 +49,10 @@ public class IfExprSymbol extends BaseExprSymbol {
             elseBody.accept(visitor);
         }
         visitor.close(this);
+    }
+
+    @Override
+    public TypeableTerminal reduceToLiteral() {
+         return null;
     }
 }

@@ -4,6 +4,7 @@ package cs444.parser.symbols.ast.expressions;
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.ast.TypeableTerminal;
 
 public class AssignmentExprSymbol extends BinOpExpr {
     public final static String myName = "Assignment";
@@ -27,6 +28,11 @@ public class AssignmentExprSymbol extends BinOpExpr {
     @Override
     public boolean isCollapsable() {
         return false;
+    }
+
+    @Override
+    public TypeableTerminal reduceToLiteral() {
+         return null;
     }
 
 }

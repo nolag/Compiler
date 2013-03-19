@@ -6,10 +6,16 @@ import cs444.parser.symbols.ATerminal;
 
 public class StringLiteralSymbol extends TypeableTerminal {
 
-	public final String strValue;
+	private static final String SYMBOL_NAME = "StringLiteral";
+    public final String strValue;
+
+    public StringLiteralSymbol(String strVal) {
+        super(SYMBOL_NAME, strVal);
+        this.strValue = strVal;
+    }
 
 	public StringLiteralSymbol(ATerminal terminal) {
-		super("StringLiteral", terminal.value);
+		super(SYMBOL_NAME, terminal.value);
 
 		StringBuilder builder = new StringBuilder();
 
@@ -41,7 +47,7 @@ public class StringLiteralSymbol extends TypeableTerminal {
 		this.strValue = builder.toString();
 	}
 
-	@Override
+    @Override
 	public void accept(ISymbolVisitor visitor) throws CompilerException {
 	    visitor.visit(this);
 	}
