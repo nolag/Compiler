@@ -39,8 +39,8 @@ public class LtExprSymbol extends BinOpExpr {
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
-            int val1 = ((INumericLiteral)rightOperand).getValue();
-            int val2 = ((INumericLiteral)leftOperand).getValue();
+            int val1 = ((INumericLiteral)leftOperand).getValue();
+            int val2 = ((INumericLiteral)rightOperand).getValue();
             return new BooleanLiteralSymbol(val1 < val2);
         }else{
             return null;

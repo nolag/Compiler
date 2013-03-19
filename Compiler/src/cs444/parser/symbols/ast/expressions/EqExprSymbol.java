@@ -40,13 +40,13 @@ public class EqExprSymbol extends BinOpExpr {
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
-            int val1 = ((INumericLiteral)rightOperand).getValue();
-            int val2 = ((INumericLiteral)leftOperand).getValue();
+            int val1 = ((INumericLiteral)leftOperand).getValue();
+            int val2 = ((INumericLiteral)rightOperand).getValue();
             return new BooleanLiteralSymbol(val1 == val2);
         } else if(rightOperand instanceof StringLiteralSymbol && 
                 leftOperand instanceof StringLiteralSymbol){
-            String val1 = ((StringLiteralSymbol) rightOperand).strValue;
-            String val2 = ((StringLiteralSymbol) leftOperand).strValue;
+            String val1 = ((StringLiteralSymbol) leftOperand).strValue;
+            String val2 = ((StringLiteralSymbol) rightOperand).strValue;
             return new BooleanLiteralSymbol(val1 == val2);
         }else{
             return null;

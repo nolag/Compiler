@@ -38,8 +38,8 @@ public class EAndExprSymbol extends BinOpExpr {
 
         if (rightOperand instanceof BooleanLiteralSymbol &&
                 leftOperand instanceof BooleanLiteralSymbol){
-            boolean val1 = ((BooleanLiteralSymbol)rightOperand).boolValue;
-            boolean val2 = ((BooleanLiteralSymbol)leftOperand).boolValue;
+            boolean val1 = ((BooleanLiteralSymbol)leftOperand).boolValue;
+            boolean val2 = ((BooleanLiteralSymbol)rightOperand).boolValue;
             return new BooleanLiteralSymbol(val1 & val2);
         }else{
             return null;

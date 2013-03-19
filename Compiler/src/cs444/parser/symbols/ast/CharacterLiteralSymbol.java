@@ -4,13 +4,14 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ATerminal;
 
-public class CharacterLiteralSymbol extends TypeableTerminal {
+public class CharacterLiteralSymbol extends TypeableTerminal implements INumericLiteral {
 
-	public final char charVal;
+	private static final String SYM_NAME = "CharacterLiteral";
+    public final char charVal;
 
 	public CharacterLiteralSymbol(ATerminal terminal) {
 
-	    super("CharacterLiteral", terminal.value);
+	    super(SYM_NAME, terminal.value);
 
 		char cvalue = value.charAt(1);
 
@@ -30,8 +31,18 @@ public class CharacterLiteralSymbol extends TypeableTerminal {
 		this.charVal = cvalue;
 	}
 
-	@Override
+	public CharacterLiteralSymbol(char value) {
+	    super(SYM_NAME, Character.toString(value));
+	    this.charVal = value;
+    }
+
+    @Override
 	public void accept(ISymbolVisitor visitor) throws CompilerException {
 	    visitor.visit(this);
 	}
+
+    @Override
+    public int getValue() {
+        return charVal;
+    }
 }

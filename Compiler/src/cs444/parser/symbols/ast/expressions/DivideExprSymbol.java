@@ -38,9 +38,9 @@ public class DivideExprSymbol extends BinOpExpr {
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
-            int val1 = ((INumericLiteral)rightOperand).getValue();
-            int val2 = ((INumericLiteral)leftOperand).getValue();
-            return new IntegerLiteralSymbol(val1 % val2);
+            int val1 = ((INumericLiteral)leftOperand).getValue();
+            int val2 = ((INumericLiteral)rightOperand).getValue();
+            return new IntegerLiteralSymbol(val1 / val2);
         }else{
             return null;
         }

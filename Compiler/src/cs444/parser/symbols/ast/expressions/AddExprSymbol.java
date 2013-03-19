@@ -40,23 +40,23 @@ public class AddExprSymbol extends BinOpExpr {
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
-            int val1 = ((INumericLiteral)rightOperand).getValue();
-            int val2 = ((INumericLiteral)leftOperand).getValue();
+            int val1 = ((INumericLiteral)leftOperand).getValue();
+            int val2 = ((INumericLiteral)rightOperand).getValue();
             return new IntegerLiteralSymbol(val1 + val2);
         } else if (rightOperand instanceof StringLiteralSymbol &&
                 leftOperand instanceof INumericLiteral){
-            String val1 = ((StringLiteralSymbol)rightOperand).strValue;
-            int val2 = ((INumericLiteral)leftOperand).getValue();
+            int val1 = ((INumericLiteral)leftOperand).getValue();
+            String val2 = ((StringLiteralSymbol)rightOperand).strValue;
             return new StringLiteralSymbol(val1 + val2);
         } else if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof StringLiteralSymbol){
-            int val1 = ((INumericLiteral)rightOperand).getValue();
-            String val2 = ((StringLiteralSymbol)leftOperand).strValue;
+            String val1 = ((StringLiteralSymbol)leftOperand).strValue;
+            int val2 = ((INumericLiteral)rightOperand).getValue();
             return new StringLiteralSymbol(val1 + val2);
         } else if(rightOperand instanceof StringLiteralSymbol && 
                 leftOperand instanceof StringLiteralSymbol){
-            String val1 = ((StringLiteralSymbol) rightOperand).strValue;
-            String val2 = ((StringLiteralSymbol) leftOperand).strValue;
+            String val1 = ((StringLiteralSymbol) leftOperand).strValue;
+            String val2 = ((StringLiteralSymbol) rightOperand).strValue;
             return new StringLiteralSymbol(val1 + val2);
         }else{
             return null;
