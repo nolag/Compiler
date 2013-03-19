@@ -43,11 +43,21 @@ public class AddExprSymbol extends BinOpExpr {
             int val1 = ((INumericLiteral)rightOperand).getValue();
             int val2 = ((INumericLiteral)leftOperand).getValue();
             return new IntegerLiteralSymbol(val1 + val2);
+        } else if (rightOperand instanceof StringLiteralSymbol &&
+                leftOperand instanceof INumericLiteral){
+            String val1 = ((StringLiteralSymbol)rightOperand).strValue;
+            int val2 = ((INumericLiteral)leftOperand).getValue();
+            return new StringLiteralSymbol(val1 + val2);
+        } else if (rightOperand instanceof INumericLiteral &&
+                leftOperand instanceof StringLiteralSymbol){
+            int val1 = ((INumericLiteral)rightOperand).getValue();
+            String val2 = ((StringLiteralSymbol)leftOperand).strValue;
+            return new StringLiteralSymbol(val1 + val2);
         } else if(rightOperand instanceof StringLiteralSymbol && 
                 leftOperand instanceof StringLiteralSymbol){
             String val1 = ((StringLiteralSymbol) rightOperand).strValue;
             String val2 = ((StringLiteralSymbol) leftOperand).strValue;
-            return new StringLiteralSymbol(val1.concat(val2));
+            return new StringLiteralSymbol(val1 + val2);
         }else{
             return null;
         }
