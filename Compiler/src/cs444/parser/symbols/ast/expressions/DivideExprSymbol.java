@@ -3,6 +3,9 @@ package cs444.parser.symbols.ast.expressions;
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.ast.INumericLiteral;
+import cs444.parser.symbols.ast.IntegerLiteralSymbol;
+import cs444.parser.symbols.ast.TypeableTerminal;
 
 public class DivideExprSymbol extends BinOpExpr {
     public final static String myName = "Divide";
@@ -28,4 +31,18 @@ public class DivideExprSymbol extends BinOpExpr {
         return false;
     }
 
+    @Override
+    public TypeableTerminal reduceToLiteral() {
+        ISymbol rightOperand = getRightOperand();
+        ISymbol leftOperand = getLeftOperand();
+
+        if (rightOperand instanceof INumericLiteral &&
+                leftOperand instanceof INumericLiteral){
+            int val1 = ((INumericLiteral)rightOperand).getValue();
+            int val2 = ((INumericLiteral)leftOperand).getValue();
+            return new IntegerLiteralSymbol(val1 % val2);
+        }else{
+            return null;
+        }
+    }
 }

@@ -133,6 +133,9 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     public void analyzeReachability() throws CompilerException { }
 
     @Override
+    public void reduceToConstantExprs() {}
+
+    @Override
     protected boolean isPrimative() {
         return false;
     }

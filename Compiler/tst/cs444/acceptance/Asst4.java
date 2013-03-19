@@ -11,18 +11,13 @@ public class Asst4 {
 
     @Test
     public void testMarmosetValidTestCases() throws IOException, InterruptedException {
-        List<String> ignoreList = new LinkedList<String>(Arrays.asList(
-                "J1_7_Reachability_WhileTrue_ConstantFolding.java"));
-
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a4/valid/", 0, true, ignoreList);
+        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a4/valid/", 0, true);
     }
 
     @Test
     public void testMarmosetInvalidTestCases() throws IOException, InterruptedException{
         List<String> ignoreList = new LinkedList<String>(Arrays.asList(
-                "Je_7_Reachability_ForFalse_1.java",
-                "Je_7_Reachability_WhileFalse_ConstantFolding.java",
-                "Je_7_Reachability_WhileTrue_ConstantFolding.java"));
+                "Je_7_Reachability_ForFalse_1.java"));
 
         TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a4/invalid/", 42,  false, ignoreList);
     }

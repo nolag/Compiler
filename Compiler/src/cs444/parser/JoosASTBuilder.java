@@ -44,7 +44,12 @@ public class JoosASTBuilder implements IASTBuilder {
             new ReturnExprFractory(), new UniOpExprFactory(), new BinOpFactory(), new CreationExprFactory(), new CastExpressionFactory(),
             new IfExprFactory(), new WhileExprFactory(), new ForExprFactory()});
 
-    public ISymbol build(String fileName, ANonTerminal start) throws OutOfRangeException, UnsupportedException, IllegalModifierException, InvalidFileNameException {
+    private final String fileName;
+    public JoosASTBuilder(String fileName){
+        this.fileName = fileName;
+    }
+
+    public ISymbol build(ANonTerminal start) throws OutOfRangeException, UnsupportedException, IllegalModifierException, InvalidFileNameException {
     	for(ASTSymbolFactory astSymbol : simplifications){
     		start = (ANonTerminal)astSymbol.convertAll(start);
     	}

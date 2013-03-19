@@ -4,6 +4,8 @@ package cs444.parser.symbols.ast.expressions;
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.ast.BooleanLiteralSymbol;
+import cs444.parser.symbols.ast.TypeableTerminal;
 
 public class OrExprSymbol extends BinOpExpr {
     public final static String myName = "Or";
@@ -29,4 +31,18 @@ public class OrExprSymbol extends BinOpExpr {
         return false;
     }
 
+    @Override
+    public TypeableTerminal reduceToLiteral() {
+        ISymbol rightOperand = getRightOperand();
+        ISymbol leftOperand = getLeftOperand();
+
+        if (rightOperand instanceof BooleanLiteralSymbol &&
+                leftOperand instanceof BooleanLiteralSymbol){
+            boolean val1 = ((BooleanLiteralSymbol)rightOperand).boolValue;
+            boolean val2 = ((BooleanLiteralSymbol)leftOperand).boolValue;
+            return new BooleanLiteralSymbol(val1 || val2);
+        }else{
+            return null;
+        }
+    }
 }

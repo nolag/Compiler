@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import cs444.CompilerException;
+import cs444.parser.IASTBuilder;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
@@ -22,6 +23,7 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.exceptions.UnsupportedException;
+import cs444.static_analysis.ConstantExprBuilder;
 import cs444.types.exceptions.CircularDependancyException;
 import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.IllegalExtendsException;
@@ -384,6 +386,12 @@ public class PkgClassResolver extends APkgClassResolver {
         for(ConstructorSymbol consturctor : start.getConstructors()){
             consturctor.resolveLocalVars(fullName);
         }
+    }
+
+    @Override
+    public void reduceToConstantExprs() throws CompilerException {
+        IASTBuilder builder = new ConstantExprBuilder();
+        this.start = (AInterfaceOrClassSymbol) builder.build(start);
     }
 
     @Override

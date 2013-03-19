@@ -3,6 +3,7 @@ package cs444.parser.symbols.ast.expressions;
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.ast.TypeableTerminal;
 
 public class ArrayAccessExprSymbol extends BaseExprSymbol{
 
@@ -17,5 +18,10 @@ public class ArrayAccessExprSymbol extends BaseExprSymbol{
         children.get(0).accept(visitor);
         children.get(1).accept(visitor);
         visitor.visit(this);
+    }
+
+    @Override
+    public TypeableTerminal reduceToLiteral() {
+        return null;
     }
 }
