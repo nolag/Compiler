@@ -4,14 +4,14 @@ import cs444.codegen.InstructionArg;
 import cs444.codegen.InstructionArg.Size;
 import cs444.codegen.Register;
 
-public class Movsx implements Instruction{
+public class Movzx implements Instruction{
 
     public final Register dst;
     public final InstructionArg src;
     public final Size size;
 
     //NOTE register register is legal, but I don't see why we would want it.
-    public Movsx(Register dst, InstructionArg src, Size size){
+    public Movzx(Register dst, InstructionArg src, Size size){
         this.dst = dst;
         this.src = src;
         this.size = size;
@@ -32,6 +32,6 @@ public class Movsx implements Instruction{
             sizeStr = "dword";
         }
 
-        return "movsx " + dst.getValue(Size.DWORD) + ", " + sizeStr + " " + src.getValue(size);
+        return "movzx " + dst.getValue(Size.DWORD) + ", " + sizeStr + " " + src.getValue(size);
     }
 }

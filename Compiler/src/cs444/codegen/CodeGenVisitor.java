@@ -6,6 +6,9 @@ import java.util.List;
 import cs444.codegen.InstructionArg.Size;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Mov;
+import cs444.codegen.instructions.Movsx;
+import cs444.codegen.instructions.Movzx;
+import cs444.codegen.instructions.Neg;
 import cs444.codegen.instructions.Pop;
 import cs444.codegen.instructions.Push;
 import cs444.codegen.instructions.Ret;
@@ -15,6 +18,7 @@ import cs444.codegen.instructions.factories.BinOpMaker;
 import cs444.codegen.instructions.factories.OrOpMaker;
 import cs444.codegen.instructions.factories.SubOpMaker;
 import cs444.parser.symbols.ATerminal;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
@@ -139,7 +143,17 @@ public class CodeGenVisitor implements ISymbolChoiceVisitor {
         if(stackSize == 16) size = Size.WORD;
         if(stackSize == 8) size = Size.LOW;
         final InstructionArg from = new PointerRegister(Register.FRAME, offset);
-//TODO
+        Instruction instruction;
+
+        if(size == Size.DWORD){
+            instruction = new Mov(Register.ACCUMULATOR, from);
+        }else if(JoosNonTerminal.unsigned.contains(dcl.getType().getTypeDclNode().fullName)){
+            instruction = new Movzx(Register.ACCUMULATOR, from, size);
+        }else{
+            instruction = new Movsx(Register.ACCUMULATOR, from, size);
+        }
+
+        instructions.add(instruction);
     }
 
     @Override
@@ -156,8 +170,7 @@ public class CodeGenVisitor implements ISymbolChoiceVisitor {
 
     @Override
     public void visit(NegOpExprSymbol op) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new Neg(Register.ACCUMULATOR));
     }
 
     @Override
