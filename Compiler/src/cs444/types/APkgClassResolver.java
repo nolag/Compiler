@@ -43,10 +43,14 @@ public abstract class APkgClassResolver {
     protected final Map<String, AMethodSymbol> smethodMap = new HashMap<String, AMethodSymbol>();
     protected final Map<String, ConstructorSymbol> constructors = new HashMap<String, ConstructorSymbol>();
 
+    private static final int DEFAULT_STACK_SIZE = 32;
+
     private final Map<DclSymbol, Integer> order = new HashMap<DclSymbol, Integer>();
     private final Map<Integer, DclSymbol> revorder = new HashMap<Integer, DclSymbol>();
     protected final Set<DclSymbol> addAll = new HashSet<DclSymbol>();
     private int onField = 0;
+
+    public final int stackSize;
 
     public static enum Castable { UP_CAST, DOWN_CAST, NOT_CASTABLE };
 
@@ -61,6 +65,7 @@ public abstract class APkgClassResolver {
 
         Set<String> alsoAssignsTo = JoosNonTerminal.defaultAssignables.get(name);
         if(alsoAssignsTo != null) assignableTo.addAll(alsoAssignsTo);
+        this.stackSize = JoosNonTerminal.stackSizes.containsKey(name) ? JoosNonTerminal.stackSizes.get(name) : DEFAULT_STACK_SIZE;
     }
 
     protected void addTo(DclSymbol add){
@@ -69,7 +74,7 @@ public abstract class APkgClassResolver {
         onField++;
     }
 
-    protected static String generateUniqueName(String name, Iterable<String> types) {
+    public static String generateUniqueName(String name, Iterable<String> types) {
         StringBuilder sb = new StringBuilder(name + "-");
 
         for (String type : types) sb.append(type + "*");
@@ -77,7 +82,7 @@ public abstract class APkgClassResolver {
         return sb.toString();
     }
 
-    protected static String generateUniqueName(MethodOrConstructorSymbol methodSymbol, String name) throws UndeclaredException {
+    public static String generateUniqueName(MethodOrConstructorSymbol methodSymbol, String name) throws UndeclaredException {
         List<String> types = new LinkedList<String>();
         APkgClassResolver resolver = methodSymbol.resolver;
         for(DclSymbol param : methodSymbol.params){

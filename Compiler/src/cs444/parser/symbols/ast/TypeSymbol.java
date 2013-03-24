@@ -5,6 +5,7 @@ import java.util.Map;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
+import cs444.codegen.ISymbolChoiceVisitor;
 import cs444.parser.symbols.ATerminal;
 import cs444.types.APkgClassResolver;
 
@@ -60,5 +61,10 @@ public class TypeSymbol extends ATerminal implements Typeable{
         TypeSymbol newType = new TypeSymbol(value, isArray, false);
         newType.typeResolver = typeResolver;
         return newType;
+    }
+
+    @Override
+    public void accept(ISymbolChoiceVisitor visitor) {
+        visitor.visit(this);
     }
 }

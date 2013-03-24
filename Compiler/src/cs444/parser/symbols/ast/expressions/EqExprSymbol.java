@@ -3,6 +3,7 @@ package cs444.parser.symbols.ast.expressions;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
+import cs444.codegen.ISymbolChoiceVisitor;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 import cs444.parser.symbols.ast.INumericLiteral;
@@ -31,6 +32,11 @@ public class EqExprSymbol extends BinOpExpr {
     @Override
     public boolean isCollapsable() {
         return false;
+    }
+    
+    @Override
+    public void accept(ISymbolChoiceVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

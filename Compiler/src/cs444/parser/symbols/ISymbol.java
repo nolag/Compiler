@@ -2,6 +2,7 @@ package cs444.parser.symbols;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
+import cs444.codegen.ISymbolChoiceVisitor;
 
 
 public interface ISymbol {
@@ -10,24 +11,26 @@ public interface ISymbol {
      *
      * @return the rule or token that is represented by this ISymbol
      */
-    String getRule();
+    public String getRule();
 
     /**
      *
      * @return the name of the symbol
      */
-    String getName();
+    public String getName();
 
     /**
      *
      * @return if the rule becomes empty so that it can be known if it should be added to a tree
      */
-    boolean empty();
+    public boolean empty();
 
     /**
      *
      * accepts a visitor that walks the tree
-     * @throws CompilerException 
+     * @throws CompilerException
      */
-    void accept(final ISymbolVisitor visitor) throws CompilerException;
+    public void accept(final ISymbolVisitor visitor) throws CompilerException;
+
+    public void accept(final ISymbolChoiceVisitor visitor);
 }

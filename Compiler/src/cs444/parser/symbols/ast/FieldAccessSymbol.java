@@ -2,6 +2,7 @@ package cs444.parser.symbols.ast;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
+import cs444.codegen.ISymbolChoiceVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 
@@ -42,6 +43,11 @@ public class FieldAccessSymbol extends ANonTerminal implements Typeable {
     @Override
     public boolean isCollapsable() {
         return false;
+    }
+
+    @Override
+    public void accept(ISymbolChoiceVisitor visitor) {
+        visitor.visit(this);
     }
 
 }

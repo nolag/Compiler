@@ -13,15 +13,13 @@ public class LocalScope {
     public final LocalScope parent;
     public final boolean isStatic;
     private final Map<String, DclSymbol> environment = new HashMap<String, DclSymbol>();
-    private Set<String> initializing = new HashSet<String>();
+    private final Set<String> initializing = new HashSet<String>();
+    public final int offset;
 
-    public LocalScope(){
-        this(null, false);
-    }
-
-    public LocalScope(LocalScope parent, boolean isStatic) {
+    public LocalScope(LocalScope parent, boolean isStatic, int offset) {
         this.parent = parent;
         this.isStatic = isStatic;
+        this.offset = offset;
     }
 
     public void add(String name, DclSymbol node) throws DuplicateDeclarationException{

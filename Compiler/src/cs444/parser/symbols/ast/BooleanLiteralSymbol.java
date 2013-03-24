@@ -2,6 +2,7 @@ package cs444.parser.symbols.ast;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
+import cs444.codegen.ISymbolChoiceVisitor;
 import cs444.parser.symbols.JoosNonTerminal;
 
 public class BooleanLiteralSymbol extends TypeableTerminal{
@@ -21,6 +22,10 @@ public class BooleanLiteralSymbol extends TypeableTerminal{
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.visit(this);
+    }
 
+    @Override
+    public void accept(ISymbolChoiceVisitor visitor) {
+        visitor.visit(this);
     }
 }

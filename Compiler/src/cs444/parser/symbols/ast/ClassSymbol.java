@@ -2,6 +2,7 @@ package cs444.parser.symbols.ast;
 
 import java.util.List;
 
+import cs444.codegen.ISymbolChoiceVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
@@ -44,5 +45,10 @@ public class ClassSymbol extends AInterfaceOrClassSymbol{
     @Override
     public boolean isClass() {
         return true;
+    }
+
+    @Override
+    public void accept(ISymbolChoiceVisitor visitor) {
+        visitor.visit(this);
     }
 }

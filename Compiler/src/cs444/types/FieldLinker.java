@@ -155,7 +155,8 @@ public class FieldLinker extends EmptyVisitor {
     }
 
     private void pushNewScope(boolean isStatic) {
-        currentScope = new LocalScope(currentScope, isStatic);
+        //TODO offset
+        currentScope = new LocalScope(currentScope, isStatic, 0);
     }
 
     private void popCurrentScope() {

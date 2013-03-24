@@ -68,6 +68,8 @@ public class LocalDclLinker extends EmptyVisitor {
     private final Stack<Deque<Typeable>> currentTypes = new Stack<Deque<Typeable>>();
     private final Stack<Boolean> useCurrentForLookup = new Stack<Boolean>();
 
+    private int offset = 0;
+
     public LocalDclLinker(String enclosingClassName){
         this.context = new ContextInfo(enclosingClassName);
 
@@ -103,6 +105,8 @@ public class LocalDclLinker extends EmptyVisitor {
         String varName = dclSymbol.dclName;
         if (currentScope.isDeclared(varName)) throw new DuplicateDeclarationException(varName, context.enclosingClassName);
         currentScope.add(varName, dclSymbol);
+        offset -= dclSymbol.getType().getTypeDclNode().stackSize;
+        dclSymbol.setOffset(offset);
     }
 
     @Override
@@ -188,10 +192,11 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     private void pushNewScope(boolean isStatic) {
-        currentScope = new LocalScope(currentScope, isStatic);
+        currentScope = new LocalScope(currentScope, isStatic, offset);
     }
 
     private void popCurrentScope() {
+        offset = currentScope.offset;
         currentScope = currentScope.parent;
     }
 
@@ -310,7 +315,7 @@ public class LocalDclLinker extends EmptyVisitor {
         if (currentScope.isStatic) {
         	throw new ExplicitThisInStaticException(context.enclosingClassName, context.getCurrentMC().dclName);
         }
-    	
+
     	simpleVistorHelper(thisSymbol, context.enclosingClassName);
     }
 

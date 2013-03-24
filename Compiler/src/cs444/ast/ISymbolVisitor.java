@@ -83,7 +83,7 @@ public interface ISymbolVisitor {
     void visit(final NameSymbol nameSymbol) throws CompilerException;
     void visit(final ATerminal terminal) throws CompilerException;
 
-    void visit(CastExpressionSymbol symbol) throws CompilerException;
+    void visit(final CastExpressionSymbol symbol) throws CompilerException;
 
     void visit(final NegOpExprSymbol op) throws CompilerException;
     void visit(final NotOpExprSymbol op) throws CompilerException;

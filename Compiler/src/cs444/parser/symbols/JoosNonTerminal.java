@@ -10,6 +10,7 @@ import java.util.Set;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
+import cs444.codegen.ISymbolChoiceVisitor;
 
 public class JoosNonTerminal extends NonTerminal{
     public static final String BRACKET_PRIMARY = "BRACKETPRIMARY";
@@ -69,6 +70,10 @@ public class JoosNonTerminal extends NonTerminal{
     public static final Set<String> nonPrimativeOperativeTypes = new HashSet<String>();
 
     public static final List<String> arraysExtend = new LinkedList<String>();
+
+    public static final Map<String, Integer> stackSizes = new HashMap<String, Integer>();
+
+    public static final Set<String> unsigned = new HashSet<String>();
 
     static{
         noCollapse.add("MODIFIERS");
@@ -146,9 +151,9 @@ public class JoosNonTerminal extends NonTerminal{
 
         Set<String> byteCharAssign = new HashSet<String>(Arrays.asList(new String [] {INTEGER, SHORT}));
         Set<String> assignToint = new HashSet<String>(Arrays.asList(new String [] {INTEGER}));
-        defaultAssignables.put("byte", byteCharAssign);
-        defaultAssignables.put("char", assignToint);
-        defaultAssignables.put("short", assignToint);
+        defaultAssignables.put(BYTE, byteCharAssign);
+        defaultAssignables.put(CHAR, assignToint);
+        defaultAssignables.put(SHORT, assignToint);
 
         Set<String> alsoToShort = new HashSet<String>(Arrays.asList(new String [] {CHAR}));
         Set<String> alsoToChar = new HashSet<String>(Arrays.asList(new String [] {SHORT}));
@@ -162,6 +167,12 @@ public class JoosNonTerminal extends NonTerminal{
         nonPrimativeOperativeTypes.add(STRING);
         arraysExtend.add("java.lang.Cloneable");
         arraysExtend.add("java.io.Serializable");
+
+        stackSizes.put(BYTE, 8);
+        stackSizes.put(SHORT, 16);
+        stackSizes.put(CHAR, 16);
+
+        unsigned.add(BYTE);
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {
@@ -186,5 +197,10 @@ public class JoosNonTerminal extends NonTerminal{
             child.accept(visitor);
         }
         visitor.close(this);
+    }
+
+    @Override
+    public void accept(ISymbolChoiceVisitor visitor) {
+        visitor.visit(this);
     }
 }

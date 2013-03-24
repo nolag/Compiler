@@ -1,5 +1,6 @@
 package cs444.parser.symbols.ast;
 
+import cs444.codegen.ISymbolChoiceVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
@@ -19,5 +20,12 @@ public class ConstructorSymbol extends MethodOrConstructorSymbol{
         if(isNative())throw new UnsupportedException("native constructors");
 
         super.validate();
+    }
+
+
+
+    @Override
+    public void accept(ISymbolChoiceVisitor visitor) {
+        visitor.visit(this);
     }
 }

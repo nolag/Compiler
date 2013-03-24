@@ -2,6 +2,7 @@ package cs444.parser.symbols.ast;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
+import cs444.codegen.ISymbolChoiceVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
@@ -12,6 +13,7 @@ import cs444.types.APkgClassResolver;
 public class DclSymbol extends AModifiersOptSymbol{
     private final boolean isLocal;
     public boolean isFinal;
+    private int offset;
 
     public static DclSymbol getClassSymbol(String fullName, APkgClassResolver resolver){
         DclSymbol retVal = null;
@@ -38,6 +40,14 @@ public class DclSymbol extends AModifiersOptSymbol{
             throws IllegalModifierException, UnsupportedException {
         super("Dcl", dclName, from, type);
         this.isLocal = isLocal;
+    }
+
+    public void setOffset(int offset){
+        this.offset = offset;
+    }
+
+    public int getOffset(){
+        return offset;
     }
 
     @Override
@@ -80,5 +90,10 @@ public class DclSymbol extends AModifiersOptSymbol{
         }
 
         visitor.close(this);
+    }
+
+    @Override
+    public void accept(ISymbolChoiceVisitor visitor) {
+        visitor.visit(this);
     }
 }
