@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
+import cs444.codegen.CodeGenVisitor;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
@@ -63,6 +64,9 @@ public class Compiler {
             checkFields(resolvers);
 
             analyzeReachability(resolvers);
+
+            generateCode(resolvers);
+
         }catch(Exception e){
             if (printErrors) e.printStackTrace();
             return COMPILER_ERROR_CODE;
@@ -96,17 +100,27 @@ public class Compiler {
         }
     }
 
-    private static void typeCheck(List<APkgClassResolver> resolvers)
-            throws CompilerException {
+    private static void typeCheck(List<APkgClassResolver> resolvers) throws CompilerException {
         for(APkgClassResolver resolver : resolvers){
             resolver.linkLocalNamesToDcl();
         }
     }
 
-    private static void buildAllResolvers(List<APkgClassResolver> resolvers)
-            throws CompilerException {
+    private static void buildAllResolvers(List<APkgClassResolver> resolvers) throws CompilerException {
+        for(APkgClassResolver resolver : resolvers) resolver.build();
+    }
+
+    private static void generateCode(List<APkgClassResolver> resolvers) throws IOException{
+        CodeGenVisitor codeGen = new CodeGenVisitor();
         for(APkgClassResolver resolver : resolvers){
-            resolver.build();
+            resolver.generateCode(codeGen);
+            //TODO verify where to write s file to
+            //TODO uncomment to test and use
+            /*File file = new File(resolver.name + ".s");
+            file.createNewFile();
+            PrintStream printer = new PrintStream(file);
+            codeGen.printToFileAndEmpty(printer);
+            printer.close();*/
         }
     }
 

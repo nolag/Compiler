@@ -4,7 +4,7 @@ import java.util.List;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
-import cs444.codegen.ISymbolChoiceVisitor;
+import cs444.codegen.ICodeGenVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.Typeable;
@@ -41,7 +41,7 @@ public class WhileExprSymbol extends BaseExprSymbol {
     }
 
     @Override
-    public void accept(ISymbolChoiceVisitor visitor) {
+    public void accept(ICodeGenVisitor visitor) {
         visitor.visit(this);
     }
     

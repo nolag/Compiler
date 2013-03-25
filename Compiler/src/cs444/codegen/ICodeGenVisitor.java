@@ -1,5 +1,7 @@
 package cs444.codegen;
 
+import java.io.PrintStream;
+
 import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
@@ -45,7 +47,7 @@ import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
-public interface ISymbolChoiceVisitor {
+public interface ICodeGenVisitor {
     void visit(final MethodInvokeSymbol invoke);
     void visit(final FieldAccessSymbol field);
     void visit(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol);
@@ -90,4 +92,6 @@ public interface ISymbolChoiceVisitor {
     void visit(final ListedSymbol listedSymbol);
     void visit(final ByteLiteralSymbol byteLiteral);
     void visit(final ShortLiteralSymbol shortLiteral);
+
+    void printToFileAndEmpty(PrintStream printer);
 }

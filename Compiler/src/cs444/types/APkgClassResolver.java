@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cs444.CompilerException;
+import cs444.codegen.ICodeGenVisitor;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol;
@@ -262,6 +263,16 @@ public abstract class APkgClassResolver {
         if(order.get(dcl) >= on) throw new UndeclaredException(dcl.dclName, fullName);
         if(now.isStatic() && !dcl.isStatic()) throw new UndeclaredException(dcl.dclName, fullName);
         return list;
+    }
+
+    public void generateCode(ICodeGenVisitor visitor){
+        //TODO visit the class somehow...
+        for(AMethodSymbol ms : methodMap.values()) ms.accept(visitor);
+        for(AMethodSymbol ms : smethodMap.values()) ms.accept(visitor);
+        for(DclSymbol ms : fieldMap.values()) ms.accept(visitor);
+        for(DclSymbol ms : sfieldMap.values()) ms.accept(visitor);
+        for(DclSymbol ms : hfieldMap.values()) ms.accept(visitor);
+        for(DclSymbol ms : hsfieldMap.values()) ms.accept(visitor);
     }
 
     public abstract void reduceToConstantExprs() throws CompilerException;

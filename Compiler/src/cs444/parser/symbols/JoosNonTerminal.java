@@ -10,7 +10,8 @@ import java.util.Set;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
-import cs444.codegen.ISymbolChoiceVisitor;
+import cs444.codegen.ICodeGenVisitor;
+import cs444.types.APkgClassResolver;
 
 public class JoosNonTerminal extends NonTerminal{
     public static final String BRACKET_PRIMARY = "BRACKETPRIMARY";
@@ -74,6 +75,8 @@ public class JoosNonTerminal extends NonTerminal{
     public static final Map<String, Integer> stackSizes = new HashMap<String, Integer>();
 
     public static final Set<String> unsigned = new HashSet<String>();
+
+    public static final String ENTRY = APkgClassResolver.generateUniqueName("test", Arrays.asList(new String [] { "int" }));
 
     static{
         noCollapse.add("MODIFIERS");
@@ -200,7 +203,7 @@ public class JoosNonTerminal extends NonTerminal{
     }
 
     @Override
-    public void accept(ISymbolChoiceVisitor visitor) {
+    public void accept(ICodeGenVisitor visitor) {
         visitor.visit(this);
     }
 }

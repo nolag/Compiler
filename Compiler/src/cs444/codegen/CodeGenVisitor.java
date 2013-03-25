@@ -1,10 +1,14 @@
 package cs444.codegen;
 
+import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 
 import cs444.codegen.InstructionArg.Size;
+import cs444.codegen.instructions.Comment;
+import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
+import cs444.codegen.instructions.Label;
 import cs444.codegen.instructions.Mov;
 import cs444.codegen.instructions.Movsx;
 import cs444.codegen.instructions.Movzx;
@@ -12,12 +16,17 @@ import cs444.codegen.instructions.Neg;
 import cs444.codegen.instructions.Pop;
 import cs444.codegen.instructions.Push;
 import cs444.codegen.instructions.Ret;
+import cs444.codegen.instructions.Sar;
 import cs444.codegen.instructions.factories.AddOpMaker;
 import cs444.codegen.instructions.factories.AndOpMaker;
 import cs444.codegen.instructions.factories.BinOpMaker;
+import cs444.codegen.instructions.factories.BinUniOpMaker;
+import cs444.codegen.instructions.factories.IDivMaker;
+import cs444.codegen.instructions.factories.IMulMaker;
 import cs444.codegen.instructions.factories.OrOpMaker;
 import cs444.codegen.instructions.factories.SubOpMaker;
 import cs444.parser.symbols.ATerminal;
+import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
@@ -63,9 +72,11 @@ import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
+import cs444.types.APkgClassResolver;
 
-public class CodeGenVisitor implements ISymbolChoiceVisitor {
+public class CodeGenVisitor implements ICodeGenVisitor {
     private final List<Instruction> instructions = new LinkedList<Instruction>();
+    private boolean hasEntry = false;
 
     @Override
     public void visit(MethodInvokeSymbol invoke) {
@@ -81,13 +92,31 @@ public class CodeGenVisitor implements ISymbolChoiceVisitor {
     @Override
     public void visit(AInterfaceOrClassSymbol aInterfaceOrClassSymbol) {
         // TODO Auto-generated method stub
-
+        for(ISymbol child : aInterfaceOrClassSymbol.children) child.accept(this);
     }
 
     @Override
     public void visit(MethodOrConstructorSymbol method) {
-        // TODO Auto-generated method stub
+        instructions.add(new Comment("Start of method " + method.dclName));
+        try{
+            if(APkgClassResolver.generateUniqueName(method, method.dclName).equals(JoosNonTerminal.ENTRY)
+                    && method.isStatic() && !hasEntry){
 
+                hasEntry = true;
+                instructions.add(new Global("_start"));
+                instructions.add(new Label("_start"));
+            }
+        }catch(Exception e){
+            //Should never get here.
+            e.printStackTrace();
+        }
+
+        //TODO need to generate a unique name with the class and the method sig and make sure it is a child that needs to be generated vs extened
+        //if(method.getProtectionLevel() != ProtectionLevel.PRIVATE) instructions.add(new Label(/*TODO*/));
+
+        for(ISymbol child : method.children) child.accept(this);
+
+        instructions.add(new Comment("End of method " + method.dclName));
     }
 
     @Override
@@ -124,6 +153,7 @@ public class CodeGenVisitor implements ISymbolChoiceVisitor {
     public void visit(ReturnExprSymbol retSymbol) {
         if(retSymbol.children.size() == 1) retSymbol.children.get(0).accept(this);
         //value is already in eax from the rule therefore we just need to ret
+
         instructions.add(Ret.ret);
     }
 
@@ -181,8 +211,7 @@ public class CodeGenVisitor implements ISymbolChoiceVisitor {
 
     @Override
     public void visit(MultiplyExprSymbol op) {
-        // TODO Auto-generated method stub
-
+        binUniOpHelper(op, IMulMaker.maker, false);
     }
 
     @Override
@@ -193,14 +222,13 @@ public class CodeGenVisitor implements ISymbolChoiceVisitor {
 
     @Override
     public void visit(DivideExprSymbol op) {
-        // TODO Auto-generated method stub
-
+        binUniOpHelper(op, IDivMaker.maker, true);
     }
 
     @Override
     public void visit(RemainderExprSymbol op) {
-        // TODO Auto-generated method stub
-
+        binUniOpHelper(op, IDivMaker.maker, true);
+        instructions.add(new Mov(Register.ACCUMULATOR, Register.DATA));
     }
 
     @Override
@@ -320,22 +348,42 @@ public class CodeGenVisitor implements ISymbolChoiceVisitor {
 
     @Override
     public void visit(DclSymbol dclSymbol) {
-        // TODO Auto-generated method stub
-
+        if(dclSymbol.children.isEmpty()) new IntegerLiteralSymbol(0).accept(this);
+        else dclSymbol.children.get(0).accept(this);
+        PointerRegister pr = new PointerRegister(Register.FRAME, dclSymbol.getOffset());
+        Size size = Size.DWORD;
+        int stackSize = dclSymbol.getType().getTypeDclNode().stackSize;
+        if(stackSize == 16) size = Size.WORD;
+        if(stackSize == 8) size = Size.LOW;
+        instructions.add(new Mov(pr, Register.ACCUMULATOR, size));
     }
 
     @Override
     public void visit(ListedSymbol listedSymbol) {
         // TODO Auto-generated method stub
-
     }
 
     private void binOpHelper(BinOpExpr bin, BinOpMaker maker){
         instructions.add(new Push(Register.BASE));
-        bin.children.get(0).accept(this);
-        instructions.add(new Mov(Register.ACCUMULATOR, Register.BASE));
         bin.children.get(1).accept(this);
+        instructions.add(new Mov(Register.ACCUMULATOR, Register.BASE));
+        bin.children.get(0).accept(this);
         instructions.add(maker.make(Register.ACCUMULATOR, Register.BASE));
+        instructions.add(new Pop(Register.BASE));
+    }
+
+    private void binUniOpHelper(BinOpExpr bin, BinUniOpMaker maker, boolean sar){
+        instructions.add(new Push(Register.BASE));
+        bin.children.get(1).accept(this);
+        instructions.add(new Mov(Register.ACCUMULATOR, Register.BASE));
+        bin.children.get(0).accept(this);
+
+        if(sar){
+            instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR));
+            instructions.add(Sar.acc32);
+        }
+
+        instructions.add(maker.make(Register.BASE));
         instructions.add(new Pop(Register.BASE));
     }
 
@@ -347,6 +395,11 @@ public class CodeGenVisitor implements ISymbolChoiceVisitor {
     @Override
     public void visit(ShortLiteralSymbol shortLiteral) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(shortLiteral.getValue()))));
+    }
 
+    @Override
+    public void printToFileAndEmpty(PrintStream printer){
+        for(Instruction instruction : instructions) printer.println(instruction.generate());
+        instructions.clear();
     }
 }
