@@ -126,7 +126,6 @@ public class TestHelper {
 
 	private static int compileAndTest(String[] files, boolean printErrors) throws IOException, InterruptedException {
 	    PkgClassInfo.instance.clear();
-	    return Compiler.compile(files, printErrors);
-	    //return Compiler.compile(files, false);
+	    return Compiler.compile(files, printErrors, false);
 	}
 }

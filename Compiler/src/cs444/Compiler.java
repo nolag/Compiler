@@ -1,9 +1,11 @@
 package cs444;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
@@ -32,10 +34,10 @@ public class Compiler {
      * @throws Exception
      */
     public static void main(String[] args){
-        System.exit(compile(args, true));
+        System.exit(compile(args, true, true));
     }
 
-    public static int compile(String[] files, boolean printErrors) {
+    public static int compile(String[] files, boolean printErrors, boolean outputFiles) {
         if (files.length == 0){
             System.err.println("ERROR: At least a file should be passed.");
             printUsage();
@@ -65,7 +67,7 @@ public class Compiler {
 
             analyzeReachability(resolvers);
 
-            generateCode(resolvers);
+            generateCode(resolvers, outputFiles);
 
         }catch(Exception e){
             if (printErrors) e.printStackTrace();
@@ -110,17 +112,24 @@ public class Compiler {
         for(APkgClassResolver resolver : resolvers) resolver.build();
     }
 
-    private static void generateCode(List<APkgClassResolver> resolvers) throws IOException{
+    private static void generateCode(List<APkgClassResolver> resolvers, boolean outputFile) throws IOException{
         CodeGenVisitor codeGen = new CodeGenVisitor();
+        String directory = "output/";
+        PrintStream printer;
         for(APkgClassResolver resolver : resolvers){
             resolver.generateCode(codeGen);
-            //TODO verify where to write s file to
             //TODO uncomment to test and use
-            /*File file = new File(resolver.name + ".s");
-            file.createNewFile();
-            PrintStream printer = new PrintStream(file);
+            if (outputFile){
+                File file = new File(directory + resolver.name + ".s");
+                file.createNewFile();
+                printer = new PrintStream(file);
+            }else{
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                printer = new PrintStream(baos);
+            }
+
             codeGen.printToFileAndEmpty(printer);
-            printer.close();*/
+            printer.close();
         }
     }
 

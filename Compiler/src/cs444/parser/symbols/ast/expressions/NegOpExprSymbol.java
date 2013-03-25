@@ -4,7 +4,6 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.codegen.ICodeGenVisitor;
 import cs444.parser.symbols.ISymbol;
-import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 import cs444.parser.symbols.ast.INumericLiteral;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.TypeableTerminal;
