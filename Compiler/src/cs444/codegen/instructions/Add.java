@@ -1,13 +1,14 @@
 package cs444.codegen.instructions;
 
+import cs444.codegen.InstructionArg;
 import cs444.codegen.InstructionArg.Size;
 import cs444.codegen.Register;
 
 public class Add implements Instruction {
     public final Register addTo;
-    public final Register addWith;
+    public final InstructionArg addWith;
 
-    public Add(Register addTo, Register addWith){
+    public Add(Register addTo, InstructionArg addWith){
         this.addTo = addTo;
         this.addWith = addWith;
     }

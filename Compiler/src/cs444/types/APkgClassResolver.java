@@ -76,9 +76,9 @@ public abstract class APkgClassResolver {
     }
 
     public static String generateUniqueName(String name, Iterable<String> types) {
-        StringBuilder sb = new StringBuilder(name + "-");
+        StringBuilder sb = new StringBuilder(name + "$");
 
-        for (String type : types) sb.append(type + "*");
+        for (String type : types) sb.append(type + "@");
 
         return sb.toString();
     }

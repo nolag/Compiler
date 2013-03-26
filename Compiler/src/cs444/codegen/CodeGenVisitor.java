@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cs444.codegen.InstructionArg.Size;
+import cs444.codegen.instructions.Add;
 import cs444.codegen.instructions.Comment;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
@@ -25,11 +26,12 @@ import cs444.codegen.instructions.factories.IDivMaker;
 import cs444.codegen.instructions.factories.IMulMaker;
 import cs444.codegen.instructions.factories.OrOpMaker;
 import cs444.codegen.instructions.factories.SubOpMaker;
+import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
-import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
+import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 import cs444.parser.symbols.ast.ByteLiteralSymbol;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
@@ -37,7 +39,6 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.EmptyStatementSymbol;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
-import cs444.parser.symbols.ast.ListedSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
@@ -73,10 +74,12 @@ import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 import cs444.types.APkgClassResolver;
+import cs444.types.ArrayPkgClassResolver;
 
 public class CodeGenVisitor implements ICodeGenVisitor {
     private final List<Instruction> instructions = new LinkedList<Instruction>();
     private boolean hasEntry = false;
+    private boolean getVal = false;
 
     @Override
     public void visit(MethodInvokeSymbol invoke) {
@@ -111,8 +114,14 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             e.printStackTrace();
         }
 
-        //TODO need to generate a unique name with the class and the method sig and make sure it is a child that needs to be generated vs extened
-        //if(method.getProtectionLevel() != ProtectionLevel.PRIVATE) instructions.add(new Label(/*TODO*/));
+        String methodName = null;
+
+        try{
+            methodName = method.dclInResolver.fullName.replace('.', '_') + "_" + ArrayPkgClassResolver.generateUniqueName(method, method.dclName);
+        }catch(Exception e){ /*Should not get here ever */}
+
+        if(method.getProtectionLevel() != ProtectionLevel.PRIVATE) instructions.add(new Global(methodName));
+        instructions.add(new Label(methodName));
 
         for(ISymbol child : method.children) child.accept(this);
 
@@ -126,9 +135,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(NonTerminal aNonTerminal) {
-        // TODO Auto-generated method stub
-
+    public void visit(ANonTerminal aNonTerminal) {
+        for(ISymbol child : aNonTerminal.children) child.accept(this);
     }
 
     @Override
@@ -165,25 +173,31 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(NameSymbol nameSymbol) {
-        //TODO anything with more than one lookup link
         final DclSymbol dcl = nameSymbol.getLastLookupDcl();
         int offset = dcl.getOffset();
-        int stackSize = dcl.getType().getTypeDclNode().stackSize;
-        Size size = Size.DWORD;
-        if(stackSize == 16) size = Size.WORD;
-        if(stackSize == 8) size = Size.LOW;
-        final InstructionArg from = new PointerRegister(Register.FRAME, offset);
-        Instruction instruction;
+        if(getVal){
+            int stackSize = dcl.getType().getTypeDclNode().stackSize;
+            Size size = Size.DWORD;
+            if(stackSize == 16) size = Size.WORD;
+            if(stackSize == 8) size = Size.LOW;
+            final InstructionArg from = new PointerRegister(Register.FRAME, offset);
+            Instruction instruction;
 
-        if(size == Size.DWORD){
-            instruction = new Mov(Register.ACCUMULATOR, from);
-        }else if(JoosNonTerminal.unsigned.contains(dcl.getType().getTypeDclNode().fullName)){
-            instruction = new Movzx(Register.ACCUMULATOR, from, size);
+            if(size == Size.DWORD){
+                instruction = new Mov(Register.ACCUMULATOR, from);
+            }else if(JoosNonTerminal.unsigned.contains(dcl.getType().getTypeDclNode().fullName)){
+                instruction = new Movzx(Register.ACCUMULATOR, from, size);
+            }else{
+                instruction = new Movsx(Register.ACCUMULATOR, from, size);
+            }
+
+            instructions.add(new Comment("getting value of " + nameSymbol.getName()));
+            instructions.add(instruction);
         }else{
-            instruction = new Movsx(Register.ACCUMULATOR, from, size);
+            instructions.add(new Comment("getting location of " + nameSymbol.getName()));
+            instructions.add(new Mov(Register.ACCUMULATOR, Register.FRAME));
+            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(offset))));
         }
-
-        instructions.add(instruction);
     }
 
     @Override
@@ -216,8 +230,14 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(AssignmentExprSymbol op) {
-        // TODO Auto-generated method stub
-
+        op.children.get(1).accept(this);
+        instructions.add(new Push(Register.BASE));
+        instructions.add(new Mov(Register.ACCUMULATOR, Register.BASE));
+        boolean tmp = getVal;
+        getVal = true;
+        op.children.get(0).accept(this);
+        getVal = tmp;
+        instructions.add(new Pop(Register.BASE));
     }
 
     @Override
@@ -348,19 +368,15 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(DclSymbol dclSymbol) {
+        instructions.add(new Comment("dcl: " + dclSymbol.dclName));
         if(dclSymbol.children.isEmpty()) new IntegerLiteralSymbol(0).accept(this);
         else dclSymbol.children.get(0).accept(this);
-        PointerRegister pr = new PointerRegister(Register.FRAME, dclSymbol.getOffset());
         Size size = Size.DWORD;
         int stackSize = dclSymbol.getType().getTypeDclNode().stackSize;
         if(stackSize == 16) size = Size.WORD;
         if(stackSize == 8) size = Size.LOW;
-        instructions.add(new Mov(pr, Register.ACCUMULATOR, size));
-    }
-
-    @Override
-    public void visit(ListedSymbol listedSymbol) {
-        // TODO Auto-generated method stub
+        instructions.add(new Push(Register.ACCUMULATOR, size));
+        instructions.add(new Comment("end dcl: " + dclSymbol.dclName));
     }
 
     private void binOpHelper(BinOpExpr bin, BinOpMaker maker){

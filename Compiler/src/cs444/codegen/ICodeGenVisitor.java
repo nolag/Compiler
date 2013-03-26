@@ -2,8 +2,8 @@ package cs444.codegen;
 
 import java.io.PrintStream;
 
+import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ATerminal;
-import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 import cs444.parser.symbols.ast.ByteLiteralSymbol;
@@ -12,7 +12,6 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.EmptyStatementSymbol;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
-import cs444.parser.symbols.ast.ListedSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
@@ -53,7 +52,7 @@ public interface ICodeGenVisitor {
     void visit(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol);
     void visit(final MethodOrConstructorSymbol method);
     void visit(final CreationExpression creationExpression);
-    void visit(final NonTerminal aNonTerminal);
+    void visit(final ANonTerminal aNonTerminal);
     void visit(final WhileExprSymbol whileExprSymbol);
     void visit(final ForExprSymbol forExprSymbol);
     void visit(final IfExprSymbol ifExprSymbol);
@@ -89,7 +88,6 @@ public interface ICodeGenVisitor {
     void visit(final EmptyStatementSymbol emptySymbol);
     void visit(final ArrayAccessExprSymbol arrayAccess);
     void visit(final DclSymbol dclSymbol);
-    void visit(final ListedSymbol listedSymbol);
     void visit(final ByteLiteralSymbol byteLiteral);
     void visit(final ShortLiteralSymbol shortLiteral);
 
