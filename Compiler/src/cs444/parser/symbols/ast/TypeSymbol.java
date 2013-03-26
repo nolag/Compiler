@@ -14,6 +14,7 @@ public class TypeSymbol extends ATerminal implements Typeable{
     public final boolean isClass;
     private APkgClassResolver typeResolver;
 
+
     private static final Map<String, TypeSymbol> builtIn = new HashMap<String, TypeSymbol>();
 
     public TypeSymbol(String value, boolean isArray, boolean isClass) {

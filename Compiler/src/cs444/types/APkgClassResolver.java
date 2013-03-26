@@ -94,13 +94,21 @@ public abstract class APkgClassResolver {
         return generateUniqueName(name, types);
     }
 
+    private static String getClassName(APkgClassResolver resolver){
+        return resolver.fullName.replace('.', '_');
+    }
+
     public static String generateFullId(MethodOrConstructorSymbol methodSymbol){
         String name = methodSymbol instanceof ConstructorSymbol ? "this" : methodSymbol.name;
         String value = null;
         try{
-            value = methodSymbol.dclInResolver.fullName.replace('.', '_') + "_" + generateUniqueName(methodSymbol, name);
+            value = getClassName(methodSymbol.dclInResolver) + "_" + generateUniqueName(methodSymbol, name);
         }catch(UndeclaredException e){ /*Should never happen based on where it is called from*/}
         return value;
+    }
+
+    public String generateSIT(){
+        return getClassName(this) + "@SIT";
     }
 
     public abstract APkgClassResolver getClass(String name, boolean die) throws UndeclaredException;
