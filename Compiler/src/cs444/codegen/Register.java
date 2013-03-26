@@ -7,7 +7,7 @@ public class Register extends InstructionArg{
     public static final Register DATA = new Register("d", 'x');
     public static final Register BASE = new Register("b", 'x');
     public static final Register STACK = new Register("s", 'p');
-    public static final Register FRAME = new Register("s", 'b');
+    public static final Register FRAME = new Register("b", 'p');
     public static final Register SOURCE = new Register("s", 'i');
     public static final Register DESTINATION = new Register("d", 'i');
 

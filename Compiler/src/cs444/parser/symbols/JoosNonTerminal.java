@@ -1,6 +1,7 @@
 package cs444.parser.symbols;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -76,7 +77,7 @@ public class JoosNonTerminal extends NonTerminal{
 
     public static final Set<String> unsigned = new HashSet<String>();
 
-    public static final String ENTRY = APkgClassResolver.generateUniqueName("test", Arrays.asList(new String [] { "int" }));
+    public static final String ENTRY = APkgClassResolver.generateUniqueName("test", Collections.<String>emptyList());
 
     static{
         noCollapse.add("MODIFIERS");
@@ -175,7 +176,7 @@ public class JoosNonTerminal extends NonTerminal{
         stackSizes.put(SHORT, 16);
         stackSizes.put(CHAR, 16);
 
-        unsigned.add(BYTE);
+        unsigned.add(CHAR);
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {

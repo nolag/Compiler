@@ -19,19 +19,6 @@ public class Movsx implements Instruction{
 
     @Override
     public String generate() {
-        String sizeStr = null;
-
-        switch(size){
-        case LOW:
-        case HIGH:
-            sizeStr = "byte";
-            break;
-        case WORD:
-            sizeStr = "word";
-        case DWORD:
-            sizeStr = "dword";
-        }
-
-        return "movsx " + dst.getValue(Size.DWORD) + ", " + sizeStr + " " + src.getValue(size);
+        return "movsx " + dst.getValue(Size.DWORD) + ", " + InstructionArg.getSizeStr(size) + " " + src.getValue(size);
     }
 }

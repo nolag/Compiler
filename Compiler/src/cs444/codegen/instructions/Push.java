@@ -2,10 +2,13 @@ package cs444.codegen.instructions;
 
 import cs444.codegen.InstructionArg;
 import cs444.codegen.InstructionArg.Size;
+import cs444.codegen.Register;
 
 public class Push implements Instruction {
     public final InstructionArg what;
     public final Size size;
+
+    public static final Push STACK_PUSH = new Push(Register.STACK);
 
     public Push(InstructionArg what, Size size){
         this.what = what;
@@ -18,7 +21,7 @@ public class Push implements Instruction {
 
     @Override
     public String generate() {
-        return "push " + InstructionArg.getSizeStr(size) + ", " + what.getValue(size);
+        return "push " + InstructionArg.getSizeStr(size) + " " + what.getValue(size);
     }
 
 }

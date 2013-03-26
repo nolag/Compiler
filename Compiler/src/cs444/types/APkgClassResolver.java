@@ -94,6 +94,15 @@ public abstract class APkgClassResolver {
         return generateUniqueName(name, types);
     }
 
+    public static String generateFullId(MethodOrConstructorSymbol methodSymbol){
+        String name = methodSymbol instanceof ConstructorSymbol ? "this" : methodSymbol.name;
+        String value = null;
+        try{
+            value = methodSymbol.dclInResolver.fullName.replace('.', '_') + "_" + generateUniqueName(methodSymbol, name);
+        }catch(UndeclaredException e){ /*Should never happen based on where it is called from*/}
+        return value;
+    }
+
     public abstract APkgClassResolver getClass(String name, boolean die) throws UndeclaredException;
 
     protected abstract void build(Set<PkgClassResolver> visited, boolean mustBeInterface, boolean mustBeClass) throws CompilerException;

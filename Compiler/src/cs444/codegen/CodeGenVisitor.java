@@ -5,11 +5,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cs444.codegen.InstructionArg.Size;
-import cs444.codegen.instructions.Add;
+import cs444.codegen.instructions.Call;
 import cs444.codegen.instructions.Comment;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
+import cs444.codegen.instructions.Int;
 import cs444.codegen.instructions.Label;
+import cs444.codegen.instructions.Leave;
 import cs444.codegen.instructions.Mov;
 import cs444.codegen.instructions.Movsx;
 import cs444.codegen.instructions.Movzx;
@@ -74,12 +76,13 @@ import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 import cs444.types.APkgClassResolver;
-import cs444.types.ArrayPkgClassResolver;
 
 public class CodeGenVisitor implements ICodeGenVisitor {
     private final List<Instruction> instructions = new LinkedList<Instruction>();
     private boolean hasEntry = false;
-    private boolean getVal = false;
+    private boolean getVal = true;
+
+    private int lastOffset = 0xBAD;
 
     @Override
     public void visit(MethodInvokeSymbol invoke) {
@@ -100,7 +103,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(MethodOrConstructorSymbol method) {
-        instructions.add(new Comment("Start of method " + method.dclName));
+        String methodName = APkgClassResolver.generateFullId(method);
         try{
             if(APkgClassResolver.generateUniqueName(method, method.dclName).equals(JoosNonTerminal.ENTRY)
                     && method.isStatic() && !hasEntry){
@@ -108,20 +111,22 @@ public class CodeGenVisitor implements ICodeGenVisitor {
                 hasEntry = true;
                 instructions.add(new Global("_start"));
                 instructions.add(new Label("_start"));
+                //TODO any static init needs to happen here
+                instructions.add(new Call(new Immediate(methodName)));
+                instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
+                instructions.add(new Mov(Register.ACCUMULATOR, Immediate.EXIT));
+                instructions.add(new Int(Immediate.SOFTWARE_INTERUPT));
             }
         }catch(Exception e){
             //Should never get here.
             e.printStackTrace();
         }
 
-        String methodName = null;
-
-        try{
-            methodName = method.dclInResolver.fullName.replace('.', '_') + "_" + ArrayPkgClassResolver.generateUniqueName(method, method.dclName);
-        }catch(Exception e){ /*Should not get here ever */}
-
         if(method.getProtectionLevel() != ProtectionLevel.PRIVATE) instructions.add(new Global(methodName));
         instructions.add(new Label(methodName));
+
+        instructions.add(Push.STACK_PUSH);
+        instructions.add(new Mov(Register.FRAME, Register.STACK));
 
         for(ISymbol child : method.children) child.accept(this);
 
@@ -161,8 +166,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void visit(ReturnExprSymbol retSymbol) {
         if(retSymbol.children.size() == 1) retSymbol.children.get(0).accept(this);
         //value is already in eax from the rule therefore we just need to ret
-
-        instructions.add(Ret.ret);
+        instructions.add(Leave.LEAVE);
+        instructions.add(Ret.RET);
     }
 
     @Override
@@ -174,7 +179,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(NameSymbol nameSymbol) {
         final DclSymbol dcl = nameSymbol.getLastLookupDcl();
-        int offset = dcl.getOffset();
+        int offset = dcl.getOffset() / 8;
         if(getVal){
             int stackSize = dcl.getType().getTypeDclNode().stackSize;
             Size size = Size.DWORD;
@@ -191,12 +196,10 @@ public class CodeGenVisitor implements ICodeGenVisitor {
                 instruction = new Movsx(Register.ACCUMULATOR, from, size);
             }
 
-            instructions.add(new Comment("getting value of " + nameSymbol.getName()));
+            instructions.add(new Comment("getting value of " + nameSymbol.value));
             instructions.add(instruction);
         }else{
-            instructions.add(new Comment("getting location of " + nameSymbol.getName()));
-            instructions.add(new Mov(Register.ACCUMULATOR, Register.FRAME));
-            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(offset))));
+            lastOffset = offset;
         }
     }
 
@@ -231,13 +234,14 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(AssignmentExprSymbol op) {
         op.children.get(1).accept(this);
-        instructions.add(new Push(Register.BASE));
-        instructions.add(new Mov(Register.ACCUMULATOR, Register.BASE));
+        instructions.add(new Push(Register.ACCUMULATOR));
         boolean tmp = getVal;
-        getVal = true;
+        getVal = false;
         op.children.get(0).accept(this);
+        InstructionArg to = new PointerRegister(Register.FRAME, lastOffset);
+        instructions.add(new Pop(Register.ACCUMULATOR));
+        instructions.add(new Mov(to, Register.ACCUMULATOR));
         getVal = tmp;
-        instructions.add(new Pop(Register.BASE));
     }
 
     @Override
@@ -368,7 +372,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(DclSymbol dclSymbol) {
-        instructions.add(new Comment("dcl: " + dclSymbol.dclName));
         if(dclSymbol.children.isEmpty()) new IntegerLiteralSymbol(0).accept(this);
         else dclSymbol.children.get(0).accept(this);
         Size size = Size.DWORD;
@@ -376,13 +379,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         if(stackSize == 16) size = Size.WORD;
         if(stackSize == 8) size = Size.LOW;
         instructions.add(new Push(Register.ACCUMULATOR, size));
-        instructions.add(new Comment("end dcl: " + dclSymbol.dclName));
     }
 
     private void binOpHelper(BinOpExpr bin, BinOpMaker maker){
         instructions.add(new Push(Register.BASE));
         bin.children.get(1).accept(this);
-        instructions.add(new Mov(Register.ACCUMULATOR, Register.BASE));
+        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
         bin.children.get(0).accept(this);
         instructions.add(maker.make(Register.ACCUMULATOR, Register.BASE));
         instructions.add(new Pop(Register.BASE));
@@ -391,7 +393,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     private void binUniOpHelper(BinOpExpr bin, BinUniOpMaker maker, boolean sar){
         instructions.add(new Push(Register.BASE));
         bin.children.get(1).accept(this);
-        instructions.add(new Mov(Register.ACCUMULATOR, Register.BASE));
+        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
         bin.children.get(0).accept(this);
 
         if(sar){

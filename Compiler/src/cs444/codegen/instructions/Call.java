@@ -1,22 +1,17 @@
 package cs444.codegen.instructions;
 
-import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
-import cs444.types.APkgClassResolver;
-import cs444.types.exceptions.UndeclaredException;
+import cs444.codegen.InstructionArg;
+import cs444.codegen.InstructionArg.Size;
 
 public class Call implements Instruction {
-    private final String call;
+    private final InstructionArg what;
 
-    public Call(MethodOrConstructorSymbol ms){
-        String funcPart = null;
-        try {
-            funcPart = APkgClassResolver.generateUniqueName(ms, ms.dclName);
-        } catch (UndeclaredException e) { /*Should not gest here*/ }
-        call = "call " + ms.dclInResolver.fullName.replace('.', '_') + "_func_" + funcPart;
+    public Call(InstructionArg what){
+        this.what = what;
     }
 
     @Override
     public String generate() {
-        return call;
+        return "call " + what.getValue(Size.DWORD);
     }
 }

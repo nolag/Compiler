@@ -19,19 +19,6 @@ public class Movzx implements Instruction{
 
     @Override
     public String generate() {
-        String sizeStr = null;
-
-        switch(size){
-        case LOW:
-        case HIGH:
-            sizeStr = "byte";
-            break;
-        case WORD:
-            sizeStr = "word";
-        case DWORD:
-            sizeStr = "dword";
-        }
-
-        return "movzx " + dst.getValue(Size.DWORD) + ", " + sizeStr + " " + src.getValue(size);
+        return "movzx " + dst.getValue(Size.DWORD) + ", " + InstructionArg.getSizeStr(size) + " " + src.getValue(size);
     }
 }

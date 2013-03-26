@@ -18,4 +18,8 @@ public abstract class InstructionArg {
     }
 
     public abstract String getValue(Size size);
+
+    public String getValue(){
+        return getValue(Size.DWORD);
+    }
 }
