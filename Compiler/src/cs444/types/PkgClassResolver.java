@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import cs444.CompilerException;
+import cs444.codegen.ICodeGenVisitor;
 import cs444.parser.IASTBuilder;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -432,5 +433,24 @@ public class PkgClassResolver extends APkgClassResolver {
     protected boolean isAbstract() {
         if (start == null) return false;
         return start.getImplementationLevel() == ImplementationLevel.ABSTRACT;
+    }
+
+    @Override
+    public void generateCode(ICodeGenVisitor visitor) {
+        if(start == null) return;
+        for(AMethodSymbol methodSymbol : start.getMethods()){
+            if(methodSymbol.dclInResolver != this) continue;
+            methodSymbol.accept(visitor);
+        }
+
+        for(DclSymbol dc : start.getFields()){
+            if(!dc.isStatic() || dc.dclInResolver != this) continue;
+            dc.accept(visitor);
+        }
+    }
+
+    @Override
+    public boolean shouldGenCode() {
+        return start != null;
     }
 }

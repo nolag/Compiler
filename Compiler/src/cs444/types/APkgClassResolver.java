@@ -265,15 +265,9 @@ public abstract class APkgClassResolver {
         return list;
     }
 
-    public void generateCode(ICodeGenVisitor visitor){
-        //TODO visit the class somehow...
-        for(AMethodSymbol ms : methodMap.values()) ms.accept(visitor);
-        for(AMethodSymbol ms : smethodMap.values()) ms.accept(visitor);
-        for(DclSymbol ms : fieldMap.values()) ms.accept(visitor);
-        for(DclSymbol ms : sfieldMap.values()) ms.accept(visitor);
-        for(DclSymbol ms : hfieldMap.values()) ms.accept(visitor);
-        for(DclSymbol ms : hsfieldMap.values()) ms.accept(visitor);
-    }
+    public abstract void generateCode(ICodeGenVisitor visitor);
+
+    public abstract boolean shouldGenCode();
 
     public abstract void reduceToConstantExprs() throws CompilerException;
 }

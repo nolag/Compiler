@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import cs444.CompilerException;
+import cs444.codegen.ICodeGenVisitor;
 import cs444.lexer.Token;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -148,5 +149,13 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     @Override
     protected boolean isAbstract() {
         return resolver.isAbstract();
+    }
+
+    @Override
+    public void generateCode(ICodeGenVisitor visitor) { }
+
+    @Override
+    public boolean shouldGenCode() {
+        return false;
     }
 }

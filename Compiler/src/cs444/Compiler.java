@@ -115,7 +115,8 @@ public class Compiler {
         for(APkgClassResolver resolver : resolvers){
             resolver.generateCode(codeGen);
             //TODO verify where to write s file to
-            //TODO uncomment to test and use
+            if(!resolver.shouldGenCode()) continue;
+            //TODO uncomment to get s files
             /*File file = new File(resolver.name + ".s");
             file.createNewFile();
             PrintStream printer = new PrintStream(file);
