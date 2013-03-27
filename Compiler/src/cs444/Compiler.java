@@ -13,6 +13,7 @@ import java.util.List;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.SelectorIndexedTable;
+import cs444.codegen.instructions.Instruction;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
@@ -117,10 +118,7 @@ public class Compiler {
         String directory = "output/";
         PrintStream printer;
 
-        SelectorIndexedTable sit = new SelectorIndexedTable();
-        for(APkgClassResolver resolver : resolvers){
-            resolver.addToSelectorIndexedTable(sit);
-        }
+        SelectorIndexedTable sit = SelectorIndexedTable.generateSIT(resolvers, outputFile, directory);
 
         CodeGenVisitor codeGen = new CodeGenVisitor(sit);
         for(APkgClassResolver resolver : resolvers){
