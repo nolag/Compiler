@@ -167,7 +167,10 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(WhileExprSymbol whileExprSymbol) {
-        int mynum = generaetLblNum();
+        int mynum = getNewLblNum();
+        String loopStart = "loopStart" + mynum;
+        String loopEnd = "loopEnd" + mynum;
+
     }
 
     @Override

@@ -439,15 +439,12 @@ public class PkgClassResolver extends APkgClassResolver {
     @Override
     public void generateCode(ICodeGenVisitor visitor) {
         if(start == null) return;
-        for(AMethodSymbol methodSymbol : start.getMethods()){
-            if(methodSymbol.dclInResolver != this) continue;
-            methodSymbol.accept(visitor);
-        }
+        for(AMethodSymbol methodSymbol : start.getUninheritedMethods()) methodSymbol.accept(visitor);
 
-        for(DclSymbol dc : start.getFields()){
+        /*TODO for(DclSymbol dc : start.getFields()){
             if(!dc.isStatic() || dc.dclInResolver != this) continue;
             dc.accept(visitor);
-        }
+        }*/
     }
 
     @Override
