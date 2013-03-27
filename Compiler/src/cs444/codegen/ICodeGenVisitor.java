@@ -81,7 +81,7 @@ public interface ICodeGenVisitor {
     void visit(final NullSymbol nullSymbol);
     void visit(final BooleanLiteralSymbol boolSymbol);
     void visit(final ThisSymbol thisSymbol);
-    void visit(final SuperSymbol thisSymbol);
+    void visit(final SuperSymbol superSymbol);
     void visit(final StringLiteralSymbol stringSymbol);
     void visit(final CharacterLiteralSymbol characterSymbol);
     void visit(final ArrayAccessExprSymbol arrayAccess);

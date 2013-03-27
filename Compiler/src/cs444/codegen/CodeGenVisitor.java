@@ -6,10 +6,13 @@ import java.util.List;
 
 import cs444.codegen.InstructionArg.Size;
 import cs444.codegen.instructions.Call;
+import cs444.codegen.instructions.Cmp;
 import cs444.codegen.instructions.Comment;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Int;
+import cs444.codegen.instructions.Jmp;
+import cs444.codegen.instructions.Jne;
 import cs444.codegen.instructions.Label;
 import cs444.codegen.instructions.Leave;
 import cs444.codegen.instructions.Mov;
@@ -169,7 +172,21 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(IfExprSymbol ifExprSymbol) {
+        int myid = getNewLblNum();
+        String falseLbl = "false" + myid;
+        String trueLbl = "true" + myid;
+        ifExprSymbol.getConditionSymbol().accept(this);
+        instructions.add(new Cmp(Register.ACCUMULATOR, Immediate.TRUE));
+        instructions.add(new Jne(new Immediate(falseLbl)));
 
+        ifExprSymbol.getifBody().accept(this);
+
+        instructions.add(new Jmp(new Immediate(trueLbl)));
+        instructions.add(new Label(falseLbl));
+
+        ifExprSymbol.getElseBody().accept(this);
+
+        instructions.add(new Label(trueLbl));
     }
 
     @Override
@@ -350,7 +367,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(SuperSymbol thisSymbol) {
+    public void visit(SuperSymbol superSymbol) {
         // TODO Auto-generated method stub
 
     }
