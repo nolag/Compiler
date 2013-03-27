@@ -18,6 +18,8 @@ import java.util.Scanner;
             if (!folder.exists()) folder.mkdir();
 
             for (File file : folder.listFiles()) {
+                if (file.getName().equals("runtime.s")) continue;
+
                 if (!file.delete()){
                     System.err.println("Couldn't delete file: " + file.getAbsolutePath());
                 }
