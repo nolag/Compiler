@@ -47,3 +47,7 @@ Compiler/JoosRules.txt
 
 # Compiler output destination
 output/
+**/output/
+
+# Compiler output final executable
+main

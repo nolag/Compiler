@@ -6,7 +6,7 @@
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
     <path id="JUnit 4.libraryclasspath">
-        <pathelement location="../../../../../opt/eclipse/plugins/org.junit_4.8.2.v4_8_2_v20110321-1705/junit.jar"/>
+        <pathelement location="/usr/share/java/junit4.jar"/>
         <pathelement location="../../../../../opt/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
     </path>
     <path id="Compiler.classpath">
@@ -22,6 +22,11 @@
         </copy>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="tst">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="a5.tst">
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
@@ -88,6 +93,15 @@
         <classpath refid="Compiler.classpath"/>
       </junit>
     </target>
+
+    <target name="a5-tests">
+      <junit fork="yes" printsummary="withOutAndErr">
+        <formatter type="plain" usefile="false" />
+        <test name="cs444.acceptance.A5"/>
+        <classpath refid="Compiler.classpath"/>
+      </junit>
+    </target>
+
     <target name="junitreport">
         <junitreport todir="${junit.output.dir}">
             <fileset dir="${junit.output.dir}">
