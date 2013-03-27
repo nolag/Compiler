@@ -68,7 +68,8 @@ public class TestHelper {
         for (int i = 0; i < array.length; i++)
             array[i] = sourceFiles.get(i);
 
-        if (compileAndTest(array, printErrors) == expectedReturnCode
+        if (callbacks.beforeCompile(file)
+                && compileAndTest(array, printErrors) == expectedReturnCode
                 && callbacks.afterCompile(file)) {
             System.out.print(".");
         }else{

@@ -9,8 +9,18 @@ import java.io.InputStreamReader;
 import java.util.Scanner;
 
     public class AsmAndLinkCallback implements ITestCallbacks{
-        // TODO: add beforeCompile to clean output/ directory
-        
+        private static final String OUTPUT = "output/";
+
+        @Override
+        public boolean beforeCompile(File _) {
+            File folder = new File(OUTPUT);
+            for (File file : folder.listFiles()) {
+                if (!file.delete()){
+                    System.err.println("Couldn't delete file: " + file.getAbsolutePath());
+                }
+            }
+            return true;
+        }
 
         @Override
         public boolean afterCompile(File file) throws IOException, InterruptedException {
@@ -50,7 +60,7 @@ import java.util.Scanner;
         }
 
         private File assembleOutput() throws IOException, InterruptedException {
-            File folder = new File("output/");
+            File folder = new File(OUTPUT);
             for (File file : folder.listFiles()) {
                 String fileName = file.getName();
                 if (!fileName.endsWith(".s")) continue;
@@ -72,6 +82,7 @@ import java.util.Scanner;
             StreamGobbler outputGobbler = new 
                 StreamGobbler(proc.getInputStream(), "OUTPUT");
 
+            // consume all output from err and out
             errorGobbler.start();
             outputGobbler.start();
 

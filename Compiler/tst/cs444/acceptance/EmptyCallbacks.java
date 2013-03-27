@@ -5,8 +5,12 @@ import java.io.File;
 public class EmptyCallbacks implements ITestCallbacks {
 
     @Override
-    public boolean afterCompile(File file) {
+    public boolean beforeCompile(File file) {
         return true;
     }
 
+    @Override
+    public boolean afterCompile(File file) {
+        return true;
+    }
 }
