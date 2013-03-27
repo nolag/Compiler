@@ -23,14 +23,21 @@ import cs444.codegen.instructions.Pop;
 import cs444.codegen.instructions.Push;
 import cs444.codegen.instructions.Ret;
 import cs444.codegen.instructions.Sar;
+import cs444.codegen.instructions.Xor;
 import cs444.codegen.instructions.factories.AddOpMaker;
 import cs444.codegen.instructions.factories.AndOpMaker;
 import cs444.codegen.instructions.factories.BinOpMaker;
 import cs444.codegen.instructions.factories.BinUniOpMaker;
+import cs444.codegen.instructions.factories.CmpMaker;
 import cs444.codegen.instructions.factories.IDivMaker;
 import cs444.codegen.instructions.factories.IMulMaker;
 import cs444.codegen.instructions.factories.OrOpMaker;
+import cs444.codegen.instructions.factories.SeteMaker;
+import cs444.codegen.instructions.factories.SetlMaker;
+import cs444.codegen.instructions.factories.SetleMaker;
+import cs444.codegen.instructions.factories.SetneMaker;
 import cs444.codegen.instructions.factories.SubOpMaker;
+import cs444.codegen.instructions.factories.UniOpMaker;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
@@ -249,8 +256,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(NotOpExprSymbol op) {
-        // TODO Auto-generated method stub
-
+        op.children.get(0).accept(this);
+        instructions.add(new Xor(Register.ACCUMULATOR, Immediate.TRUE));
     }
 
     @Override
@@ -285,7 +292,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(AddExprSymbol op) {
         binOpHelper(op, AddOpMaker.maker);
-
     }
 
     @Override
@@ -295,19 +301,17 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(LtExprSymbol op) {
-        // TODO Auto-generated method stub
-
+        compHelper(op, SetlMaker.maker);
     }
 
     @Override
     public void visit(EqExprSymbol op) {
-        // TODO Auto-generated method stub
-
+        compHelper(op, SeteMaker.maker);
     }
 
     @Override
     public void visit(NeExprSymbol op) {
-        // TODO Auto-generated method stub
+        compHelper(op, SetneMaker.maker);
 
     }
 
@@ -335,8 +339,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(LeExprSymbol op) {
-        // TODO Auto-generated method stub
-
+        compHelper(op, SetleMaker.maker);
     }
 
     @Override
@@ -400,30 +403,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Push(Register.ACCUMULATOR, size));
     }
 
-    private void binOpHelper(BinOpExpr bin, BinOpMaker maker){
-        instructions.add(new Push(Register.BASE));
-        bin.children.get(1).accept(this);
-        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
-        bin.children.get(0).accept(this);
-        instructions.add(maker.make(Register.ACCUMULATOR, Register.BASE));
-        instructions.add(new Pop(Register.BASE));
-    }
-
-    private void binUniOpHelper(BinOpExpr bin, BinUniOpMaker maker, boolean sar){
-        instructions.add(new Push(Register.BASE));
-        bin.children.get(1).accept(this);
-        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
-        bin.children.get(0).accept(this);
-
-        if(sar){
-            instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR));
-            instructions.add(Sar.acc32);
-        }
-
-        instructions.add(maker.make(Register.BASE));
-        instructions.add(new Pop(Register.BASE));
-    }
-
     @Override
     public void visit(ByteLiteralSymbol byteLiteral) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(byteLiteral.getValue()))));
@@ -438,5 +417,34 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void printToFileAndEmpty(PrintStream printer){
         for(Instruction instruction : instructions) printer.println(instruction.generate());
         instructions.clear();
+    }
+
+    private void binOpHelper(BinOpExpr bin, BinOpMaker maker){
+        instructions.add(new Push(Register.BASE));
+        bin.children.get(1).accept(this);
+        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
+        bin.children.get(0).accept(this);
+        instructions.add(maker.make(Register.ACCUMULATOR, Register.BASE));
+        instructions.add(new Pop(Register.BASE));
+    }
+
+    private void compHelper(BinOpExpr bin, UniOpMaker uni){
+        binOpHelper(bin, CmpMaker.maker);
+        instructions.add(uni.make(Register.ACCUMULATOR));
+    }
+
+    private void binUniOpHelper(BinOpExpr bin, BinUniOpMaker maker, boolean sar){
+        instructions.add(new Push(Register.BASE));
+        bin.children.get(1).accept(this);
+        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
+        bin.children.get(0).accept(this);
+
+        if(sar){
+            instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR));
+            instructions.add(new Sar(Register.ACCUMULATOR, new Immediate("32")));
+        }
+
+        instructions.add(maker.make(Register.BASE));
+        instructions.add(new Pop(Register.BASE));
     }
 }

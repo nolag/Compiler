@@ -1,19 +1,18 @@
 package cs444.codegen.instructions;
 
-import cs444.codegen.InstructionArg.Size;
-import cs444.codegen.Register;
+import cs444.codegen.InstructionArg;
 
 public class And implements Instruction {
-    public final Register addTo;
-    public final Register addWith;
+    public final InstructionArg arg1;
+    public final InstructionArg arg2;
 
-    public And(Register addTo, Register addWith){
-        this.addTo = addTo;
-        this.addWith = addWith;
+    public And(InstructionArg addTo, InstructionArg addWith){
+        this.arg1 = addTo;
+        this.arg2 = addWith;
     }
 
     @Override
     public String generate() {
-        return "and " + addTo.getValue(Size.DWORD) + ", " + addWith.getValue(Size.DWORD);
+        return "and " + arg1.getValue() + ", " + arg2.getValue();
     }
 }

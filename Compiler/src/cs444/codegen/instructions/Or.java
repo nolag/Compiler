@@ -1,19 +1,18 @@
 package cs444.codegen.instructions;
 
-import cs444.codegen.InstructionArg.Size;
-import cs444.codegen.Register;
+import cs444.codegen.InstructionArg;
 
 public class Or implements Instruction {
-    public final Register addTo;
-    public final Register addWith;
+    public final InstructionArg arg1;
+    public final InstructionArg arg2;
 
-    public Or(Register addTo, Register addWith){
-        this.addTo = addTo;
-        this.addWith = addWith;
+    public Or(InstructionArg addTo, InstructionArg addWith){
+        this.arg1 = addTo;
+        this.arg2 = addWith;
     }
 
     @Override
     public String generate() {
-        return "or " + addTo.getValue(Size.DWORD) + ", " + addWith.getValue(Size.DWORD);
+        return "or " + arg1.getValue() + ", " + arg2.getValue();
     }
 }
