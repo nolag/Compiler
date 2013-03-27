@@ -12,8 +12,11 @@ import java.util.Scanner;
         private static final String OUTPUT = "output/";
 
         @Override
-        public boolean beforeCompile(File _) {
+        public boolean beforeCompile(File _) throws IOException {
             File folder = new File(OUTPUT);
+
+            if (!folder.exists()) folder.mkdir();
+
             for (File file : folder.listFiles()) {
                 if (!file.delete()){
                     System.err.println("Couldn't delete file: " + file.getAbsolutePath());

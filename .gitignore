@@ -46,10 +46,8 @@ Compiler/JoosRules.txt
 *.zip
 
 # Compiler output destination
-output/*.s
-output/*.o
-**/output/*.s
-**/output/*.o
+output/
+**/output/
 
 # Compiler output final executable
 main
