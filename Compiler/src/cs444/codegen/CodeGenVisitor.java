@@ -171,6 +171,17 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         String loopStart = "loopStart" + mynum;
         String loopEnd = "loopEnd" + mynum;
 
+
+
+        instructions.add(new Label(loopStart));
+        whileExprSymbol.getConditionSymbol().accept(this);
+        instructions.add(new Cmp(Register.ACCUMULATOR, Immediate.TRUE));
+        instructions.add(new Jne(new Immediate(loopEnd)));
+
+        whileExprSymbol.getBody().accept(this);
+
+        instructions.add(new Jmp(new Immediate(loopStart)));
+        instructions.add(new Label(loopEnd));
     }
 
     @Override
@@ -192,7 +203,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Jmp(new Immediate(trueLbl)));
         instructions.add(new Label(falseLbl));
 
-        ifExprSymbol.getElseBody().accept(this);
+        ISymbol elseSymbol = ifExprSymbol.getElseBody();
+
+        if(elseSymbol != null) elseSymbol.accept(this);
 
         instructions.add(new Label(trueLbl));
     }
