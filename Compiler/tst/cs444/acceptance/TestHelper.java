@@ -14,8 +14,14 @@ import cs444.types.PkgClassInfo;
 
 public class TestHelper {
 
-	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors, boolean includeStdLib,
-	            List<String> ignoreList) throws IOException, InterruptedException {
+    private static ITestCallbacks callbacks;
+    private static boolean outputAsmFiles;
+
+	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors, boolean includeStdLib, 
+	        boolean outputAsmFiles, List<String> ignoreList, ITestCallbacks testCallbacks) throws IOException, InterruptedException {
+	    TestHelper.callbacks = testCallbacks;
+	    TestHelper.outputAsmFiles = outputAsmFiles;
+
 		File folder = new File(path);
 
 		int totalTests = 0;
@@ -34,32 +40,12 @@ public class TestHelper {
 			}
 
 			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
-			    List<String> sourceFiles = getAllFiles(file, includeStdLib);
-
-				String[] array = new String[sourceFiles.size()];
-				for (int i = 0; i < array.length; i++)
-					array[i] = sourceFiles.get(i);
-
-				if (compileAndTest(array, printErrors) == expectedReturnCode) {
-					System.out.print(".");
-				}else{
-					System.out.print("F");
-					failFiles.add(path + fileName);
-				}
+			    runTestCase(path, expectedReturnCode, printErrors,
+                        includeStdLib, failFiles, file, fileName);
 				totalTests++;
 			} else if (file.isDirectory() && !fileName.toLowerCase().endsWith(".skip")) {
-			    List<String> sourceFiles = getAllFiles(file, includeStdLib);
-
-				String[] array = new String[sourceFiles.size()];
-				for (int i = 0; i < array.length; i++)
-					array[i] = sourceFiles.get(i);
-
-				if (compileAndTest(array, printErrors) == expectedReturnCode) {
-					System.out.print(".");
-				} else {
-					System.out.print("F");
-					failFiles.add(path + fileName);
-				}
+			    runTestCase(path, expectedReturnCode, printErrors,
+                        includeStdLib, failFiles, file, fileName);
 				totalTests++;
 			} else {
 				System.out.print("*"); // skip file
@@ -69,12 +55,36 @@ public class TestHelper {
 
 		printSummary(totalTests, filesSkipped, failFiles);
 		int failures = failFiles.size();
-		assertEquals("Compiler return unexpected return code compiling " + failures + " files. Expected return code was: " + expectedReturnCode, 0, failures);
+		assertEquals("Unexpected return code compiling or running " + failures + " files. Expected return code was: " + expectedReturnCode, 0, failures);
 	}
 
-	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors) throws IOException, InterruptedException {
-	    assertReturnCodeForFiles(path, expectedReturnCode, printErrors, true);
-	}
+    private static void runTestCase(String path, int expectedReturnCode,
+            boolean printErrors, boolean includeStdLib, List<String> failFiles,
+            File file, String fileName) throws IOException,
+            InterruptedException {
+        List<String> sourceFiles = getAllFiles(file, includeStdLib);
+
+        String[] array = new String[sourceFiles.size()];
+        for (int i = 0; i < array.length; i++)
+            array[i] = sourceFiles.get(i);
+
+        if (compileAndTest(array, printErrors) == expectedReturnCode
+                && callbacks.afterCompile(file)) {
+            System.out.print(".");
+        }else{
+            System.out.print("F");
+            failFiles.add(path + fileName);
+        }
+    }
+
+    public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors, boolean includeStdLib,
+            List<String> ignoreList) throws IOException, InterruptedException {
+        assertReturnCodeForFiles(path, expectedReturnCode, printErrors, includeStdLib, false, ignoreList, new EmptyCallbacks());
+    }
+
+    public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors) throws IOException, InterruptedException {
+        assertReturnCodeForFiles(path, expectedReturnCode, printErrors, true);
+    }
 
     public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors, boolean includeStdLib) 
             throws IOException, InterruptedException {
@@ -126,6 +136,6 @@ public class TestHelper {
 
 	private static int compileAndTest(String[] files, boolean printErrors) throws IOException, InterruptedException {
 	    PkgClassInfo.instance.clear();
-	    return Compiler.compile(files, printErrors, false);
+	    return Compiler.compile(files, printErrors, TestHelper.outputAsmFiles);
 	}
 }
