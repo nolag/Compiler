@@ -167,14 +167,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(WhileExprSymbol whileExprSymbol) {
-        // TODO Auto-generated method stub
-
+        int mynum = generaetLblNum();
     }
 
     @Override
     public void visit(ForExprSymbol forExprSymbol) {
         // TODO Auto-generated method stub
-
     }
 
     @Override

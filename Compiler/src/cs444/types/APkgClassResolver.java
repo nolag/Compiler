@@ -100,7 +100,7 @@ public abstract class APkgClassResolver {
     }
 
     public static String generateFullId(MethodOrConstructorSymbol methodSymbol){
-        String name = methodSymbol instanceof ConstructorSymbol ? "this" : methodSymbol.name;
+        String name = methodSymbol instanceof ConstructorSymbol ? "this" : methodSymbol.dclName;
         String value = null;
         try{
             value = getClassName(methodSymbol.dclInResolver) + "_" + generateUniqueName(methodSymbol, name);
