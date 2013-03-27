@@ -6,6 +6,7 @@ import java.util.Set;
 
 import cs444.CompilerException;
 import cs444.codegen.ICodeGenVisitor;
+import cs444.codegen.SelectorIndexedTable;
 import cs444.lexer.Token;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -157,5 +158,10 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     @Override
     public boolean shouldGenCode() {
         return false;
+    }
+
+    @Override
+    public void addToSelectorIndexedTable(SelectorIndexedTable sit) {
+        // TODO Auto-generated method stub
     }
 }

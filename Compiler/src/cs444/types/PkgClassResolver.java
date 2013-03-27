@@ -12,6 +12,7 @@ import java.util.Set;
 
 import cs444.CompilerException;
 import cs444.codegen.ICodeGenVisitor;
+import cs444.codegen.SelectorIndexedTable;
 import cs444.parser.IASTBuilder;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -452,5 +453,21 @@ public class PkgClassResolver extends APkgClassResolver {
     @Override
     public boolean shouldGenCode() {
         return start != null;
+    }
+
+    @Override
+    public void addToSelectorIndexedTable(SelectorIndexedTable sit) {
+        if(this.isAbstract() || start == null) return;
+
+        for (AMethodSymbol method : start.getMethods()) {
+            if(method.isStatic()) continue;
+            try {
+                sit.addIndex(this.fullName, generateUniqueName(method, method.dclName),
+                        generateFullId(method));
+            } catch (UndeclaredException e) {
+                // should not get here
+                e.printStackTrace();
+            }
+        }
     }
 }

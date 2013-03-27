@@ -78,11 +78,16 @@ import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 import cs444.types.APkgClassResolver;
 
 public class CodeGenVisitor implements ICodeGenVisitor {
+    private final SelectorIndexedTable sit;
     private final List<Instruction> instructions = new LinkedList<Instruction>();
     private boolean hasEntry = false;
     private boolean getVal = true;
 
     private int lastOffset = 0xBAD;
+
+    public CodeGenVisitor(SelectorIndexedTable sit) {
+        this.sit = sit;
+    }
 
     @Override
     public void visit(MethodInvokeSymbol invoke) {

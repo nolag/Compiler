@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cs444.codegen.CodeGenVisitor;
+import cs444.codegen.SelectorIndexedTable;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
@@ -113,9 +114,15 @@ public class Compiler {
     }
 
     private static void generateCode(List<APkgClassResolver> resolvers, boolean outputFile) throws IOException{
-        CodeGenVisitor codeGen = new CodeGenVisitor();
         String directory = "output/";
         PrintStream printer;
+
+        SelectorIndexedTable sit = new SelectorIndexedTable();
+        for(APkgClassResolver resolver : resolvers){
+            resolver.addToSelectorIndexedTable(sit);
+        }
+
+        CodeGenVisitor codeGen = new CodeGenVisitor(sit);
         for(APkgClassResolver resolver : resolvers){
             resolver.generateCode(codeGen);
             if(!resolver.shouldGenCode()) continue;
