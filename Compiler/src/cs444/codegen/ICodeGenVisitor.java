@@ -9,7 +9,6 @@ import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 import cs444.parser.symbols.ast.ByteLiteralSymbol;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.EmptyStatementSymbol;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
@@ -85,7 +84,6 @@ public interface ICodeGenVisitor {
     void visit(final SuperSymbol thisSymbol);
     void visit(final StringLiteralSymbol stringSymbol);
     void visit(final CharacterLiteralSymbol characterSymbol);
-    void visit(final EmptyStatementSymbol emptySymbol);
     void visit(final ArrayAccessExprSymbol arrayAccess);
     void visit(final DclSymbol dclSymbol);
     void visit(final ByteLiteralSymbol byteLiteral);

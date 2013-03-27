@@ -175,8 +175,11 @@ public class JoosNonTerminal extends NonTerminal{
         stackSizes.put(BYTE, 8);
         stackSizes.put(SHORT, 16);
         stackSizes.put(CHAR, 16);
+        //Can't get 1 bit so just use 8.
+        stackSizes.put(BOOLEAN, 8);
 
         unsigned.add(CHAR);
+        unsigned.add(BOOLEAN);
     }
 
     public JoosNonTerminal(String name, ISymbol[] children) {

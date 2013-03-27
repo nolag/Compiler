@@ -38,7 +38,6 @@ import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 import cs444.parser.symbols.ast.ByteLiteralSymbol;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.EmptyStatementSymbol;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
@@ -83,7 +82,14 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     private boolean hasEntry = false;
     private boolean getVal = true;
 
-    private int lastOffset = 0xBAD;
+    //FFFFFFFF is easy to see if something went wrong
+    private int lastOffset = 0xFFFFFFFF;
+
+    private int nextLblnum = 0;
+
+    private int getNewLblNum(){
+        return nextLblnum++;
+    }
 
     public CodeGenVisitor(SelectorIndexedTable sit) {
         this.sit = sit;
@@ -163,7 +169,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(IfExprSymbol ifExprSymbol) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -330,14 +335,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(NullSymbol nullSymbol) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new Mov(Register.ACCUMULATOR, Immediate.NULL));
     }
 
     @Override
     public void visit(BooleanLiteralSymbol boolSymbol) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new Mov(Register.ACCUMULATOR, boolSymbol.boolValue ? Immediate.TRUE : Immediate.FALSE));
     }
 
     @Override
@@ -361,12 +364,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(CharacterLiteralSymbol characterSymbol) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(characterSymbol.getValue()))));
-    }
-
-    @Override
-    public void visit(EmptyStatementSymbol emptySymbol) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
