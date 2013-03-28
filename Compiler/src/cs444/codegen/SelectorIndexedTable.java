@@ -55,9 +55,9 @@ public class SelectorIndexedTable {
                 String implLabel = column.get(selector);
                 if (implLabel == null){
                     instructions.add(new Comment(classLabel + " does not have access to " + selector + ":"));
-                    instructions.add(new Dd("0"));
+                    instructions.add(new Dd(Immediate.NULL));
                 }else{
-                    instructions.add(new Dd(implLabel));
+                    instructions.add(new Dd(new Immediate(implLabel)));
                 }
             }
         }
