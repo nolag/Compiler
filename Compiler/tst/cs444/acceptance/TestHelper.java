@@ -31,7 +31,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("ForLoops")) continue;
+			//if (!fileName.equals("DivZero")) continue;
 
 			if (ignoreList.contains(fileName)){
 			    System.out.print("*"); // skip file

@@ -208,7 +208,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Label(loopStart));
         whileExprSymbol.getConditionSymbol().accept(this);
 
-        setupJumpNe(Immediate.TRUE, loopEnd);
+        setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, loopEnd);
 
         whileExprSymbol.getBody().accept(this);
 
@@ -230,7 +230,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment("Compare for " + mynum));
         forExprSymbol.getConditionExpr().accept(this);
 
-        setupJumpNe(Immediate.TRUE, loopEnd);
+        setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, loopEnd);
 
         instructions.add(new Comment("for body" + mynum));
 
@@ -261,7 +261,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         String trueLbl = "true" + myid;
         ifExprSymbol.getConditionSymbol().accept(this);
 
-        setupJumpNe(Immediate.TRUE, falseLbl);
+        setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, falseLbl);
 
         ifExprSymbol.getifBody().accept(this);
 
@@ -410,9 +410,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void visit(AndExprSymbol op) {
         String andEnd = "and" + getNewLblNum();
         op.children.get(0).accept(this);
-        setupJumpNe(Immediate.TRUE, andEnd);
+        setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, andEnd);
         op.children.get(1).accept(this);
-        setupJumpNe(Immediate.TRUE, andEnd);
+        setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, andEnd);
         instructions.add(new Label(andEnd));
     }
 
@@ -420,9 +420,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void visit(OrExprSymbol op) {
         String orEnd = "or" + getNewLblNum();
         op.children.get(0).accept(this);
-        setupJumpNe(Immediate.FALSE, orEnd);
+        setupJumpNe(Register.ACCUMULATOR, Immediate.FALSE, orEnd);
         op.children.get(1).accept(this);
-        setupJumpNe(Immediate.FALSE, orEnd);
+        setupJumpNe(Register.ACCUMULATOR, Immediate.FALSE, orEnd);
         instructions.add(new Label(orEnd));
     }
 
@@ -537,14 +537,18 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         if(sar){
             instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR));
             instructions.add(new Sar(Register.DATA, Immediate.PREP_EDX));
+            String safeDiv = "safeDiv" + getNewLblNum();
+            setupJumpNe(Register.BASE, Immediate.ZERO, safeDiv);
+            Runtime.throwException(instructions, "Divide by zero");
+            instructions.add(new Label(safeDiv));
         }
 
         instructions.add(maker.make(Register.BASE));
         instructions.add(new Pop(Register.BASE));
     }
 
-    private void setupJumpNe(Immediate when, String lblTo){
-        instructions.add(new Cmp(Register.ACCUMULATOR, when));
+    private void setupJumpNe(Register reg, Immediate when, String lblTo){
+        instructions.add(new Cmp(reg, when));
         instructions.add(new Jne(new Immediate(lblTo)));
     }
 }
