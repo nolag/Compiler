@@ -170,8 +170,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         instructions.add(new Comment("Allocate " + bytes + " bytes for " + typeDclNode.fullName));
         Runtime.malloc(bytes, instructions);
-        // TODO finish this
+        ObjectLayout.initialize(typeDclNode, instructions);
 
+        // TODO call constructor
     }
 
     @Override

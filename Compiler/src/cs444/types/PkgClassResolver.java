@@ -456,6 +456,8 @@ public class PkgClassResolver extends APkgClassResolver {
     public void addToSelectorIndexedTable(SelectorIndexedTable sit) {
         if(this.isAbstract() || start == null) return;
 
+        sit.addClass(this.fullName);
+
         for (AMethodSymbol method : start.getMethods()) {
             if(method.isStatic()) continue;
             try {

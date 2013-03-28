@@ -15,6 +15,7 @@ import cs444.codegen.instructions.Dd;
 import cs444.codegen.instructions.Extern;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
+import cs444.codegen.instructions.Label;
 import cs444.types.APkgClassResolver;
 
 public class SelectorIndexedTable {
@@ -25,11 +26,7 @@ public class SelectorIndexedTable {
     public void addIndex(String className, String selector,
             String methodImplLabel) {
 
-        Map<String, String> column = sit.get(className);
-        if (column == null){
-            column = new HashMap<String, String>();
-            sit.put(className, column);
-        }
+        Map<String, String> column = this.addClass(className);
 
         column.put(selector, methodImplLabel);
         offset.put(selector, offsetCounter);
@@ -49,6 +46,12 @@ public class SelectorIndexedTable {
 
             for (String implLabel : column.values()) {
                 instructions.add(new Extern(implLabel));
+            }
+            instructions.add(new Label(classLabel));
+
+            if (column.isEmpty()){
+                instructions.add(new Comment(classLabel + " does not have non-static method, so add NULL"));
+                instructions.add(new Dd(Immediate.NULL));
             }
 
             for (String selector : offset.keySet()) {
@@ -83,6 +86,15 @@ public class SelectorIndexedTable {
         }
 
         return sit;
+    }
+
+    public Map<String, String> addClass(String fullName) {
+        Map<String, String> column = sit.get(fullName);
+        if (column == null){
+            column = new HashMap<String, String>();
+            sit.put(fullName, column);
+        }
+        return column;
     }
 
 }
