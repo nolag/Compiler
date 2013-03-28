@@ -207,8 +207,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         instructions.add(new Label(loopStart));
         whileExprSymbol.getConditionSymbol().accept(this);
-        instructions.add(new Cmp(Register.ACCUMULATOR, Immediate.TRUE));
-        instructions.add(new Jne(new Immediate(loopEnd)));
+
+        setupJumpNe(Immediate.TRUE, loopEnd);
 
         whileExprSymbol.getBody().accept(this);
 
@@ -229,8 +229,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Label(loopStart));
         instructions.add(new Comment("Compare for " + mynum));
         forExprSymbol.getConditionExpr().accept(this);
-        instructions.add(new Cmp(Register.ACCUMULATOR, Immediate.TRUE));
-        instructions.add(new Jne(new Immediate(loopEnd)));
+
+        setupJumpNe(Immediate.TRUE, loopEnd);
 
         instructions.add(new Comment("for body" + mynum));
 
@@ -260,8 +260,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         String falseLbl = "false" + myid;
         String trueLbl = "true" + myid;
         ifExprSymbol.getConditionSymbol().accept(this);
-        instructions.add(new Cmp(Register.ACCUMULATOR, Immediate.TRUE));
-        instructions.add(new Jne(new Immediate(falseLbl)));
+
+        setupJumpNe(Immediate.TRUE, falseLbl);
 
         ifExprSymbol.getifBody().accept(this);
 
@@ -408,14 +408,22 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(AndExprSymbol op) {
-        // TODO Auto-generated method stub
-
+        String andEnd = "and" + getNewLblNum();
+        op.children.get(0).accept(this);
+        setupJumpNe(Immediate.TRUE, andEnd);
+        op.children.get(1).accept(this);
+        setupJumpNe(Immediate.TRUE, andEnd);
+        instructions.add(new Label(andEnd));
     }
 
     @Override
     public void visit(OrExprSymbol op) {
-        // TODO Auto-generated method stub
-
+        String orEnd = "or" + getNewLblNum();
+        op.children.get(0).accept(this);
+        setupJumpNe(Immediate.FALSE, orEnd);
+        op.children.get(1).accept(this);
+        setupJumpNe(Immediate.FALSE, orEnd);
+        instructions.add(new Label(orEnd));
     }
 
     @Override
@@ -534,4 +542,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(maker.make(Register.BASE));
         instructions.add(new Pop(Register.BASE));
     }
+    }
+
+    private void setupJumpNe(Immediate when, String lblTo){
+        instructions.add(new Cmp(Register.ACCUMULATOR, when));
+        instructions.add(new Jne(new Immediate(lblTo)));
 }
