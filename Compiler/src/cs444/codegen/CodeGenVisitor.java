@@ -166,12 +166,17 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(CreationExpression creationExpression) {
         APkgClassResolver typeDclNode = creationExpression.getType().getTypeDclNode();
-        long bytes = typeDclNode.getObjectSize() / 8;
 
-        instructions.add(new Comment("Allocate " + bytes + " bytes for " + typeDclNode.fullName));
-        Runtime.malloc(bytes, instructions);
-        ObjectLayout.initialize(typeDclNode, instructions);
+        if (!creationExpression.getType().isArray){
+            long bytes = typeDclNode.getObjectSize() / 8;
 
+            instructions.add(new Comment("Allocate " + bytes + " bytes for " + typeDclNode.fullName));
+            Runtime.malloc(bytes, instructions);
+            ObjectLayout.initialize(typeDclNode, instructions);
+        }else{
+            // TODO: do array creation here and change instruction comment
+            instructions.add(new Comment("Allocate for " + typeDclNode.fullName + " no done yet"));
+        }
         // TODO call constructor
     }
 

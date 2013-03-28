@@ -27,7 +27,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     private static DclSymbol length;
 
     public static String getArrayName(String name){
-        return name + "[]";
+        return name + "?array?";
     }
 
     private void addLenght(){
