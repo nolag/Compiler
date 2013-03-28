@@ -93,7 +93,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     private boolean getVal = true;
 
     //FFFFFFFF is easy to see if something went wrong
-    private int lastOffset = 0xFFFFFFFF;
+    private long lastOffset = 0xFFFFFFFF;
 
     private int nextLblnum = 0;
 
@@ -156,7 +156,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(CreationExpression creationExpression) {
-        // TODO Auto-generated method stub
+        long bytes = creationExpression.getType().getTypeDclNode().getObjectSize() / 8;
+
+        // TODO finish this
 
     }
 
@@ -227,7 +229,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(NameSymbol nameSymbol) {
         final DclSymbol dcl = nameSymbol.getLastLookupDcl();
-        int offset = dcl.getOffset() / 8;
+        long offset = dcl.getOffset() / 8;
         if(getVal){
             int stackSize = dcl.getType().getTypeDclNode().stackSize;
             Size size = Size.DWORD;

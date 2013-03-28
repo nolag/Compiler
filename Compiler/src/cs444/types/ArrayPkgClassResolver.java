@@ -164,4 +164,17 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     public void addToSelectorIndexedTable(SelectorIndexedTable sit) {
         // TODO Auto-generated method stub
     }
+
+    @Override
+    public void computeFieldOffsets() {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    @Override
+    public long getObjectSize() {
+        // TODO Auto-generated method stub
+        return 0;
+        
+    }
 }

@@ -9,12 +9,14 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
+import cs444.types.APkgClassResolver;
 
 public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
     public final Iterable<String> impls;
     public final String superName;
     public final Iterable<NameSymbol> pkgImports;
     private ConstructorSymbol defaultConstructor;
+    private long objectSize = 0;
 
     protected AInterfaceOrClassSymbol(String ruleName, String dclName, ANonTerminal from, Iterable<String> impls, List<ISymbol> body,
             String superName, Iterable<NameSymbol> pkgImports) throws IllegalModifierException, UnsupportedException {
@@ -91,5 +93,21 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
 
     public ConstructorSymbol getDefaultConstructor() {
         return this.defaultConstructor;
+    }
+
+    public void computeFieldOffsets() {
+        // first two words are for SIT and SubType Labels
+        long lastOffset = APkgClassResolver.DEFAULT_STACK_SIZE;
+        for (DclSymbol fieldDcl : this.getFields()) {
+            if (fieldDcl.getOffset() != 0) lastOffset = fieldDcl.getOffset();
+            // no a field from super:
+            lastOffset += APkgClassResolver.DEFAULT_STACK_SIZE;
+            fieldDcl.setOffset(lastOffset);
+        }
+        this.objectSize = lastOffset + APkgClassResolver.DEFAULT_STACK_SIZE;
+    }
+
+    public long getObjectSize(){
+        return objectSize;
     }
 }

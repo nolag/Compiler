@@ -467,4 +467,14 @@ public class PkgClassResolver extends APkgClassResolver {
             }
         }
     }
+
+    @Override
+    public void computeFieldOffsets() {
+        if (shouldGenCode()) start.computeFieldOffsets();
+    }
+
+    @Override
+    public long getObjectSize() {
+        return start.getObjectSize();
+    }
 }

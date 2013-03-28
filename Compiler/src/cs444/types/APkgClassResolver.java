@@ -45,7 +45,7 @@ public abstract class APkgClassResolver {
     protected final Map<String, AMethodSymbol> smethodMap = new HashMap<String, AMethodSymbol>();
     protected final Map<String, ConstructorSymbol> constructors = new HashMap<String, ConstructorSymbol>();
 
-    private static final int DEFAULT_STACK_SIZE = 32;
+    public static final int DEFAULT_STACK_SIZE = 32;
 
     private final Map<DclSymbol, Integer> order = new HashMap<DclSymbol, Integer>();
     private final Map<Integer, DclSymbol> revorder = new HashMap<Integer, DclSymbol>();
@@ -290,4 +290,8 @@ public abstract class APkgClassResolver {
     public abstract void reduceToConstantExprs() throws CompilerException;
 
     public abstract void addToSelectorIndexedTable(SelectorIndexedTable sit);
+
+    public abstract void computeFieldOffsets();
+
+    public abstract long getObjectSize();
 }

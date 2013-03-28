@@ -2,9 +2,9 @@ package cs444.codegen;
 
 public class PointerRegister extends InstructionArg{
     public final Register register;
-    public final int offset;
+    public final long offset;
 
-    public PointerRegister(Register register, int offset){
+    public PointerRegister(Register register, long offset){
         this.register = register;
         this.offset = offset;
     }
