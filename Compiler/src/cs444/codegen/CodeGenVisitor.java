@@ -542,9 +542,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(maker.make(Register.BASE));
         instructions.add(new Pop(Register.BASE));
     }
-    }
 
     private void setupJumpNe(Immediate when, String lblTo){
         instructions.add(new Cmp(Register.ACCUMULATOR, when));
         instructions.add(new Jne(new Immediate(lblTo)));
+    }
 }
