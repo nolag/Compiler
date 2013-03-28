@@ -45,7 +45,8 @@ public abstract class APkgClassResolver {
     protected final Map<String, AMethodSymbol> smethodMap = new HashMap<String, AMethodSymbol>();
     protected final Map<String, ConstructorSymbol> constructors = new HashMap<String, ConstructorSymbol>();
 
-    private static final int DEFAULT_STACK_SIZE = 32;
+    public static final int DEFAULT_STACK_SIZE = 32;
+    private static final int MIN_STACK_SHIFT = 16;
 
     private final Map<DclSymbol, Integer> order = new HashMap<DclSymbol, Integer>();
     private final Map<Integer, DclSymbol> revorder = new HashMap<Integer, DclSymbol>();
@@ -53,6 +54,7 @@ public abstract class APkgClassResolver {
     private int onField = 0;
 
     public final int stackSize;
+    public final int realSize;
 
     public static enum Castable { UP_CAST, DOWN_CAST, NOT_CASTABLE };
 
@@ -67,7 +69,8 @@ public abstract class APkgClassResolver {
 
         Set<String> alsoAssignsTo = JoosNonTerminal.defaultAssignables.get(name);
         if(alsoAssignsTo != null) assignableTo.addAll(alsoAssignsTo);
-        this.stackSize = JoosNonTerminal.stackSizes.containsKey(name) ? JoosNonTerminal.stackSizes.get(name) : DEFAULT_STACK_SIZE;
+        this.realSize = JoosNonTerminal.stackSizes.containsKey(name) ? JoosNonTerminal.stackSizes.get(name) : DEFAULT_STACK_SIZE;;
+        this.stackSize = realSize < MIN_STACK_SHIFT ? MIN_STACK_SHIFT : realSize;
     }
 
     protected void addTo(DclSymbol add){

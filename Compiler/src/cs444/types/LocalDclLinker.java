@@ -120,6 +120,7 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void close(NonTerminal aNonTerminal){
         if (aNonTerminal.getName().equals(JoosNonTerminal.BLOCK)){
+            aNonTerminal.setStackSize(currentScope.offset - offset);
             popCurrentScope();
             currentTypes.pop();
         }

@@ -7,6 +7,8 @@ public abstract class ANonTerminal implements ISymbol{
     public final List<ISymbol> children = new LinkedList<ISymbol>();
     public final String name;
 
+    private int stackSize = 0;
+
     protected ANonTerminal(String name){
         this.name = name;
     }
@@ -60,6 +62,14 @@ public abstract class ANonTerminal implements ISymbol{
             }
         }
         return validChildren;
+    }
+
+    public void setStackSize(int stackSize){
+        this.stackSize = stackSize;
+    }
+
+    public int getStackSize(){
+        return stackSize;
     }
 
     public abstract boolean isCollapsable();

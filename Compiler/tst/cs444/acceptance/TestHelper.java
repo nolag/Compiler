@@ -17,7 +17,7 @@ public class TestHelper {
     private static ITestCallbacks callbacks;
     private static boolean outputAsmFiles;
 
-	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors, boolean includeStdLib, 
+	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors, boolean includeStdLib,
 	        boolean outputAsmFiles, List<String> ignoreList, ITestCallbacks testCallbacks) throws IOException, InterruptedException {
 	    TestHelper.callbacks = testCallbacks;
 	    TestHelper.outputAsmFiles = outputAsmFiles;
@@ -31,7 +31,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			// if (!fileName.equals("Je_7_Reachability_ForFalse_1.java")) continue;
+			if (!fileName.equals("EagerBooleanConditionals")) continue;
 
 			if (ignoreList.contains(fileName)){
 			    System.out.print("*"); // skip file
@@ -87,7 +87,7 @@ public class TestHelper {
         assertReturnCodeForFiles(path, expectedReturnCode, printErrors, true);
     }
 
-    public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors, boolean includeStdLib) 
+    public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors, boolean includeStdLib)
             throws IOException, InterruptedException {
         assertReturnCodeForFiles(path, expectedReturnCode, printErrors, includeStdLib, Collections.<String>emptyList());
     }

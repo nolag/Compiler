@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cs444.codegen.InstructionArg.Size;
+import cs444.codegen.instructions.Add;
 import cs444.codegen.instructions.Call;
 import cs444.codegen.instructions.Cmp;
 import cs444.codegen.instructions.Comment;
@@ -92,8 +93,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     private boolean hasEntry = false;
     private boolean getVal = true;
 
+    private boolean lastWasFunc = false;
+
     //FFFFFFFF is easy to see if something went wrong
     private int lastOffset = 0xFFFFFFFF;
+
+    private Size lastSize = Size.DWORD;
 
     private int nextLblnum = 0;
 
@@ -146,6 +151,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         if(method.getProtectionLevel() != ProtectionLevel.PRIVATE) instructions.add(new Global(methodName));
         instructions.add(new Label(methodName));
 
+        lastWasFunc = true;
+
         instructions.add(Push.STACK_PUSH);
         instructions.add(new Mov(Register.FRAME, Register.STACK));
 
@@ -162,16 +169,28 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(ANonTerminal aNonTerminal) {
+        boolean isBlock = aNonTerminal.getName().equals(JoosNonTerminal.BLOCK);
+        boolean lastFunc = lastWasFunc;
+        lastWasFunc = false;
+
         for(ISymbol child : aNonTerminal.children) child.accept(this);
+
+        if(isBlock && !lastFunc){
+            int size = aNonTerminal.getStackSize() / 8;
+            if(0 != size){
+                Immediate by = new Immediate(String.valueOf(size));
+                instructions.add(new Add(Register.STACK, by));
+            }
+        }
+        lastWasFunc = lastFunc;
     }
 
     @Override
     public void visit(WhileExprSymbol whileExprSymbol) {
         int mynum = getNewLblNum();
+        instructions.add(new Comment("while start" + mynum));
         String loopStart = "loopStart" + mynum;
         String loopEnd = "loopEnd" + mynum;
-
-
 
         instructions.add(new Label(loopStart));
         whileExprSymbol.getConditionSymbol().accept(this);
@@ -182,6 +201,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         instructions.add(new Jmp(new Immediate(loopStart)));
         instructions.add(new Label(loopEnd));
+        instructions.add(new Comment("while end" + mynum));
     }
 
     @Override
@@ -192,6 +212,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(IfExprSymbol ifExprSymbol) {
         int myid = getNewLblNum();
+        instructions.add(new Comment("if start" + myid));
         String falseLbl = "false" + myid;
         String trueLbl = "true" + myid;
         ifExprSymbol.getConditionSymbol().accept(this);
@@ -208,6 +229,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         if(elseSymbol != null) elseSymbol.accept(this);
 
         instructions.add(new Label(trueLbl));
+        instructions.add(new Comment("if end" + myid));
     }
 
     @Override
@@ -228,8 +250,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void visit(NameSymbol nameSymbol) {
         final DclSymbol dcl = nameSymbol.getLastLookupDcl();
         int offset = dcl.getOffset() / 8;
+        int stackSize = dcl.getType().getTypeDclNode().realSize;
         if(getVal){
-            int stackSize = dcl.getType().getTypeDclNode().stackSize;
+
             Size size = Size.DWORD;
             if(stackSize == 16) size = Size.WORD;
             if(stackSize == 8) size = Size.LOW;
@@ -248,6 +271,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(instruction);
         }else{
             lastOffset = offset;
+            lastSize = getSize(stackSize);
         }
     }
 
@@ -265,6 +289,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(NegOpExprSymbol op) {
+        op.children.get(0).accept(this);
         instructions.add(new Neg(Register.ACCUMULATOR));
     }
 
@@ -282,19 +307,25 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(AssignmentExprSymbol op) {
         op.children.get(1).accept(this);
-        instructions.add(new Push(Register.ACCUMULATOR));
         boolean tmp = getVal;
         getVal = false;
+
+        instructions.add(new Push(Register.ACCUMULATOR));
+
         op.children.get(0).accept(this);
-        InstructionArg to = new PointerRegister(Register.FRAME, lastOffset);
+
         instructions.add(new Pop(Register.ACCUMULATOR));
-        instructions.add(new Mov(to, Register.ACCUMULATOR));
+
+        InstructionArg to = new PointerRegister(Register.FRAME, lastOffset);
+        instructions.add(new Mov(to, Register.ACCUMULATOR, lastSize));
         getVal = tmp;
     }
 
     @Override
     public void visit(DivideExprSymbol op) {
+        instructions.add(new Comment("START"));
         binUniOpHelper(op, IDivMaker.maker, true);
+        instructions.add(new Comment("END"));
     }
 
     @Override
@@ -410,11 +441,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void visit(DclSymbol dclSymbol) {
         if(dclSymbol.children.isEmpty()) new IntegerLiteralSymbol(0).accept(this);
         else dclSymbol.children.get(0).accept(this);
-        Size size = Size.DWORD;
-        int stackSize = dclSymbol.getType().getTypeDclNode().stackSize;
-        if(stackSize == 16) size = Size.WORD;
-        if(stackSize == 8) size = Size.LOW;
-        instructions.add(new Push(Register.ACCUMULATOR, size));
+        instructions.add(new Push(Register.ACCUMULATOR, getSize(dclSymbol.getType().getTypeDclNode().stackSize)));
     }
 
     @Override
@@ -455,10 +482,16 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         if(sar){
             instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR));
-            instructions.add(new Sar(Register.ACCUMULATOR, new Immediate("32")));
+            instructions.add(new Sar(Register.DATA, Immediate.PREP_EDX));
         }
 
         instructions.add(maker.make(Register.BASE));
         instructions.add(new Pop(Register.BASE));
+    }
+
+    private Size getSize(int stackSize) {
+        if(stackSize == 16) return Size.WORD;
+        if(stackSize == 8) return Size.LOW;
+        return Size.DWORD;
     }
 }

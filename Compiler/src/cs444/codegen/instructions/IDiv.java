@@ -12,6 +12,6 @@ public class IDiv implements Instruction {
 
     @Override
     public String generate() {
-        return "idiv  " + with.getValue(Size.DWORD);
+        return "idiv " + with.getValue(Size.DWORD);
     }
 }

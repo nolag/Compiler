@@ -11,6 +11,8 @@ public class Immediate extends InstructionArg{
     public static final Immediate NULL = FALSE;
     public static final Immediate SOFTWARE_INTERUPT = new Immediate("80h");
 
+    public static final Immediate PREP_EDX = new Immediate("31");
+
     public Immediate(String value){
         this.value = value;
     }
