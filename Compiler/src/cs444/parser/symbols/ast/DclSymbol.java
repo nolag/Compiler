@@ -13,7 +13,7 @@ import cs444.types.APkgClassResolver;
 public class DclSymbol extends AModifiersOptSymbol{
     private final boolean isLocal;
     public boolean isFinal;
-    private int offset;
+    private long offset;
 
     public static DclSymbol getClassSymbol(String fullName, APkgClassResolver resolver){
         DclSymbol retVal = null;
@@ -42,11 +42,11 @@ public class DclSymbol extends AModifiersOptSymbol{
         this.isLocal = isLocal;
     }
 
-    public void setOffset(int offset){
+    public void setOffset(long offset){
         this.offset = offset;
     }
 
-    public int getOffset(){
+    public long getOffset(){
         return offset;
     }
 

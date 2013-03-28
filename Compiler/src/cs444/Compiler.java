@@ -120,6 +120,10 @@ public class Compiler {
 
         SelectorIndexedTable sit = SelectorIndexedTable.generateSIT(resolvers, outputFile, directory);
 
+        for (APkgClassResolver resolver : resolvers) {
+            resolver.computeFieldOffsets();
+        }
+
         CodeGenVisitor codeGen = new CodeGenVisitor(sit);
         for(APkgClassResolver resolver : resolvers){
             resolver.generateCode(codeGen);

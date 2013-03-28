@@ -293,4 +293,8 @@ public abstract class APkgClassResolver {
     public abstract void reduceToConstantExprs() throws CompilerException;
 
     public abstract void addToSelectorIndexedTable(SelectorIndexedTable sit);
+
+    public abstract void computeFieldOffsets();
+
+    public abstract long getObjectSize();
 }

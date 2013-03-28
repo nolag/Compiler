@@ -5,16 +5,21 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import cs444.codegen.instructions.Comment;
+import cs444.codegen.instructions.Dd;
+import cs444.codegen.instructions.Extern;
+import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.types.APkgClassResolver;
 
 public class SelectorIndexedTable {
     private final Map<String, Map<String, String>> sit = new HashMap<String, Map<String,String>>();;
-    private final Map<String, Integer> offset = new HashMap<String, Integer>();
+    private final Map<String, Integer> offset = new LinkedHashMap<String, Integer>();
     private int offsetCounter = 0;
 
     public void addIndex(String className, String selector,
@@ -38,7 +43,24 @@ public class SelectorIndexedTable {
     public void genCodeAndPrint(PrintStream printer) {
         List<Instruction> instructions = new LinkedList<Instruction>();
 
-        // TODO: generate instructions here
+        for (String classLabel : sit.keySet()) {
+            instructions.add(new Global(classLabel));
+            Map<String, String> column = sit.get(classLabel);
+
+            for (String implLabel : column.values()) {
+                instructions.add(new Extern(implLabel));
+            }
+
+            for (String selector : offset.keySet()) {
+                String implLabel = column.get(selector);
+                if (implLabel == null){
+                    instructions.add(new Comment(classLabel + " does not have access to " + selector + ":"));
+                    instructions.add(new Dd("0"));
+                }else{
+                    instructions.add(new Dd(implLabel));
+                }
+            }
+        }
 
         for(Instruction instruction : instructions) printer.println(instruction.generate());
     }
