@@ -29,17 +29,23 @@ import java.util.Scanner;
 
         @Override
         public boolean afterCompile(File file) throws IOException, InterruptedException {
-            File folder = assembleOutput();
+            File folder = new File(OUTPUT);
+            if (!assembleOutput(folder)) return false;
 
             String folderAbsPath = folder.getAbsolutePath();
-            execAndWait(new String[] {"bash", "-c", "ld -melf_i386 -o main " +
-                folderAbsPath + File.separator + "*.o"});
+            if(execAndWait(new String[] {"bash", "-c", "ld -melf_i386 -o main " +
+                folderAbsPath + File.separator + "*.o"}) != 0) return false;
 
             int returnCode = execAndWait(new String[] {"./main"});
 
             if (!file.isDirectory()) return true;
 
-            int expectedReturnCode = getExpectedReturnCode(file);
+            int expectedReturnCode;
+            try{
+                expectedReturnCode = getExpectedReturnCode(file);
+            }catch(FileNotFoundException e){
+                return true;
+            }
 
             if (expectedReturnCode != returnCode){
                 System.out.print("WRC" + returnCode + "->");
@@ -64,16 +70,15 @@ import java.util.Scanner;
             return expectedReturnCode;
         }
 
-        private File assembleOutput() throws IOException, InterruptedException {
-            File folder = new File(OUTPUT);
+        private boolean assembleOutput(File folder) throws IOException, InterruptedException {
             for (File file : folder.listFiles()) {
                 String fileName = file.getName();
                 if (!fileName.endsWith(".s")) continue;
                 String[] command = new String[] {"nasm", "-O1", "-f", "elf", "-g", "-F",
                         "dwarf", file.getAbsolutePath()};
-                execAndWait(command);
+                if (execAndWait(command) != 0) return false;
             }
-            return folder;
+            return true;
         }
 
         private int execAndWait(String[] command) throws IOException, InterruptedException{
@@ -91,12 +96,20 @@ import java.util.Scanner;
             errorGobbler.start();
             outputGobbler.start();
 
+            errorGobbler.join();
+            outputGobbler.join();
+
             return proc.waitFor();
         }
 
         class StreamGobbler extends Thread{
             InputStream is;
             String type;
+            boolean receivedOutput = false;
+
+            public boolean receivedOutput() {
+                return receivedOutput;
+            }
 
             StreamGobbler(InputStream is, String type){
                 this.is = is;
@@ -108,8 +121,10 @@ import java.util.Scanner;
                     InputStreamReader isr = new InputStreamReader(is);
                     BufferedReader br = new BufferedReader(isr);
                     String line=null;
-                    while ( (line = br.readLine()) != null)
+                    while ( (line = br.readLine()) != null){
                         System.out.println(type + ">" + line);
+                        receivedOutput = true;
+                    }
                 } catch (IOException ioe){
                     ioe.printStackTrace();
                 }
