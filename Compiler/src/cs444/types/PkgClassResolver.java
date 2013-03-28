@@ -479,4 +479,8 @@ public class PkgClassResolver extends APkgClassResolver {
     public long getObjectSize() {
         return start.getObjectSize();
     }
+
+    public AInterfaceOrClassSymbol getStart() {
+        return start;
+    }
 }

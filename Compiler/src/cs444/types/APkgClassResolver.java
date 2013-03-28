@@ -31,7 +31,7 @@ public abstract class APkgClassResolver {
     protected boolean isBuilt = false;
     protected final boolean isFinal;
 
-    protected static final String DEFAULT_PKG = "!default";
+    protected static final String DEFAULT_PKG = "?default?";
     protected static final String LANG = "java.lang";
     protected static final String OBJECT = LANG + ".Object";
 
@@ -67,7 +67,7 @@ public abstract class APkgClassResolver {
 
         Set<String> alsoAssignsTo = JoosNonTerminal.defaultAssignables.get(name);
         if(alsoAssignsTo != null) assignableTo.addAll(alsoAssignsTo);
-        this.realSize = SizeHelper.getSizeOfType(name);
+        this.realSize = SizeHelper.getBitSizeOfType(name);
         this.stackSize = realSize < SizeHelper.MIN_STACK_SHIFT ? SizeHelper.MIN_STACK_SHIFT : realSize;
     }
 

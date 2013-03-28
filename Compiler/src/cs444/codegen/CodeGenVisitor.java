@@ -166,12 +166,17 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(CreationExpression creationExpression) {
         APkgClassResolver typeDclNode = creationExpression.getType().getTypeDclNode();
-        long bytes = typeDclNode.getObjectSize() / 8;
 
-        instructions.add(new Comment("Allocate " + bytes + " bytes for " + typeDclNode.fullName));
-        Runtime.malloc(bytes, instructions);
-        ObjectLayout.initialize(typeDclNode, instructions);
+        if (!creationExpression.getType().isArray){
+            long bytes = typeDclNode.getObjectSize() / 8;
 
+            instructions.add(new Comment("Allocate " + bytes + " bytes for " + typeDclNode.fullName));
+            Runtime.malloc(bytes, instructions);
+            ObjectLayout.initialize(typeDclNode, instructions);
+        }else{
+            // TODO: do array creation here and change instruction comment
+            instructions.add(new Comment("Allocate for " + typeDclNode.fullName + " no done yet"));
+        }
         // TODO call constructor
     }
 
@@ -310,7 +315,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(instruction);
         }else{
             lastOffset = offset;
-            lastSize = getSize(stackSize);
+            lastSize = SizeHelper.getSize(stackSize);
         }
     }
 
@@ -482,7 +487,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void visit(DclSymbol dclSymbol) {
         if(dclSymbol.children.isEmpty()) new IntegerLiteralSymbol(0).accept(this);
         else dclSymbol.children.get(0).accept(this);
-        instructions.add(new Push(Register.ACCUMULATOR, getSize(dclSymbol.getType().getTypeDclNode().stackSize)));
+        instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getSize(dclSymbol.getType().getTypeDclNode().stackSize)));
     }
 
     @Override
@@ -528,11 +533,5 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         instructions.add(maker.make(Register.BASE));
         instructions.add(new Pop(Register.BASE));
-    }
-
-    private Size getSize(int stackSize) {
-        if(stackSize == 16) return Size.WORD;
-        if(stackSize == 8) return Size.LOW;
-        return Size.DWORD;
     }
 }

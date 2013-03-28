@@ -8,6 +8,7 @@
     <path id="JUnit 4.libraryclasspath">
         <pathelement location="/usr/share/java/junit4.jar"/>
         <pathelement location="../../../../../opt/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+        <pathelement location="/usr/lib/eclipse/plugins/org.hamcrest.core_1.1.0.jar"/>
     </path>
     <path id="Compiler.classpath">
         <pathelement location="bin"/>
@@ -51,6 +52,10 @@
             <exclude name="cs444/integration/fixtures/**" />
             <classpath refid="Compiler.classpath"/>
         </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}" includeantruntime="true">
+            <src path="a5.tst"/>
+            <classpath refid="Compiler.classpath"/>
+        </javac>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
     <target name="Compiler">
@@ -66,6 +71,9 @@
             <test name="cs444.parser.ParserTest" todir="${junit.output.dir}"/>
             <test name="cs444.integration.parser.JoosRulesTest" todir="${junit.output.dir}"/>
             <test name="cs444.acceptance.Asst1" todir="${junit.output.dir}"/>
+            <test name="cs444.acceptance.Asst2" todir="${junit.output.dir}"/>
+            <test name="cs444.acceptance.Asst3" todir="${junit.output.dir}"/>
+            <test name="cs444.acceptance.Asst4" todir="${junit.output.dir}"/>
             <classpath refid="Compiler.classpath"/>
         </junit>
     </target>
@@ -81,6 +89,9 @@
     <target name="acceptance-tests">
       <junit fork="yes" printsummary="withOutAndErr">
         <test name="cs444.acceptance.Asst1"/>
+        <test name="cs444.acceptance.Asst2"/>
+        <test name="cs444.acceptance.Asst3"/>
+        <test name="cs444.acceptance.Asst4"/>
         <classpath refid="Compiler.classpath"/>
       </junit>
     </target>

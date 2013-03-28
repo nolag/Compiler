@@ -1,1 +1,1 @@
-java -cp /usr/share/java/junit4.jar:bin/ org.junit.runner.JUnitCore cs444.acceptance.A5
+java -cp /usr/share/java/junit4.jar:/usr/lib/eclipse/plugins/org.hamcrest.core_1.1.0.jar:bin/ org.junit.runner.JUnitCore cs444.acceptance.A5

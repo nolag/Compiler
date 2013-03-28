@@ -101,7 +101,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         for (DclSymbol fieldDcl : this.getFields()) {
             if (fieldDcl.getOffset() != 0) lastOffset = fieldDcl.getOffset();
             // no a field from super:
-            lastOffset += SizeHelper.getSizeOfType(fieldDcl.type.value);
+            lastOffset += SizeHelper.getBitSizeOfType(fieldDcl.type.value);
             fieldDcl.setOffset(lastOffset);
         }
         this.objectSize = lastOffset + SizeHelper.DEFAULT_STACK_SIZE;

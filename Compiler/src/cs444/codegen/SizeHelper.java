@@ -3,6 +3,7 @@ package cs444.codegen;
 import java.util.HashMap;
 import java.util.Map;
 
+import cs444.codegen.InstructionArg.Size;
 import cs444.parser.symbols.JoosNonTerminal;
 
 public class SizeHelper {
@@ -19,7 +20,18 @@ public class SizeHelper {
         SizeHelper.stackSizes.put(JoosNonTerminal.BOOLEAN, 8);
     }
 
-    public static int getSizeOfType(String typeName) {
+    public static int getBitSizeOfType(String typeName) {
         return SizeHelper.stackSizes.containsKey(typeName) ? SizeHelper.stackSizes.get(typeName) : DEFAULT_STACK_SIZE;
+    }
+
+
+    public static Size getSize(int stackSize) {
+        if(stackSize == 16) return Size.WORD;
+        if(stackSize == 8) return Size.LOW;
+        return Size.DWORD;
+    }
+
+    public static Size getSizeOfType(String typeName) {
+        return getSize(getBitSizeOfType(typeName));
     }
 }
