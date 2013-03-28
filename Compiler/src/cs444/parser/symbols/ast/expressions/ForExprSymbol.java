@@ -48,10 +48,10 @@ public class ForExprSymbol extends BaseExprSymbol {
         getConditionExpr().accept(visitor);
         visitor.afterCondition(this);
         visitor.afterClause(this);
-        final ISymbol body = getBody();
-        if(body != null) body.accept(visitor);
         getForUpdate().accept(visitor);
         visitor.afterClause(this);
+        final ISymbol body = getBody();
+        if(body != null) body.accept(visitor);
         visitor.close(this);
     }
 
