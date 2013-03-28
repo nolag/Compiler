@@ -41,7 +41,8 @@ public class Asst3 {
 
     @Test
     public void a3Testing() throws IOException, InterruptedException{
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/valid/", 0, true, false);
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/invalid/", 42, false, false);
+        List<String> ignoreList = new LinkedList<String>(Arrays.asList("IfWhileFor"));
+        TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/valid/", 0, true, false, ignoreList);
+        TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/invalid/", 42, false, false,ignoreList);
     }
 }

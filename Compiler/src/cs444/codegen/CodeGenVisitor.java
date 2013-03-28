@@ -196,7 +196,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(WhileExprSymbol whileExprSymbol) {
         int mynum = getNewLblNum();
-        instructions.add(new Comment("while start" + mynum));
+        instructions.add(new Comment("while start " + mynum));
         String loopStart = "loopStart" + mynum;
         String loopEnd = "loopEnd" + mynum;
 
@@ -209,12 +209,43 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         instructions.add(new Jmp(new Immediate(loopStart)));
         instructions.add(new Label(loopEnd));
-        instructions.add(new Comment("while end" + mynum));
+        instructions.add(new Comment("while end " + mynum));
     }
 
     @Override
     public void visit(ForExprSymbol forExprSymbol) {
-        // TODO Auto-generated method stub
+        int mynum = getNewLblNum();
+        instructions.add(new Comment("for start " + mynum));
+        String loopStart = "loopStart" + mynum;
+        String loopEnd = "loopEnd" + mynum;
+
+        instructions.add(new Comment("Init for " + mynum));
+        forExprSymbol.getForInit().accept(this);
+        instructions.add(new Label(loopStart));
+        instructions.add(new Comment("Compare for " + mynum));
+        forExprSymbol.getConditionExpr().accept(this);
+        instructions.add(new Cmp(Register.ACCUMULATOR, Immediate.TRUE));
+        instructions.add(new Jne(new Immediate(loopEnd)));
+
+        instructions.add(new Comment("for body" + mynum));
+
+        forExprSymbol.getBody().accept(this);
+
+        instructions.add(new Comment("for update " + mynum));
+        forExprSymbol.getForUpdate().accept(this);
+
+        instructions.add(new Jmp(new Immediate(loopStart)));
+        instructions.add(new Label(loopEnd));
+
+        //This takes care of the init if they dcl something there
+        int size = forExprSymbol.getStackSize() / 8;
+        if(0 != size){
+            Immediate by = new Immediate(String.valueOf(size));
+            instructions.add(new Comment("for stack " + mynum));
+            instructions.add(new Add(Register.STACK, by));
+        }
+
+        instructions.add(new Comment("for end " + mynum));
     }
 
     @Override
@@ -291,8 +322,10 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(CastExpressionSymbol symbol) {
-        // TODO Auto-generated method stub
-
+        TypeSymbol type = symbol.getType();
+        //TODO object cast to primative
+        if(!JoosNonTerminal.primativeNumbers.contains(type.getTypeDclNode().fullName)) type.accept(this);
+        symbol.getOperandExpression().accept(this);
     }
 
     @Override

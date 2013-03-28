@@ -8,6 +8,7 @@ import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.TypeableTerminal;
 
 public class ForExprSymbol extends BaseExprSymbol {
+    private int offsetSize = 0;
 
     public ForExprSymbol(ISymbol forInit, ISymbol forCondition,
             ISymbol forUpdate, ISymbol body) {
@@ -34,6 +35,10 @@ public class ForExprSymbol extends BaseExprSymbol {
         return children.get(2);
     }
 
+    public ISymbol getBody(){
+        return children.get(3);
+    }
+
     @Override
     public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
@@ -43,11 +48,21 @@ public class ForExprSymbol extends BaseExprSymbol {
         getConditionExpr().accept(visitor);
         visitor.afterCondition(this);
         visitor.afterClause(this);
+        final ISymbol body = getBody();
+        if(body != null) body.accept(visitor);
         getForUpdate().accept(visitor);
         visitor.afterClause(this);
         visitor.close(this);
     }
-    
+
+    public void setOffsetSize(int offsetSize){
+        this.offsetSize = offsetSize;
+    }
+
+    public int getOffsetSize(){
+        return offsetSize;
+    }
+
     @Override
     public void accept(ICodeGenVisitor visitor) {
         visitor.visit(this);

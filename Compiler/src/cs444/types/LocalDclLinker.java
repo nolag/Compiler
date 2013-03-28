@@ -406,6 +406,7 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void close(ForExprSymbol expr) throws UndeclaredException, IllegalCastAssignmentException{
         currentTypes.pop();
+        expr.setStackSize(currentScope.offset - offset);
         popCurrentScope();
     }
 
@@ -450,10 +451,9 @@ public class LocalDclLinker extends EmptyVisitor {
         assertIsAssignable(isType, toType, secondIsClass, allowDownCast);
     }
 
-    private void assertIsAssignable(TypeSymbol type,
-            TypeSymbol toType, boolean secondIsClass,
-            boolean allowDownCast) throws UndeclaredException,
-            IllegalCastAssignmentException {
+    private void assertIsAssignable(TypeSymbol type, TypeSymbol toType, boolean secondIsClass, boolean allowDownCast)
+            throws UndeclaredException, IllegalCastAssignmentException {
+
         Castable castType = toType.getTypeDclNode().getCastablility(type.getTypeDclNode());
         if(castType == Castable.NOT_CASTABLE  || toType.isClass != secondIsClass || (castType == Castable.DOWN_CAST && !allowDownCast)
                 || type.value.equals(JoosNonTerminal.VOID) || toType.value.equals(JoosNonTerminal.VOID)
@@ -466,13 +466,12 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void visit(CastExpressionSymbol symbol) throws IllegalCastAssignmentException, UndeclaredException {
+    public void visit(CastExpressionSymbol symbol) throws CompilerException {
         castOrAssign(true, true);
         //cast is to a class, make sure it's not a class after the cast
         Deque<Typeable> currentDeque = currentTypes.peek();
         TypeSymbol type = currentDeque.removeLast().getType();
         TypeSymbol finalType = type.getNonClassVersion();
-        symbol.setType(finalType);
         currentDeque.add(finalType);
     }
 
