@@ -5,11 +5,11 @@ import java.util.List;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
+import cs444.codegen.SizeHelper;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
-import cs444.types.APkgClassResolver;
 
 public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
     public final Iterable<String> impls;
@@ -97,14 +97,14 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
 
     public void computeFieldOffsets() {
         // first two words are for SIT and SubType Labels
-        long lastOffset = APkgClassResolver.DEFAULT_STACK_SIZE;
+        long lastOffset = SizeHelper.DEFAULT_STACK_SIZE;
         for (DclSymbol fieldDcl : this.getFields()) {
             if (fieldDcl.getOffset() != 0) lastOffset = fieldDcl.getOffset();
             // no a field from super:
-            lastOffset += APkgClassResolver.DEFAULT_STACK_SIZE;
+            lastOffset += SizeHelper.getSizeOfType(fieldDcl.type.value);
             fieldDcl.setOffset(lastOffset);
         }
-        this.objectSize = lastOffset + APkgClassResolver.DEFAULT_STACK_SIZE;
+        this.objectSize = lastOffset + SizeHelper.DEFAULT_STACK_SIZE;
     }
 
     public long getObjectSize(){

@@ -130,6 +130,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(MethodOrConstructorSymbol method) {
         String methodName = APkgClassResolver.generateFullId(method);
+        Runtime.externAll(instructions);
+
         try{
             if(APkgClassResolver.generateUniqueName(method, method.dclName).equals(JoosNonTerminal.ENTRY)
                     && method.isStatic() && !hasEntry){
@@ -163,8 +165,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(CreationExpression creationExpression) {
-        long bytes = creationExpression.getType().getTypeDclNode().getObjectSize() / 8;
+        APkgClassResolver typeDclNode = creationExpression.getType().getTypeDclNode();
+        long bytes = typeDclNode.getObjectSize() / 8;
 
+        instructions.add(new Comment("Allocate " + bytes + " bytes for " + typeDclNode.fullName));
+        Runtime.malloc(bytes, instructions);
         // TODO finish this
 
     }

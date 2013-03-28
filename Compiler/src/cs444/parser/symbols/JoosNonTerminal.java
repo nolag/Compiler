@@ -73,8 +73,6 @@ public class JoosNonTerminal extends NonTerminal{
 
     public static final List<String> arraysExtend = new LinkedList<String>();
 
-    public static final Map<String, Integer> stackSizes = new HashMap<String, Integer>();
-
     public static final Set<String> unsigned = new HashSet<String>();
 
     public static final String ENTRY = APkgClassResolver.generateUniqueName("test", Collections.<String>emptyList());
@@ -171,12 +169,6 @@ public class JoosNonTerminal extends NonTerminal{
         nonPrimativeOperativeTypes.add(STRING);
         arraysExtend.add("java.lang.Cloneable");
         arraysExtend.add("java.io.Serializable");
-
-        stackSizes.put(BYTE, 8);
-        stackSizes.put(SHORT, 16);
-        stackSizes.put(CHAR, 16);
-        //Can't get 1 bit so just use 8.
-        stackSizes.put(BOOLEAN, 8);
 
         unsigned.add(CHAR);
         unsigned.add(BOOLEAN);
