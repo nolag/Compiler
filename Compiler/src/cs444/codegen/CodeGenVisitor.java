@@ -115,8 +115,10 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     public CodeGenVisitor(SelectorIndexedTable sit) {
         this.sit = sit;
-        Runtime.externAll(instructions);
+    }
 
+    public void genHeader() {
+        Runtime.externAll(instructions);
     }
 
     public void genLayoutForStaticFields(

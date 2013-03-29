@@ -127,6 +127,7 @@ public class Compiler {
         CodeGenVisitor codeGen = new CodeGenVisitor(sit);
         for(APkgClassResolver resolver : resolvers){
             if(!resolver.shouldGenCode()) continue;
+            codeGen.genHeader();
             codeGen.genLayoutForStaticFields(resolver.getUninheritedStaticFields());
             resolver.generateCode(codeGen);
             if (outputFile){
