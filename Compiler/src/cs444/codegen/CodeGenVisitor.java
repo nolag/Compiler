@@ -131,7 +131,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Call(arg));
 
         if(invoke.getStackSize() != 0){
-            long size = (invoke.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE) / 8;
+            long size = (invoke.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE);
             Immediate by = new Immediate(String.valueOf(size));
             instructions.add(new Add(Register.STACK, by));
         }
