@@ -51,8 +51,8 @@ public abstract class APkgClassResolver {
     protected final Set<DclSymbol> addAll = new HashSet<DclSymbol>();
     private int onField = 0;
 
-    public final int stackSize;
-    public final int realSize;
+    public final long stackSize;
+    public final long realSize;
 
     public static enum Castable { UP_CAST, DOWN_CAST, NOT_CASTABLE };
 

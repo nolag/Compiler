@@ -85,11 +85,11 @@ import java.util.Scanner;
             Process proc = Runtime.getRuntime().exec(command);
 
             // any error message?
-            StreamGobbler errorGobbler = new 
+            StreamGobbler errorGobbler = new
                 StreamGobbler(proc.getErrorStream(), "ERROR");
 
             // any output?
-            StreamGobbler outputGobbler = new 
+            StreamGobbler outputGobbler = new
                 StreamGobbler(proc.getInputStream(), "OUTPUT");
 
             // consume all output from err and out
@@ -116,6 +116,7 @@ import java.util.Scanner;
                 this.type = type;
             }
 
+            @Override
             public void run(){
                 try{
                     InputStreamReader isr = new InputStreamReader(is);

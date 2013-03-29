@@ -7,7 +7,7 @@ public abstract class ANonTerminal implements ISymbol{
     public final List<ISymbol> children = new LinkedList<ISymbol>();
     public final String name;
 
-    private int stackSize = 0;
+    private long stackSize = 0;
 
     protected ANonTerminal(String name){
         this.name = name;
@@ -64,11 +64,11 @@ public abstract class ANonTerminal implements ISymbol{
         return validChildren;
     }
 
-    public void setStackSize(int stackSize){
+    public void setStackSize(long stackSize){
         this.stackSize = stackSize;
     }
 
-    public int getStackSize(){
+    public long getStackSize(){
         return stackSize;
     }
 

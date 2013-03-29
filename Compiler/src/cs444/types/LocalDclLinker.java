@@ -9,6 +9,7 @@ import java.util.Stack;
 
 import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
+import cs444.codegen.SizeHelper;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
@@ -68,7 +69,10 @@ public class LocalDclLinker extends EmptyVisitor {
     private final Stack<Deque<Typeable>> currentTypes = new Stack<Deque<Typeable>>();
     private final Stack<Boolean> useCurrentForLookup = new Stack<Boolean>();
 
-    private int offset = 0;
+    private long offset = 0;
+
+    private boolean methodArgs = false;
+    private long argOffset = 0;
 
     public LocalDclLinker(String enclosingClassName){
         this.context = new ContextInfo(enclosingClassName);
@@ -80,8 +84,22 @@ public class LocalDclLinker extends EmptyVisitor {
     // creates root scope which will contain parameters declarations
     @Override
     public void open(MethodOrConstructorSymbol methodSymbol){
+        methodArgs = true;
+        int where = methodSymbol.isStatic() ? 2 : 3;
+        argOffset = SizeHelper.DEFAULT_STACK_SIZE * where;
         pushNewScope(methodSymbol.isStatic());
         context.setCurrentMC(methodSymbol);
+    }
+
+    @Override
+    public void middle(MethodOrConstructorSymbol methodOrConstructorSymbol) throws CompilerException {
+        methodArgs = false;
+        methodOrConstructorSymbol.setStackSize(argOffset - SizeHelper.DEFAULT_STACK_SIZE);
+        for(DclSymbol param : methodOrConstructorSymbol.params){
+            long stack = param.getType().getTypeDclNode().stackSize;
+            argOffset -= stack;
+            param.setOffset(argOffset);
+        }
     }
 
     @Override
@@ -105,8 +123,12 @@ public class LocalDclLinker extends EmptyVisitor {
         String varName = dclSymbol.dclName;
         if (currentScope.isDeclared(varName)) throw new DuplicateDeclarationException(varName, context.enclosingClassName);
         currentScope.add(varName, dclSymbol);
-        offset -= dclSymbol.getType().getTypeDclNode().stackSize;
-        dclSymbol.setOffset(offset);
+        if(methodArgs){
+            argOffset += dclSymbol.getType().getTypeDclNode().stackSize;
+        }else{
+            offset -= dclSymbol.getType().getTypeDclNode().stackSize;
+            dclSymbol.setOffset(offset);
+        }
     }
 
     @Override
@@ -137,7 +159,6 @@ public class LocalDclLinker extends EmptyVisitor {
         boolean isStatic = invoke.lookupFirst == null ? currentScope.isStatic : false;
         if(invoke.lookupFirst != null){
             DclSymbol dcl = null;
-            //if(invoke.children.size() <= 1) dcl = currentScope.find(invoke.lookupFirst);
             dcl = currentScope.find(invoke.lookupFirst);
             if(dcl == null){
                 List<DclSymbol> dcls = resolver.findDcl(invoke.lookupFirst, isStatic, currentSymbols.isEmpty());
@@ -188,6 +209,8 @@ public class LocalDclLinker extends EmptyVisitor {
 
         APkgClassResolver myResolver = PkgClassInfo.instance.getSymbol(context.enclosingClassName);
         AMethodSymbol method = resolver.findMethod(invoke.methodName, isStatic, params, myResolver);
+        invoke.setCallSymbol(method);
+        invoke.setStackSize(method.getStackSize());
         invoke.setLookup(invoke.getLookup().addWith(method));
         currentTypes.peek().add(method);
     }

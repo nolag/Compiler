@@ -15,6 +15,7 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
     public final String lookupFirst;
 
     private LookupLink link;
+    private MethodOrConstructorSymbol call;
 
     public MethodInvokeSymbol(String name, List<ISymbol> params, ISymbol on) {
         super("Method Invoke");
@@ -66,6 +67,19 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
 
     public LookupLink getLookup(){
         return link;
+    }
+
+    public Iterable<ISymbol> getArgs(){
+        if(hasFirst) return children.subList(1, children.size());
+        return children;
+    }
+
+    public void setCallSymbol(MethodOrConstructorSymbol call){
+        this.call = call;
+    }
+
+    public MethodOrConstructorSymbol getCallSymbol(){
+        return call;
     }
 
     @Override

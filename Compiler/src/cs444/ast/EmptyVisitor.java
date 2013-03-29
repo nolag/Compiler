@@ -225,4 +225,7 @@ public class EmptyVisitor implements ISymbolVisitor {
 
     @Override
     public void prepareElseBody(IfExprSymbol ifExpr) throws CompilerException { }
+
+    @Override
+    public void middle(MethodOrConstructorSymbol methodOrConstructorSymbol) throws CompilerException { }
 }

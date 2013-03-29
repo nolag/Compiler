@@ -8,7 +8,7 @@ public class Push implements Instruction {
     public final InstructionArg what;
     public final Size size;
 
-    public static final Push STACK_PUSH = new Push(Register.STACK);
+    public static final Push STACK_FRAME = new Push(Register.FRAME);
 
     public Push(InstructionArg what, Size size){
         this.what = what;

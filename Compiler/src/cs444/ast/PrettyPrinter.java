@@ -358,4 +358,7 @@ public class PrettyPrinter implements ISymbolVisitor {
     @Override
     public void afterCondition(ForExprSymbol forExprSymbol)
             throws CompilerException { }
+
+    @Override
+    public void middle(MethodOrConstructorSymbol methodOrConstructorSymbol) throws CompilerException { }
 }

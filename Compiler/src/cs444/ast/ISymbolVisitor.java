@@ -113,4 +113,5 @@ public interface ISymbolVisitor {
     void visit(final ArrayAccessExprSymbol arrayAccess) throws CompilerException;
 
     void visit(final ISymbol symbol) throws CompilerException;
+    void middle(MethodOrConstructorSymbol methodOrConstructorSymbol) throws CompilerException;
 }

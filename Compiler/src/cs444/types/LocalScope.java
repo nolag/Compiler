@@ -14,9 +14,9 @@ public class LocalScope {
     public final boolean isStatic;
     private final Map<String, DclSymbol> environment = new HashMap<String, DclSymbol>();
     private final Set<String> initializing = new HashSet<String>();
-    public final int offset;
+    public final long offset;
 
-    public LocalScope(LocalScope parent, boolean isStatic, int offset) {
+    public LocalScope(LocalScope parent, boolean isStatic, long offset) {
         this.parent = parent;
         this.isStatic = isStatic;
         this.offset = offset;

@@ -25,7 +25,7 @@ public class SizeHelper {
     }
 
 
-    public static Size getSize(int stackSize) {
+    public static Size getSize(long stackSize) {
         if(stackSize == 2) return Size.WORD;
         if(stackSize == 1) return Size.LOW;
         return Size.DWORD;
