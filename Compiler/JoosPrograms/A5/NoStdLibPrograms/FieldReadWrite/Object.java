@@ -4,6 +4,9 @@ public class Object{
     public Object() { }
     public static int test(){
         AClass aclass = new AClass();
-        return 0;
+
+        aclass.fChar = (char) 10;
+        aclass.fInt = aclass.fShort = (short)aclass.fChar;
+        return aclass.fInt * aclass.fChar;
     }
 }

@@ -1,6 +1,7 @@
 package cs444.codegen;
 
 import java.io.PrintStream;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -60,6 +61,7 @@ import cs444.parser.symbols.ast.StringLiteralSymbol;
 import cs444.parser.symbols.ast.SuperSymbol;
 import cs444.parser.symbols.ast.ThisSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
@@ -118,7 +120,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(FieldAccessSymbol field) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -292,31 +293,68 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(NameSymbol nameSymbol) {
-        final DclSymbol dcl = nameSymbol.getLastLookupDcl();
-        long offset = dcl.getOffset() / 8;
-        int stackSize = dcl.getType().getTypeDclNode().realSize;
-        if(getVal){
+        final DclSymbol lastDcl = nameSymbol.getLastLookupDcl();
+        long lastDclOffset = lastDcl.getOffset() / 8;
+        int stackSize = lastDcl.getType().getTypeDclNode().realSize;
 
-            Size size = Size.DWORD;
-            if(stackSize == 16) size = Size.WORD;
-            if(stackSize == 8) size = Size.LOW;
-            final InstructionArg from = new PointerRegister(Register.FRAME, offset);
-            Instruction instruction;
+        if(lastDcl.isLocal()){
+            genCodeForLocalVar(nameSymbol, lastDcl, lastDclOffset, stackSize);
+        }else{
+            // instance fields
+            Iterator<Typeable> lookup = nameSymbol.getLookupPath().iterator();
+            Typeable type = lookup.next();
+            DclSymbol first;
+            if(type instanceof DclSymbol &&
+                    (first = (DclSymbol) type).isLocal()){
+                final long localObjOffset = first.getOffset() / 8;
+                instructions.add(new Comment("Move pointer of obj " + nameSymbol.value + " to Accumulator"));
+                instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.FRAME, localObjOffset)));
+                // TODO: do null check
 
-            if(size == Size.DWORD){
-                instruction = new Mov(Register.ACCUMULATOR, from);
-            }else if(JoosNonTerminal.unsigned.contains(dcl.getType().getTypeDclNode().fullName)){
-                instruction = new Movzx(Register.ACCUMULATOR, from, size);
-            }else{
-                instruction = new Movsx(Register.ACCUMULATOR, from, size);
+                while(lookup.hasNext() && (type = lookup.next()) != lastDcl){
+                    // TODO: get address of field 'type'
+                }
+                // now type is last in qualified name => target field
+                if(getVal){
+                    instructions.add(new Comment("Move value of field " + nameSymbol.value + " to Accumulator"));
+                    instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, lastDclOffset)));
+                }else{
+                    instructions.add(new Comment("Move reference to field " + nameSymbol.value + " to Accumulator"));
+                    instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
+                    lastSize = SizeHelper.getSize(stackSize);
+                }
             }
+        }
+    }
 
-            instructions.add(new Comment("getting value of " + nameSymbol.value));
-            instructions.add(instruction);
+    private void genCodeForLocalVar(NameSymbol nameSymbol, final DclSymbol dcl,
+            long offset, int stackSize) {
+        if(getVal){
+            genCodeForLocalVarGetValue(nameSymbol, dcl, offset, stackSize);
         }else{
             lastOffset = offset;
             lastSize = SizeHelper.getSize(stackSize);
         }
+    }
+
+    private void genCodeForLocalVarGetValue(NameSymbol nameSymbol,
+            final DclSymbol dcl, long offset, int stackSize) {
+        Size size = Size.DWORD;
+        if(stackSize == 16) size = Size.WORD;
+        if(stackSize == 8) size = Size.LOW;
+        final InstructionArg from = new PointerRegister(Register.FRAME, offset);
+        Instruction instruction;
+
+        if(size == Size.DWORD){
+            instruction = new Mov(Register.ACCUMULATOR, from);
+        }else if(JoosNonTerminal.unsigned.contains(dcl.getType().getTypeDclNode().fullName)){
+            instruction = new Movzx(Register.ACCUMULATOR, from, size);
+        }else{
+            instruction = new Movsx(Register.ACCUMULATOR, from, size);
+        }
+
+        instructions.add(new Comment("getting value of " + nameSymbol.value));
+        instructions.add(instruction);
     }
 
     @Override
@@ -355,15 +393,24 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         op.children.get(1).accept(this);
         boolean tmp = getVal;
         getVal = false;
-
         instructions.add(new Push(Register.ACCUMULATOR));
 
+        // LHS
+        lastOffset = -1;
         op.children.get(0).accept(this);
 
-        instructions.add(new Pop(Register.ACCUMULATOR));
+        instructions.add(new Pop(Register.DATA));
 
-        InstructionArg to = new PointerRegister(Register.FRAME, lastOffset);
-        instructions.add(new Mov(to, Register.ACCUMULATOR, lastSize));
+        if (lastOffset != -1){
+            InstructionArg to = new PointerRegister(Register.FRAME, lastOffset);
+            instructions.add(new Mov(to, Register.DATA, lastSize));
+        }else{
+            InstructionArg to = new PointerRegister(Register.ACCUMULATOR);
+            instructions.add(new Mov(to, Register.DATA, lastSize));
+        }
+
+        instructions.add(new Comment("Move result of assignment expr to Accumulator, so it's available to parent"));
+        instructions.add(new Mov(Register.ACCUMULATOR, Register.DATA));
         getVal = tmp;
     }
 

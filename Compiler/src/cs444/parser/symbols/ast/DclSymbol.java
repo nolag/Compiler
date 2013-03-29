@@ -96,4 +96,8 @@ public class DclSymbol extends AModifiersOptSymbol{
     public void accept(ICodeGenVisitor visitor) {
         visitor.visit(this);
     }
+
+    public boolean isLocal() {
+        return dclInResolver == null;
+    }
 }
