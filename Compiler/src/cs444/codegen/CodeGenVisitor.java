@@ -10,6 +10,7 @@ import cs444.codegen.instructions.Add;
 import cs444.codegen.instructions.Call;
 import cs444.codegen.instructions.Cmp;
 import cs444.codegen.instructions.Comment;
+import cs444.codegen.instructions.Extern;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Int;
@@ -104,6 +105,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     private int nextLblnum = 0;
 
+    APkgClassResolver currentFile;
+
     private int getNewLblNum(){
         return nextLblnum++;
     }
@@ -114,7 +117,24 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(MethodInvokeSymbol invoke) {
-        //TODO
+        if(invoke.hasFirst){
+          //TODO visit first and make this like a recusive lookup for name during that part
+        }
+
+        for(ISymbol arg : invoke.getArgs()){
+            arg.accept(this);
+            instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
+        }
+
+        InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(invoke.getCallSymbol()));
+        if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
+        instructions.add(new Call(arg));
+
+        if(invoke.getStackSize() != 0){
+            long size = (invoke.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE) / 8;
+            Immediate by = new Immediate(String.valueOf(size));
+            instructions.add(new Add(Register.STACK, by));
+        }
     }
 
     @Override
@@ -124,12 +144,13 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(AInterfaceOrClassSymbol aInterfaceOrClassSymbol) {
-        // TODO Auto-generated method stub
+        // TODO More?
         for(ISymbol child : aInterfaceOrClassSymbol.children) child.accept(this);
     }
 
     @Override
     public void visit(MethodOrConstructorSymbol method) {
+        currentFile = method.dclInResolver;
         String methodName = APkgClassResolver.generateFullId(method);
         Runtime.externAll(instructions);
 
@@ -156,7 +177,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         lastWasFunc = true;
 
-        instructions.add(Push.STACK_PUSH);
+        instructions.add(Push.STACK_FRAME);
         instructions.add(new Mov(Register.FRAME, Register.STACK));
 
         for(ISymbol child : method.children) child.accept(this);
@@ -190,7 +211,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         for(ISymbol child : aNonTerminal.children) child.accept(this);
 
         if(isBlock && !lastFunc){
-            int size = aNonTerminal.getStackSize();
+            long size = aNonTerminal.getStackSize();
             if(0 != size){
                 Immediate by = new Immediate(String.valueOf(size));
                 instructions.add(new Add(Register.STACK, by));
@@ -244,7 +265,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Label(loopEnd));
 
         //This takes care of the init if they dcl something there
-        int size = forExprSymbol.getStackSize();
+        long size = forExprSymbol.getStackSize();
         if(0 != size){
             Immediate by = new Immediate(String.valueOf(size));
             instructions.add(new Comment("for stack " + mynum));
@@ -295,7 +316,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void visit(NameSymbol nameSymbol) {
         final DclSymbol lastDcl = nameSymbol.getLastLookupDcl();
         long lastDclOffset = lastDcl.getOffset();
-        int stackSize = lastDcl.getType().getTypeDclNode().realSize;
+        long stackSize = lastDcl.getType().getTypeDclNode().realSize;
 
         if(lastDcl.isLocal()){
             genCodeForLocalVar(nameSymbol, lastDcl, lastDclOffset, stackSize);
@@ -333,7 +354,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     private void genCodeForLocalVar(NameSymbol nameSymbol, final DclSymbol dcl,
-            long offset, int stackSize) {
+            long offset, long stackSize) {
         if(getVal){
             genCodeForLocalVarGetValue(nameSymbol, dcl, offset, stackSize);
         }else{
@@ -343,7 +364,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     private void genCodeForLocalVarGetValue(NameSymbol nameSymbol,
-            final DclSymbol dcl, long offset, int stackSize) {
+            final DclSymbol dcl, long offset, long stackSize) {
         Size size = SizeHelper.getSize(stackSize);
         final InstructionArg from = new PointerRegister(Register.FRAME, offset);
         Instruction instruction;
@@ -500,16 +521,19 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(IntegerLiteralSymbol intLiteral) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(intLiteral.getValue()))));
+        lastSize = Size.DWORD;
     }
 
     @Override
     public void visit(NullSymbol nullSymbol) {
         instructions.add(new Mov(Register.ACCUMULATOR, Immediate.NULL));
+        lastSize = Size.DWORD;
     }
 
     @Override
     public void visit(BooleanLiteralSymbol boolSymbol) {
         instructions.add(new Mov(Register.ACCUMULATOR, boolSymbol.boolValue ? Immediate.TRUE : Immediate.FALSE));
+        lastSize = Size.WORD;
     }
 
     @Override
@@ -556,6 +580,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(ShortLiteralSymbol shortLiteral) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(shortLiteral.getValue()))));
+        lastSize = Size.WORD;
     }
 
     @Override

@@ -24,7 +24,7 @@ import cs444.types.exceptions.UndeclaredException;
 
 public class ArrayPkgClassResolver extends APkgClassResolver {
     private final APkgClassResolver resolver;
-    private static DclSymbol length;
+    private DclSymbol length;
 
     public static String getArrayName(String name){
         return name + "?array?";
@@ -168,13 +168,13 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     @Override
     public void computeFieldOffsets() {
         // TODO Auto-generated method stub
-        
+
     }
-    
+
     @Override
     public long getObjectSize() {
         // TODO Auto-generated method stub
         return 0;
-        
+
     }
 }

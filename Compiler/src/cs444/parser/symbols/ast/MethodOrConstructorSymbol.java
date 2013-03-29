@@ -51,6 +51,8 @@ public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
             param.accept(visitor);
         }
 
+        visitor.middle(this);
+
         for (ISymbol child : children) {
             child.accept(visitor);
         }

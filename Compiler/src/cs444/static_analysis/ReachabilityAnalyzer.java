@@ -227,237 +227,243 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
     @Override
     public void prepare(MethodInvokeSymbol invode) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void prepare(FieldAccessSymbol fieldAccessSymbol)
             throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void prepareCondition(Typeable condition) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void open(AInterfaceOrClassSymbol aInterfaceOrClassSymbol)
             throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void close(AInterfaceOrClassSymbol aInterfaceOrClassSymbol)
             throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void close(DclSymbol dclSymbol) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void close(NonTerminal aNonTerminal) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void close(CreationExpression creationExpression)
             throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void close(MethodInvokeSymbol invoke) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void close(FieldAccessSymbol field) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void afterClause(ForExprSymbol forExprSymbol)
             throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void afterCondition(ForExprSymbol forExprSymbol)
             throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(TypeSymbol typeSymbol) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(NameSymbol nameSymbol) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(NegOpExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(NotOpExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(MultiplyExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(DivideExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(RemainderExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(AddExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(SubtractExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(LtExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(EqExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(NeExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(AndExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(OrExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(EAndExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(EOrExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(LeExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(InstanceOfExprSymbol op) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(IntegerLiteralSymbol intLiteral) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(NullSymbol nullSymbol) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(BooleanLiteralSymbol boolSymbol) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(ThisSymbol thisSymbol) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(SuperSymbol thisSymbol) throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(StringLiteralSymbol stringSymbol)
             throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(CharacterLiteralSymbol characterSymbol)
             throws CompilerException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void visit(ArrayAccessExprSymbol arrayAccess)
             throws CompilerException {
         // TODO Auto-generated method stub
-        
+
+    }
+
+    @Override
+    public void middle(MethodOrConstructorSymbol methodOrConstructorSymbol) throws CompilerException {
+        // TODO Auto-generated method stub
+
     }
 }
