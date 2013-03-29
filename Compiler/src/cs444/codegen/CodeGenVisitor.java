@@ -113,6 +113,17 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     public CodeGenVisitor(SelectorIndexedTable sit) {
         this.sit = sit;
+        Runtime.externAll(instructions);
+
+    }
+
+    public void genLayoutForStaticFields(
+            Iterable<DclSymbol> staticFields) {
+        for (DclSymbol fieldDcl : staticFields) {
+            long lastDclOffset = fieldDcl.getOffset();
+            long stackSize = fieldDcl.getType().getTypeDclNode().realSize;
+            //instructions.add(new Dd(new Immediate(APkgClassResolver.getUniqueNameFor(fieldDcl))));
+        }
     }
 
     @Override
@@ -152,7 +163,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void visit(MethodOrConstructorSymbol method) {
         currentFile = method.dclInResolver;
         String methodName = APkgClassResolver.generateFullId(method);
-        Runtime.externAll(instructions);
 
         try{
             if(APkgClassResolver.generateUniqueName(method, method.dclName).equals(JoosNonTerminal.ENTRY)
