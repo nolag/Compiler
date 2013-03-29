@@ -67,7 +67,7 @@ public abstract class APkgClassResolver {
 
         Set<String> alsoAssignsTo = JoosNonTerminal.defaultAssignables.get(name);
         if(alsoAssignsTo != null) assignableTo.addAll(alsoAssignsTo);
-        this.realSize = SizeHelper.getBitSizeOfType(name);
+        this.realSize = SizeHelper.getByteSizeOfType(name);
         this.stackSize = realSize < SizeHelper.MIN_STACK_SHIFT ? SizeHelper.MIN_STACK_SHIFT : realSize;
     }
 

@@ -169,7 +169,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         APkgClassResolver typeDclNode = creationExpression.getType().getTypeDclNode();
 
         if (!creationExpression.getType().isArray){
-            long bytes = typeDclNode.getObjectSize() / 8;
+            long bytes = typeDclNode.getObjectSize();
 
             instructions.add(new Comment("Allocate " + bytes + " bytes for " + typeDclNode.fullName));
             Runtime.malloc(bytes, instructions);
@@ -190,7 +190,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         for(ISymbol child : aNonTerminal.children) child.accept(this);
 
         if(isBlock && !lastFunc){
-            int size = aNonTerminal.getStackSize() / 8;
+            int size = aNonTerminal.getStackSize();
             if(0 != size){
                 Immediate by = new Immediate(String.valueOf(size));
                 instructions.add(new Add(Register.STACK, by));
@@ -244,7 +244,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Label(loopEnd));
 
         //This takes care of the init if they dcl something there
-        int size = forExprSymbol.getStackSize() / 8;
+        int size = forExprSymbol.getStackSize();
         if(0 != size){
             Immediate by = new Immediate(String.valueOf(size));
             instructions.add(new Comment("for stack " + mynum));
@@ -294,7 +294,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(NameSymbol nameSymbol) {
         final DclSymbol lastDcl = nameSymbol.getLastLookupDcl();
-        long lastDclOffset = lastDcl.getOffset() / 8;
+        long lastDclOffset = lastDcl.getOffset();
         int stackSize = lastDcl.getType().getTypeDclNode().realSize;
 
         if(lastDcl.isLocal()){
@@ -306,7 +306,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             DclSymbol first;
             if(type instanceof DclSymbol &&
                     (first = (DclSymbol) type).isLocal()){
-                final long localObjOffset = first.getOffset() / 8;
+                final long localObjOffset = first.getOffset();
                 instructions.add(new Comment("Move pointer of obj " + first.dclName + " in " + nameSymbol.value + " to Accumulator"));
                 instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.FRAME, localObjOffset)));
                 // TODO: do null check
@@ -315,7 +315,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
                     DclSymbol dclSymbol = (DclSymbol) type;
                     instructions.add(new Comment("Move reference to field " + dclSymbol.dclName + " in " +
                             nameSymbol.value + " to Accumulator"));
-                    PointerRegister from = new PointerRegister(Register.ACCUMULATOR, dclSymbol.getOffset() / 8);
+                    PointerRegister from = new PointerRegister(Register.ACCUMULATOR, dclSymbol.getOffset());
                     instructions.add(new Mov(Register.ACCUMULATOR, from));
                 }
 
@@ -344,9 +344,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     private void genCodeForLocalVarGetValue(NameSymbol nameSymbol,
             final DclSymbol dcl, long offset, int stackSize) {
-        Size size = Size.DWORD;
-        if(stackSize == 16) size = Size.WORD;
-        if(stackSize == 8) size = Size.LOW;
+        Size size = SizeHelper.getSize(stackSize);
         final InstructionArg from = new PointerRegister(Register.FRAME, offset);
         Instruction instruction;
 
