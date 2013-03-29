@@ -11,6 +11,7 @@ import cs444.codegen.instructions.Call;
 import cs444.codegen.instructions.Cmp;
 import cs444.codegen.instructions.Comment;
 import cs444.codegen.instructions.Extern;
+import cs444.codegen.instructions.DataInstruction;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Int;
@@ -32,6 +33,7 @@ import cs444.codegen.instructions.factories.AndOpMaker;
 import cs444.codegen.instructions.factories.BinOpMaker;
 import cs444.codegen.instructions.factories.BinUniOpMaker;
 import cs444.codegen.instructions.factories.CmpMaker;
+import cs444.codegen.instructions.factories.DataInstructionMaker;
 import cs444.codegen.instructions.factories.IDivMaker;
 import cs444.codegen.instructions.factories.IMulMaker;
 import cs444.codegen.instructions.factories.OrOpMaker;
@@ -119,10 +121,13 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     public void genLayoutForStaticFields(
             Iterable<DclSymbol> staticFields) {
+        instructions.add(new Comment("Static fields:"));
         for (DclSymbol fieldDcl : staticFields) {
-            long lastDclOffset = fieldDcl.getOffset();
-            long stackSize = fieldDcl.getType().getTypeDclNode().realSize;
-            //instructions.add(new Dd(new Immediate(APkgClassResolver.getUniqueNameFor(fieldDcl))));
+            Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
+
+            instructions.add(new Label(APkgClassResolver.getUniqueNameFor(fieldDcl)));
+            DataInstruction data = DataInstructionMaker.make(Immediate.NULL, size);
+            instructions.add(data);
         }
     }
 

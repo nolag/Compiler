@@ -99,6 +99,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         // first two words are for SIT and SubType Labels
         long nextOffset = 2 * SizeHelper.DEFAULT_STACK_SIZE;
         for (DclSymbol fieldDcl : this.getFields()) {
+            if (fieldDcl.isStatic()) continue;
             if (fieldDcl.getOffset() != 0) {
                 nextOffset = fieldDcl.getOffset() + 
                         SizeHelper.getByteSizeOfType(fieldDcl.type.value);

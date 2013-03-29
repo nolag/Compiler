@@ -4,14 +4,14 @@ import cs444.codegen.InstructionArg;
 import cs444.codegen.InstructionArg.Size;
 
 
-public class Dd extends DataInstruction implements Instruction {
-    public Dd(InstructionArg data) {
+public class Dw extends DataInstruction implements Instruction {
+    public Dw(InstructionArg data) {
         super(data);
     }
 
     @Override
     public String generate() {
-        return "dd " + data.getValue(Size.DWORD);
+        return "dw " + data.getValue(Size.LOW);
     }
 
 }
