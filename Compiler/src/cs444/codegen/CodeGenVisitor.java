@@ -10,6 +10,7 @@ import cs444.codegen.instructions.Add;
 import cs444.codegen.instructions.Call;
 import cs444.codegen.instructions.Cmp;
 import cs444.codegen.instructions.Comment;
+import cs444.codegen.instructions.Extern;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Int;
@@ -104,6 +105,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     private int nextLblnum = 0;
 
+    APkgClassResolver currentFile;
+
     private int getNewLblNum(){
         return nextLblnum++;
     }
@@ -120,10 +123,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         for(ISymbol arg : invoke.getArgs()){
             arg.accept(this);
-            instructions.add(new Push(Register.ACCUMULATOR, lastSize));
+            instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
         }
 
         InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(invoke.getCallSymbol()));
+        if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
         instructions.add(new Call(arg));
 
         if(invoke.getStackSize() != 0){
@@ -146,6 +150,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(MethodOrConstructorSymbol method) {
+        currentFile = method.dclInResolver;
         String methodName = APkgClassResolver.generateFullId(method);
         Runtime.externAll(instructions);
 

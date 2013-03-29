@@ -34,4 +34,9 @@ public class SizeHelper {
     public static Size getSizeOfType(String typeName) {
         return getSize(getByteSizeOfType(typeName));
     }
+
+    public static Size getPushSize(Size size){
+        if(size == Size.HIGH || size == Size.LOW) return Size.WORD;
+        return size;
+    }
 }
