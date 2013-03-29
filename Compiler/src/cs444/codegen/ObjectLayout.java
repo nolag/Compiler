@@ -37,7 +37,7 @@ public class ObjectLayout {
                 Size size = SizeHelper.getSizeOfType(field.type.value);
                 instructions.add(new Comment("Set field " + field.dclName + " of type " 
                         + field.type.value + " to NULL"));
-                instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, field.getOffset()), 
+                instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, field.getOffset() / 8), 
                         Immediate.NULL, size));
             }
         }

@@ -97,14 +97,18 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
 
     public void computeFieldOffsets() {
         // first two words are for SIT and SubType Labels
-        long lastOffset = SizeHelper.DEFAULT_STACK_SIZE;
+        long nextOffset = 2 * SizeHelper.DEFAULT_STACK_SIZE;
         for (DclSymbol fieldDcl : this.getFields()) {
-            if (fieldDcl.getOffset() != 0) lastOffset = fieldDcl.getOffset();
+            if (fieldDcl.getOffset() != 0) {
+                nextOffset = fieldDcl.getOffset() + 
+                        SizeHelper.getBitSizeOfType(fieldDcl.type.value);
+            }
+
             // no a field from super:
-            lastOffset += SizeHelper.getBitSizeOfType(fieldDcl.type.value);
-            fieldDcl.setOffset(lastOffset);
+            fieldDcl.setOffset(nextOffset);
+            nextOffset += SizeHelper.getBitSizeOfType(fieldDcl.type.value);
         }
-        this.objectSize = lastOffset + SizeHelper.DEFAULT_STACK_SIZE;
+        this.objectSize = nextOffset;
     }
 
     public long getObjectSize(){

@@ -307,19 +307,24 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             if(type instanceof DclSymbol &&
                     (first = (DclSymbol) type).isLocal()){
                 final long localObjOffset = first.getOffset() / 8;
-                instructions.add(new Comment("Move pointer of obj " + nameSymbol.value + " to Accumulator"));
+                instructions.add(new Comment("Move pointer of obj " + first.dclName + " in " + nameSymbol.value + " to Accumulator"));
                 instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.FRAME, localObjOffset)));
                 // TODO: do null check
 
                 while(lookup.hasNext() && (type = lookup.next()) != lastDcl){
-                    // TODO: get address of field 'type'
+                    DclSymbol dclSymbol = (DclSymbol) type;
+                    instructions.add(new Comment("Move reference to field " + dclSymbol.dclName + " in " +
+                            nameSymbol.value + " to Accumulator"));
+                    PointerRegister from = new PointerRegister(Register.ACCUMULATOR, dclSymbol.getOffset() / 8);
+                    instructions.add(new Mov(Register.ACCUMULATOR, from));
                 }
+
                 // now type is last in qualified name => target field
                 if(getVal){
-                    instructions.add(new Comment("Move value of field " + nameSymbol.value + " to Accumulator"));
+                    instructions.add(new Comment("Move value of field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
                     instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, lastDclOffset)));
                 }else{
-                    instructions.add(new Comment("Move reference to field " + nameSymbol.value + " to Accumulator"));
+                    instructions.add(new Comment("Move reference to field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
                     instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
                     lastSize = SizeHelper.getSize(stackSize);
                 }

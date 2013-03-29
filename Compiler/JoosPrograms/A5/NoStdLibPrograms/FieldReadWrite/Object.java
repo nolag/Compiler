@@ -5,8 +5,8 @@ public class Object{
     public static int test(){
         AClass aclass = new AClass();
 
-        aclass.fChar = (char) 10;
+        aclass.fChar = (char) 2;
         aclass.fInt = aclass.fShort = (short)aclass.fChar;
-        return aclass.fInt * aclass.fChar;
+        return aclass.fInt * aclass.fChar * aclass.fShort;
     }
 }

@@ -159,7 +159,6 @@ public abstract class APkgClassResolver {
         int i = 1;
 
         if(dcl != null){
-            dclList.add(dcl);
             pkgResolver = getClass(dcl.type.value, true);
         }else{
             StringBuilder sb = new StringBuilder(nameParts[0]);
