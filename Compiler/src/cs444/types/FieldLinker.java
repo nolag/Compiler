@@ -150,6 +150,8 @@ public class FieldLinker extends EmptyVisitor {
 
         APkgClassResolver myResolver = PkgClassInfo.instance.getSymbol(enclosingClassName);
         AMethodSymbol method = resolver.findMethod(invoke.methodName, isStatic, params, myResolver);
+        invoke.setCallSymbol(method);
+        invoke.setStackSize(method.getStackSize());
         invoke.setLookup(invoke.getLookup().addWith(method));
         currentTypes.peek().add(method);
     }

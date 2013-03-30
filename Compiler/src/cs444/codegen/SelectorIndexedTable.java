@@ -16,6 +16,8 @@ import cs444.codegen.instructions.Extern;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Label;
+import cs444.codegen.instructions.Section;
+import cs444.codegen.instructions.Section.SectionType;
 import cs444.types.APkgClassResolver;
 
 public class SelectorIndexedTable {
@@ -39,6 +41,8 @@ public class SelectorIndexedTable {
 
     public void genCodeAndPrint(PrintStream printer) {
         List<Instruction> instructions = new LinkedList<Instruction>();
+
+        instructions.add(new Section(SectionType.DATA));
 
         for (String classLabel : sit.keySet()) {
             instructions.add(new Global(classLabel));

@@ -13,6 +13,7 @@ import java.util.List;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.SelectorIndexedTable;
+import cs444.codegen.StaticFieldInit;
 import cs444.codegen.instructions.Instruction;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
@@ -124,11 +125,12 @@ public class Compiler {
             resolver.computeFieldOffsets();
         }
 
+        StaticFieldInit.generateCode(resolvers, sit, outputFile, directory);
         CodeGenVisitor codeGen = new CodeGenVisitor(sit);
         for(APkgClassResolver resolver : resolvers){
             if(!resolver.shouldGenCode()) continue;
-            codeGen.genHeader();
             codeGen.genLayoutForStaticFields(resolver.getUninheritedStaticFields());
+            codeGen.genHeader();
             resolver.generateCode(codeGen);
             if (outputFile){
                 File file = new File(directory + resolver.name + ".s");
