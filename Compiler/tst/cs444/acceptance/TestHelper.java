@@ -31,7 +31,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("J2_fieldinit_forward_ref")) continue;
+			// if (!fileName.equals("J2_A_FieldInitialization_Static_NonConstant_Before")) continue;
 
 			if (ignoreList.contains(fileName)){
 			    System.out.print("*"); // skip file
