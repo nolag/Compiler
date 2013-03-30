@@ -19,6 +19,7 @@ public class Asst3 {
     @Test
     public void testMarmosetInvalidTestCases() throws IOException, InterruptedException{
         List<String> ignoreList = new LinkedList<String>(Arrays.asList(
+                "Je_6_FinalField_ArrayLength.java",
                 "Je_16_StaticThis_StaticFieldInitializer.java",
                 "Je_1_Dot_ParenthesizedType_Field.java",
                 "Je_5_ForwardReference_ArrayLength.java",

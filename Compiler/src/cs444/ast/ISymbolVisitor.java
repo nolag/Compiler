@@ -6,6 +6,7 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
+import cs444.parser.symbols.ast.ByteLiteralSymbol;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.EmptyStatementSymbol;
@@ -15,6 +16,7 @@ import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.NullSymbol;
+import cs444.parser.symbols.ast.ShortLiteralSymbol;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
 import cs444.parser.symbols.ast.SuperSymbol;
 import cs444.parser.symbols.ast.ThisSymbol;
@@ -111,6 +113,8 @@ public interface ISymbolVisitor {
     void visit(final CharacterLiteralSymbol characterSymbol) throws CompilerException;
     void visit(final EmptyStatementSymbol emptySymbol) throws CompilerException;
     void visit(final ArrayAccessExprSymbol arrayAccess) throws CompilerException;
+    void visit(final ShortLiteralSymbol shortLiteral) throws CompilerException;
+    void visit(final ByteLiteralSymbol byteLiteral) throws CompilerException;
 
     void visit(final ISymbol symbol) throws CompilerException;
     void middle(MethodOrConstructorSymbol methodOrConstructorSymbol) throws CompilerException;

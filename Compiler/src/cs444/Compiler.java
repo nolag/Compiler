@@ -14,7 +14,6 @@ import java.util.List;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.SelectorIndexedTable;
 import cs444.codegen.StaticFieldInit;
-import cs444.codegen.instructions.Instruction;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
@@ -65,10 +64,10 @@ public class Compiler {
             //Make a copy, the symbols can add more for arrays.
             List<APkgClassResolver> resolvers = new LinkedList<APkgClassResolver>(PkgClassInfo.instance.getSymbols());
             buildAllResolvers(resolvers);
+            analyzeReachability(resolvers);
+
             typeCheck(resolvers);
             checkFields(resolvers);
-
-            analyzeReachability(resolvers);
 
             generateCode(resolvers, outputFiles);
 
