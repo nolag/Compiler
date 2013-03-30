@@ -212,7 +212,7 @@ public abstract class APkgClassResolver {
 
     private void verifyCanRead(AModifiersOptSymbol retVal, APkgClassResolver pkgClass) throws UndeclaredException{
         if(pkgClass == this) return;
-        if(retVal.getProtectionLevel() == ProtectionLevel.PRIVATE) throw new UndeclaredException(name, fullName);
+        if(retVal.getProtectionLevel() == ProtectionLevel.PRIVATE)throw new UndeclaredException(name, fullName);
         if(retVal.getProtectionLevel() == ProtectionLevel.PUBLIC) return;
         final APkgClassResolver dclResolver = retVal.dclInResolver;
         if(pkgClass.pkg.equals(dclResolver.pkg)) return;
@@ -260,7 +260,9 @@ public abstract class APkgClassResolver {
     public ConstructorSymbol getConstructor(List<String> types, APkgClassResolver resolver) throws UndeclaredException {
         String name = generateUniqueName("this", types);
         ConstructorSymbol cs = constructors.get(name);
-        if(cs == null) throw new UndeclaredException(name, fullName);
+        if(cs == null){
+            throw new UndeclaredException(name, fullName);
+        }
         verifyCanRead(cs, resolver);
         return cs;
     }

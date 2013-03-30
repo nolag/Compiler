@@ -57,8 +57,8 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
 
             String [] indexTypes = { JoosNonTerminal.INTEGER, JoosNonTerminal.CHAR, JoosNonTerminal.BYTE, JoosNonTerminal.SHORT };
 
-            for (String indType : indexTypes) {
-                addArrayConstructorFor(indType, ts, name);
+            for (String indexType : indexTypes) {
+                addArrayConstructorFor(indexType, ts, name);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -72,15 +72,19 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
             NameSymbol name) throws IllegalModifierException,
             UnsupportedException, UndeclaredException {
         List<DclSymbol> dcls = new LinkedList<DclSymbol>();
+        DclSymbol dcl = new DclSymbol("i", null, TypeSymbol.getPrimative(indType), true);
+        dcl.dclInResolver = this;
         dcls = new LinkedList<DclSymbol>();
-        dcls.add(new DclSymbol("i", null, TypeSymbol.getPrimative(indType), true));
+        dcls.add(dcl);
         MethodHeader header = new MethodHeader(name, ts, dcls);
 
         //ANonTerminal from, ANonTerminal body
         ConstructorSymbol cs = new ConstructorSymbol(header, null, null);
         cs.forcePublic();
         cs.resolver = this;
-        constructors.put(generateUniqueName(cs, JoosNonTerminal.THIS), cs);
+        cs.dclInResolver = this;
+        String uniqueName = generateUniqueName(cs, JoosNonTerminal.THIS);
+        constructors.put(uniqueName, cs);
     }
 
     @Override
@@ -105,18 +109,20 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         methodMap.putAll(resolver.methodMap);
         sfieldMap.putAll(resolver.sfieldMap);
         fieldMap.putAll(resolver.fieldMap);
-        TypeSymbol intType = new TypeSymbol("int", false, false);
+        TypeSymbol intType = TypeSymbol.getPrimative(JoosNonTerminal.INTEGER);
+
         try{
             DclSymbol length = new DclSymbol("length", null, intType, null, true);
+            length.forcePublic();
             fieldMap.put("length", length);
         }catch (CompilerException ce){
             ce.printStackTrace();
         }
         try{
             PkgClassResolver obj = (PkgClassResolver) getClass(OBJECT, true);
+            if(!obj.isBuilt) obj.build();
             for(AMethodSymbol m : obj.start.getMethods()){
-                String uniqueName;
-                uniqueName = generateUniqueName(m, m.dclName);
+                String uniqueName = generateUniqueName(m, m.dclName);
                 if(m.isStatic()) smethodMap.put(uniqueName, m);
                 else methodMap.put(uniqueName, m);
             }
