@@ -14,6 +14,7 @@ import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
+import cs444.parser.symbols.ast.ByteLiteralSymbol;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.EmptyStatementSymbol;
@@ -23,6 +24,7 @@ import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.NullSymbol;
+import cs444.parser.symbols.ast.ShortLiteralSymbol;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
 import cs444.parser.symbols.ast.SuperSymbol;
 import cs444.parser.symbols.ast.ThisSymbol;
@@ -312,6 +314,17 @@ public class LocalDclLinker extends EmptyVisitor {
     public void visit(IntegerLiteralSymbol intSymbol) throws UndeclaredException {
         simpleVistorHelper(intSymbol, JoosNonTerminal.INTEGER);
 
+    }
+
+    @Override
+    public void visit(ShortLiteralSymbol shortLiteral) throws CompilerException {
+        simpleVistorHelper(shortLiteral, JoosNonTerminal.SHORT);
+
+    }
+
+    @Override
+    public void visit(ByteLiteralSymbol byteLiteral) throws CompilerException {
+        simpleVistorHelper(byteLiteral, JoosNonTerminal.BYTE);
     }
 
     @Override
@@ -652,6 +665,7 @@ public class LocalDclLinker extends EmptyVisitor {
             params.add(name);
         }
 
+        if(!resolver.isBuilt) resolver.build();
         resolver.getConstructor(params, PkgClassInfo.instance.getSymbol(context.enclosingClassName));
         create.setType(typeSymbol);
         currentTypes.peek().add(create);
@@ -676,6 +690,7 @@ public class LocalDclLinker extends EmptyVisitor {
 
     private void bothIntHelper(String returnType, BinOpExpr op) throws BadOperandsTypeException, UndeclaredException{
         TypeSymbol second = currentTypes.peek().removeLast().getType();
+        Typeable fuckingType = currentTypes.peek().getLast();
         TypeSymbol first = currentTypes.peek().removeLast().getType();
         isNumeric(first, true);
         isNumeric(second, true);

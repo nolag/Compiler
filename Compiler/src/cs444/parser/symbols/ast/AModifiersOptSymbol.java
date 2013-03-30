@@ -8,7 +8,7 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
-import cs444.types.PkgClassResolver;
+import cs444.types.APkgClassResolver;
 
 public abstract class AModifiersOptSymbol extends ANonTerminal implements Typeable{
     private boolean hasPublic;
@@ -26,7 +26,7 @@ public abstract class AModifiersOptSymbol extends ANonTerminal implements Typeab
 
     public final String dclName;
     public TypeSymbol type;
-    public PkgClassResolver dclInResolver;
+    public APkgClassResolver dclInResolver;
 
     protected AModifiersOptSymbol(String name, String dclName, ANonTerminal modifiersParent,
                                   TypeSymbol type)

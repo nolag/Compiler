@@ -260,7 +260,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             child.accept(this);
             instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
             Typeable typeable = (Typeable) child;
-            types.add(typeable.getType().value);
+            TypeSymbol ts = typeable.getType();
+            types.add(ts.getTypeDclNode().fullName);
         }
 
         instructions.add(new Push(Register.COUNTER));
