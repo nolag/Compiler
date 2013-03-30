@@ -114,6 +114,11 @@ public abstract class APkgClassResolver {
         return getClassName(this) + "@SIT";
     }
 
+    public static String getUniqueNameFor(DclSymbol fieldDcl) {
+        String className = getClassName(fieldDcl.dclInResolver);
+        return className + "_field_" + fieldDcl.dclName;
+    }
+
     public abstract APkgClassResolver getClass(String name, boolean die) throws UndeclaredException;
 
     protected abstract void build(Set<PkgClassResolver> visited, boolean mustBeInterface, boolean mustBeClass) throws CompilerException;
@@ -295,4 +300,7 @@ public abstract class APkgClassResolver {
     public abstract void computeFieldOffsets();
 
     public abstract long getObjectSize();
+
+
+    public abstract Iterable<DclSymbol> getUninheritedStaticFields();
 }

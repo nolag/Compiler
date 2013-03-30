@@ -438,13 +438,9 @@ public class PkgClassResolver extends APkgClassResolver {
 
     @Override
     public void generateCode(ICodeGenVisitor visitor) {
-        if(start == null) return;
-        for(AMethodSymbol methodSymbol : start.getUninheritedMethods()) methodSymbol.accept(visitor);
+        if(!shouldGenCode()) return;
 
-        /*TODO for(DclSymbol dc : start.getFields()){
-            if(!dc.isStatic() || dc.dclInResolver != this) continue;
-            dc.accept(visitor);
-        }*/
+        for(AMethodSymbol methodSymbol : start.getUninheritedMethods()) methodSymbol.accept(visitor);
     }
 
     @Override
@@ -482,5 +478,18 @@ public class PkgClassResolver extends APkgClassResolver {
 
     public AInterfaceOrClassSymbol getStart() {
         return start;
+    }
+
+    @Override
+    public Iterable<DclSymbol> getUninheritedStaticFields() {
+        List<DclSymbol> fieldsDcls = new LinkedList<DclSymbol>();
+
+        for(DclSymbol dcl : start.getFields()){
+            if(!dcl.isStatic() || dcl.dclInResolver != this) continue;
+
+            fieldsDcls.add((DclSymbol)dcl);
+        }
+
+        return fieldsDcls;
     }
 }

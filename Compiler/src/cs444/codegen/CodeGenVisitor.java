@@ -11,6 +11,7 @@ import cs444.codegen.instructions.Call;
 import cs444.codegen.instructions.Cmp;
 import cs444.codegen.instructions.Comment;
 import cs444.codegen.instructions.Extern;
+import cs444.codegen.instructions.DataInstruction;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Int;
@@ -32,6 +33,7 @@ import cs444.codegen.instructions.factories.AndOpMaker;
 import cs444.codegen.instructions.factories.BinOpMaker;
 import cs444.codegen.instructions.factories.BinUniOpMaker;
 import cs444.codegen.instructions.factories.CmpMaker;
+import cs444.codegen.instructions.factories.DataInstructionMaker;
 import cs444.codegen.instructions.factories.IDivMaker;
 import cs444.codegen.instructions.factories.IMulMaker;
 import cs444.codegen.instructions.factories.OrOpMaker;
@@ -89,6 +91,7 @@ import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 import cs444.types.APkgClassResolver;
+import cs444.types.PkgClassResolver;
 
 public class CodeGenVisitor implements ICodeGenVisitor {
     private final SelectorIndexedTable sit;
@@ -113,6 +116,24 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     public CodeGenVisitor(SelectorIndexedTable sit) {
         this.sit = sit;
+    }
+
+    public void genHeader() {
+        Runtime.externAll(instructions);
+    }
+
+    public void genLayoutForStaticFields(
+            Iterable<DclSymbol> staticFields) {
+        instructions.add(new Comment("Static fields:"));
+        for (DclSymbol fieldDcl : staticFields) {
+            Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
+
+            String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
+            instructions.add(new Global(fieldLbl));
+            instructions.add(new Label(fieldLbl));
+            DataInstruction data = DataInstructionMaker.make(Immediate.NULL, size);
+            instructions.add(data);
+        }
     }
 
     @Override
@@ -152,7 +173,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void visit(MethodOrConstructorSymbol method) {
         currentFile = method.dclInResolver;
         String methodName = APkgClassResolver.generateFullId(method);
-        Runtime.externAll(instructions);
 
         try{
             if(APkgClassResolver.generateUniqueName(method, method.dclName).equals(JoosNonTerminal.ENTRY)
@@ -318,38 +338,61 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         long lastDclOffset = lastDcl.getOffset();
         long stackSize = lastDcl.getType().getTypeDclNode().realSize;
 
-        if(lastDcl.isLocal()){
+        if(lastDcl.isLocal){
             genCodeForLocalVar(nameSymbol, lastDcl, lastDclOffset, stackSize);
-        }else{
-            // instance fields
-            Iterator<Typeable> lookup = nameSymbol.getLookupPath().iterator();
-            Typeable type = lookup.next();
-            DclSymbol first;
-            if(type instanceof DclSymbol &&
-                    (first = (DclSymbol) type).isLocal()){
-                final long localObjOffset = first.getOffset();
-                instructions.add(new Comment("Move pointer of obj " + first.dclName + " in " + nameSymbol.value + " to Accumulator"));
-                instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.FRAME, localObjOffset)));
-                // TODO: do null check
+            return;
+        }
+        // instance fields called on local var or on Class
+        Iterator<Typeable> lookup = nameSymbol.getLookupPath().iterator();
+        Typeable type = lookup.next();
+        if (!(type instanceof DclSymbol)){
+            // Not sure if this is possible:
+            System.err.println("WARNING: got a type that is not DclSymbol when visiting a NameSymbol.");
+            return;
+        }
 
-                while(lookup.hasNext() && (type = lookup.next()) != lastDcl){
-                    DclSymbol dclSymbol = (DclSymbol) type;
-                    instructions.add(new Comment("Move reference to field " + dclSymbol.dclName + " in " +
-                            nameSymbol.value + " to Accumulator"));
-                    PointerRegister from = new PointerRegister(Register.ACCUMULATOR, dclSymbol.getOffset());
-                    instructions.add(new Mov(Register.ACCUMULATOR, from));
-                }
+        DclSymbol first = (DclSymbol) type;
+        if (first.isLocal){
+            final long localObjOffset = first.getOffset();
+            instructions.add(new Comment("Move pointer of obj " + first.dclName + " in " + nameSymbol.value + " to Accumulator"));
+            instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.FRAME, localObjOffset)));
+            // TODO: do null check
+        }else if (first.getType().isClass){
+            // is using static fields
+            // TODO: test using chain of types a1.a2.a3...
+            while(lookup.hasNext() && (type = lookup.next()).getType().isClass);
+            DclSymbol staticField = (DclSymbol) type;
+            final String staticFieldLbl = PkgClassResolver.getUniqueNameFor(staticField);
+            instructions.add(new Extern(staticFieldLbl));
 
-                // now type is last in qualified name => target field
-                if(getVal){
-                    instructions.add(new Comment("Move value of field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
-                    instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, lastDclOffset)));
-                }else{
-                    instructions.add(new Comment("Move reference to field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
-                    instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
-                    lastSize = SizeHelper.getSize(stackSize);
-                }
+            if (staticField == lastDcl && getVal){
+                instructions.add(new Comment("Move value of static field " + staticField.dclName + " to Accumulator"));
+                instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(new Immediate(staticFieldLbl))));
+                return;
             }
+            // get reference
+            instructions.add(new Comment("Move label of static field " + staticField.dclName + " to Accumulator"));
+            instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl)));
+            if (staticField == lastDcl) return;
+        }
+
+        // the rest are non static fields
+        while(lookup.hasNext() && (type = lookup.next()) != lastDcl){
+            DclSymbol dclSymbol = (DclSymbol) type;
+            instructions.add(new Comment("Move reference to field " + dclSymbol.dclName + " in " +
+                    nameSymbol.value + " to Accumulator"));
+            PointerRegister from = new PointerRegister(Register.ACCUMULATOR, dclSymbol.getOffset());
+            instructions.add(new Mov(Register.ACCUMULATOR, from));
+        }
+
+        // now type is last in qualified name => target field
+        if(getVal){
+            instructions.add(new Comment("Move value of field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
+            instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, lastDclOffset)));
+        }else{
+            instructions.add(new Comment("Move reference to field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
+            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
+            lastSize = SizeHelper.getSize(stackSize);
         }
     }
 

@@ -11,7 +11,7 @@ import cs444.types.APkgClassResolver;
 
 
 public class DclSymbol extends AModifiersOptSymbol{
-    private final boolean isLocal;
+    public final boolean isLocal;
     public boolean isFinal;
     private long offset;
 
@@ -95,9 +95,5 @@ public class DclSymbol extends AModifiersOptSymbol{
     @Override
     public void accept(ICodeGenVisitor visitor) {
         visitor.visit(this);
-    }
-
-    public boolean isLocal() {
-        return dclInResolver == null;
     }
 }

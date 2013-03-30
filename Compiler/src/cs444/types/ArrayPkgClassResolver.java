@@ -177,4 +177,10 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         return 0;
 
     }
+
+    @Override
+    public Iterable<DclSymbol> getUninheritedStaticFields() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
