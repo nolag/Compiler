@@ -19,14 +19,14 @@ public class ObjectLayout {
 
     public static void initialize(APkgClassResolver typeDclNode,
             List<Instruction> instructions) {
-        String className = typeDclNode.fullName;
 
         instructions.add(new Comment("Initializing Pointer to SIT Column"));
         // save eax
         instructions.add(new Push(Register.ACCUMULATOR));
 
-        instructions.add(new Extern(new Immediate(className)));
-        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR), new Immediate(className)));
+        String classNameSIT = typeDclNode.generateSIT();
+        instructions.add(new Extern(new Immediate(classNameSIT)));
+        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR), new Immediate(classNameSIT)));
 
         // TODO: initialize pointer to Subtype checking.
 

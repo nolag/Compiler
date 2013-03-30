@@ -11,7 +11,6 @@ import cs444.codegen.instructions.Call;
 import cs444.codegen.instructions.Cmp;
 import cs444.codegen.instructions.Comment;
 import cs444.codegen.instructions.Extern;
-import cs444.codegen.instructions.DataInstruction;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Int;
@@ -99,7 +98,7 @@ import cs444.types.PkgClassResolver;
 
 public class CodeGenVisitor implements ICodeGenVisitor {
     private final SelectorIndexedTable sit;
-    private final List<Instruction> instructions = new LinkedList<Instruction>();
+    private final List<Instruction> instructions;
     private boolean hasEntry = false;
     private boolean getVal = true;
 
@@ -119,6 +118,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     public CodeGenVisitor(SelectorIndexedTable sit) {
+        this.instructions = new LinkedList<Instruction>();
+        this.sit = sit;
+    }
+
+    public CodeGenVisitor(SelectorIndexedTable sit, List<Instruction> startInstructions) {
+        this.instructions = startInstructions;
         this.sit = sit;
     }
 
@@ -189,7 +194,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
                 hasEntry = true;
                 instructions.add(new Global("_start"));
                 instructions.add(new Label("_start"));
-                //TODO any static init needs to happen here
+                instructions.add(new Extern(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL)));
+                instructions.add(new Call(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL)));
                 instructions.add(new Call(new Immediate(methodName)));
                 instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
                 instructions.add(new Mov(Register.ACCUMULATOR, Immediate.EXIT));

@@ -25,6 +25,7 @@ public class A5 {
                 "J1_1_Instanceof_OfAdditiveExpression",
                 "J1_1_Instanceof_OfCastExpression",
                 "J1_6_Assignable_Object_ObjectArray",
+                "J1_ArrayCreateAndIndex",
                 "J1_6_AssignmentInArrayLength",
                 "J1_A_AddressNotEqual",
                 "J1_A_ArrayBaseInAssignment",

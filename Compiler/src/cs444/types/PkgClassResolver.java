@@ -452,12 +452,12 @@ public class PkgClassResolver extends APkgClassResolver {
     public void addToSelectorIndexedTable(SelectorIndexedTable sit) {
         if(this.isAbstract() || start == null) return;
 
-        sit.addClass(this.fullName);
+        sit.addClass(this.generateSIT());
 
         for (AMethodSymbol method : start.getMethods()) {
             if(method.isStatic()) continue;
             try {
-                sit.addIndex(this.fullName, generateUniqueName(method, method.dclName),
+                sit.addIndex(this.generateSIT(), generateUniqueName(method, method.dclName),
                         generateFullId(method));
             } catch (UndeclaredException e) {
                 // should not get here
