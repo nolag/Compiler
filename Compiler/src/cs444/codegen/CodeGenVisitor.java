@@ -28,14 +28,13 @@ import cs444.codegen.instructions.ReserveInstruction;
 import cs444.codegen.instructions.Ret;
 import cs444.codegen.instructions.Sar;
 import cs444.codegen.instructions.Section;
-import cs444.codegen.instructions.Xor;
 import cs444.codegen.instructions.Section.SectionType;
+import cs444.codegen.instructions.Xor;
 import cs444.codegen.instructions.factories.AddOpMaker;
 import cs444.codegen.instructions.factories.AndOpMaker;
 import cs444.codegen.instructions.factories.BinOpMaker;
 import cs444.codegen.instructions.factories.BinUniOpMaker;
 import cs444.codegen.instructions.factories.CmpMaker;
-import cs444.codegen.instructions.factories.DataInstructionMaker;
 import cs444.codegen.instructions.factories.IDivMaker;
 import cs444.codegen.instructions.factories.IMulMaker;
 import cs444.codegen.instructions.factories.OrOpMaker;
@@ -113,7 +112,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     private int nextLblnum = 0;
 
-    APkgClassResolver currentFile;
+    private APkgClassResolver currentFile;
+
+    private boolean isFieldLookup = false;
 
     private int getNewLblNum(){
         return nextLblnum++;
@@ -155,12 +156,22 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void visit(MethodInvokeSymbol invoke) {
         MethodOrConstructorSymbol call = invoke.getCallSymbol();
         if(!call.isStatic()){
-            if(invoke.hasFirst){
+            final Iterator<Typeable> lookup = invoke.getLookup().dcls.iterator();
+            Typeable first = lookup.next();
 
-                //TODO visit first and make this like a recusive lookup for name during that part
+            if(invoke.hasFirst){
+                invoke.children.get(0).accept(this);
+                first = lookup.next();
+            }
+
+            if(first != call){
+                lookupLink(call.dclName, lookup, first, call, 0);
+            }else if(invoke.hasFirst){
+                instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
+            }else if(isFieldLookup){
+                instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
             }else{
-                //TODO if it is this then do it for this
-                //instructions.add(new Push(PointerRegister.THIS));
+                instructions.add(new Mov(Register.COUNTER, PointerRegister.THIS));
             }
         }
 
@@ -168,6 +179,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             arg.accept(this);
             instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
         }
+
+        if(!call.isStatic()) instructions.add(new Push(Register.COUNTER));
 
         InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(invoke.getCallSymbol()));
         if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
@@ -183,7 +196,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(FieldAccessSymbol field) {
         field.children.get(0).accept(this);
+        isFieldLookup = true;
         field.children.get(1).accept(this);
+        isFieldLookup = false;
     }
 
     @Override
@@ -417,10 +432,25 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             return;
         }
 
+        if(lookupLink(nameSymbol.value, lookup, type, lastDcl, stackSize)) return;
+
+        // now type is last in qualified name => target field
+        if(getVal){
+            Size size = SizeHelper.getSize(lastDcl.getType().getTypeDclNode().realSize);
+            instructions.add(new Comment("Move value of field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
+            instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, lastDclOffset), size));
+        }else{
+            instructions.add(new Comment("Move reference to field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
+            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
+            lastSize = SizeHelper.getSize(stackSize);
+        }
+    }
+
+    private boolean lookupLink(String value, Iterator<Typeable> lookup, Typeable type, ISymbol lastDcl, long stackSize){
         DclSymbol first = (DclSymbol) type;
         if (first.isLocal){
             final long localObjOffset = first.getOffset();
-            instructions.add(new Comment("Move pointer of obj " + first.dclName + " in " + nameSymbol.value + " to Accumulator"));
+            instructions.add(new Comment("Move pointer of obj " + first.dclName + " in " + value + " to Accumulator"));
             instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.FRAME, localObjOffset)));
             // TODO: do null check
         }else if (first.getType().isClass){
@@ -435,36 +465,25 @@ public class CodeGenVisitor implements ICodeGenVisitor {
                 Size size = SizeHelper.getSize(staticField.getType().getTypeDclNode().realSize);
                 instructions.add(new Comment("Move value of static field " + staticField.dclName + " to Accumulator"));
                 instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(new Immediate(staticFieldLbl)), size));
-                return;
+                return true;
             }
             // get reference
             instructions.add(new Comment("Move label of static field " + staticField.dclName + " to Accumulator"));
             instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl)));
             if (staticField == lastDcl){
                 lastSize = SizeHelper.getSize(stackSize);
-                return;
+                return true;
             }
         }
 
         // the rest are non static fields
         while(lookup.hasNext() && (type = lookup.next()) != lastDcl){
             DclSymbol dclSymbol = (DclSymbol) type;
-            instructions.add(new Comment("Move reference to field " + dclSymbol.dclName + " in " +
-                    nameSymbol.value + " to Accumulator"));
+            instructions.add(new Comment("Move reference to field " + dclSymbol.dclName + " in " + value + " to Accumulator"));
             PointerRegister from = new PointerRegister(Register.ACCUMULATOR, dclSymbol.getOffset());
             instructions.add(new Mov(Register.ACCUMULATOR, from));
         }
-
-        // now type is last in qualified name => target field
-        if(getVal){
-            Size size = SizeHelper.getSize(lastDcl.getType().getTypeDclNode().realSize);
-            instructions.add(new Comment("Move value of field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
-            instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, lastDclOffset), size));
-        }else{
-            instructions.add(new Comment("Move reference to field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
-            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
-            lastSize = SizeHelper.getSize(stackSize);
-        }
+        return false;
     }
 
     private void genCodeForLocalVar(NameSymbol nameSymbol, final DclSymbol dcl,
