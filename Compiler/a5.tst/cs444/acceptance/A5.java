@@ -170,7 +170,6 @@ public class A5 {
                 "J1e_A_CastToArray",
                 "J1e_A_CastNewExp",
                 "J1e_A_CastToString",
-                "J2_A_FieldInitialization_Static_Before",
                 "J2_A_FieldInitialization_Static_NonConstant_Before",
                 "J2_fieldinit_forward_ref",
                 "J2_forwardRef"));
@@ -180,11 +179,10 @@ public class A5 {
         if (allTest == null){
             TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a5/", 0, true, true,
                     true, ignoreList, new AsmAndLinkCallback());
-        }
-        else if (allTest.equals("true")){
+        } else if (allTest.equals("true")){
             TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a5/", 0, true, true,
                     true, Collections.<String>emptyList(), new AsmAndLinkCallback());
-        }else{
+        } else{
             TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a5/", 0, true, true,
                     true, failingList, new AsmAndLinkCallback());
         }

@@ -377,7 +377,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             while(lookup.hasNext() && (type = lookup.next()).getType().isClass);
             DclSymbol staticField = (DclSymbol) type;
             final String staticFieldLbl = PkgClassResolver.getUniqueNameFor(staticField);
-            instructions.add(new Extern(staticFieldLbl));
+            if(staticField.dclInResolver != currentFile) instructions.add(new Extern(staticFieldLbl));
 
             if (staticField == lastDcl && getVal){
                 Size size = SizeHelper.getSize(staticField.getType().getTypeDclNode().realSize);
