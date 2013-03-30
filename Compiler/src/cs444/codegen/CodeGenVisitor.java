@@ -10,8 +10,8 @@ import cs444.codegen.instructions.Add;
 import cs444.codegen.instructions.Call;
 import cs444.codegen.instructions.Cmp;
 import cs444.codegen.instructions.Comment;
-import cs444.codegen.instructions.Extern;
 import cs444.codegen.instructions.DataInstruction;
+import cs444.codegen.instructions.Extern;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Int;
@@ -52,6 +52,7 @@ import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 import cs444.parser.symbols.ast.ByteLiteralSymbol;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
+import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
@@ -92,6 +93,7 @@ import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassResolver;
+import cs444.types.exceptions.UndeclaredException;
 
 public class CodeGenVisitor implements ICodeGenVisitor {
     private final SelectorIndexedTable sit;
@@ -138,8 +140,15 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(MethodInvokeSymbol invoke) {
-        if(invoke.hasFirst){
-          //TODO visit first and make this like a recusive lookup for name during that part
+        MethodOrConstructorSymbol call = invoke.getCallSymbol();
+        if(!call.isStatic()){
+            if(invoke.hasFirst){
+
+                //TODO visit first and make this like a recusive lookup for name during that part
+            }else{
+                //TODO if it is this then do it for this
+                //instructions.add(new Push(PointerRegister.THIS));
+            }
         }
 
         for(ISymbol arg : invoke.getArgs()){
@@ -160,7 +169,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(FieldAccessSymbol field) {
-        // TODO Auto-generated method stub
+        field.children.get(0).accept(this);
+        field.children.get(1).accept(this);
     }
 
     @Override
@@ -202,6 +212,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         for(ISymbol child : method.children) child.accept(this);
 
+
+        //Don't fall though void funcs
+        instructions.add(Leave.LEAVE);
+        instructions.add(Ret.RET);
+
         instructions.add(new Comment("End of method " + method.dclName));
     }
 
@@ -219,7 +234,43 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             // TODO: do array creation here and change instruction comment
             instructions.add(new Comment("Allocate for " + typeDclNode.fullName + " no done yet"));
         }
-        // TODO call constructor
+
+        final APkgClassResolver resolver = creationExpression.getType().getTypeDclNode();
+
+        List<String> types = new LinkedList<String>();
+
+        //put object in c
+        instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
+
+        for(ISymbol child : creationExpression.children){
+            child.accept(this);
+            instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
+            Typeable typeable = (Typeable) child;
+            types.add(typeable.getType().value);
+        }
+
+        instructions.add(new Push(Register.COUNTER));
+
+        ConstructorSymbol cs = null;
+        try {
+            cs = resolver.getConstructor(types, resolver);
+        } catch (UndeclaredException e) {
+            //Should never get here
+            e.printStackTrace();
+        }
+
+        InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(cs));
+        if(cs.dclInResolver != currentFile) instructions.add(new Extern(arg));
+        instructions.add(new Call(arg));
+
+        if(cs.getStackSize() != 0){
+            long size = (cs.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE);
+            Immediate by = new Immediate(String.valueOf(size));
+            instructions.add(new Add(Register.STACK, by));
+        }
+
+        //return value is the new object
+        instructions.add(new Mov(Register.ACCUMULATOR, Register.COUNTER));
     }
 
     @Override
@@ -581,8 +632,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(ThisSymbol thisSymbol) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new Comment("This pointer"));
+        instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
     }
 
     @Override

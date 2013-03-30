@@ -15,10 +15,6 @@ public class Immediate extends InstructionArg{
     public static final Immediate NULL = FALSE;
     public static final Immediate ZERO = FALSE;
 
-
-
-
-
     public Immediate(String value){
         this.value = value;
     }

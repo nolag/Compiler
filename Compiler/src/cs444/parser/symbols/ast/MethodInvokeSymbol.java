@@ -17,6 +17,7 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
     private LookupLink link;
     private MethodOrConstructorSymbol call;
 
+
     public MethodInvokeSymbol(String name, List<ISymbol> params, ISymbol on) {
         super("Method Invoke");
         if(on != null)children.add(on);

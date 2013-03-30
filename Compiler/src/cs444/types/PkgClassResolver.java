@@ -441,6 +441,7 @@ public class PkgClassResolver extends APkgClassResolver {
         if(!shouldGenCode()) return;
 
         for(AMethodSymbol methodSymbol : start.getUninheritedMethods()) methodSymbol.accept(visitor);
+        for(ConstructorSymbol cs : start.getConstructors()) cs.accept(visitor);
     }
 
     @Override
@@ -487,7 +488,7 @@ public class PkgClassResolver extends APkgClassResolver {
         for(DclSymbol dcl : start.getFields()){
             if(!dcl.isStatic() || dcl.dclInResolver != this) continue;
 
-            fieldsDcls.add((DclSymbol)dcl);
+            fieldsDcls.add(dcl);
         }
 
         return fieldsDcls;

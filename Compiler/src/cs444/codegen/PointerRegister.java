@@ -1,6 +1,8 @@
 package cs444.codegen;
 
 public class PointerRegister extends InstructionArg{
+    public static final PointerRegister THIS = new PointerRegister(Register.FRAME, SizeHelper.DEFAULT_STACK_SIZE * 2);
+
     public final InstructionArg arg;
     public final long offset;
 
