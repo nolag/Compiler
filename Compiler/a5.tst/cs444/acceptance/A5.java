@@ -13,11 +13,8 @@ public class A5 {
 
     @Test
     public void testCompileProgramsNoStdLib() throws IOException, InterruptedException{
-        List<String> ignoreList = new LinkedList<String>(Arrays.asList(
-                "StaticFieldsReadWrite"));
-
         TestHelper.assertReturnCodeForFiles("JoosPrograms/A5/NoStdLibPrograms/", 0, true, false,
-                true, ignoreList, new AsmAndLinkCallback());
+                true, Collections.<String>emptyList(), new AsmAndLinkCallback());
     }
 
     @Test

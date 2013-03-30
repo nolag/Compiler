@@ -25,9 +25,12 @@ import cs444.codegen.instructions.Movzx;
 import cs444.codegen.instructions.Neg;
 import cs444.codegen.instructions.Pop;
 import cs444.codegen.instructions.Push;
+import cs444.codegen.instructions.ReserveInstruction;
 import cs444.codegen.instructions.Ret;
 import cs444.codegen.instructions.Sar;
+import cs444.codegen.instructions.Section;
 import cs444.codegen.instructions.Xor;
+import cs444.codegen.instructions.Section.SectionType;
 import cs444.codegen.instructions.factories.AddOpMaker;
 import cs444.codegen.instructions.factories.AndOpMaker;
 import cs444.codegen.instructions.factories.BinOpMaker;
@@ -37,6 +40,7 @@ import cs444.codegen.instructions.factories.DataInstructionMaker;
 import cs444.codegen.instructions.factories.IDivMaker;
 import cs444.codegen.instructions.factories.IMulMaker;
 import cs444.codegen.instructions.factories.OrOpMaker;
+import cs444.codegen.instructions.factories.ReserveInstructionMaker;
 import cs444.codegen.instructions.factories.SeteMaker;
 import cs444.codegen.instructions.factories.SetlMaker;
 import cs444.codegen.instructions.factories.SetleMaker;
@@ -120,18 +124,22 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     public void genHeader() {
         Runtime.externAll(instructions);
+        instructions.add(new Section(SectionType.TEXT));
     }
 
     public void genLayoutForStaticFields(
             Iterable<DclSymbol> staticFields) {
-        instructions.add(new Comment("Static fields:"));
+        if (staticFields.iterator().hasNext()){
+            instructions.add(new Comment("Static fields:"));
+            instructions.add(new Section(SectionType.BSS));
+        }
+
         for (DclSymbol fieldDcl : staticFields) {
             Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
 
             String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
             instructions.add(new Global(fieldLbl));
-            instructions.add(new Label(fieldLbl));
-            DataInstruction data = DataInstructionMaker.make(Immediate.NULL, size);
+            ReserveInstruction data = ReserveInstructionMaker.make(fieldLbl, size, 1);
             instructions.add(data);
         }
     }
@@ -366,14 +374,18 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Extern(staticFieldLbl));
 
             if (staticField == lastDcl && getVal){
+                Size size = SizeHelper.getSize(staticField.getType().getTypeDclNode().realSize);
                 instructions.add(new Comment("Move value of static field " + staticField.dclName + " to Accumulator"));
-                instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(new Immediate(staticFieldLbl))));
+                instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(new Immediate(staticFieldLbl)), size));
                 return;
             }
             // get reference
             instructions.add(new Comment("Move label of static field " + staticField.dclName + " to Accumulator"));
             instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl)));
-            if (staticField == lastDcl) return;
+            if (staticField == lastDcl){
+                lastSize = SizeHelper.getSize(stackSize);
+                return;
+            }
         }
 
         // the rest are non static fields
@@ -387,8 +399,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         // now type is last in qualified name => target field
         if(getVal){
+            Size size = SizeHelper.getSize(lastDcl.getType().getTypeDclNode().realSize);
             instructions.add(new Comment("Move value of field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
-            instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, lastDclOffset)));
+            instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, lastDclOffset), size));
         }else{
             instructions.add(new Comment("Move reference to field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
             instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
