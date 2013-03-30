@@ -98,6 +98,7 @@ import cs444.types.PkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
 public class CodeGenVisitor implements ICodeGenVisitor {
+    private static final String INIT_OBJECT_FUNC = "__init_object";
     private final SelectorIndexedTable sit;
     private final List<Instruction> instructions;
     private boolean hasEntry = false;
@@ -130,9 +131,39 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         this.sit = sit;
     }
 
-    public void genHeader() {
+    public void genHeader(APkgClassResolver resolver) {
         Runtime.externAll(instructions);
         instructions.add(new Section(SectionType.TEXT));
+
+        instructions.add(new Comment(INIT_OBJECT_FUNC + ": call super default constructor and initialize obj fields." +
+                " eax should contain address of object."));
+        instructions.add(new Label(INIT_OBJECT_FUNC));
+        instructions.add(new Push(Register.FRAME));
+        instructions.add(new Mov(Register.FRAME, Register.STACK));
+
+        // save pointer to object
+        instructions.add(new Push(Register.ACCUMULATOR));
+
+        // TODO: call super constructor
+
+        for (DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
+            Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
+            PointerRegister toAddr = new PointerRegister(Register.ACCUMULATOR, fieldDcl.getOffset());
+
+            if(fieldDcl.children.isEmpty()){
+                instructions.add(new Comment("Set field " + fieldDcl.dclName + " of type " 
+                        + fieldDcl.type.value + " to NULL"));
+                instructions.add(new Comment("Pop the object address to aex"));
+                instructions.add(new Pop(Register.ACCUMULATOR));
+                instructions.add(new Mov(toAddr, Immediate.NULL, size));
+            }else{
+                instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
+                fieldDcl.children.get(0).accept(new CodeGenVisitor(sit, instructions));
+                instructions.add(new Comment("Pop the object address to aex"));
+                instructions.add(new Pop(Register.ACCUMULATOR));
+                instructions.add(new Mov(toAddr, Register.ACCUMULATOR, size));
+            }
+        }
     }
 
     public void genLayoutForStaticFields(

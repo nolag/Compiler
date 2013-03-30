@@ -129,7 +129,7 @@ public class Compiler {
         for(APkgClassResolver resolver : resolvers){
             if(!resolver.shouldGenCode()) continue;
             codeGen.genLayoutForStaticFields(resolver.getUninheritedStaticFields());
-            codeGen.genHeader();
+            codeGen.genHeader(resolver);
             resolver.generateCode(codeGen);
             if (outputFile){
                 File file = new File(directory + resolver.name + ".s");

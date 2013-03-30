@@ -303,6 +303,7 @@ public abstract class APkgClassResolver {
 
     public abstract long getObjectSize();
 
-
     public abstract Iterable<DclSymbol> getUninheritedStaticFields();
+
+    public abstract Iterable<DclSymbol> getUninheritedNonStaticFields();
 }

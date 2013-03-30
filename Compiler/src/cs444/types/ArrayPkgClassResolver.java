@@ -191,4 +191,10 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public Iterable<DclSymbol> getUninheritedNonStaticFields() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

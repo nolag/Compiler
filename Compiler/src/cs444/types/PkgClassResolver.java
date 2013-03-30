@@ -493,4 +493,17 @@ public class PkgClassResolver extends APkgClassResolver {
 
         return fieldsDcls;
     }
+
+    @Override
+    public Iterable<DclSymbol> getUninheritedNonStaticFields() {
+        List<DclSymbol> fieldsDcls = new LinkedList<DclSymbol>();
+
+        for(DclSymbol dcl : start.getFields()){
+            if(dcl.isStatic() || dcl.dclInResolver != this) continue;
+
+            fieldsDcls.add((DclSymbol)dcl);
+        }
+
+        return fieldsDcls;
+    }
 }

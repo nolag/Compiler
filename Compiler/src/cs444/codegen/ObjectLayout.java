@@ -21,8 +21,6 @@ public class ObjectLayout {
             List<Instruction> instructions) {
 
         instructions.add(new Comment("Initializing Pointer to SIT Column"));
-        // save eax
-        instructions.add(new Push(Register.ACCUMULATOR));
 
         String classNameSIT = typeDclNode.generateSIT();
         instructions.add(new Extern(new Immediate(classNameSIT)));
@@ -30,20 +28,6 @@ public class ObjectLayout {
 
         // TODO: initialize pointer to Subtype checking.
 
-        // TODO: do this in _INIT_FIELDS that every constructor will call
-        if (typeDclNode instanceof PkgClassResolver){
-            AInterfaceOrClassSymbol classSym = ((PkgClassResolver) typeDclNode).getStart();
-            for (DclSymbol field : classSym.getFields()) {
-                Size size = SizeHelper.getSizeOfType(field.type.value);
-                instructions.add(new Comment("Set field " + field.dclName + " of type " 
-                        + field.type.value + " to NULL"));
-                instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, field.getOffset()),
-                        Immediate.NULL, size));
-            }
-        }
-
-        instructions.add(new Comment("Pop the object address to aex"));
-        instructions.add(new Pop(Register.ACCUMULATOR));
         //instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR)));
     }
 
