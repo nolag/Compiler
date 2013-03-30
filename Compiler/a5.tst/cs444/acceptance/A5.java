@@ -170,9 +170,7 @@ public class A5 {
                 "J1e_A_CastToArray",
                 "J1e_A_CastNewExp",
                 "J1e_A_CastToString",
-                "J2_A_FieldInitialization_Static_NonConstant_Before",
-                "J2_fieldinit_forward_ref",
-                "J2_forwardRef"));
+                "J2_A_FieldInitialization_Static_NonConstant_Before"));
 
         Map<String, String> env = System.getenv();
         String allTest = env.get("all_tests");
