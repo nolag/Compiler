@@ -156,6 +156,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void visit(MethodInvokeSymbol invoke) {
         MethodOrConstructorSymbol call = invoke.getCallSymbol();
         if(!call.isStatic()){
+            instructions.add(new Comment("Preping this"));
             final Iterator<Typeable> lookup = invoke.getLookup().dcls.iterator();
             Typeable first = lookup.next();
 
@@ -165,16 +166,16 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             }
 
             if(first != call){
-                lookupLink(call.dclName, lookup, first, call, 0);
-            }else if(invoke.hasFirst){
+                lookupLink(call.dclName, lookup, first, call, 0, !isFieldLookup && ! invoke.hasFirst);
                 instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
-            }else if(isFieldLookup){
+            }else if(invoke.hasFirst || isFieldLookup){
                 instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
             }else{
                 instructions.add(new Mov(Register.COUNTER, PointerRegister.THIS));
             }
         }
 
+        instructions.add(new Comment("Pushing args"));
         for(ISymbol arg : invoke.getArgs()){
             arg.accept(this);
             instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
@@ -191,6 +192,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             Immediate by = new Immediate(String.valueOf(size));
             instructions.add(new Add(Register.STACK, by));
         }
+
+        instructions.add(new Comment("end invoke"));
     }
 
     @Override
@@ -301,6 +304,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         //return value is the new object
         instructions.add(new Mov(Register.ACCUMULATOR, Register.COUNTER));
+        instructions.add(new Comment("Done creating object"));
     }
 
     @Override
@@ -432,7 +436,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             return;
         }
 
-        if(lookupLink(nameSymbol.value, lookup, type, lastDcl, stackSize)) return;
+        if(lookupLink(nameSymbol.value, lookup, type, lastDcl, stackSize, !isFieldLookup)) return;
 
         // now type is last in qualified name => target field
         if(getVal){
@@ -446,7 +450,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }
     }
 
-    private boolean lookupLink(String value, Iterator<Typeable> lookup, Typeable type, ISymbol lastDcl, long stackSize){
+    private boolean lookupLink(String value, Iterator<Typeable> lookup, Typeable type,
+            ISymbol lastDcl,  long stackSize, boolean forceThis){
+
         DclSymbol first = (DclSymbol) type;
         if (first.isLocal){
             final long localObjOffset = first.getOffset();
@@ -474,6 +480,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
                 lastSize = SizeHelper.getSize(stackSize);
                 return true;
             }
+        }else if(forceThis){
+            instructions.add(new Comment("Force This pointer"));
+            instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
         }
 
         // the rest are non static fields
