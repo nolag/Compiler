@@ -7,14 +7,19 @@ import cs444.codegen.instructions.Comment;
 import cs444.codegen.instructions.Extern;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Mov;
+import cs444.codegen.instructions.Pop;
+import cs444.codegen.instructions.Push;
 
 public class Runtime {
     private static final Immediate MALLOC = new Immediate("__malloc");
     private static final Immediate EXCEPTION = new Immediate("__exception");
 
     public static void malloc(long bytes, List<Instruction> instructions) {
+        // backup regs used by malloc
+        instructions.add(new Push(Register.BASE));
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(Long.toString(bytes))));
         instructions.add(new Call(MALLOC));
+        instructions.add(new Pop(Register.BASE));
     }
 
     public static void externAll(List<Instruction> instructions) {
