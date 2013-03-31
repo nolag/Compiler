@@ -335,6 +335,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }else{
             // TODO: do array creation here and change instruction comment
             instructions.add(new Comment("Allocate for " + typeDclNode.fullName + " no done yet"));
+            // TODO: do not return when array creation is done
+            return;
         }
 
         final APkgClassResolver resolver = creationExpression.getType().getTypeDclNode();

@@ -18,7 +18,7 @@ public class A5 {
                 true, Collections.<String>emptyList(), new AsmAndLinkCallback());
     }
 
-    @Ignore("not ready")
+    // @Ignore("not ready")
     @Test
     public void testMarmosetPrograms() throws IOException, InterruptedException{
         List<String> ignoreList = new LinkedList<String>(Arrays.asList(
