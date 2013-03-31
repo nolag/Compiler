@@ -33,7 +33,7 @@ public abstract class APkgClassResolver {
 
     protected static final String DEFAULT_PKG = "?default?";
     protected static final String LANG = "java.lang";
-    protected static final String OBJECT = LANG + ".Object";
+    public static final String OBJECT = LANG + ".Object";
 
     protected final Set<String> assignableTo = new HashSet<String>();
     protected final Map<String, PkgClassResolver> namedMap = new HashMap<String, PkgClassResolver>();
@@ -303,6 +303,7 @@ public abstract class APkgClassResolver {
 
     public abstract long getObjectSize();
 
-
     public abstract Iterable<DclSymbol> getUninheritedStaticFields();
+
+    public abstract Iterable<DclSymbol> getUninheritedNonStaticFields();
 }

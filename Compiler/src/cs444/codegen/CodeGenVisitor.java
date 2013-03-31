@@ -1,6 +1,7 @@
 package cs444.codegen;
 
 import java.io.PrintStream;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +61,7 @@ import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
+import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.NullSymbol;
 import cs444.parser.symbols.ast.ShortLiteralSymbol;
@@ -98,6 +100,7 @@ import cs444.types.PkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
 public class CodeGenVisitor implements ICodeGenVisitor {
+    private static final String INIT_OBJECT_FUNC = "__init_object";
     private final SelectorIndexedTable sit;
     private final List<Instruction> instructions;
     private boolean hasEntry = false;
@@ -130,9 +133,55 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         this.sit = sit;
     }
 
-    public void genHeader() {
+    public void genHeader(APkgClassResolver resolver) {
         Runtime.externAll(instructions);
         instructions.add(new Section(SectionType.TEXT));
+
+        instructions.add(new Comment(INIT_OBJECT_FUNC + ": call super default constructor and initialize obj fields." +
+                " eax should contain address of object."));
+        instructions.add(new Label(INIT_OBJECT_FUNC));
+        instructions.add(new Push(Register.FRAME));
+        instructions.add(new Mov(Register.FRAME, Register.STACK));
+
+        APkgClassResolver superResolver = null;
+
+        try {
+            superResolver = resolver.getSuper();
+        } catch (UndeclaredException e) {
+            // shouldn't get here
+            e.printStackTrace();
+        }
+
+        instructions.add(new Push(Register.ACCUMULATOR));
+        if (!resolver.fullName.equals(APkgClassResolver.OBJECT)){
+            currentFile = resolver;
+            invokeConstructor(superResolver, Collections.<ISymbol>emptyList());
+        }
+
+        instructions.add(new Comment("Store pointer to object in edx"));
+        instructions.add(new Pop(Register.DATA));
+
+        for (DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
+            Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
+
+            PointerRegister fieldAddr = new PointerRegister(Register.DATA, fieldDcl.getOffset());
+            if(fieldDcl.children.isEmpty()){
+                instructions.add(new Comment("Set field " + fieldDcl.dclName + " of type " 
+                        + fieldDcl.type.value + " to NULL"));
+                instructions.add(new Mov(fieldAddr, Immediate.NULL, size));
+            }else{
+                instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
+                // save pointer to object
+                instructions.add(new Push(Register.DATA));
+                fieldDcl.children.get(0).accept(new CodeGenVisitor(sit, instructions));
+                instructions.add(new Comment("Pop the object address to edx"));
+                instructions.add(new Pop(Register.DATA));
+                instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, size));
+            }
+        }
+
+        instructions.add(Leave.LEAVE);
+        instructions.add(Ret.RET);
     }
 
     public void genLayoutForStaticFields(
@@ -211,7 +260,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(MethodOrConstructorSymbol method) {
+    public void visit(MethodSymbol method){
         currentFile = method.dclInResolver;
         String methodName = APkgClassResolver.generateFullId(method);
 
@@ -234,6 +283,28 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             e.printStackTrace();
         }
 
+        methProlog(method, methodName);
+
+        for(ISymbol child : method.children) child.accept(this);
+
+        methEpilogue(method);
+    }
+
+    @Override
+    public void visit(ConstructorSymbol constructor) {
+        String constrName = APkgClassResolver.generateFullId(constructor);
+        methProlog(constructor, constrName);
+
+        instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
+
+        instructions.add(new Call(new Immediate(INIT_OBJECT_FUNC)));
+
+        for(ISymbol child : constructor.children) child.accept(this);
+
+        methEpilogue(constructor);
+    }
+
+    private void methProlog(MethodOrConstructorSymbol method, String methodName) {
         if(method.getProtectionLevel() != ProtectionLevel.PRIVATE) instructions.add(new Global(methodName));
         instructions.add(new Label(methodName));
 
@@ -241,10 +312,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         instructions.add(Push.STACK_FRAME);
         instructions.add(new Mov(Register.FRAME, Register.STACK));
+    }
 
-        for(ISymbol child : method.children) child.accept(this);
-
-
+    private void methEpilogue(MethodOrConstructorSymbol method) {
         //Don't fall though void funcs
         instructions.add(Leave.LEAVE);
         instructions.add(Ret.RET);
@@ -269,12 +339,23 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         final APkgClassResolver resolver = creationExpression.getType().getTypeDclNode();
 
+        List<ISymbol> children = creationExpression.children;
+
+        invokeConstructor(resolver, children);
+
+        //return value is the new object
+        instructions.add(new Mov(Register.ACCUMULATOR, Register.COUNTER));
+        instructions.add(new Comment("Done creating object"));
+    }
+
+    private void invokeConstructor(final APkgClassResolver resolver,
+            List<ISymbol> children) {
         List<String> types = new LinkedList<String>();
 
         //put object in c
         instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
 
-        for(ISymbol child : creationExpression.children){
+        for(ISymbol child : children){
             child.accept(this);
             instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
             Typeable typeable = (Typeable) child;
@@ -301,10 +382,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             Immediate by = new Immediate(String.valueOf(size));
             instructions.add(new Add(Register.STACK, by));
         }
-
-        //return value is the new object
-        instructions.add(new Mov(Register.ACCUMULATOR, Register.COUNTER));
-        instructions.add(new Comment("Done creating object"));
     }
 
     @Override
