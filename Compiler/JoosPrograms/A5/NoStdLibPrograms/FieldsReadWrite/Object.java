@@ -1,7 +1,7 @@
 package java.lang;
 
 public class Object{
-    public int fInt = 2;
+    public int fInt2 = 4;
 
     public Object() { }
     public static int test(){
@@ -10,7 +10,8 @@ public class Object{
 
         aclass.fChar = (char) 2;
         aclass.fInt = aclass.fShort = (short)aclass.fChar;
+        obj.fInt2 = 3;
 
-        return aclass.fInt * aclass.fChar * obj.fInt;
+        return aclass.fInt2 * aclass.fInt * obj.fInt2; // 3 * 2 * 4
     }
 }

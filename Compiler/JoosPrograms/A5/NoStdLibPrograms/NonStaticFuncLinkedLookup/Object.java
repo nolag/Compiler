@@ -7,7 +7,7 @@ public class Object{
     protected int getI(){
         return this.i;
     }
-    
+
     public Object getMe(int j){
         i = j;
         return this;
@@ -20,7 +20,9 @@ public class Object{
     public Object(int j) {
         this.i = j;
     }
-    
+
+    public Object(){}
+
     public static int test(){
         Object o = new Object(9);
         Object i = new Object(0);

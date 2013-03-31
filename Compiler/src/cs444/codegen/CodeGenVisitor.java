@@ -1,6 +1,7 @@
 package cs444.codegen;
 
 import java.io.PrintStream;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -142,10 +143,23 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Push(Register.FRAME));
         instructions.add(new Mov(Register.FRAME, Register.STACK));
 
-        // TODO: call super constructor
+        APkgClassResolver superResolver = null;
+
+        try {
+            superResolver = resolver.getSuper();
+        } catch (UndeclaredException e) {
+            // shouldn't get here
+            e.printStackTrace();
+        }
+
+        instructions.add(new Push(Register.ACCUMULATOR));
+        if (!resolver.fullName.equals(APkgClassResolver.OBJECT)){
+            currentFile = resolver;
+            invokeConstructor(superResolver, Collections.<ISymbol>emptyList());
+        }
 
         instructions.add(new Comment("Store pointer to object in edx"));
-        instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR));
+        instructions.add(new Pop(Register.DATA));
 
         for (DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
             Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
@@ -283,8 +297,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
 
-        // TODO: invoke super here
-
         instructions.add(new Call(new Immediate(INIT_OBJECT_FUNC)));
 
         for(ISymbol child : constructor.children) child.accept(this);
@@ -327,12 +339,23 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         final APkgClassResolver resolver = creationExpression.getType().getTypeDclNode();
 
+        List<ISymbol> children = creationExpression.children;
+
+        invokeConstructor(resolver, children);
+
+        //return value is the new object
+        instructions.add(new Mov(Register.ACCUMULATOR, Register.COUNTER));
+        instructions.add(new Comment("Done creating object"));
+    }
+
+    private void invokeConstructor(final APkgClassResolver resolver,
+            List<ISymbol> children) {
         List<String> types = new LinkedList<String>();
 
         //put object in c
         instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
 
-        for(ISymbol child : creationExpression.children){
+        for(ISymbol child : children){
             child.accept(this);
             instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
             Typeable typeable = (Typeable) child;
@@ -359,10 +382,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             Immediate by = new Immediate(String.valueOf(size));
             instructions.add(new Add(Register.STACK, by));
         }
-
-        //return value is the new object
-        instructions.add(new Mov(Register.ACCUMULATOR, Register.COUNTER));
-        instructions.add(new Comment("Done creating object"));
     }
 
     @Override

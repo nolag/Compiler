@@ -411,7 +411,11 @@ public class PkgClassResolver extends APkgClassResolver {
 
     @Override
     public APkgClassResolver getSuper() throws UndeclaredException {
-        return findClass(start.superName);
+        if (start.superName == null){
+            return findClass(OBJECT);
+        }else{
+            return findClass(start.superName);
+        }
     }
 
     @Override
