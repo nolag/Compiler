@@ -60,6 +60,7 @@ import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
+import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.NullSymbol;
 import cs444.parser.symbols.ast.ShortLiteralSymbol;
@@ -245,7 +246,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(MethodOrConstructorSymbol method) {
+    public void visit(MethodSymbol method){
         currentFile = method.dclInResolver;
         String methodName = APkgClassResolver.generateFullId(method);
 
@@ -268,6 +269,30 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             e.printStackTrace();
         }
 
+        methProlog(method, methodName);
+
+        for(ISymbol child : method.children) child.accept(this);
+
+        methEpilogue(method);
+    }
+
+    @Override
+    public void visit(ConstructorSymbol constructor) {
+        String constrName = APkgClassResolver.generateFullId(constructor);
+        methProlog(constructor, constrName);
+
+        instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
+
+        // TODO: invoke super here
+
+        instructions.add(new Call(new Immediate(INIT_OBJECT_FUNC)));
+
+        for(ISymbol child : constructor.children) child.accept(this);
+
+        methEpilogue(constructor);
+    }
+
+    private void methProlog(MethodOrConstructorSymbol method, String methodName) {
         if(method.getProtectionLevel() != ProtectionLevel.PRIVATE) instructions.add(new Global(methodName));
         instructions.add(new Label(methodName));
 
@@ -275,17 +300,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         instructions.add(Push.STACK_FRAME);
         instructions.add(new Mov(Register.FRAME, Register.STACK));
+    }
 
-        // TODO: refactor this
-        if (method instanceof ConstructorSymbol){
-            instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
-            instructions.add(new Call(new Immediate(INIT_OBJECT_FUNC)));
-        }
-
-
-        for(ISymbol child : method.children) child.accept(this);
-
-
+    private void methEpilogue(MethodOrConstructorSymbol method) {
         //Don't fall though void funcs
         instructions.add(Leave.LEAVE);
         instructions.add(Ret.RET);
