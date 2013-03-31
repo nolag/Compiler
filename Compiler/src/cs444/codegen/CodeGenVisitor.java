@@ -273,6 +273,13 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(Push.STACK_FRAME);
         instructions.add(new Mov(Register.FRAME, Register.STACK));
 
+        // TODO: refactor this
+        if (method instanceof ConstructorSymbol){
+            instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
+            instructions.add(new Call(new Immediate(INIT_OBJECT_FUNC)));
+        }
+
+
         for(ISymbol child : method.children) child.accept(this);
 
 
