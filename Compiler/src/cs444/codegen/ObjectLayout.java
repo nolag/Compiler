@@ -22,6 +22,8 @@ public class ObjectLayout {
 
         // TODO: initialize pointer to Subtype checking.
 
+        // TODO: According to J1_A_FieldInitialization_Before, we need to preinitialize all fields to 0
+
         //instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR)));
     }
 

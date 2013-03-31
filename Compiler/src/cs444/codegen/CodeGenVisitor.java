@@ -140,8 +140,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment(INIT_OBJECT_FUNC + ": call super default constructor and initialize obj fields." +
                 " eax should contain address of object."));
         instructions.add(new Label(INIT_OBJECT_FUNC));
-        instructions.add(new Push(Register.FRAME));
-        instructions.add(new Mov(Register.FRAME, Register.STACK));
 
         APkgClassResolver superResolver = null;
 
@@ -180,7 +178,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             }
         }
 
-        instructions.add(Leave.LEAVE);
         instructions.add(Ret.RET);
     }
 

@@ -12,9 +12,7 @@ import cs444.codegen.instructions.Extern;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Label;
-import cs444.codegen.instructions.Leave;
 import cs444.codegen.instructions.Mov;
-import cs444.codegen.instructions.Push;
 import cs444.codegen.instructions.Ret;
 import cs444.codegen.instructions.Section;
 import cs444.codegen.instructions.Section.SectionType;
@@ -51,8 +49,6 @@ public class StaticFieldInit {
         instructions.add(new Global(STATIC_FIELD_INIT_LBL));
         Runtime.externAll(instructions);
         instructions.add(new Label(STATIC_FIELD_INIT_LBL));
-        instructions.add(new Push(Register.FRAME));
-        instructions.add(new Mov(Register.FRAME, Register.STACK));
 
         for (APkgClassResolver aPkgClassResolver : resolvers) {
             if (!(aPkgClassResolver instanceof PkgClassResolver)) continue;
@@ -75,7 +71,6 @@ public class StaticFieldInit {
             }
         }
 
-        instructions.add(Leave.LEAVE);
         instructions.add(Ret.RET);
     }
 }
