@@ -141,29 +141,32 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Push(Register.FRAME));
         instructions.add(new Mov(Register.FRAME, Register.STACK));
 
-        // save pointer to object
-        instructions.add(new Push(Register.ACCUMULATOR));
-
         // TODO: call super constructor
+
+        instructions.add(new Comment("Store pointer to object in edx"));
+        instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR));
 
         for (DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
             Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
-            PointerRegister toAddr = new PointerRegister(Register.ACCUMULATOR, fieldDcl.getOffset());
 
+            PointerRegister fieldAddr = new PointerRegister(Register.DATA, fieldDcl.getOffset());
             if(fieldDcl.children.isEmpty()){
                 instructions.add(new Comment("Set field " + fieldDcl.dclName + " of type " 
                         + fieldDcl.type.value + " to NULL"));
-                instructions.add(new Comment("Pop the object address to aex"));
-                instructions.add(new Pop(Register.ACCUMULATOR));
-                instructions.add(new Mov(toAddr, Immediate.NULL, size));
+                instructions.add(new Mov(fieldAddr, Immediate.NULL, size));
             }else{
                 instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
+                // save pointer to object
+                instructions.add(new Push(Register.DATA));
                 fieldDcl.children.get(0).accept(new CodeGenVisitor(sit, instructions));
-                instructions.add(new Comment("Pop the object address to aex"));
-                instructions.add(new Pop(Register.ACCUMULATOR));
-                instructions.add(new Mov(toAddr, Register.ACCUMULATOR, size));
+                instructions.add(new Comment("Pop the object address to edx"));
+                instructions.add(new Pop(Register.DATA));
+                instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, size));
             }
         }
+
+        instructions.add(Leave.LEAVE);
+        instructions.add(Ret.RET);
     }
 
     public void genLayoutForStaticFields(
