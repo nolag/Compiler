@@ -120,7 +120,7 @@ public class A5 {
 "J1_A_ArrayBaseInAssignment",
 "J1_A_ArrayStoreLoad",
 "J1_A_BooleanArray_External",
-"J1_A_CloneOnInterface",
+//"J1_A_CloneOnInterface",
 "J1_A_ConcatInSimpleInvoke",
 "J1_A_ConcatInStaticInvoke",
 "J1_A_String_ByteShortCharInt",

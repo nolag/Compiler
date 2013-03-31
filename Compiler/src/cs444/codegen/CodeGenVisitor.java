@@ -243,9 +243,18 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Call(arg));
         }else{
             //TODO replace with SIT lookup, Register.COUNTER already has this pointer.
-            InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(invoke.getCallSymbol()));
-            if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
-            instructions.add(new Call(arg));
+            instructions.add(new Comment("get SIT column"));
+            instructions.add(new Mov(Register.COUNTER, new PointerRegister(Register.COUNTER)));
+
+            PointerRegister methodAddr = null;
+            try {
+                methodAddr = new PointerRegister(Register.COUNTER, sit.getOffset(PkgClassResolver.generateUniqueName(call, call.dclName)));
+            } catch (UndeclaredException e) {
+                // shouldn't get here
+                e.printStackTrace();
+            }
+            instructions.add(new Mov(Register.COUNTER,  methodAddr));
+            instructions.add(new Call(Register.COUNTER));
         }
 
         if(invoke.getStackSize() != 0){
