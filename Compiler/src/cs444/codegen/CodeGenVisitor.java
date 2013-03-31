@@ -51,6 +51,7 @@ import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
+import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 import cs444.parser.symbols.ast.ByteLiteralSymbol;
@@ -171,7 +172,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
             PointerRegister fieldAddr = new PointerRegister(Register.DATA, fieldDcl.getOffset());
             if(fieldDcl.children.isEmpty()){
-                instructions.add(new Comment("Set field " + fieldDcl.dclName + " of type " 
+                instructions.add(new Comment("Set field " + fieldDcl.dclName + " of type "
                         + fieldDcl.type.value + " to NULL"));
                 instructions.add(new Mov(fieldAddr, Immediate.NULL, size));
             }else{
@@ -236,9 +237,16 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         if(!call.isStatic()) instructions.add(new Push(Register.COUNTER));
 
-        InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(invoke.getCallSymbol()));
-        if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
-        instructions.add(new Call(arg));
+        if(call.isStatic() || call.getImplementationLevel() == ImplementationLevel.FINAL){
+            InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(invoke.getCallSymbol()));
+            if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
+            instructions.add(new Call(arg));
+        }else{
+            //TODO replace with SIT lookup, Register.COUNTER already has this pointer.
+            InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(invoke.getCallSymbol()));
+            if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
+            instructions.add(new Call(arg));
+        }
 
         if(invoke.getStackSize() != 0){
             long size = (invoke.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE);
