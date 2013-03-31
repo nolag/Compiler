@@ -99,7 +99,6 @@ public class A5 {
                 "J2_A_FieldInitialization_Static_Before",
                 "J2_A_FieldInitialization_Static_NonConstant_Before",
                 "J2_fieldinit_forward_ref",
-                "J2_forwardRef",
                 "J1_A_String_ByteShortCharInt",
                 "J1_charadd",
                 "J1_random_arithmetic_var"));
@@ -151,8 +150,7 @@ public class A5 {
 "J1_stringconcat",
 "J1_typecheck_array",
 "J1_typecheck_expstm",
-"J1_WildConcat",
-"J2_forwardRef"
+"J1_WildConcat"
 ));
 
         Map<String, String> env = System.getenv();

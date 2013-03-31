@@ -129,11 +129,19 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     public CodeGenVisitor(SelectorIndexedTable sit, List<Instruction> startInstructions) {
+        this(null, sit, startInstructions);
+    }
+
+    public CodeGenVisitor(APkgClassResolver resolver,
+            SelectorIndexedTable sit, List<Instruction> startInstructions) {
+        this.currentFile = resolver;
         this.instructions = startInstructions;
         this.sit = sit;
     }
 
     public void genHeader(APkgClassResolver resolver) {
+        this.currentFile = resolver;
+
         Runtime.externAll(instructions);
         instructions.add(new Section(SectionType.TEXT));
 
@@ -152,7 +160,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         instructions.add(new Push(Register.ACCUMULATOR));
         if (!resolver.fullName.equals(APkgClassResolver.OBJECT)){
-            currentFile = resolver;
             invokeConstructor(superResolver, Collections.<ISymbol>emptyList());
         }
 
@@ -171,7 +178,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
                 instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
                 // save pointer to object
                 instructions.add(new Push(Register.DATA));
-                fieldDcl.children.get(0).accept(new CodeGenVisitor(sit, instructions));
+                fieldDcl.children.get(0).accept(new CodeGenVisitor(currentFile, sit, instructions));
                 instructions.add(new Comment("Pop the object address to edx"));
                 instructions.add(new Pop(Register.DATA));
                 instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, size));
@@ -258,7 +265,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(MethodSymbol method){
-        currentFile = method.dclInResolver;
         String methodName = APkgClassResolver.generateFullId(method);
 
         try{
