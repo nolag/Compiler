@@ -12,6 +12,6 @@ public class Object{
         aclass.fInt = aclass.fShort = (short)aclass.fChar;
         obj.fInt2 = 3;
 
-        return aclass.fInt2 * aclass.fInt * obj.fInt2; // 3 * 2 * 4
+        return aclass.fInt2 * aclass.fInt * obj.fInt2; // 4 * 2 * 3
     }
 }
