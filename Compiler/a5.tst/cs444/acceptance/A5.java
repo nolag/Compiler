@@ -155,8 +155,6 @@ public class A5 {
                 "J1_stringconcat",
                 "J1_typecheck_array",
                 "J1_typecheck_expstm",
-                "J1_while1",
-                "J1_while2",
                 "J1_WildConcat",
                 "J2_forwardRef"
                 ));
