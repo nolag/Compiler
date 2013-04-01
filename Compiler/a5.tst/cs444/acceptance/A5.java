@@ -131,7 +131,6 @@ public class A5 {
 "J1_intstringadd",
 "J1_NamedTypeArray",
 "J1_nestedcast",
-"J1_random_arithmetic_var",
 "J1_sideeffect7",
 "J1_sideeffects_array",
 "J1_sideeffects_array2",

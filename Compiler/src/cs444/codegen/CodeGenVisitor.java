@@ -850,6 +850,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     private void compHelper(BinOpExpr bin, UniOpMaker uni){
         binOpHelper(bin, CmpMaker.maker);
+        // clear all bits in register
+        instructions.add(new Mov(Register.ACCUMULATOR, Immediate.ZERO));
         instructions.add(uni.make(Register.ACCUMULATOR));
     }
 
