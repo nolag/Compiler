@@ -363,10 +363,13 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         List<ISymbol> children = creationExpression.children;
 
+        instructions.add(new Comment("Backs up reference to object before invoking constructor"));
+        instructions.add(new Push(Register.ACCUMULATOR));
         invokeConstructor(resolver, children);
 
         //return value is the new object
-        instructions.add(new Mov(Register.ACCUMULATOR, Register.COUNTER));
+        instructions.add(new Comment("Restore reference of object"));
+        instructions.add(new Pop(Register.ACCUMULATOR));
         instructions.add(new Comment("Done creating object"));
     }
 
