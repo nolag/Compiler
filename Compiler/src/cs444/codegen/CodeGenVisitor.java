@@ -818,8 +818,13 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(ArrayAccessExprSymbol arrayAccess) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new Comment("Accessing array"));
+        instructions.add(new Push(Register.BASE));
+        arrayAccess.children.get(0).accept(this);
+        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
+        arrayAccess.children.get(1).accept(this);
+        instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, Register.BASE)));
+        instructions.add(new Pop(Register.BASE));
     }
 
     @Override

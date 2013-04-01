@@ -534,6 +534,7 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void visit(AssignmentExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, UnsupportedException {
         Typeable leftHS = currentTypes.peek().removeLast();
+
         TypeSymbol rightHSType = currentTypes.peek().removeLast().getType();
 
         assertIsAssignable(rightHSType, leftHS.getType(), false, false);
