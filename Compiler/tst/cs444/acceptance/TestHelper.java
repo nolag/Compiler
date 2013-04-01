@@ -31,7 +31,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-      //if (!fileName.equals("J1_random_arithmetic_var")) continue;
+			// if (!fileName.equals("J2_interface_omitted_abstract")) continue;
 
 			if (ignoreList.contains(fileName)){
 			    System.out.print("*"); // skip file

@@ -455,19 +455,27 @@ public class PkgClassResolver extends APkgClassResolver {
 
     @Override
     public void addToSelectorIndexedTable(SelectorIndexedTable sit) {
-        if(this.isAbstract() || start == null) return;
+        if(start == null) return;
 
-        sit.addClass(this.generateSIT());
+        String classSITLbl = this.generateSIT();
+
+        if(!this.isAbstract()){
+            sit.addClass(classSITLbl);
+        }
 
         for (AMethodSymbol method : start.getMethods()) {
             if(method.isStatic()) continue;
+
+            String selector = null;
             try {
-                sit.addIndex(this.generateSIT(), generateUniqueName(method, method.dclName),
-                        generateFullId(method));
+                selector = generateUniqueName(method, method.dclName);
             } catch (UndeclaredException e) {
                 // should not get here
                 e.printStackTrace();
             }
+            sit.addSelector(selector);
+
+            if (!this.isAbstract()) sit.addIndex(classSITLbl, selector, generateFullId(method));
         }
     }
 

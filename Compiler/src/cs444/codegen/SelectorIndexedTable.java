@@ -31,6 +31,18 @@ public class SelectorIndexedTable {
         Map<String, String> column = this.addClass(className);
 
         column.put(selector, methodImplLabel);
+    }
+
+    public Map<String, String> addClass(String fullName) {
+        Map<String, String> column = sit.get(fullName);
+        if (column == null){
+            column = new HashMap<String, String>();
+            sit.put(fullName, column);
+        }
+        return column;
+    }
+
+    public void addSelector(String selector) {
         if (!offset.containsKey(selector)){
             offset.put(selector, offsetCounter);
             offsetCounter += 4;
@@ -93,14 +105,4 @@ public class SelectorIndexedTable {
 
         return sit;
     }
-
-    public Map<String, String> addClass(String fullName) {
-        Map<String, String> column = sit.get(fullName);
-        if (column == null){
-            column = new HashMap<String, String>();
-            sit.put(fullName, column);
-        }
-        return column;
-    }
-
 }
