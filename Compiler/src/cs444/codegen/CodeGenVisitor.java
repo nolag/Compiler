@@ -172,11 +172,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
 
             PointerRegister fieldAddr = new PointerRegister(Register.DATA, fieldDcl.getOffset());
-            if(fieldDcl.children.isEmpty()){
-                instructions.add(new Comment("Set field " + fieldDcl.dclName + " of type "
-                        + fieldDcl.type.value + " to NULL"));
-                instructions.add(new Mov(fieldAddr, Immediate.NULL, size));
-            }else{
+            if(!fieldDcl.children.isEmpty()){
                 instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
                 // save pointer to object
                 instructions.add(new Push(Register.DATA));
@@ -350,22 +346,25 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         if (!creationExpression.getType().isArray){
             InstructionArg bytes = new Immediate(String.valueOf(typeDclNode.getObjectSize()));
-            instructions.add(new Comment("Allocate " + bytes + " bytes for " + typeDclNode.fullName));
+            instructions.add(new Comment("Allocate " + bytes.getValue() + " bytes for " + typeDclNode.fullName));
+            instructions.add(new Mov(Register.ACCUMULATOR, bytes));
             Runtime.malloc(bytes, instructions);
         }else{
             instructions.add(new Comment("Getting size for array constuction"));
             creationExpression.children.get(0).accept(this);
             instructions.add(new Comment("Use base to save the size"));
             instructions.add(new Push(Register.BASE));
-            instructions.add(new Mov(Register.ACCUMULATOR, Register.BASE));
+            instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
             //TODO add check that the size is > 0
-            instructions.add(new Shl(Register.ACCUMULATOR, Immediate.STACK_SIZE));
+            instructions.add(new Shl(Register.ACCUMULATOR, Immediate.STACK_SIZE_POWER));
 
             instructions.add(new Comment("Adding space for SIT, cast info, and length" + typeDclNode.fullName));
-            long size = SizeHelper.DEFAULT_STACK_SIZE  * 2 + SizeHelper.getIntSize(Size.DWORD);
-            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(size))));
+            final long size = SizeHelper.DEFAULT_STACK_SIZE  * 2 + SizeHelper.getIntSize(Size.DWORD);
+            final Immediate sizeI = new Immediate(String.valueOf(size));
+            instructions.add(new Add(Register.ACCUMULATOR, sizeI));
             instructions.add(new Comment("Allocate for array" + typeDclNode.fullName));
             Runtime.malloc(Register.ACCUMULATOR, instructions);
+            instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, sizeI), Register.BASE));
             instructions.add(new Pop(Register.BASE));
         }
 
@@ -413,11 +412,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Call(arg));
 
         if(cs.getStackSize() != 0){
-            long size = (cs.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE);
+            long size = (cs.getStackSize());
             Immediate by = new Immediate(String.valueOf(size));
             instructions.add(new Add(Register.STACK, by));
         }
 
+        instructions.add(new Pop(Register.COUNTER));
         //return value is the new object
         instructions.add(new Mov(Register.ACCUMULATOR, Register.COUNTER));
     }

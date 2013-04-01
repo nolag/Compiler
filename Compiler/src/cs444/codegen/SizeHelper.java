@@ -10,6 +10,7 @@ public class SizeHelper {
     // all sizes in bytes
     public static final int DEFAULT_STACK_SIZE = 4;
     public static final int MIN_STACK_SHIFT = 2;
+    public static final int DEFAULT_STACK_POWER = 2;
     public static final Map<String, Integer> stackSizes = new HashMap<String, Integer>();
 
     static{

@@ -76,7 +76,8 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
             throws IllegalModifierException, UnsupportedException, UndeclaredException {
 
         List<DclSymbol> dcls = new LinkedList<DclSymbol>();
-        DclSymbol dcl = new DclSymbol("i", null, TypeSymbol.getPrimative(indType), true);
+        TypeSymbol t = TypeSymbol.getPrimative(indType);
+        DclSymbol dcl = new DclSymbol("i", null, t, true);
         dcl.dclInResolver = this;
         dcls = new LinkedList<DclSymbol>();
         dcls.add(dcl);
@@ -87,6 +88,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         cs.forcePublic();
         cs.resolver = this;
         cs.dclInResolver = this;
+        cs.setStackSize(SizeHelper.DEFAULT_STACK_SIZE);
         String uniqueName = generateUniqueName(cs, JoosNonTerminal.THIS);
         constructors.put(uniqueName, cs);
     }

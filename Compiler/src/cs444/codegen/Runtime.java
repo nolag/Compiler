@@ -12,6 +12,7 @@ import cs444.codegen.instructions.Loop;
 import cs444.codegen.instructions.Mov;
 import cs444.codegen.instructions.Pop;
 import cs444.codegen.instructions.Push;
+import cs444.codegen.instructions.Sar;
 import cs444.codegen.instructions.Xor;
 
 public class Runtime {
@@ -27,8 +28,8 @@ public class Runtime {
     public static void malloc(InstructionArg bytes, List<Instruction> instructions) {
         // backup regs used by malloc
         instructions.add(new Push(Register.BASE));
-        if(bytes != Register.ACCUMULATOR)instructions.add(new Mov(Register.ACCUMULATOR, bytes));
         if(bytes != Register.COUNTER)instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
+        instructions.add(new Sar(Register.COUNTER, Immediate.STACK_SIZE_POWER));
         instructions.add(new Call(MALLOC));
         instructions.add(new Pop(Register.BASE));
 
@@ -39,9 +40,9 @@ public class Runtime {
 
         instructions.add(new Xor(Register.DATA, Register.DATA));
         instructions.add(new Comment("Zeroing out the newly allocated values"));
-        instructions.add(new Loop(myLbl));
-        instructions.add(new Mov(PointerRegister.ZEROING_REGISTER, Register.DATA));
         instructions.add(new Label(myLbl));
+        instructions.add(new Mov(PointerRegister.ZEROING_REGISTER, Register.DATA));
+        instructions.add(new Loop(myLbl));
         instructions.add(new Comment("Done zeroing out the newly allocated values"));
     }
 
