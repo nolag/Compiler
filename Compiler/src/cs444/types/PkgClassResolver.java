@@ -513,7 +513,7 @@ public class PkgClassResolver extends APkgClassResolver {
         for(DclSymbol dcl : start.getFields()){
             if(dcl.isStatic() || dcl.dclInResolver != this) continue;
 
-            fieldsDcls.add((DclSymbol)dcl);
+            fieldsDcls.add(dcl);
         }
 
         return fieldsDcls;

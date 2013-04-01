@@ -30,6 +30,7 @@ import cs444.codegen.instructions.Ret;
 import cs444.codegen.instructions.Sar;
 import cs444.codegen.instructions.Section;
 import cs444.codegen.instructions.Section.SectionType;
+import cs444.codegen.instructions.Shl;
 import cs444.codegen.instructions.Xor;
 import cs444.codegen.instructions.factories.AddOpMaker;
 import cs444.codegen.instructions.factories.AndOpMaker;
@@ -114,13 +115,13 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     private Size lastSize = Size.DWORD;
 
-    private int nextLblnum = 0;
+    private long nextLblnum = 0;
 
     private APkgClassResolver currentFile;
 
     private boolean isFieldLookup = false;
 
-    private int getNewLblNum(){
+    private long getNewLblNum(){
         return nextLblnum++;
     }
 
@@ -189,8 +190,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(Ret.RET);
     }
 
-    public void genLayoutForStaticFields(
-            Iterable<DclSymbol> staticFields) {
+    public void genLayoutForStaticFields(Iterable<DclSymbol> staticFields) {
         if (staticFields.iterator().hasNext()){
             instructions.add(new Comment("Static fields:"));
             instructions.add(new Section(SectionType.BSS));
@@ -349,17 +349,27 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         APkgClassResolver typeDclNode = creationExpression.getType().getTypeDclNode();
 
         if (!creationExpression.getType().isArray){
-            long bytes = typeDclNode.getObjectSize();
-
+            InstructionArg bytes = new Immediate(String.valueOf(typeDclNode.getObjectSize()));
             instructions.add(new Comment("Allocate " + bytes + " bytes for " + typeDclNode.fullName));
             Runtime.malloc(bytes, instructions);
-            ObjectLayout.initialize(typeDclNode, instructions);
         }else{
-            // TODO: do array creation here and change instruction comment
-            instructions.add(new Comment("Allocate for " + typeDclNode.fullName + " no done yet"));
-            // TODO: do not return when array creation is done
-            return;
+            instructions.add(new Comment("Getting size for array constuction"));
+            creationExpression.children.get(0).accept(this);
+            instructions.add(new Comment("Use base to save the size"));
+            instructions.add(new Push(Register.BASE));
+            instructions.add(new Mov(Register.ACCUMULATOR, Register.BASE));
+            //TODO add check that the size is > 0
+            instructions.add(new Shl(Register.ACCUMULATOR, Immediate.STACK_SIZE));
+
+            instructions.add(new Comment("Adding space for SIT, cast info, and length" + typeDclNode.fullName));
+            long size = SizeHelper.DEFAULT_STACK_SIZE  * 2 + SizeHelper.getIntSize(Size.DWORD);
+            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(size))));
+            instructions.add(new Comment("Allocate for array" + typeDclNode.fullName));
+            Runtime.malloc(Register.ACCUMULATOR, instructions);
+            instructions.add(new Pop(Register.BASE));
         }
+
+        ObjectLayout.initialize(typeDclNode, instructions);
 
         final APkgClassResolver resolver = creationExpression.getType().getTypeDclNode();
 
@@ -369,14 +379,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Push(Register.ACCUMULATOR));
         invokeConstructor(resolver, children);
 
-        //return value is the new object
         instructions.add(new Comment("Restore reference of object"));
         instructions.add(new Pop(Register.ACCUMULATOR));
         instructions.add(new Comment("Done creating object"));
     }
 
-    private void invokeConstructor(final APkgClassResolver resolver,
-            List<ISymbol> children) {
+    private void invokeConstructor(final APkgClassResolver resolver, List<ISymbol> children) {
         List<String> types = new LinkedList<String>();
 
         //put object in c
@@ -409,6 +417,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             Immediate by = new Immediate(String.valueOf(size));
             instructions.add(new Add(Register.STACK, by));
         }
+
+        //return value is the new object
+        instructions.add(new Mov(Register.ACCUMULATOR, Register.COUNTER));
     }
 
     @Override
@@ -431,7 +442,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(WhileExprSymbol whileExprSymbol) {
-        int mynum = getNewLblNum();
+        long mynum = getNewLblNum();
         instructions.add(new Comment("while start " + mynum));
         String loopStart = "loopStart" + mynum;
         String loopEnd = "loopEnd" + mynum;
@@ -450,7 +461,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(ForExprSymbol forExprSymbol) {
-        int mynum = getNewLblNum();
+        long mynum = getNewLblNum();
         instructions.add(new Comment("for start " + mynum));
         String loopStart = "loopStart" + mynum;
         String loopEnd = "loopEnd" + mynum;
@@ -486,7 +497,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(IfExprSymbol ifExprSymbol) {
-        int myid = getNewLblNum();
+        long myid = getNewLblNum();
         instructions.add(new Comment("if start" + myid));
         String falseLbl = "false" + myid;
         String trueLbl = "true" + myid;
@@ -499,7 +510,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Jmp(new Immediate(trueLbl)));
         instructions.add(new Label(falseLbl));
 
-        ISymbol elseSymbol = ifExprSymbol.getElseBody();
+        final ISymbol elseSymbol = ifExprSymbol.getElseBody();
 
         if(elseSymbol != null) elseSymbol.accept(this);
 

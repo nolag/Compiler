@@ -31,7 +31,7 @@ public abstract class APkgClassResolver {
     protected boolean isBuilt = false;
     protected final boolean isFinal;
 
-    protected static final String DEFAULT_PKG = "?default?";
+    public static final String DEFAULT_PKG = "?default?";
     protected static final String LANG = "java.lang";
     public static final String OBJECT = LANG + ".Object";
 

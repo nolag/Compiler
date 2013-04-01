@@ -1,5 +1,6 @@
 package cs444.types;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -7,6 +8,7 @@ import java.util.Set;
 import cs444.CompilerException;
 import cs444.codegen.ICodeGenVisitor;
 import cs444.codegen.SelectorIndexedTable;
+import cs444.codegen.SizeHelper;
 import cs444.lexer.Token;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -23,11 +25,12 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.exceptions.UndeclaredException;
 
 public class ArrayPkgClassResolver extends APkgClassResolver {
+    private final APkgClassResolver obj;
     private final APkgClassResolver resolver;
     private DclSymbol length;
 
     public static String getArrayName(String name){
-        return name + "?array?";
+        return name + "__array";
     }
 
     private void addLenght(){
@@ -66,11 +69,12 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         addLenght();
 
         for(String s : JoosNonTerminal.arraysExtend) assignableTo.add(s);
+        obj = PkgClassInfo.instance.getSymbol(OBJECT);
     }
 
-    private void addArrayConstructorFor(String indType, TypeSymbol ts,
-            NameSymbol name) throws IllegalModifierException,
-            UnsupportedException, UndeclaredException {
+    private void addArrayConstructorFor(String indType, TypeSymbol ts, NameSymbol name)
+            throws IllegalModifierException, UnsupportedException, UndeclaredException {
+
         List<DclSymbol> dcls = new LinkedList<DclSymbol>();
         DclSymbol dcl = new DclSymbol("i", null, TypeSymbol.getPrimative(indType), true);
         dcl.dclInResolver = this;
@@ -94,7 +98,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
 
     @Override
     public APkgClassResolver getSuper() throws UndeclaredException {
-        throw new UndeclaredException("super", "Arrays");
+        return obj;
     }
 
     @Override
@@ -165,36 +169,40 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
 
     @Override
     public boolean shouldGenCode() {
-        return false;
+        return true;
     }
 
     @Override
     public void addToSelectorIndexedTable(SelectorIndexedTable sit) {
-        // TODO Auto-generated method stub
+        sit.addClass(generateSIT());
+        for(AMethodSymbol method : methodMap.values()){
+            try {
+                sit.addIndex(this.generateSIT(), generateUniqueName(method, method.dclName),
+                        generateFullId(method));
+            } catch (UndeclaredException e) {
+                // should not get here
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
     public void computeFieldOffsets() {
-        // TODO Auto-generated method stub
-
+        fieldMap.get(JoosNonTerminal.LENGTH).setOffset(2 * SizeHelper.DEFAULT_STACK_SIZE);
     }
 
     @Override
     public long getObjectSize() {
-        // TODO Auto-generated method stub
-        return 0;
-
+        return SizeHelper.DEFAULT_STACK_SIZE;
     }
 
     @Override
     public Iterable<DclSymbol> getUninheritedStaticFields() {
-        // TODO Auto-generated method stub
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
     public Iterable<DclSymbol> getUninheritedNonStaticFields() {
-        // TODO Auto-generated method stub
-        return null;
+        return fieldMap.values();
     }
 }

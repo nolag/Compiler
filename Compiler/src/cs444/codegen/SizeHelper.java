@@ -39,4 +39,12 @@ public class SizeHelper {
         if(size == Size.HIGH || size == Size.LOW) return Size.WORD;
         return size;
     }
+
+    public static int getIntSize(Size size){
+        switch(size){
+        case DWORD: return 4;
+        case WORD: return 2;
+        default: return 1;
+        }
+    }
 }

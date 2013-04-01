@@ -59,7 +59,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
 
         for(AMethodSymbol method : this.getMethods()){
             if ((method instanceof MethodSymbol) && ((MethodSymbol) method).parent == this){
-                methodSymbols.add((AMethodSymbol)method);
+                methodSymbols.add(method);
             }
         }
 
@@ -100,9 +100,10 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         long nextOffset = 2 * SizeHelper.DEFAULT_STACK_SIZE;
         for (DclSymbol fieldDcl : this.getFields()) {
             if (fieldDcl.isStatic()) continue;
-            if (fieldDcl.getOffset() != 0) {
-                nextOffset = fieldDcl.getOffset() + 
-                        SizeHelper.getByteSizeOfType(fieldDcl.type.value);
+
+            if(fieldDcl.getOffset() != 0 && nextOffset != fieldDcl.getOffset()){
+                //Should never get here this is an error!
+                System.err.println("DOES NOT ADD UP FOR INHERITING " + fieldDcl.dclName + " in " + dclName);
             }
 
             // no a field from super:

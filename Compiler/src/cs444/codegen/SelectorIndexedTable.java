@@ -25,8 +25,7 @@ public class SelectorIndexedTable {
     private final Map<String, Integer> offset = new LinkedHashMap<String, Integer>();
     private int offsetCounter = 0;
 
-    public void addIndex(String className, String selector,
-            String methodImplLabel) {
+    public void addIndex(String className, String selector, String methodImplLabel) {
 
         Map<String, String> column = this.addClass(className);
 
@@ -86,9 +85,9 @@ public class SelectorIndexedTable {
         for(Instruction instruction : instructions) printer.println(instruction.generate());
     }
 
-    public static SelectorIndexedTable generateSIT(List<APkgClassResolver> resolvers,
-            boolean outputFile, String directory)
+    public static SelectorIndexedTable generateSIT(List<APkgClassResolver> resolvers, boolean outputFile, String directory)
                     throws IOException, FileNotFoundException {
+
         SelectorIndexedTable sit = new SelectorIndexedTable();
 
         for(APkgClassResolver resolver : resolvers){

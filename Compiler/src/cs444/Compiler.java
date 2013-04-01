@@ -69,6 +69,7 @@ public class Compiler {
             typeCheck(resolvers);
             checkFields(resolvers);
 
+            resolvers = new LinkedList<APkgClassResolver>(PkgClassInfo.instance.getSymbols());
             generateCode(resolvers, outputFiles);
 
         }catch(Exception e){
@@ -132,7 +133,9 @@ public class Compiler {
             codeGen.genHeader(resolver);
             resolver.generateCode(codeGen);
             if (outputFile){
-                File file = new File(directory + resolver.name + ".s");
+                File file;
+                if(resolver.pkg == APkgClassResolver.DEFAULT_PKG) file = new File(directory + resolver.name + ".s");
+                else file = new File(directory + resolver.fullName + ".s");
                 file.createNewFile();
                 printer = new PrintStream(file);
             }else{
