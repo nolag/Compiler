@@ -257,8 +257,10 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Call(Register.COUNTER));
         }
 
-        if(invoke.getStackSize() != 0){
-            long size = (invoke.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE);
+        // NOTE: do not use INVOKE in here, invoke gets size from method, 
+        // but visitor may visit InvokeSymbol before MethodSymbol
+        if(call.getStackSize() != 0){
+            long size = (call.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE);
             Immediate by = new Immediate(String.valueOf(size));
             instructions.add(new Add(Register.STACK, by));
         }
@@ -835,10 +837,14 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     private void binOpHelper(BinOpExpr bin, BinOpMaker maker){
         instructions.add(new Push(Register.BASE));
-        bin.children.get(1).accept(this);
-        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
+
         bin.children.get(0).accept(this);
-        instructions.add(maker.make(Register.ACCUMULATOR, Register.BASE));
+        instructions.add(new Push(Register.ACCUMULATOR));
+        bin.children.get(1).accept(this);
+        instructions.add(new Pop(Register.BASE));
+        instructions.add(maker.make(Register.BASE, Register.ACCUMULATOR));
+        instructions.add(new Mov(Register.ACCUMULATOR, Register.BASE));
+
         instructions.add(new Pop(Register.BASE));
     }
 
@@ -849,10 +855,16 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     private void binUniOpHelper(BinOpExpr bin, BinUniOpMaker maker, boolean sar){
         instructions.add(new Push(Register.BASE));
-        bin.children.get(1).accept(this);
-        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
-        bin.children.get(0).accept(this);
 
+        bin.children.get(0).accept(this);
+        instructions.add(new Push(Register.ACCUMULATOR));
+        bin.children.get(1).accept(this);
+
+        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
+        // pop first operand
+        instructions.add(new Pop(Register.ACCUMULATOR));
+
+        // first operand -> eax, second operand -> ebx
         if(sar){
             instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR));
             instructions.add(new Sar(Register.DATA, Immediate.PREP_EDX));
