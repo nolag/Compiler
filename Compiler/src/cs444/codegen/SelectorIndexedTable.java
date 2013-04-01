@@ -31,8 +31,10 @@ public class SelectorIndexedTable {
         Map<String, String> column = this.addClass(className);
 
         column.put(selector, methodImplLabel);
-        offset.put(selector, offsetCounter);
-        offsetCounter += 4;
+        if (!offset.containsKey(selector)){
+            offset.put(selector, offsetCounter);
+            offsetCounter += 4;
+        }
     }
 
     public int getOffset(String selector){

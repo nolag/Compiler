@@ -243,9 +243,18 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Call(arg));
         }else{
             //TODO replace with SIT lookup, Register.COUNTER already has this pointer.
-            InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(invoke.getCallSymbol()));
-            if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
-            instructions.add(new Call(arg));
+            instructions.add(new Comment("get SIT column"));
+            instructions.add(new Mov(Register.COUNTER, new PointerRegister(Register.COUNTER)));
+
+            PointerRegister methodAddr = null;
+            try {
+                methodAddr = new PointerRegister(Register.COUNTER, sit.getOffset(PkgClassResolver.generateUniqueName(call, call.dclName)));
+            } catch (UndeclaredException e) {
+                // shouldn't get here
+                e.printStackTrace();
+            }
+            instructions.add(new Mov(Register.COUNTER,  methodAddr));
+            instructions.add(new Call(Register.COUNTER));
         }
 
         if(invoke.getStackSize() != 0){
@@ -354,10 +363,13 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         List<ISymbol> children = creationExpression.children;
 
+        instructions.add(new Comment("Backs up reference to object before invoking constructor"));
+        instructions.add(new Push(Register.ACCUMULATOR));
         invokeConstructor(resolver, children);
 
         //return value is the new object
-        instructions.add(new Mov(Register.ACCUMULATOR, Register.COUNTER));
+        instructions.add(new Comment("Restore reference of object"));
+        instructions.add(new Pop(Register.ACCUMULATOR));
         instructions.add(new Comment("Done creating object"));
     }
 
