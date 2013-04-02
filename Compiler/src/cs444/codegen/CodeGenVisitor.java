@@ -819,10 +819,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment("Accessing array"));
         instructions.add(new Push(Register.BASE));
         arrayAccess.children.get(0).accept(this);
+        final Size s = lastSize;
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
         arrayAccess.children.get(1).accept(this);
         instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(SizeHelper.getPushSize(lastSize))));
-        instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(SizeHelper.DEFAULT_STACK_POWER * 2))));
+        instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(SizeHelper.DEFAULT_STACK_SIZE * 2))));
         if(gettingValue){
             getVal = gettingValue;
             instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, Register.BASE)));
@@ -830,6 +831,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Add(Register.ACCUMULATOR, new PointerRegister(Register.BASE)));
         }
         instructions.add(new Pop(Register.BASE));
+        lastSize = s;
     }
 
     @Override
