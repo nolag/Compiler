@@ -14,6 +14,7 @@ import java.util.List;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.SelectorIndexedTable;
 import cs444.codegen.StaticFieldInit;
+import cs444.codegen.SubtypeIndexedTable;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
@@ -120,6 +121,7 @@ public class Compiler {
         PrintStream printer;
 
         SelectorIndexedTable sit = SelectorIndexedTable.generateSIT(resolvers, outputFile, directory);
+        SubtypeIndexedTable subIt = SubtypeIndexedTable.generateTable(resolvers, outputFile, directory);
 
         for (APkgClassResolver resolver : resolvers) {
             resolver.computeFieldOffsets();
