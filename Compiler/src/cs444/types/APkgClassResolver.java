@@ -232,7 +232,9 @@ public abstract class APkgClassResolver {
         throw new UndeclaredException(name, fullName);
     }
 
-    public abstract APkgClassResolver getSuper() throws UndeclaredException;
+    public APkgClassResolver getSuper() {
+        return superClass;
+    }
 
     public String getSuperName()throws UndeclaredException{
         return getSuper().fullName;

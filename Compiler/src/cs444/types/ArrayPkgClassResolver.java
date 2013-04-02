@@ -9,6 +9,7 @@ import cs444.CompilerException;
 import cs444.codegen.ICodeGenVisitor;
 import cs444.codegen.SelectorIndexedTable;
 import cs444.codegen.SizeHelper;
+import cs444.codegen.SubtypeIndexedTable;
 import cs444.lexer.Token;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -25,7 +26,6 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.exceptions.UndeclaredException;
 
 public class ArrayPkgClassResolver extends APkgClassResolver {
-    private final APkgClassResolver obj;
     private final APkgClassResolver resolver;
     private DclSymbol length;
 
@@ -68,8 +68,11 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         }
         addLenght();
 
-        for(String s : JoosNonTerminal.arraysExtend) assignableTo.add(s);
-        obj = PkgClassInfo.instance.getSymbol(OBJECT);
+        for(String s : JoosNonTerminal.arraysExtend){
+            assignableTo.add(s);
+            implInterfs.add((PkgClassResolver) PkgClassInfo.instance.getSymbol(s));
+        }
+        superClass = PkgClassInfo.instance.getSymbol(OBJECT);
     }
 
     private void addArrayConstructorFor(String indType, TypeSymbol ts, NameSymbol name)
@@ -102,11 +105,6 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     @Override
     public APkgClassResolver getClass(String name, boolean die) throws UndeclaredException {
         return resolver.getClass(name, die);
-    }
-
-    @Override
-    public APkgClassResolver getSuper() throws UndeclaredException {
-        return obj;
     }
 
     @Override
@@ -192,6 +190,11 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void addToSubtypeIndexedTable(SubtypeIndexedTable subtit) {
+        // TODO Auto-generated method stub
     }
 
     @Override

@@ -690,7 +690,7 @@ public class LocalDclLinker extends EmptyVisitor {
 
     private void bothIntHelper(String returnType, BinOpExpr op) throws BadOperandsTypeException, UndeclaredException{
         TypeSymbol second = currentTypes.peek().removeLast().getType();
-        Typeable fuckingType = currentTypes.peek().getLast();
+        currentTypes.peek().getLast();
         TypeSymbol first = currentTypes.peek().removeLast().getType();
         isNumeric(first, true);
         isNumeric(second, true);

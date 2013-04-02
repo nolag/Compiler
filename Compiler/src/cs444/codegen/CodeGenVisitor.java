@@ -153,12 +153,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         APkgClassResolver superResolver = null;
 
-        try {
-            superResolver = resolver.getSuper();
-        } catch (UndeclaredException e) {
-            // shouldn't get here
-            e.printStackTrace();
-        }
+        superResolver = resolver.getSuper();
 
         if (!resolver.fullName.equals(APkgClassResolver.OBJECT)){
             invokeConstructor(superResolver, Collections.<ISymbol>emptyList());

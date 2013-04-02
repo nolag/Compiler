@@ -167,8 +167,8 @@ public class JoosNonTerminal extends NonTerminal{
         whiles.add("WHILESTATEMENTNOSHORTIF");
 
         nonPrimativeOperativeTypes.add(STRING);
-        arraysExtend.add("java.lang.Cloneable");
-        arraysExtend.add("java.io.Serializable");
+        arraysExtend.add(APkgClassResolver.CLONABLE);
+        arraysExtend.add(APkgClassResolver.SERIALIZABLE);
 
         unsigned.add(CHAR);
         unsigned.add(BOOLEAN);

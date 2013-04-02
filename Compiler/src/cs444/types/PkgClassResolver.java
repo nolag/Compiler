@@ -415,15 +415,6 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public APkgClassResolver getSuper() throws UndeclaredException {
-        if (start.superName == null){
-            return findClass(OBJECT);
-        }else{
-            return findClass(start.superName);
-        }
-    }
-
-    @Override
     public APkgClassResolver accessor() throws UndeclaredException{
         throw new UndeclaredException("Accessors", this.fullName);
     }
