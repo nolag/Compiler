@@ -254,9 +254,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         // NOTE: do not use INVOKE in here, invoke gets size from method,
         // but visitor may visit InvokeSymbol before MethodSymbol
-        if(call.getStackSize() != 0){
-            long size = (call.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE);
-            Immediate by = new Immediate(String.valueOf(size));
+        long mySize =  call.getStackSize();
+        if(mySize != 0){
+            Immediate by = new Immediate(String.valueOf(mySize));
             instructions.add(new Add(Register.STACK, by));
         }
 
@@ -716,6 +716,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(LtExprSymbol op) {
         compHelper(op, SetlMaker.maker);
+        instructions.add(new Comment("Zero out the rest of the bytes"));
+
     }
 
     @Override
@@ -825,10 +827,10 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(SizeHelper.getPushSize(lastSize))));
         instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(SizeHelper.DEFAULT_STACK_SIZE * 2))));
         if(gettingValue){
-            getVal = gettingValue;
+            getVal = true;
             instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, Register.BASE)));
         }else{
-            instructions.add(new Add(Register.ACCUMULATOR, new PointerRegister(Register.BASE)));
+            instructions.add(new Add(Register.ACCUMULATOR, Register.BASE));
         }
         instructions.add(new Pop(Register.BASE));
         lastSize = s;
