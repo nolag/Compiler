@@ -88,7 +88,13 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         cs.forcePublic();
         cs.resolver = this;
         cs.dclInResolver = this;
-        cs.setStackSize(SizeHelper.DEFAULT_STACK_SIZE);
+        //set the size
+        try{
+            cs.accept(new LocalDclLinker(fullName));
+        }catch(Exception e){
+            //never should get here
+            e.printStackTrace();
+        }
         String uniqueName = generateUniqueName(cs, JoosNonTerminal.THIS);
         constructors.put(uniqueName, cs);
     }

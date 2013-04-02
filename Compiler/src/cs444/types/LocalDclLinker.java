@@ -96,7 +96,7 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void middle(MethodOrConstructorSymbol methodOrConstructorSymbol) throws CompilerException {
         methodArgs = false;
-        methodOrConstructorSymbol.setStackSize(argOffset - SizeHelper.DEFAULT_STACK_SIZE);
+        methodOrConstructorSymbol.setStackSize(argOffset - SizeHelper.DEFAULT_STACK_SIZE * 2);
         for(DclSymbol param : methodOrConstructorSymbol.params){
             long stack = param.getType().getTypeDclNode().stackSize;
             argOffset -= stack;

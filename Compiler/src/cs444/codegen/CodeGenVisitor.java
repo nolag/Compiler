@@ -160,13 +160,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             e.printStackTrace();
         }
 
-        instructions.add(new Push(Register.ACCUMULATOR));
         if (!resolver.fullName.equals(APkgClassResolver.OBJECT)){
             invokeConstructor(superResolver, Collections.<ISymbol>emptyList());
         }
 
         instructions.add(new Comment("Store pointer to object in edx"));
-        instructions.add(new Pop(Register.DATA));
+        instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR));
 
         for (DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
             Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
@@ -253,7 +252,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Call(Register.COUNTER));
         }
 
-        // NOTE: do not use INVOKE in here, invoke gets size from method, 
+        // NOTE: do not use INVOKE in here, invoke gets size from method,
         // but visitor may visit InvokeSymbol before MethodSymbol
         if(call.getStackSize() != 0){
             long size = (call.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE);
@@ -352,9 +351,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }else{
             instructions.add(new Comment("Getting size for array constuction"));
             creationExpression.children.get(0).accept(this);
-            instructions.add(new Comment("Use base to save the size"));
-            instructions.add(new Push(Register.BASE));
-            instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
+            instructions.add(new Comment("Save the size of the array"));
+            instructions.add(new Push(Register.ACCUMULATOR));
             //TODO add check that the size is > 0
             instructions.add(new Shl(Register.ACCUMULATOR, Immediate.STACK_SIZE_POWER));
 
@@ -364,8 +362,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Add(Register.ACCUMULATOR, sizeI));
             instructions.add(new Comment("Allocate for array" + typeDclNode.fullName));
             Runtime.malloc(Register.ACCUMULATOR, instructions);
-            instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, sizeI), Register.BASE));
-            instructions.add(new Pop(Register.BASE));
+            instructions.add(new Comment("Pop the size"));
+            instructions.add(new Pop(Register.DATA));
+            instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, sizeI), Register.DATA));
         }
 
         ObjectLayout.initialize(typeDclNode, instructions);
@@ -374,12 +373,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         List<ISymbol> children = creationExpression.children;
 
-        instructions.add(new Comment("Backs up reference to object before invoking constructor"));
-        instructions.add(new Push(Register.ACCUMULATOR));
+        instructions.add(new Comment("invoke Constructor"));
         invokeConstructor(resolver, children);
 
-        instructions.add(new Comment("Restore reference of object"));
-        instructions.add(new Pop(Register.ACCUMULATOR));
         instructions.add(new Comment("Done creating object"));
     }
 
@@ -411,15 +407,14 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         if(cs.dclInResolver != currentFile) instructions.add(new Extern(arg));
         instructions.add(new Call(arg));
 
-        if(cs.getStackSize() != 0){
-            long size = (cs.getStackSize());
-            Immediate by = new Immediate(String.valueOf(size));
+        //return value is the new object
+        instructions.add(new Pop(Register.ACCUMULATOR));
+
+        long mySize = cs.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE;
+        if(mySize != 0){
+            Immediate by = new Immediate(String.valueOf(mySize));
             instructions.add(new Add(Register.STACK, by));
         }
-
-        instructions.add(new Pop(Register.COUNTER));
-        //return value is the new object
-        instructions.add(new Mov(Register.ACCUMULATOR, Register.COUNTER));
     }
 
     @Override
@@ -818,12 +813,22 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(ArrayAccessExprSymbol arrayAccess) {
+        boolean gettingValue = getVal;
+        //always want the value of the array when accessing it's member.
+        getVal = true;
         instructions.add(new Comment("Accessing array"));
         instructions.add(new Push(Register.BASE));
         arrayAccess.children.get(0).accept(this);
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
         arrayAccess.children.get(1).accept(this);
-        instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, Register.BASE)));
+        instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(SizeHelper.getPushSize(lastSize))));
+        instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(SizeHelper.DEFAULT_STACK_POWER * 2))));
+        if(gettingValue){
+            getVal = gettingValue;
+            instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, Register.BASE)));
+        }else{
+            instructions.add(new Add(Register.ACCUMULATOR, new PointerRegister(Register.BASE)));
+        }
         instructions.add(new Pop(Register.BASE));
     }
 
