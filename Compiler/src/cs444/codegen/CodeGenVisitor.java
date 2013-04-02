@@ -773,7 +773,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(InstanceOfExprSymbol op) {
         // TODO Auto-generated method stub
-
+//        instructions.add(new Mov(Register.ACCUMULATOR, Immediate.TRUE));
     }
 
     @Override
