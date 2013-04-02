@@ -552,7 +552,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         if(getVal){
             Size size = SizeHelper.getSize(lastDcl.getType().getTypeDclNode().realSize);
             instructions.add(new Comment("Move value of field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
-            instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, lastDclOffset), size));
+            instructions.add(moveDataFromMemoryToEax(lastDcl, size, new PointerRegister(Register.ACCUMULATOR, lastDclOffset)));
         }else{
             instructions.add(new Comment("Move reference to field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
             instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
@@ -621,6 +621,15 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         final InstructionArg from = new PointerRegister(Register.FRAME, offset);
         Instruction instruction;
 
+        instruction = moveDataFromMemoryToEax(dcl, size, from);
+
+        instructions.add(new Comment("getting value of " + nameSymbol.value));
+        instructions.add(instruction);
+    }
+
+    private Instruction moveDataFromMemoryToEax(final DclSymbol dcl, Size size,
+            final InstructionArg from) {
+        Instruction instruction;
         if(size == Size.DWORD){
             instruction = new Mov(Register.ACCUMULATOR, from);
         }else if(JoosNonTerminal.unsigned.contains(dcl.getType().getTypeDclNode().fullName)){
@@ -628,9 +637,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }else{
             instruction = new Movsx(Register.ACCUMULATOR, from, size);
         }
-
-        instructions.add(new Comment("getting value of " + nameSymbol.value));
-        instructions.add(instruction);
+        return instruction;
     }
 
     @Override
