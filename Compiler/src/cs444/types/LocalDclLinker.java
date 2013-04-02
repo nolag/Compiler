@@ -69,7 +69,7 @@ public class LocalDclLinker extends EmptyVisitor {
     private LocalScope currentScope;
     private final ContextInfo context;
     private final Stack<Deque<Typeable>> currentTypes = new Stack<Deque<Typeable>>();
-    private final Stack<Boolean> useCurrentForLookup = new Stack<Boolean>();
+    private final Stack<Boolean> useCurrentScopeForLookup = new Stack<Boolean>();
 
     private long offset = 0;
 
@@ -80,7 +80,7 @@ public class LocalDclLinker extends EmptyVisitor {
         this.context = new ContextInfo(enclosingClassName);
 
         currentTypes.add(new ArrayDeque<Typeable>());
-        useCurrentForLookup.add(false);
+        useCurrentScopeForLookup.add(false);
     }
 
     // creates root scope which will contain parameters declarations
@@ -173,8 +173,8 @@ public class LocalDclLinker extends EmptyVisitor {
 
         LookupLink lookup = new LookupLink(new LinkedList<Typeable>(currentSymbols));
         invoke.setLookup(lookup);
-        useCurrentForLookup.pop();
-        useCurrentForLookup.push(false);
+        useCurrentScopeForLookup.pop();
+        useCurrentScopeForLookup.push(false);
         currentTypes.push(new ArrayDeque<Typeable>());
     }
 
@@ -231,7 +231,7 @@ public class LocalDclLinker extends EmptyVisitor {
 
         DclSymbol dclNode = null;
 
-        if(!useCurrentForLookup.peek()) dclNode = currentScope.find(lookupNames[0]);
+        if(!useCurrentScopeForLookup.peek()) dclNode = currentScope.find(lookupNames[0]);
         LookupLink link;
 
         if(dclNode != null){
@@ -251,7 +251,7 @@ public class LocalDclLinker extends EmptyVisitor {
         }else{
             APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(context.enclosingClassName);
             boolean isStatic = currentScope.isStatic;
-            Typeable currentSymbol = useCurrentForLookup.peek() ? currentTypes.peek().getLast() : null;
+            Typeable currentSymbol = useCurrentScopeForLookup.peek() ? currentTypes.peek().getLast() : null;
             boolean allowClass = true;
 
             if(currentSymbol != null){
@@ -271,25 +271,25 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void prepare(MethodInvokeSymbol invoke) {
         currentTypes.push(new ArrayDeque<Typeable>());
-        useCurrentForLookup.push(false);
+        useCurrentScopeForLookup.push(false);
     }
 
     @Override
     public void prepare(FieldAccessSymbol fieldAccessSymbol) {
         currentTypes.push(new ArrayDeque<Typeable>());
-        useCurrentForLookup.push(false);
+        useCurrentScopeForLookup.push(false);
     }
 
     @Override
     public void open(FieldAccessSymbol access){
-        useCurrentForLookup.pop();
-        useCurrentForLookup.push(true);
+        useCurrentScopeForLookup.pop();
+        useCurrentScopeForLookup.push(true);
     }
 
     @Override
     public void close(FieldAccessSymbol access){
         Deque<Typeable> typeableDeque = currentTypes.pop();
-        useCurrentForLookup.pop();
+        useCurrentScopeForLookup.pop();
         currentTypes.peek().add(typeableDeque.getLast());
     }
 
@@ -632,13 +632,13 @@ public class LocalDclLinker extends EmptyVisitor {
 
     @Override
     public void open(CreationExpression create){
-        useCurrentForLookup.push(false);
+        useCurrentScopeForLookup.push(false);
         currentTypes.push(new ArrayDeque<Typeable>());
     }
 
     @Override
     public void close(CreationExpression create) throws CompilerException{
-        useCurrentForLookup.pop();
+        useCurrentScopeForLookup.pop();
         Deque<Typeable> currentSymbols = currentTypes.pop();
         APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(context.enclosingClassName);
         TypeSymbol typeSymbol = create.getType();
