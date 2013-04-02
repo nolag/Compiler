@@ -9,9 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import cs444.codegen.instructions.Comment;
-import cs444.codegen.instructions.Dd;
-import cs444.codegen.instructions.Extern;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Label;
@@ -23,10 +20,11 @@ public class IndexedTableData {
     public Map<String, Integer> offset = new LinkedHashMap<String, Integer>();
     public int offsetCounter = 0;
     private List<Instruction> instructions = new LinkedList<Instruction>();
+    private ICellCodeGenerator cellGen;
     private int cellDataSize;
 
-
-    public IndexedTableData(int cellDataSize) {
+    public IndexedTableData(ICellCodeGenerator cellCodeGenerator, int cellDataSize) {
+        this.cellGen = cellCodeGenerator;
         this.cellDataSize = cellDataSize;
     }
 
@@ -63,25 +61,16 @@ public class IndexedTableData {
 
         for (String colHeaderLabel : indexedTable.keySet()) {
             instructions.add(new Global(colHeaderLabel));
-            Map<String, String> column = indexedTable.get(colHeaderLabel);
-
-            for (String implLabel : column.values()) {
-                instructions.add(new Extern(implLabel));
-            }
             instructions.add(new Label(colHeaderLabel));
 
-            if (column.isEmpty()){
-                instructions.add(new Comment(colHeaderLabel + " does not have non-static method, so add NULL"));
-                instructions.add(new Dd(Immediate.NULL));
-            }
+            Map<String, String> column = indexedTable.get(colHeaderLabel);
 
             for (String selector : offset.keySet()) {
                 String implLabel = column.get(selector);
                 if (implLabel == null){
-                    instructions.add(new Comment(colHeaderLabel + " does not have access to " + selector + ":"));
-                    instructions.add(new Dd(Immediate.NULL));
+                    this.cellGen.genEmptyCelCode(colHeaderLabel, selector, instructions);
                 }else{
-                    instructions.add(new Dd(new Immediate(implLabel)));
+                    this.cellGen.genCellCode(colHeaderLabel, selector, implLabel, instructions);
                 }
             }
         }
