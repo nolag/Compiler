@@ -15,16 +15,15 @@ public class ObjectLayout {
             List<Instruction> instructions) {
 
         instructions.add(new Comment("Initializing Pointer to SIT Column"));
+        Immediate classSITLabel = new Immediate(typeDclNode.generateSIT());
+        instructions.add(new Extern(classSITLabel));
+        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR), classSITLabel));
 
-        String classNameSIT = typeDclNode.generateSIT();
-        instructions.add(new Extern(new Immediate(classNameSIT)));
-        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR), new Immediate(classNameSIT)));
-
-        // TODO: initialize pointer to Subtype checking.
-
-        // TODO: According to J1_A_FieldInitialization_Before, we need to preinitialize all fields to 0
-
-        //instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR)));
+        instructions.add(new Comment("Initializing Pointer to Subtype Column"));
+        Immediate subtypeITLabel = new Immediate(typeDclNode.generateSubtypeIT());
+        instructions.add(new Extern(subtypeITLabel));
+        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, SUBTYPE_OFFSET),
+                subtypeITLabel));
     }
 
 }

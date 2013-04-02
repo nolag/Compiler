@@ -50,7 +50,7 @@ public class SubtypeIndexedTable {
         SubtypeIndexedTable sit = new SubtypeIndexedTable();
 
         for(APkgClassResolver resolver : resolvers){
-            resolver.addToSubtypeIndexedTable(sit);
+            if(resolver.shouldGenCode()) resolver.addToSubtypeIndexedTable(sit);
         }
 
         sit.table.genCode();

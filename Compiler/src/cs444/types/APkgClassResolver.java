@@ -319,6 +319,28 @@ public abstract class APkgClassResolver {
 
     public abstract Iterable<DclSymbol> getUninheritedNonStaticFields();
 
+    public void addToSubtypeIndexedTable(SubtypeIndexedTable subtit) {
 
-    public abstract void addToSubtypeIndexedTable(SubtypeIndexedTable subtit);
+        String subtypeITLbl = generateSubtypeIT();
+
+        if (!this.isAbstract()){
+            subtit.addSubtype(subtypeITLbl);
+        }
+
+        subtit.addSuperType(this.fullName);
+        if(!this.fullName.equals(OBJECT)) subtit.addSuperType(this.superClass.fullName);
+
+        for (APkgClassResolver interf : this.implInterfs) {
+            subtit.addSuperType(interf.fullName);
+        }
+
+        if(!this.isAbstract()){
+            subtit.addIndex(subtypeITLbl, this.fullName);
+            if(!this.fullName.equals(OBJECT)) subtit.addIndex(subtypeITLbl, this.superClass.fullName);
+
+            for (APkgClassResolver interf : this.implInterfs) {
+                subtit.addIndex(subtypeITLbl, interf.fullName);
+            }
+        }
+    }
 }

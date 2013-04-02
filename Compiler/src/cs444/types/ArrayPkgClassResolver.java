@@ -9,7 +9,6 @@ import cs444.CompilerException;
 import cs444.codegen.ICodeGenVisitor;
 import cs444.codegen.SelectorIndexedTable;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.SubtypeIndexedTable;
 import cs444.lexer.Token;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -70,7 +69,9 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
 
         for(String s : JoosNonTerminal.arraysExtend){
             assignableTo.add(s);
-            implInterfs.add((PkgClassResolver) PkgClassInfo.instance.getSymbol(s));
+            APkgClassResolver implInterf = PkgClassInfo.instance.getSymbol(s);
+            // check for null for the tests that doesn't include StdLib and use arrays
+            if (implInterf != null) implInterfs.add((PkgClassResolver) implInterf);
         }
         superClass = PkgClassInfo.instance.getSymbol(OBJECT);
     }
@@ -190,11 +191,6 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public void addToSubtypeIndexedTable(SubtypeIndexedTable subtit) {
-        // TODO Auto-generated method stub
     }
 
     @Override
