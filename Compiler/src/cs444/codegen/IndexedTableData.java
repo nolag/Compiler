@@ -28,6 +28,12 @@ public class IndexedTableData {
         this.cellDataSize = cellDataSize;
     }
 
+    public void addIndex(String columnName, String rowName) {
+        Map<String, String> column = this.addColumn(columnName);
+
+        column.put(rowName, ""); // data is not important
+    }
+
     public void addIndex(String columnName, String rowName,
             String cellData) {
         Map<String, String> column = this.addColumn(columnName);
