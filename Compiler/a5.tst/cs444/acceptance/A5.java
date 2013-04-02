@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class A5 {
@@ -19,7 +18,7 @@ public class A5 {
                 true, ignoreList, new AsmAndLinkCallback());
     }
 
-    @Ignore("not ready")
+    //@Ignore("not ready")
     @Test
     public void testMarmosetPrograms() throws IOException, InterruptedException{
         List<String> ignoreList = new LinkedList<String>(Arrays.asList(
