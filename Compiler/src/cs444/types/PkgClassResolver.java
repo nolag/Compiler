@@ -13,6 +13,7 @@ import java.util.Set;
 import cs444.CompilerException;
 import cs444.codegen.ICodeGenVisitor;
 import cs444.codegen.SelectorIndexedTable;
+import cs444.codegen.SubtypeIndexedTable;
 import cs444.parser.IASTBuilder;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -128,6 +129,8 @@ public class PkgClassResolver extends APkgClassResolver {
         PkgClassResolver obj = (PkgClassResolver) getClass(OBJECT, true);
         if(obj == this) return;
         obj.build();
+        this.superClass = obj;
+
         for(AMethodSymbol methodSymbol : obj.start.getMethods()){
             String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
             AMethodSymbol has = methodMap.get(uniqueName);
@@ -332,6 +335,7 @@ public class PkgClassResolver extends APkgClassResolver {
                 }
 
                 assignableTo.addAll(building.assignableTo);
+                this.superClass = building;
             }else{
                 verifyObject();
             }
@@ -367,6 +371,7 @@ public class PkgClassResolver extends APkgClassResolver {
 
                 assignableTo.addAll(building.assignableTo);
                 alreadyImps.add(building.fullName);
+                implInterfs.add(building);
             }
 
             for(Set<PkgClassResolver> pkgSet : resolvedSets) visited.addAll(pkgSet);
@@ -406,15 +411,6 @@ public class PkgClassResolver extends APkgClassResolver {
 
         for(ConstructorSymbol constructor : start.getConstructors()){
             constructor.analyzeReachability(fullName);
-        }
-    }
-
-    @Override
-    public APkgClassResolver getSuper() throws UndeclaredException {
-        if (start.superName == null){
-            return findClass(OBJECT);
-        }else{
-            return findClass(start.superName);
         }
     }
 
@@ -476,6 +472,33 @@ public class PkgClassResolver extends APkgClassResolver {
             sit.addSelector(selector);
 
             if (!this.isAbstract()) sit.addIndex(classSITLbl, selector, generateFullId(method));
+        }
+    }
+
+    @Override
+    public void addToSubtypeIndexedTable(SubtypeIndexedTable subtit) {
+        if (start == null) return;
+
+        String subtypeITLbl = generateSubtypeIT();
+
+        if (!this.isAbstract()){
+            subtit.addSubtype(subtypeITLbl);
+        }
+
+        subtit.addSuperType(this.fullName);
+        if(!this.fullName.equals(OBJECT)) subtit.addSuperType(this.superClass.fullName);
+
+        for (APkgClassResolver interf : this.implInterfs) {
+            subtit.addSuperType(interf.fullName);
+        }
+
+        if(!this.isAbstract()){
+            subtit.addIndex(subtypeITLbl, this.fullName);
+            if(!this.fullName.equals(OBJECT)) subtit.addIndex(subtypeITLbl, this.superClass.fullName);
+
+            for (APkgClassResolver interf : this.implInterfs) {
+                subtit.addIndex(subtypeITLbl, interf.fullName);
+            }
         }
     }
 

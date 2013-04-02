@@ -66,7 +66,7 @@ public class A5 {
 
         Map<String, String> env = System.getenv();
         String allTest = env.get("all_tests");
-        if (allTest.equals("true")){
+        if (allTest != null && allTest.equals("true")){
             TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a5/", 0, true, true,
                     true, Collections.<String>emptyList(), new AsmAndLinkCallback());
         } else{

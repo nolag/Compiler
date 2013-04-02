@@ -12,6 +12,7 @@ import cs444.CompilerException;
 import cs444.codegen.ICodeGenVisitor;
 import cs444.codegen.SelectorIndexedTable;
 import cs444.codegen.SizeHelper;
+import cs444.codegen.SubtypeIndexedTable;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol;
@@ -30,10 +31,15 @@ public abstract class APkgClassResolver {
     public final String pkg;
     protected boolean isBuilt = false;
     protected final boolean isFinal;
+    protected APkgClassResolver superClass;
+    protected final List<PkgClassResolver> implInterfs = new LinkedList<PkgClassResolver>();
 
     public static final String DEFAULT_PKG = "?default?";
     protected static final String LANG = "java.lang";
     public static final String OBJECT = LANG + ".Object";
+    public static final String CLONABLE = LANG + ".Cloneable";
+    private static final String IO = "java.io";
+    public static final String SERIALIZABLE= IO + ".Serializable";
 
     protected final Set<String> assignableTo = new HashSet<String>();
     protected final Map<String, PkgClassResolver> namedMap = new HashMap<String, PkgClassResolver>();
@@ -112,6 +118,10 @@ public abstract class APkgClassResolver {
 
     public String generateSIT(){
         return getClassName(this) + "@SIT";
+    }
+
+    public String generateSubtypeIT() {
+        return getClassName(this) + "@Subtype";
     }
 
     public static String getUniqueNameFor(DclSymbol fieldDcl) {
@@ -222,7 +232,9 @@ public abstract class APkgClassResolver {
         throw new UndeclaredException(name, fullName);
     }
 
-    public abstract APkgClassResolver getSuper() throws UndeclaredException;
+    public APkgClassResolver getSuper() {
+        return superClass;
+    }
 
     public String getSuperName()throws UndeclaredException{
         return getSuper().fullName;
@@ -306,4 +318,7 @@ public abstract class APkgClassResolver {
     public abstract Iterable<DclSymbol> getUninheritedStaticFields();
 
     public abstract Iterable<DclSymbol> getUninheritedNonStaticFields();
+
+
+    public abstract void addToSubtypeIndexedTable(SubtypeIndexedTable subtit);
 }

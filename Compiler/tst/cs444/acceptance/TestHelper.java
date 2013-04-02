@@ -31,7 +31,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.equals("BasicArray3")) continue;
+			// if (!fileName.equals("J1_1_Instanceof_OfAdditiveExpression")) continue;
 
 			if (ignoreList.contains(fileName)){
 			    System.out.print("*"); // skip file
