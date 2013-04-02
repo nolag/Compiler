@@ -551,7 +551,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         if(getVal){
             Size size = SizeHelper.getSize(lastDcl.getType().getTypeDclNode().realSize);
             instructions.add(new Comment("Move value of field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
-            instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, lastDclOffset), size));
+            genMov(size, new PointerRegister(Register.ACCUMULATOR, lastDclOffset), lastDcl.dclName, lastDcl);
+
         }else{
             instructions.add(new Comment("Move reference to field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
             instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
@@ -614,12 +615,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }
     }
 
-    private void genCodeForLocalVarGetValue(NameSymbol nameSymbol,
-            final DclSymbol dcl, long offset, long stackSize) {
-        Size size = SizeHelper.getSize(stackSize);
-        final InstructionArg from = new PointerRegister(Register.FRAME, offset);
+    private void genMov(Size size, InstructionArg from, String value, Typeable dcl){
         Instruction instruction;
-
         if(size == Size.DWORD){
             instruction = new Mov(Register.ACCUMULATOR, from);
         }else if(JoosNonTerminal.unsigned.contains(dcl.getType().getTypeDclNode().fullName)){
@@ -627,9 +624,15 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }else{
             instruction = new Movsx(Register.ACCUMULATOR, from, size);
         }
-
-        instructions.add(new Comment("getting value of " + nameSymbol.value));
+        instructions.add(new Comment("getting value of " + value));
         instructions.add(instruction);
+    }
+
+    private void genCodeForLocalVarGetValue(NameSymbol nameSymbol,
+            final DclSymbol dcl, long offset, long stackSize) {
+        Size size = SizeHelper.getSize(stackSize);
+        final InstructionArg from = new PointerRegister(Register.FRAME, offset);
+        genMov(size, from, nameSymbol.value, dcl);
     }
 
     @Override
@@ -828,7 +831,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(offset))));
         if(gettingValue){
             getVal = true;
-            instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, Register.BASE)));
+            genMov(s, new PointerRegister(Register.ACCUMULATOR, Register.BASE), "array", arrayAccess);
+
         }else{
             instructions.add(new Add(Register.ACCUMULATOR, Register.BASE));
         }
