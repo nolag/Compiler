@@ -7,7 +7,6 @@ import java.util.Set;
 
 import cs444.CompilerException;
 import cs444.codegen.ICodeGenVisitor;
-import cs444.codegen.SelectorIndexedTable;
 import cs444.codegen.SizeHelper;
 import cs444.lexer.Token;
 import cs444.parser.symbols.ISymbol;
@@ -177,20 +176,6 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     @Override
     public boolean shouldGenCode() {
         return true;
-    }
-
-    @Override
-    public void addToSelectorIndexedTable(SelectorIndexedTable sit) {
-        sit.addClass(generateSIT());
-        for(AMethodSymbol method : methodMap.values()){
-            try {
-                sit.addIndex(this.generateSIT(), generateUniqueName(method, method.dclName),
-                        generateFullId(method));
-            } catch (UndeclaredException e) {
-                // should not get here
-                e.printStackTrace();
-            }
-        }
     }
 
     @Override

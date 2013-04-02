@@ -37,7 +37,7 @@ public class SelectorIndexedTable {
         SelectorIndexedTable sit = new SelectorIndexedTable();
 
         for(APkgClassResolver resolver : resolvers){
-            resolver.addToSelectorIndexedTable(sit);
+            if(resolver.shouldGenCode()) resolver.addToSelectorIndexedTable(sit);
         }
 
         sit.table.genCode();

@@ -309,8 +309,6 @@ public abstract class APkgClassResolver {
 
     public abstract void reduceToConstantExprs() throws CompilerException;
 
-    public abstract void addToSelectorIndexedTable(SelectorIndexedTable sit);
-
     public abstract void computeFieldOffsets();
 
     public abstract long getObjectSize();
@@ -318,6 +316,29 @@ public abstract class APkgClassResolver {
     public abstract Iterable<DclSymbol> getUninheritedStaticFields();
 
     public abstract Iterable<DclSymbol> getUninheritedNonStaticFields();
+
+    public void addToSelectorIndexedTable(SelectorIndexedTable sit) {
+        String classSITLbl = this.generateSIT();
+
+        if(!this.isAbstract()){
+            sit.addClass(classSITLbl);
+        }
+
+        for (AMethodSymbol method : methodMap.values()) {
+            if(method.isStatic()) continue;
+
+            String selector = null;
+            try {
+                selector = generateUniqueName(method, method.dclName);
+            } catch (UndeclaredException e) {
+                // should not get here
+                e.printStackTrace();
+            }
+            sit.addSelector(selector);
+
+            if (!this.isAbstract()) sit.addIndex(classSITLbl, selector, generateFullId(method));
+        }
+    }
 
     public void addToSubtypeIndexedTable(SubtypeIndexedTable subtit) {
 
