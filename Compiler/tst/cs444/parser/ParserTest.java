@@ -490,6 +490,7 @@ public class ParserTest {
         ISymbol gt = new Terminal(new Token(Token.Type.GT, ">"));
         ISymbol ge = new Terminal(new Token(Token.Type.GE, ">="));
         ISymbol inst = new Terminal(new Token(Token.Type.INSTANCEOF, "instanceof"));
+        ISymbol obj = new Terminal(new Token(Token.Type.ID, "Object"));
         ISymbol eq = new Terminal(new Token(Token.Type.EQ, "=="));
         ISymbol ne = new Terminal(new Token(Token.Type.NE, "!="));
         ISymbol becomes = new Terminal(new Token(Token.Type.BECOMES, "="));
@@ -508,7 +509,7 @@ public class ParserTest {
         ANonTerminal let = new JoosNonTerminal ("RELATIONALEXPRESSION",new ISymbol [] {b1, le, get});
         ANonTerminal gtt = new JoosNonTerminal ("RELATIONALEXPRESSION",new ISymbol [] {let, gt, b2});
         ANonTerminal ltt = new JoosNonTerminal ("RELATIONALEXPRESSION",new ISymbol [] {b1, lt, gtt});
-        ANonTerminal instt = new JoosNonTerminal ("RELATIONALEXPRESSION",new ISymbol [] {b1, inst, ltt});
+        ANonTerminal instt = new JoosNonTerminal ("RELATIONALEXPRESSION",new ISymbol [] {ltt, inst, obj});
         ANonTerminal eqt = new JoosNonTerminal ("EQUALITYEXPRESSION",new ISymbol [] {b1, eq, instt});
         ANonTerminal net = new JoosNonTerminal ("EQUALITYEXPRESSION",new ISymbol [] {b1, ne, eqt});
         ANonTerminal becomest = new JoosNonTerminal ("ASSIGNMENTEXPRESSION",new ISymbol [] {b1, becomes, net});
@@ -528,7 +529,7 @@ public class ParserTest {
         assertTrue(head instanceof EqExprSymbol);
         head = (ANonTerminal)head.children.get(1);
         assertTrue(head instanceof InstanceOfExprSymbol);
-        head = (ANonTerminal)head.children.get(1);
+        head = (ANonTerminal)head.children.get(0);
         assertTrue(head instanceof LtExprSymbol);
         head = (ANonTerminal)head.children.get(1);
         assertTrue(head instanceof LtExprSymbol);
