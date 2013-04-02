@@ -124,7 +124,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         TypeSymbol intType = TypeSymbol.getPrimative(JoosNonTerminal.INTEGER);
 
         try{
-            DclSymbol length = new DclSymbol("length", null, intType, null, true);
+            DclSymbol length = new DclSymbol("length", null, intType, null, false);
             length.forcePublic();
             fieldMap.put("length", length);
         }catch (CompilerException ce){

@@ -357,14 +357,18 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Shl(Register.ACCUMULATOR, Immediate.STACK_SIZE_POWER));
 
             instructions.add(new Comment("Adding space for SIT, cast info, and length" + typeDclNode.fullName));
-            final long size = SizeHelper.DEFAULT_STACK_SIZE  * 2 + SizeHelper.getIntSize(Size.DWORD);
-            final Immediate sizeI = new Immediate(String.valueOf(size));
+            final long baseSize = SizeHelper.DEFAULT_STACK_SIZE  * 2 + SizeHelper.getIntSize(Size.DWORD);
+            final Immediate sizeI = new Immediate(String.valueOf(baseSize));
             instructions.add(new Add(Register.ACCUMULATOR, sizeI));
             instructions.add(new Comment("Allocate for array" + typeDclNode.fullName));
             Runtime.malloc(Register.ACCUMULATOR, instructions);
             instructions.add(new Comment("Pop the size"));
             instructions.add(new Pop(Register.DATA));
-            instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, sizeI), Register.DATA));
+
+            final long lengthIndex = SizeHelper.DEFAULT_STACK_SIZE  * 2;
+            Immediate li = new Immediate(String.valueOf(lengthIndex));
+
+            instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, li), Register.DATA));
         }
 
         ObjectLayout.initialize(typeDclNode, instructions);
@@ -552,7 +556,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         if(getVal){
             Size size = SizeHelper.getSize(lastDcl.getType().getTypeDclNode().realSize);
             instructions.add(new Comment("Move value of field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
-            instructions.add(moveDataFromMemoryToEax(lastDcl, size, new PointerRegister(Register.ACCUMULATOR, lastDclOffset)));
+            instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, lastDclOffset), size));
         }else{
             instructions.add(new Comment("Move reference to field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
             instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
@@ -621,15 +625,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         final InstructionArg from = new PointerRegister(Register.FRAME, offset);
         Instruction instruction;
 
-        instruction = moveDataFromMemoryToEax(dcl, size, from);
-
-        instructions.add(new Comment("getting value of " + nameSymbol.value));
-        instructions.add(instruction);
-    }
-
-    private Instruction moveDataFromMemoryToEax(final DclSymbol dcl, Size size,
-            final InstructionArg from) {
-        Instruction instruction;
         if(size == Size.DWORD){
             instruction = new Mov(Register.ACCUMULATOR, from);
         }else if(JoosNonTerminal.unsigned.contains(dcl.getType().getTypeDclNode().fullName)){
@@ -637,7 +632,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }else{
             instruction = new Movsx(Register.ACCUMULATOR, from, size);
         }
-        return instruction;
+
+        instructions.add(new Comment("getting value of " + nameSymbol.value));
+        instructions.add(instruction);
     }
 
     @Override
@@ -832,7 +829,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
         arrayAccess.children.get(1).accept(this);
         instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(SizeHelper.getPushSize(lastSize))));
-        instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(SizeHelper.DEFAULT_STACK_SIZE * 2))));
+        long offset = SizeHelper.DEFAULT_STACK_SIZE * 2 + SizeHelper.getIntSize(Size.DWORD);
+        instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(offset))));
         if(gettingValue){
             getVal = true;
             instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, Register.BASE)));
