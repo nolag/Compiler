@@ -108,7 +108,7 @@ import cs444.types.exceptions.UndeclaredException;
 public class CodeGenVisitor implements ICodeGenVisitor {
     private static final String INIT_OBJECT_FUNC = "__init_object";
     private final SelectorIndexedTable selectorITable;
-    private SubtypeIndexedTable subtypeITable;
+    private final SubtypeIndexedTable subtypeITable;
     private final List<Instruction> instructions;
     private boolean hasEntry = false;
     private boolean getVal = true;
@@ -560,12 +560,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             Size size = SizeHelper.getSize(lastDcl.getType().getTypeDclNode().realSize);
             instructions.add(new Comment("Move value of field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
             genMov(size, new PointerRegister(Register.ACCUMULATOR, lastDclOffset), lastDcl.dclName, lastDcl);
-
         }else{
             instructions.add(new Comment("Move reference to field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
             instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
-            lastSize = SizeHelper.getSize(stackSize);
         }
+        lastSize = SizeHelper.getSize(stackSize);
     }
 
     private boolean lookupLink(String value, Iterator<Typeable> lookup, Typeable type,
@@ -920,12 +919,13 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         if(gettingValue){
             getVal = true;
             genMov(s, new PointerRegister(Register.ACCUMULATOR, Register.BASE), "array", arrayAccess);
+            lastSize = s;
 
         }else{
             instructions.add(new Add(Register.ACCUMULATOR, Register.BASE));
+            lastSize = SizeHelper.getSize(SizeHelper.DEFAULT_STACK_SIZE);
         }
         instructions.add(new Pop(Register.BASE));
-        lastSize = s;
     }
 
     @Override

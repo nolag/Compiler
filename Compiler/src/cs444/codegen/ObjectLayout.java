@@ -23,8 +23,7 @@ public class ObjectLayout {
         instructions.add(new Comment("Initializing Pointer to Subtype Column"));
         Immediate subtypeITLabel = new Immediate(typeDclNode.generateSubtypeIT());
         instructions.add(new Extern(subtypeITLabel));
-        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, SUBTYPE_OFFSET),
-                subtypeITLabel));
+        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, SUBTYPE_OFFSET), subtypeITLabel));
     }
 
     public static void subtypeCheckCode(TypeSymbol subType, SubtypeIndexedTable subtypeITable,
