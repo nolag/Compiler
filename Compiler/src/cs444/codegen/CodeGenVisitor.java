@@ -881,7 +881,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Comment("First arg to new String"));
             instructions.add(new Push(Register.ACCUMULATOR));
             instructions.add(new Comment("This pointer to new string"));
-            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(charsLen))));
+            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(charsLen)));
             ObjectLayout.initialize(resolver, instructions);
             instructions.add(new Push(Register.ACCUMULATOR));
 
@@ -889,6 +889,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             if(constructor.dclInResolver != currentFile) instructions.add(new Extern(carg));
             instructions.add(new Call(carg));
             instructions.add(new Pop(Register.ACCUMULATOR));
+            instructions.add(new Add(Register.STACK, new Immediate(SizeHelper.DEFAULT_STACK_SIZE)));
 
         } catch (UndeclaredException e) {
             //Should never get here

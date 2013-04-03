@@ -33,6 +33,10 @@ public class Immediate extends InstructionArg{
         this(arg.getValue() + " " + op + " " + val);
     }
 
+    public Immediate(long value){
+        this(String.valueOf(value));
+    }
+
     public static Immediate getImediate(Size size){
         switch(size){
         case DWORD: return DWORD_I;
