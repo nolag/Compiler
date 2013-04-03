@@ -65,9 +65,14 @@ public class Compiler {
             //Make a copy, the symbols can add more for arrays.
             List<APkgClassResolver> resolvers = new LinkedList<APkgClassResolver>(PkgClassInfo.instance.getSymbols());
             buildAllResolvers(resolvers);
+
+            resolvers = new LinkedList<APkgClassResolver>(PkgClassInfo.instance.getSymbols());
             analyzeReachability(resolvers);
 
+            resolvers = new LinkedList<APkgClassResolver>(PkgClassInfo.instance.getSymbols());
             typeCheck(resolvers);
+
+            resolvers = new LinkedList<APkgClassResolver>(PkgClassInfo.instance.getSymbols());
             checkFields(resolvers);
 
             resolvers = new LinkedList<APkgClassResolver>(PkgClassInfo.instance.getSymbols());
