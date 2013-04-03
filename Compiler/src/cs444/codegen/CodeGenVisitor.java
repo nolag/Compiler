@@ -103,7 +103,8 @@ import cs444.types.exceptions.UndeclaredException;
 
 public class CodeGenVisitor implements ICodeGenVisitor {
     private static final String INIT_OBJECT_FUNC = "__init_object";
-    private final SelectorIndexedTable sit;
+    private final SelectorIndexedTable selectorITable;
+    private SubtypeIndexedTable subtypeITable;
     private final List<Instruction> instructions;
     private boolean hasEntry = false;
     private boolean getVal = true;
@@ -125,20 +126,22 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         return nextLblnum++;
     }
 
-    public CodeGenVisitor(SelectorIndexedTable sit) {
+    public CodeGenVisitor(SelectorIndexedTable sit, SubtypeIndexedTable subIt) {
         this.instructions = new LinkedList<Instruction>();
-        this.sit = sit;
+        this.selectorITable = sit;
+        this.subtypeITable = subIt;
     }
 
-    public CodeGenVisitor(SelectorIndexedTable sit, List<Instruction> startInstructions) {
-        this(null, sit, startInstructions);
+    public CodeGenVisitor(SelectorIndexedTable sit, SubtypeIndexedTable subIt, List<Instruction> startInstructions) {
+        this(null, sit, subIt, startInstructions);
     }
 
     public CodeGenVisitor(APkgClassResolver resolver,
-            SelectorIndexedTable sit, List<Instruction> startInstructions) {
+            SelectorIndexedTable sit, SubtypeIndexedTable subIt, List<Instruction> startInstructions) {
         this.currentFile = resolver;
         this.instructions = startInstructions;
-        this.sit = sit;
+        this.selectorITable = sit;
+        this.subtypeITable = subIt;
     }
 
     public void genHeader(APkgClassResolver resolver) {
@@ -170,7 +173,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
                 instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
                 // save pointer to object
                 instructions.add(new Push(Register.DATA));
-                fieldDcl.children.get(0).accept(new CodeGenVisitor(currentFile, sit, instructions));
+                fieldDcl.children.get(0).accept(new CodeGenVisitor(currentFile, selectorITable, subtypeITable, instructions));
                 instructions.add(new Comment("Pop the object address to edx"));
                 instructions.add(new Pop(Register.DATA));
                 instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, size));
@@ -232,13 +235,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
             instructions.add(new Call(arg));
         }else{
-            //TODO replace with SIT lookup, Register.COUNTER already has this pointer.
             instructions.add(new Comment("get SIT column"));
             instructions.add(new Mov(Register.COUNTER, new PointerRegister(Register.COUNTER)));
 
             PointerRegister methodAddr = null;
             try {
-                methodAddr = new PointerRegister(Register.COUNTER, sit.getOffset(PkgClassResolver.generateUniqueName(call, call.dclName)));
+                methodAddr = new PointerRegister(Register.COUNTER, selectorITable.getOffset(PkgClassResolver.generateUniqueName(call, call.dclName)));
             } catch (UndeclaredException e) {
                 // shouldn't get here
                 e.printStackTrace();
@@ -770,8 +772,15 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(InstanceOfExprSymbol op) {
-        // TODO Auto-generated method stub
-//        instructions.add(new Mov(Register.ACCUMULATOR, Immediate.TRUE));
+        op.getLeftOperand().accept(this);
+        // eax should have reference to object
+        instructions.add(new Comment("Subtype lookup"));
+        instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, ObjectLayout.SUBTYPE_OFFSET)));
+
+        TypeSymbol type = (TypeSymbol) op.getRightOperand();
+
+        PointerRegister instanceOfInfo = new PointerRegister(Register.ACCUMULATOR, subtypeITable.getOffset(type.getTypeDclNode().fullName));
+        instructions.add(new Movzx(Register.ACCUMULATOR, instanceOfInfo, subtypeITable.dataSize));
     }
 
     @Override

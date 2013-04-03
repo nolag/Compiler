@@ -27,7 +27,7 @@ public class SelectorIndexedTable {
         table.addRow(selector);
     }
 
-    public int getOffset(String selector){
+    public long getOffset(String selector){
         return table.getOffset(selector);
     }
 

@@ -9,7 +9,7 @@ import cs444.codegen.instructions.Mov;
 import cs444.types.APkgClassResolver;
 
 public class ObjectLayout {
-    private final static int SUBTYPE_OFFSET = SizeHelper.DEFAULT_STACK_SIZE;
+    public final static int SUBTYPE_OFFSET = SizeHelper.DEFAULT_STACK_SIZE;
 
     public static void initialize(APkgClassResolver typeDclNode,
             List<Instruction> instructions) {

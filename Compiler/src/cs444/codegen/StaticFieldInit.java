@@ -26,10 +26,11 @@ public class StaticFieldInit {
     private final List<Instruction> instructions = new LinkedList<Instruction>();
 
     public static void generateCode(List<APkgClassResolver> resolvers,
-            SelectorIndexedTable sit, boolean outputFile, String directory) throws IOException {
+            SelectorIndexedTable sit, SubtypeIndexedTable subit,
+            boolean outputFile, String directory) throws IOException {
         StaticFieldInit fInit = new StaticFieldInit();
 
-        fInit.genCode(resolvers, sit);
+        fInit.genCode(resolvers, sit, subit);
 
         if(outputFile){
             File file = new File(directory + STATIC_FIELD_INIT_FILE);
@@ -44,7 +45,7 @@ public class StaticFieldInit {
         for(Instruction instruction : instructions) printer.println(instruction.generate());
     }
 
-    private void genCode(List<APkgClassResolver> resolvers, SelectorIndexedTable sit) {
+    private void genCode(List<APkgClassResolver> resolvers, SelectorIndexedTable sit, SubtypeIndexedTable subit) {
         instructions.add(new Section(SectionType.TEXT));
         instructions.add(new Global(STATIC_FIELD_INIT_LBL));
         Runtime.externAll(instructions);
@@ -65,7 +66,7 @@ public class StaticFieldInit {
                     instructions.add(new Mov(toAddr, Immediate.NULL, size));
                 }else{
                     instructions.add(new Comment("Initializing static field " + fieldNameLbl + "."));
-                    fieldDcl.children.get(0).accept(new CodeGenVisitor(sit, instructions));
+                    fieldDcl.children.get(0).accept(new CodeGenVisitor(sit, subit, instructions));
                     instructions.add(new Mov(toAddr, Register.ACCUMULATOR, size));
                 }
             }

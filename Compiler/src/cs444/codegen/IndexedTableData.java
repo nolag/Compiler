@@ -12,18 +12,16 @@ import java.util.Map;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Label;
-import cs444.codegen.instructions.Section;
-import cs444.codegen.instructions.Section.SectionType;
 
 public class IndexedTableData {
     public Map<String, Map<String, String>> indexedTable = new HashMap<String, Map<String,String>>();
-    public Map<String, Integer> offset = new LinkedHashMap<String, Integer>();
-    public int offsetCounter = 0;
+    public Map<String, Long> offset = new LinkedHashMap<String, Long>();
+    public long offsetCounter = 0;
     private List<Instruction> instructions = new LinkedList<Instruction>();
     private ICellCodeGenerator cellGen;
-    private int cellDataSize;
+    private long cellDataSize;
 
-    public IndexedTableData(ICellCodeGenerator cellCodeGenerator, int cellDataSize) {
+    public IndexedTableData(ICellCodeGenerator cellCodeGenerator, long cellDataSize) {
         this.cellGen = cellCodeGenerator;
         this.cellDataSize = cellDataSize;
     }
@@ -57,13 +55,13 @@ public class IndexedTableData {
         }
     }
 
-    public int getOffset(String rowName) {
+    public long getOffset(String rowName) {
         return this.offset.get(rowName);
     }
 
-
     public void genCode() {
-        instructions.add(new Section(SectionType.DATA));
+        // having data section in different files confuses GDB :-/
+        // instructions.add(new Section(SectionType.DATA));
 
         for (String colHeaderLabel : indexedTable.keySet()) {
             instructions.add(new Global(colHeaderLabel));
