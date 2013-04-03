@@ -28,6 +28,7 @@ public class A5 {
 
 
         List<String> failingList = new LinkedList<String>(Arrays.asList(
+                                                                        "J1e_divisionbyzero",
 "J1_1_Instanceof_OfAdditiveExpression",
 "J1_A_ArrayBaseInAssignment",
 "J1_A_ArrayStoreLoad",

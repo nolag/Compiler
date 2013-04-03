@@ -599,6 +599,13 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }else if(forceThis){
             instructions.add(new Comment("Force This pointer"));
             instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
+
+            // use first as instance field if it's not last one in the chain
+            if (type == lastDcl) return false;
+            DclSymbol dclSymbol = (DclSymbol) type;
+            instructions.add(new Comment("Move reference to field " + dclSymbol.dclName + " in " + value + " to Accumulator"));
+            PointerRegister from = new PointerRegister(Register.ACCUMULATOR, dclSymbol.getOffset());
+            instructions.add(new Mov(Register.ACCUMULATOR, from));
         }
 
         // the rest are non static fields
