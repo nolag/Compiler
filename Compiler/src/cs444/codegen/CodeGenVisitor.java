@@ -855,16 +855,22 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(StringLiteralSymbol stringSymbol) {
-        //two defualt stacks, SIT and castinfo, 2*length because each is 2 bytes.
-        final long length = (stringSymbol.value.length() + SizeHelper.DEFAULT_STACK_SIZE) * 2;
+        instructions.add(new Comment("New String!"));
+        instructions.add(new Comment("allocate the string at the same time (why not)"));
+        final long charsLen = (stringSymbol.strValue.length() + SizeHelper.DEFAULT_STACK_SIZE) * 2 + SizeHelper.getIntSize(Size.DWORD);
+        final long length =  charsLen + stringSymbol.getType().getTypeDclNode().getObjectSize();
+
+        instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(length))));
         //no need to zero out, it will be set for sure
         Runtime.malloc(new Immediate(String.valueOf(length)), instructions, false);
         final String charArray = ArrayPkgClassResolver.getArrayName(JoosNonTerminal.CHAR);
         ObjectLayout.initialize(PkgClassInfo.instance.getSymbol(charArray), instructions);
 
-        final char [] cs = stringSymbol.value.toCharArray();
+        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, 8), new Immediate(String.valueOf(stringSymbol.strValue.length()))));
+
+        final char [] cs = stringSymbol.strValue.toCharArray();
         for(int i = 0; i < cs.length; i++){
-            final long place = 2 * i + SizeHelper.DEFAULT_STACK_SIZE * 2 + SizeHelper.getIntSize(Size.DWORD);;
+            final long place = 2 * i + SizeHelper.DEFAULT_STACK_SIZE * 2 + SizeHelper.getIntSize(Size.DWORD);
             final InstructionArg to = new PointerRegister(Register.ACCUMULATOR, new Immediate(String.valueOf(place)));
             instructions.add(new Mov(to, new Immediate("'" + String.valueOf(cs[i]) + "'"), Size.WORD));
         }
@@ -872,14 +878,23 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         try {
             final String arg = charArray;
             final ConstructorSymbol constructor = resolver.getConstructor(Arrays.asList(arg), resolver);
+            instructions.add(new Comment("First arg to new String"));
+            instructions.add(new Push(Register.ACCUMULATOR));
+            instructions.add(new Comment("This pointer to new string"));
+            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(charsLen))));
+            ObjectLayout.initialize(resolver, instructions);
+            instructions.add(new Push(Register.ACCUMULATOR));
+
             InstructionArg carg = new Immediate(APkgClassResolver.generateFullId(constructor));
             if(constructor.dclInResolver != currentFile) instructions.add(new Extern(carg));
             instructions.add(new Call(carg));
+            instructions.add(new Pop(Register.ACCUMULATOR));
 
         } catch (UndeclaredException e) {
             //Should never get here
             e.printStackTrace();
         }
+        instructions.add(new Comment("End of New String!"));
     }
 
     @Override
