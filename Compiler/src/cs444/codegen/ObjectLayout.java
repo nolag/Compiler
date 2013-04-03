@@ -6,6 +6,9 @@ import cs444.codegen.instructions.Comment;
 import cs444.codegen.instructions.Extern;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Mov;
+import cs444.codegen.instructions.Movzx;
+import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
 import cs444.types.APkgClassResolver;
 
 public class ObjectLayout {
@@ -26,4 +29,11 @@ public class ObjectLayout {
                 subtypeITLabel));
     }
 
+    public static void subtypeCheckCode(TypeSymbol subType, SubtypeIndexedTable subtypeITable,
+            List<Instruction> instructions) {
+        instructions.add(new Comment("Subtype lookup"));
+        instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, ObjectLayout.SUBTYPE_OFFSET)));
+        PointerRegister instanceOfInfo = new PointerRegister(Register.ACCUMULATOR, subtypeITable.getOffset(subType.getTypeDclNode().fullName));
+        instructions.add(new Movzx(Register.ACCUMULATOR, instanceOfInfo, subtypeITable.dataSize));
+    }
 }

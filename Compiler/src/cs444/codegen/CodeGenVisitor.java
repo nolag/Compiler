@@ -15,6 +15,7 @@ import cs444.codegen.instructions.Extern;
 import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Int;
+import cs444.codegen.instructions.Je;
 import cs444.codegen.instructions.Jmp;
 import cs444.codegen.instructions.Jne;
 import cs444.codegen.instructions.Label;
@@ -774,13 +775,25 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void visit(InstanceOfExprSymbol op) {
         op.getLeftOperand().accept(this);
         // eax should have reference to object
-        instructions.add(new Comment("Subtype lookup"));
-        instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, ObjectLayout.SUBTYPE_OFFSET)));
+        String nullObjectLbl = "nullObject" + getNewLblNum();
+        ifNullJmpCode(nullObjectLbl);
 
-        TypeSymbol type = (TypeSymbol) op.getRightOperand();
+        ObjectLayout.subtypeCheckCode((TypeSymbol) op.getRightOperand(), subtypeITable, instructions);
 
-        PointerRegister instanceOfInfo = new PointerRegister(Register.ACCUMULATOR, subtypeITable.getOffset(type.getTypeDclNode().fullName));
-        instructions.add(new Movzx(Register.ACCUMULATOR, instanceOfInfo, subtypeITable.dataSize));
+        String endLbl = "instanceOfEnd" + getNewLblNum();
+        instructions.add(new Jmp(new Immediate(endLbl)));
+
+        instructions.add(new Label(nullObjectLbl));
+        instructions.add(new Comment("set eax to FALSE"));
+        instructions.add(new Mov(Register.ACCUMULATOR, Immediate.FALSE));
+
+        instructions.add(new Label(endLbl));
+    }
+
+    private void ifNullJmpCode(String ifNullLbl) {
+        instructions.add(new Comment("null check"));
+        instructions.add(new Cmp(Register.ACCUMULATOR, Immediate.NULL));
+        instructions.add(new Je(new Immediate(ifNullLbl)));
     }
 
     @Override

@@ -27,7 +27,6 @@ public class A5 {
 "J1e_A_CastToArray",
 "J1e_A_CastToString",
 "J1_1_Instanceof_OfAdditiveExpression",
-"J1_arrayinstanceof2",
 "J1_A_ArrayBaseInAssignment",
 "J1_A_ArrayStoreLoad",
 "J1_A_BooleanArray_External",
