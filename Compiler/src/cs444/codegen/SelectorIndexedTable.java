@@ -27,7 +27,7 @@ public class SelectorIndexedTable {
         table.addRow(selector);
     }
 
-    public int getOffset(String selector){
+    public long getOffset(String selector){
         return table.getOffset(selector);
     }
 
@@ -37,7 +37,7 @@ public class SelectorIndexedTable {
         SelectorIndexedTable sit = new SelectorIndexedTable();
 
         for(APkgClassResolver resolver : resolvers){
-            resolver.addToSelectorIndexedTable(sit);
+            if(resolver.shouldGenCode()) resolver.addToSelectorIndexedTable(sit);
         }
 
         sit.table.genCode();

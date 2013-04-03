@@ -309,8 +309,6 @@ public abstract class APkgClassResolver {
 
     public abstract void reduceToConstantExprs() throws CompilerException;
 
-    public abstract void addToSelectorIndexedTable(SelectorIndexedTable sit);
-
     public abstract void computeFieldOffsets();
 
     public abstract long getObjectSize();
@@ -319,6 +317,51 @@ public abstract class APkgClassResolver {
 
     public abstract Iterable<DclSymbol> getUninheritedNonStaticFields();
 
+    public void addToSelectorIndexedTable(SelectorIndexedTable sit) {
+        String classSITLbl = this.generateSIT();
 
-    public abstract void addToSubtypeIndexedTable(SubtypeIndexedTable subtit);
+        if(!this.isAbstract()){
+            sit.addClass(classSITLbl);
+        }
+
+        for (AMethodSymbol method : methodMap.values()) {
+            if(method.isStatic()) continue;
+
+            String selector = null;
+            try {
+                selector = generateUniqueName(method, method.dclName);
+            } catch (UndeclaredException e) {
+                // should not get here
+                e.printStackTrace();
+            }
+            sit.addSelector(selector);
+
+            if (!this.isAbstract()) sit.addIndex(classSITLbl, selector, generateFullId(method));
+        }
+    }
+
+    public void addToSubtypeIndexedTable(SubtypeIndexedTable subtit) {
+
+        String subtypeITLbl = generateSubtypeIT();
+
+        if (!this.isAbstract()){
+            subtit.addSubtype(subtypeITLbl);
+        }
+
+        subtit.addSuperType(this.fullName);
+        if(!this.fullName.equals(OBJECT)) subtit.addSuperType(this.superClass.fullName);
+
+        for (APkgClassResolver interf : this.implInterfs) {
+            subtit.addSuperType(interf.fullName);
+        }
+
+        if(!this.isAbstract()){
+            subtit.addIndex(subtypeITLbl, this.fullName);
+            if(!this.fullName.equals(OBJECT)) subtit.addIndex(subtypeITLbl, this.superClass.fullName);
+
+            for (APkgClassResolver interf : this.implInterfs) {
+                subtit.addIndex(subtypeITLbl, interf.fullName);
+            }
+        }
+    }
 }

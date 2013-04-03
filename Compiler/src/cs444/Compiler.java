@@ -127,8 +127,8 @@ public class Compiler {
             resolver.computeFieldOffsets();
         }
 
-        StaticFieldInit.generateCode(resolvers, sit, outputFile, directory);
-        CodeGenVisitor codeGen = new CodeGenVisitor(sit);
+        StaticFieldInit.generateCode(resolvers, sit, subIt, outputFile, directory);
+        CodeGenVisitor codeGen = new CodeGenVisitor(sit, subIt);
         for(APkgClassResolver resolver : resolvers){
             if(!resolver.shouldGenCode()) continue;
             codeGen.genLayoutForStaticFields(resolver.getUninheritedStaticFields());

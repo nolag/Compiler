@@ -6,8 +6,8 @@ import java.util.Map;
 
 import cs444.codegen.InstructionArg.Size;
 import cs444.codegen.instructions.Comment;
-import cs444.codegen.instructions.Db;
 import cs444.codegen.instructions.Instruction;
+import cs444.codegen.instructions.factories.DataInstructionMaker;
 import cs444.types.APkgClassResolver;
 
 public class SubtypeIndexedTable {
@@ -17,19 +17,20 @@ public class SubtypeIndexedTable {
         public void genEmptyCelCode(String colHeaderLabel, String rowName,
                 List<Instruction> instructions) {
             instructions.add(new Comment(colHeaderLabel + " is not subtype of " + rowName));
-            instructions.add(new Db(Immediate.FALSE));
+            instructions.add(DataInstructionMaker.make(Immediate.FALSE, dataSize));
         }
 
         @Override
         public void genCellCode(String colHeaderLabel, String rowName,
                 String data, List<Instruction> instructions) {
             instructions.add(new Comment(colHeaderLabel + " is subtype of " + rowName));
-            instructions.add(new Db(Immediate.TRUE));
+            instructions.add(DataInstructionMaker.make(Immediate.TRUE, dataSize));
         }
 
     }
 
-    private IndexedTableData table = new IndexedTableData(new SubtypeCellGen(), SizeHelper.getIntSize(Size.LOW));
+    public final Size dataSize = Size.WORD;
+    private IndexedTableData table = new IndexedTableData(new SubtypeCellGen(), SizeHelper.getIntSize(dataSize));
 
     public Map<String, String> addSubtype(String fullName) {
         return table.addColumn(fullName);
@@ -43,6 +44,10 @@ public class SubtypeIndexedTable {
         table.addIndex(subtypeITLbl, superType);
     }
 
+    public long getOffset(String superType) {
+        return table.getOffset(superType);
+    }
+
     public static SubtypeIndexedTable generateTable(
             List<APkgClassResolver> resolvers, boolean outputFile,
             String directory) throws IOException {
@@ -50,7 +55,7 @@ public class SubtypeIndexedTable {
         SubtypeIndexedTable sit = new SubtypeIndexedTable();
 
         for(APkgClassResolver resolver : resolvers){
-            resolver.addToSubtypeIndexedTable(sit);
+            if(resolver.shouldGenCode()) resolver.addToSubtypeIndexedTable(sit);
         }
 
         sit.table.genCode();

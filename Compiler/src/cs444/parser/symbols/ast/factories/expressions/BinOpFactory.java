@@ -4,6 +4,8 @@ import cs444.lexer.Token;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
+import cs444.parser.symbols.ast.NameSymbol;
+import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
@@ -45,7 +47,16 @@ public class BinOpFactory extends ASTSymbolFactory{
         if(typeName.equals(Token.Type.GT.toString())) return new LtExprSymbol(right, left);
         if(typeName.equals(Token.Type.LE.toString())) return new LeExprSymbol(left, right);
         if(typeName.equals(Token.Type.GE.toString())) return new LeExprSymbol(right, left);
-        if(typeName.equals(Token.Type.INSTANCEOF.toString())) return new InstanceOfExprSymbol(left, right);
+        if(typeName.equals(Token.Type.INSTANCEOF.toString())){
+            TypeSymbol type;
+            if (right instanceof TypeSymbol){
+                type = (TypeSymbol) right;
+            }else{
+                NameSymbol nameSymb = (NameSymbol) right;
+                type = new TypeSymbol(nameSymb.value, false, true);
+            }
+            return new InstanceOfExprSymbol(left, type);
+        }
         if(typeName.equals(Token.Type.EQ.toString())) return new EqExprSymbol(left, right);
         if(typeName.equals(Token.Type.NE.toString())) return new NeExprSymbol(left, right);
         if(typeName.equals(Token.Type.DAMPERSAND.toString())) return new AndExprSymbol(left, right);
