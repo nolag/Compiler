@@ -13,8 +13,7 @@ import cs444.types.APkgClassResolver;
 public class ObjectLayout {
     public final static int SUBTYPE_OFFSET = SizeHelper.DEFAULT_STACK_SIZE;
 
-    public static void initialize(APkgClassResolver typeDclNode,
-            List<Instruction> instructions) {
+    public static void initialize(APkgClassResolver typeDclNode, List<Instruction> instructions) {
 
         instructions.add(new Comment("Initializing Pointer to SIT Column"));
         Immediate classSITLabel = new Immediate(typeDclNode.generateSIT());
