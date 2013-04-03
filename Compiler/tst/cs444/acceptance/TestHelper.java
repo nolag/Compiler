@@ -31,7 +31,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			// if (!fileName.equals("J1_arrayinstanceof2")) continue;
+			// if (!fileName.equals("J1_A_LazyEval")) continue;
 
 			if (ignoreList.contains(fileName)){
 			    System.out.print("*"); // skip file

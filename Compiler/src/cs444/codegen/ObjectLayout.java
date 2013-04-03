@@ -8,7 +8,6 @@ import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Mov;
 import cs444.codegen.instructions.Movzx;
 import cs444.parser.symbols.ast.TypeSymbol;
-import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
 import cs444.types.APkgClassResolver;
 
 public class ObjectLayout {

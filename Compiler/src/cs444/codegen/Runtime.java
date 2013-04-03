@@ -16,8 +16,10 @@ import cs444.codegen.instructions.Sar;
 import cs444.codegen.instructions.Xor;
 
 public class Runtime {
+    public static final String EXCEPTION_LBL = "__exception";
+
     private static final Immediate MALLOC = new Immediate("__malloc");
-    private static final Immediate EXCEPTION = new Immediate("__exception");
+    private static final Immediate EXCEPTION = new Immediate(EXCEPTION_LBL);
 
     private static long loopnum = 0;
 

@@ -236,6 +236,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
             instructions.add(new Call(arg));
         }else{
+            // TODO: check why this line breaks some tests. Maybe it uncovers a hidden bug:
+            // ifNullJmpCode(Register.COUNTER, Runtime.EXCEPTION_LBL);
             instructions.add(new Comment("get SIT column"));
             instructions.add(new Mov(Register.COUNTER, new PointerRegister(Register.COUNTER)));
 
@@ -571,7 +573,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             final long localObjOffset = first.getOffset();
             instructions.add(new Comment("Move pointer of obj " + first.dclName + " in " + value + " to Accumulator"));
             instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.FRAME, localObjOffset)));
-            // TODO: do null check
+
+            ifNullJmpCode(Register.ACCUMULATOR, Runtime.EXCEPTION_LBL);
         }else if (first.getType().isClass){
             // is using static fields
             // TODO: test using chain of types a1.a2.a3...
@@ -776,7 +779,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         op.getLeftOperand().accept(this);
         // eax should have reference to object
         String nullObjectLbl = "nullObject" + getNewLblNum();
-        ifNullJmpCode(nullObjectLbl);
+        ifNullJmpCode(Register.ACCUMULATOR, nullObjectLbl);
 
         ObjectLayout.subtypeCheckCode((TypeSymbol) op.getRightOperand(), subtypeITable, instructions);
 
@@ -790,7 +793,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Label(endLbl));
     }
 
-    private void ifNullJmpCode(String ifNullLbl) {
+    private void ifNullJmpCode(Register register, String ifNullLbl) {
         instructions.add(new Comment("null check"));
         instructions.add(new Cmp(Register.ACCUMULATOR, Immediate.NULL));
         instructions.add(new Je(new Immediate(ifNullLbl)));
