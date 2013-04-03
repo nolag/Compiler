@@ -28,7 +28,6 @@ public class A5 {
 
 
         List<String> failingList = new LinkedList<String>(Arrays.asList(
-                                                                        "J1e_A_CastNewExp",
 "J1e_A_CastToArray",
 "J1e_A_CastToString",
 "J1_1_Instanceof_OfAdditiveExpression",

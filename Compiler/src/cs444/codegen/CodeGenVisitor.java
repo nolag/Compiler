@@ -650,9 +650,25 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(CastExpressionSymbol symbol) {
         TypeSymbol type = symbol.getType();
-        //TODO object cast to primative
-        if(!JoosNonTerminal.primativeNumbers.contains(type.getTypeDclNode().fullName)) type.accept(this);
+
+        type.accept(this);
         symbol.getOperandExpression().accept(this);
+
+        String typeName = type.getTypeDclNode().fullName;
+        if(!JoosNonTerminal.primativeNumbers.contains(typeName)
+                && !JoosNonTerminal.otherPrimatives.contains(typeName)){
+            String castExprEnd = "CastExprEnd" + getNewLblNum();
+            ifNullJmpCode(Register.ACCUMULATOR, castExprEnd);
+
+            instructions.add(new Push(Register.ACCUMULATOR));
+            ObjectLayout.subtypeCheckCode(type, subtypeITable, instructions);
+            setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, Runtime.EXCEPTION_LBL);
+            instructions.add(new Pop(Register.ACCUMULATOR));
+
+            instructions.add(new Label(castExprEnd));
+        }else{
+            //TODO object cast to primative and other primitives
+        }
     }
 
     @Override
