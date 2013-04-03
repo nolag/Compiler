@@ -9,8 +9,4 @@ public class Object{
 
     }
 
-    public static int test(){
-        Object.o.m1(); // NullPointerException 
-        return -1;
-    }
 }

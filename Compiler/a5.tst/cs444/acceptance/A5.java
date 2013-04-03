@@ -12,9 +12,11 @@ import org.junit.Test;
 public class A5 {
     @Test
     public void testCompileProgramsNoStdLib() throws IOException, InterruptedException{
-        List<String> ignoreList = new LinkedList<String>(Arrays.asList(
-                "NonStaticToNonStaticCall",
-                "NullCheck"));
+        List<String> ignoreList = new LinkedList<String>(
+                Arrays.asList(
+                        "NullCheck"
+                        )
+                );
 
         TestHelper.assertReturnCodeForFiles("JoosPrograms/A5/NoStdLibPrograms/", 0, true, false,
                 true, ignoreList, new AsmAndLinkCallback());
