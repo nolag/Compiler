@@ -18,6 +18,8 @@ public class Object{
         
         if(s1.equals((Object)s3)) i = i + 2;
         
+        if(s3.length() != 4) i = i + 4;
+        
         return i;
     }
 }

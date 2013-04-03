@@ -871,7 +871,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         for(int i = 0; i < cs.length; i++){
             final long place = 2 * i + SizeHelper.DEFAULT_STACK_SIZE * 2 + SizeHelper.getIntSize(Size.DWORD);
             final InstructionArg to = new PointerRegister(Register.ACCUMULATOR, new Immediate(String.valueOf(place)));
-            instructions.add(new Mov(to, new Immediate("'" + String.valueOf(cs[i]) + "'"), Size.WORD));
+            instructions.add(new Mov(to, new Immediate((cs[i])), Size.WORD));
         }
         APkgClassResolver resolver = stringSymbol.getType().getTypeDclNode();
         try {
@@ -899,7 +899,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(CharacterLiteralSymbol characterSymbol) {
-        instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(characterSymbol.getValue()))));
+        instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(characterSymbol.getValue())));
     }
 
     @Override
@@ -915,7 +915,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         arrayAccess.children.get(1).accept(this);
         instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(SizeHelper.getPushSize(lastSize))));
         final long offset = SizeHelper.DEFAULT_STACK_SIZE * 2 + SizeHelper.getIntSize(Size.DWORD);
-        instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(offset))));
+        instructions.add(new Add(Register.ACCUMULATOR, new Immediate(offset)));
         if(gettingValue){
             getVal = true;
             genMov(s, new PointerRegister(Register.ACCUMULATOR, Register.BASE), "array", arrayAccess);
