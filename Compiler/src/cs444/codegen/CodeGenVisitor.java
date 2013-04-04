@@ -941,6 +941,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(ByteLiteralSymbol byteLiteral) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(byteLiteral.getValue()))));
+        lastSize = Size.WORD;
     }
 
     @Override
