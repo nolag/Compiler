@@ -165,10 +165,10 @@ public class LocalDclLinker extends EmptyVisitor {
             if(dcl == null){
                 List<DclSymbol> dcls = resolver.findDcl(invoke.lookupFirst, isStatic, currentSymbols.isEmpty());
                 dcl = dcls.get(dcls.size() - 1);
+                currentSymbols.addAll(dcls);
+            }else{
+                currentSymbols.add(dcl);
             }
-            currentSymbols.add(dcl);
-            resolver = dcl.type.getTypeDclNode();
-            isStatic = dcl.type.isClass;
         }
 
         LookupLink lookup = new LookupLink(new LinkedList<Typeable>(currentSymbols));
