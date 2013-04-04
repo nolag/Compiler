@@ -351,6 +351,15 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Comment("Allocate " + bytes.getValue() + " bytes for " + typeDclNode.fullName));
             instructions.add(new Mov(Register.ACCUMULATOR, bytes));
             Runtime.malloc(bytes, instructions);
+
+            ObjectLayout.initialize(typeDclNode, instructions);
+
+            final APkgClassResolver resolver = creationExpression.getType().getTypeDclNode();
+
+            List<ISymbol> children = creationExpression.children;
+
+            instructions.add(new Comment("invoke Constructor"));
+            invokeConstructor(resolver, children);
         }else{
             instructions.add(new Comment("Getting size for array constuction"));
             creationExpression.children.get(0).accept(this);
@@ -372,17 +381,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             Immediate li = new Immediate(String.valueOf(lengthIndex));
 
             instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, li), Register.DATA));
+            ObjectLayout.initialize(typeDclNode, instructions);
         }
-
-        ObjectLayout.initialize(typeDclNode, instructions);
-
-        final APkgClassResolver resolver = creationExpression.getType().getTypeDclNode();
-
-        List<ISymbol> children = creationExpression.children;
-
-        instructions.add(new Comment("invoke Constructor"));
-        invokeConstructor(resolver, children);
-
         instructions.add(new Comment("Done creating object"));
     }
 
