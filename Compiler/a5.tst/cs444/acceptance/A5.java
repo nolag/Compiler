@@ -14,6 +14,7 @@ public class A5 {
     public void testCompileProgramsNoStdLib() throws IOException, InterruptedException{
         List<String> ignoreList = new LinkedList<String>(
                 Arrays.asList(
+                        "ImplicitClassNameForStaticFields",
                         "SmallStringTest2",
                         "NullCheck"
                         )
