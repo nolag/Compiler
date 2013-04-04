@@ -311,7 +311,7 @@ public abstract class APkgClassResolver {
 
     public abstract void computeFieldOffsets();
 
-    public abstract long getObjectSize();
+    public abstract long getStackSize();
 
     public abstract Iterable<DclSymbol> getUninheritedStaticFields();
 

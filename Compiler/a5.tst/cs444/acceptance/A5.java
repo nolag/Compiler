@@ -35,13 +35,11 @@ public class A5 {
                 "J1_A_ConcatInSimpleInvoke",
                 "J1_A_ConcatInStaticInvoke",
                 "J1_A_String_ByteShortCharInt",
-                "J1_Hello",
-                "J1_StringCast",
-                "J1_WildConcat",
                 "J1_charadd",
                 "J1_concatInMethods",
                 "J1_concat_in_binop",
                 "J1_constructorbodycast",
+                "J1_Hello",
                 "J1_implicitstringconcatenation",
                 "J1_intstringadd",
                 "J1_nestedcast",
@@ -49,13 +47,13 @@ public class A5 {
                 "J1_sideeffects_array2",
                 "J1_sideeffects_array3",
                 "J1_sideeffects_array4",
-                "J1_sideeffects_obj2",
                 "J1_sideeffects_obj",
+                "J1_sideeffects_obj2",
                 "J1_sideeffects_obj3",
                 "J1_sim_xor",
-                "J1_stringadd",
                 "J1_stringconcat",
-                "J1_typecheck_array"
+                "J1_typecheck_array",
+                "J1_WildConcat"
                 ));
 
         Map<String, String> env = System.getenv();

@@ -347,7 +347,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         APkgClassResolver typeDclNode = creationExpression.getType().getTypeDclNode();
 
         if (!creationExpression.getType().isArray){
-            InstructionArg bytes = new Immediate(String.valueOf(typeDclNode.getObjectSize()));
+            InstructionArg bytes = new Immediate(String.valueOf(typeDclNode.getStackSize()));
             instructions.add(new Comment("Allocate " + bytes.getValue() + " bytes for " + typeDclNode.fullName));
             instructions.add(new Mov(Register.ACCUMULATOR, bytes));
             Runtime.malloc(bytes, instructions);
@@ -857,7 +857,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment("New String!"));
         instructions.add(new Comment("allocate the string at the same time (why not)"));
         final long charsLen = (stringSymbol.strValue.length() + SizeHelper.DEFAULT_STACK_SIZE) * 2 + SizeHelper.getIntSize(Size.DWORD);
-        final long length =  charsLen + stringSymbol.getType().getTypeDclNode().getObjectSize();
+        final long length =  charsLen + stringSymbol.getType().getTypeDclNode().getStackSize();
 
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(length))));
         //no need to zero out, it will be set for sure
@@ -910,16 +910,19 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment("Accessing array"));
         instructions.add(new Push(Register.BASE));
         arrayAccess.children.get(0).accept(this);
-        final Size s = lastSize;
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
         arrayAccess.children.get(1).accept(this);
-        instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(SizeHelper.getPushSize(lastSize))));
+
+        long stackSize = arrayAccess.getType().getTypeDclNode().getStackSize();
+        final Size elementSize = SizeHelper.getSize(stackSize);
+        instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(SizeHelper.getPushSize(elementSize))));
         final long offset = SizeHelper.DEFAULT_STACK_SIZE * 2 + SizeHelper.getIntSize(Size.DWORD);
         instructions.add(new Add(Register.ACCUMULATOR, new Immediate(offset)));
+
         if(gettingValue){
             getVal = true;
-            genMov(s, new PointerRegister(Register.ACCUMULATOR, Register.BASE), "array", arrayAccess);
-            lastSize = s;
+            genMov(elementSize, new PointerRegister(Register.ACCUMULATOR, Register.BASE), "array", arrayAccess);
+            lastSize = elementSize;
 
         }else{
             instructions.add(new Add(Register.ACCUMULATOR, Register.BASE));
