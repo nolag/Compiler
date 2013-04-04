@@ -30,7 +30,6 @@ public class A5 {
 
         List<String> failingList = new LinkedList<String>(Arrays.asList(
                 "J1_1_Instanceof_OfAdditiveExpression",
-                "J1_A_ArrayBaseInAssignment",
                 "J1_A_ArrayStoreLoad",
                 "J1_A_ConcatInSimpleInvoke",
                 "J1_A_ConcatInStaticInvoke",
@@ -46,7 +45,6 @@ public class A5 {
                 "J1_sideeffects_array",
                 "J1_sideeffects_array2",
                 "J1_sideeffects_array3",
-                "J1_sideeffects_array4",
                 "J1_sideeffects_obj",
                 "J1_sideeffects_obj2",
                 "J1_sideeffects_obj3",
