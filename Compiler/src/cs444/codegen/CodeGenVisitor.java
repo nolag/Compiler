@@ -54,6 +54,7 @@ import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
+import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
@@ -736,9 +737,55 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Mov(Register.ACCUMULATOR, Register.DATA));
     }
 
+    private void strPartHelper(ISymbol child, APkgClassResolver resolver){
+        final String firstType = ((Typeable)child).getType().getTypeDclNode().fullName;
+        child.accept(this);
+        AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(firstType));
+        if(ms == null) resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(APkgClassResolver.OBJECT));
+
+        lastSize = SizeHelper.getPushSize(lastSize);
+        int pop = SizeHelper.getIntSize(lastSize);
+
+        instructions.add(new Push(Register.ACCUMULATOR, lastSize));
+
+        InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(ms));
+        if(ms.dclInResolver != currentFile) instructions.add(new Extern(arg));
+        instructions.add(new Call(arg));
+
+        instructions.add(new Add(Register.STACK, new Immediate(pop)));
+    }
+
     @Override
     public void visit(AddExprSymbol op) {
-        binOpHelper(op, AddOpMaker.maker);
+        if(op.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.STRING)){
+            final APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);
+            final ISymbol firstChild = op.children.get(0);
+            final ISymbol secondChild = op.children.get(0);
+
+            instructions.add(new Comment("String add first arg"));
+            strPartHelper(firstChild, resolver);
+            instructions.add(new Comment("Backup first string"));
+            instructions.add(new Push(Register.BASE));
+            instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
+
+            instructions.add(new Comment("String add second arg"));
+            strPartHelper(secondChild, resolver);
+
+            instructions.add(new Comment("Pushing second string as arument then first as this"));
+            instructions.add(new Push(Register.ACCUMULATOR));
+            instructions.add(new Push(Register.BASE));
+            final AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.STR_ADD, false, Arrays.asList(JoosNonTerminal.STRING));
+            InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(ms));
+            if(ms.dclInResolver != currentFile) instructions.add(new Extern(arg));
+            instructions.add(new Call(arg));
+
+            instructions.add(new Add(Register.STACK, new Immediate(SizeHelper.DEFAULT_STACK_SIZE * 2)));
+            instructions.add(new Pop(Register.BASE));
+            instructions.add(new Comment("end of string add"));
+            lastSize = SizeHelper.getSize(SizeHelper.DEFAULT_STACK_SIZE);
+        }else{
+            binOpHelper(op, AddOpMaker.maker);
+        }
     }
 
     @Override

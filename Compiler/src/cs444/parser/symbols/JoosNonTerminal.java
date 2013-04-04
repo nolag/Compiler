@@ -49,6 +49,8 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String SHORT = "short";
     public static final String BYTE = "byte";
 
+    public static final String STR_ADD = "concat";
+    public static final String TO_STR = "valueOf";
     public static final String LENGTH = "length";
 
     public static final Map<String, Set<String>> defaultAssignables = new HashMap<String, Set<String>>();

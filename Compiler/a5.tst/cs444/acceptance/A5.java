@@ -50,7 +50,7 @@ public class A5 {
                 "J1_sideeffects_obj",
                 "J1_sideeffects_obj3",
                 "J1_sim_xor",
-                "J1_stringconcat"
+                "J1_stringadd"
                 ));
 
         Map<String, String> env = System.getenv();

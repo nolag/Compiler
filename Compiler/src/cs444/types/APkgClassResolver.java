@@ -209,14 +209,17 @@ public abstract class APkgClassResolver {
     }
 
     public AMethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes, APkgClassResolver pkgClass) throws UndeclaredException {
+        String uniqueName = generateUniqueName(name, paramTypes);
+        AMethodSymbol retVal = safeFindMethod(name, isStatic, paramTypes);
+        if(retVal == null) throw new UndeclaredException(uniqueName, fullName);
+        verifyCanRead(retVal, pkgClass);
+        return retVal;
+    }
+
+    public AMethodSymbol safeFindMethod(String name, boolean isStatic, Iterable<String> paramTypes){
         final Map<String, AMethodSymbol> getFrom = isStatic ? smethodMap : methodMap;
         String uniqueName = generateUniqueName(name, paramTypes);
         AMethodSymbol retVal = getFrom.get(uniqueName);
-
-        if(retVal == null) throw new UndeclaredException(uniqueName, fullName);
-
-        verifyCanRead(retVal, pkgClass);
-
         return retVal;
     }
 
