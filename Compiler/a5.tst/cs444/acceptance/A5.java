@@ -15,7 +15,6 @@ public class A5 {
         List<String> ignoreList = new LinkedList<String>(
                 Arrays.asList(
                         "ImplicitClassNameForStaticFields",
-                        "SmallStringTest2",
                         "NullCheck"
                         )
                 );

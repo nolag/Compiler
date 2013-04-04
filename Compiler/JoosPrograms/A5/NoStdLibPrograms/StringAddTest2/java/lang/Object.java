@@ -10,6 +10,7 @@ public class Object{
     public static int test(){
         String s1 = "lol";
         String s2 = "lol";
+        
         String s3 = s1 + s2;
         int i = 0;
         

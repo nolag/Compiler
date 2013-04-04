@@ -208,6 +208,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     public void visit(MethodInvokeSymbol invoke) {
         MethodOrConstructorSymbol call = invoke.getCallSymbol();
         if(!call.isStatic()){
+            instructions.add(new Comment("Backing up ebx because having this in ecx is bad"));
+            instructions.add(new Push(Register.BASE));
             instructions.add(new Comment("Preping this"));
             final Iterator<Typeable> lookup = invoke.getLookup().dcls.iterator();
             Typeable first = lookup.next();
@@ -219,11 +221,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
             if(first != call){
                 lookupLink(call.dclName, lookup, first, call, 0, !isFieldLookup && ! invoke.hasFirst);
-                instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
+                instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
             }else if(invoke.hasFirst || isFieldLookup){
-                instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
+                instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
             }else{
-                instructions.add(new Mov(Register.COUNTER, PointerRegister.THIS));
+                instructions.add(new Mov(Register.BASE, PointerRegister.THIS));
             }
         }
 
@@ -233,7 +235,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
         }
 
-        if(!call.isStatic()) instructions.add(new Push(Register.COUNTER));
+        if(!call.isStatic())instructions.add(new Push(Register.BASE));
 
         if(call.isStatic() || call.getImplementationLevel() == ImplementationLevel.FINAL){
             InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(invoke.getCallSymbol()));
@@ -241,19 +243,19 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Call(arg));
         }else{
             // TODO: check why this line breaks some tests. Maybe it uncovers a hidden bug:
-            // ifNullJmpCode(Register.COUNTER, Runtime.EXCEPTION_LBL);
+            // ifNullJmpCode(Register.BASE, Runtime.EXCEPTION_LBL);
             instructions.add(new Comment("get SIT column"));
-            instructions.add(new Mov(Register.COUNTER, new PointerRegister(Register.COUNTER)));
+            instructions.add(new Mov(Register.BASE, new PointerRegister(Register.BASE)));
 
             PointerRegister methodAddr = null;
             try {
-                methodAddr = new PointerRegister(Register.COUNTER, selectorITable.getOffset(PkgClassResolver.generateUniqueName(call, call.dclName)));
+                methodAddr = new PointerRegister(Register.BASE, selectorITable.getOffset(PkgClassResolver.generateUniqueName(call, call.dclName)));
             } catch (UndeclaredException e) {
                 // shouldn't get here
                 e.printStackTrace();
             }
-            instructions.add(new Mov(Register.COUNTER,  methodAddr));
-            instructions.add(new Call(Register.COUNTER));
+            instructions.add(new Mov(Register.BASE,  methodAddr));
+            instructions.add(new Call(Register.BASE));
         }
 
         // NOTE: do not use INVOKE in here, invoke gets size from method,
@@ -264,6 +266,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Add(Register.STACK, by));
         }
 
+        if(!call.isStatic())instructions.add(new Pop(Register.BASE));
         instructions.add(new Comment("end invoke"));
     }
 
