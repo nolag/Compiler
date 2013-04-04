@@ -8,10 +8,7 @@ import java.util.Set;
 import cs444.CompilerException;
 import cs444.codegen.ICodeGenVisitor;
 import cs444.codegen.SizeHelper;
-import cs444.lexer.Token;
-import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
-import cs444.parser.symbols.Terminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
@@ -25,23 +22,10 @@ import cs444.types.exceptions.UndeclaredException;
 
 public class ArrayPkgClassResolver extends APkgClassResolver {
     private final APkgClassResolver resolver;
-    private DclSymbol length;
+    public boolean isBuilt = false;
 
     public static String getArrayName(String name){
         return name + "__array";
-    }
-
-    private void addLenght(){
-        try {
-            if(length == null){
-                JoosNonTerminal mods = new JoosNonTerminal("Modifiers", new ISymbol [] { new Terminal(new Token(Token.Type.PUBLIC, "public"))});
-                length = new DclSymbol(JoosNonTerminal.LENGTH, mods, TypeSymbol.getPrimative(JoosNonTerminal.INTEGER), false, true);
-                length.forcePublic();
-            }
-            fieldMap.put(JoosNonTerminal.LENGTH, length);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public ArrayPkgClassResolver(APkgClassResolver resolver) {
@@ -64,7 +48,6 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         }catch (Exception e){
             e.printStackTrace();
         }
-        addLenght();
 
         for(String s : JoosNonTerminal.arraysExtend){
             assignableTo.add(s);
@@ -114,29 +97,32 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
 
     @Override
     protected void build(Set<PkgClassResolver> visited, boolean mustBeInterface, boolean mustBeClass){
-        APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(OBJECT);
-        smethodMap.putAll(resolver.smethodMap);
-        methodMap.putAll(resolver.methodMap);
-        sfieldMap.putAll(resolver.sfieldMap);
-        fieldMap.putAll(resolver.fieldMap);
-        TypeSymbol intType = TypeSymbol.getPrimative(JoosNonTerminal.INTEGER);
+        if(!isBuilt){
+            isBuilt = true;
+            APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(OBJECT);
+            smethodMap.putAll(resolver.smethodMap);
+            methodMap.putAll(resolver.methodMap);
+            sfieldMap.putAll(resolver.sfieldMap);
+            fieldMap.putAll(resolver.fieldMap);
+            TypeSymbol intType = TypeSymbol.getPrimative(JoosNonTerminal.INTEGER);
 
-        try{
-            DclSymbol length = new DclSymbol("length", null, intType, null, false);
-            length.forcePublic();
-            fieldMap.put("length", length);
-        }catch (CompilerException ce){
-            ce.printStackTrace();
-        }
-        try{
-            PkgClassResolver obj = (PkgClassResolver) getClass(OBJECT, true);
-            if(!obj.isBuilt) obj.build();
-            for(AMethodSymbol m : obj.start.getMethods()){
-                String uniqueName = generateUniqueName(m, m.dclName);
-                if(m.isStatic()) smethodMap.put(uniqueName, m);
-                else methodMap.put(uniqueName, m);
+            try{
+                DclSymbol length = new DclSymbol("length", null, intType, null, false);
+                length.forcePublic();
+                fieldMap.put("length", length);
+            }catch (CompilerException ce){
+                ce.printStackTrace();
             }
-        }catch(Exception e){ }
+            try{
+                PkgClassResolver obj = (PkgClassResolver) getClass(OBJECT, true);
+                if(!obj.isBuilt) obj.build();
+                for(AMethodSymbol m : obj.start.getMethods()){
+                    String uniqueName = generateUniqueName(m, m.dclName);
+                    if(m.isStatic()) smethodMap.put(uniqueName, m);
+                    else methodMap.put(uniqueName, m);
+                }
+            }catch(Exception e){ }
+        }
     }
 
     @Override
@@ -160,7 +146,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
 
     @Override
     protected Iterable<DclSymbol> getDcls() {
-        return null;
+        return fieldMap.values();
     }
 
     @Override

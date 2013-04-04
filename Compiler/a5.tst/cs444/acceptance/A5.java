@@ -14,6 +14,7 @@ public class A5 {
     public void testCompileProgramsNoStdLib() throws IOException, InterruptedException{
         List<String> ignoreList = new LinkedList<String>(
                 Arrays.asList(
+                        "SmallStringTest2",
                         "NullCheck"
                         )
                 );
@@ -28,37 +29,35 @@ public class A5 {
 
 
         List<String> failingList = new LinkedList<String>(Arrays.asList(
-"J1_1_Instanceof_OfAdditiveExpression",
-"J1_A_ArrayBaseInAssignment",
-"J1_A_ArrayStoreLoad",
-"J1_A_BooleanArray_External",
-"J1_A_ConcatInSimpleInvoke",
-"J1_A_ConcatInStaticInvoke",
-"J1_A_String_ByteShortCharInt",
-"J1_Hello",
-"J1_StringCast",
-"J1_WildConcat",
-"J1_charadd",
-"J1_callbeforereturn",
-"J1_concatInMethods",
-"J1_concat_in_binop",
-"J1_constructorbodycast",
-"J1_implicitstringconcatenation",
-"J1_intstringadd",
-"J1_nestedcast",
-"J1_sideeffect7",
-"J1_sideeffects_array",
-"J1_sideeffects_array2",
-"J1_sideeffects_array3",
-"J1_sideeffects_array4",
-"J1_sideeffects_obj2",
-"J1_sideeffects_obj",
-"J1_sideeffects_obj3",
-"J1_sim_xor",
-"J1_stringadd",
-"J1_stringconcat",
-"J1_typecheck_array",
-"J1_typecheck_expstm"
+                "J1_1_Instanceof_OfAdditiveExpression",
+                "J1_A_ArrayBaseInAssignment",
+                "J1_A_ArrayStoreLoad",
+                "J1_A_ConcatInSimpleInvoke",
+                "J1_A_ConcatInStaticInvoke",
+                "J1_A_String_ByteShortCharInt",
+                "J1_Hello",
+                "J1_StringCast",
+                "J1_WildConcat",
+                "J1_charadd",
+                "J1_concatInMethods",
+                "J1_concat_in_binop",
+                "J1_constructorbodycast",
+                "J1_implicitstringconcatenation",
+                "J1_intstringadd",
+                "J1_nestedcast",
+                "J1_sideeffect7",
+                "J1_sideeffects_array",
+                "J1_sideeffects_array2",
+                "J1_sideeffects_array3",
+                "J1_sideeffects_array4",
+                "J1_sideeffects_obj",
+                "J1_sideeffects_obj2",
+                "J1_sideeffects_obj3",
+                "J1_sim_xor",
+                "J1_stringadd",
+                "J1_stringconcat",
+                "J1_typecheck_array",
+                "J1e_divisionbyzero"
 ));
 
         Map<String, String> env = System.getenv();

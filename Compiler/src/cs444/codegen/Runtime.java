@@ -27,7 +27,7 @@ public class Runtime {
         return loopnum++;
     }
 
-    public static void malloc(InstructionArg bytes, List<Instruction> instructions) {
+    public static void malloc(InstructionArg bytes, List<Instruction> instructions, boolean zeroOut) {
         // backup regs used by malloc
         instructions.add(new Push(Register.BASE));
         if(bytes != Register.COUNTER)instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
@@ -35,17 +35,23 @@ public class Runtime {
         instructions.add(new Call(MALLOC));
         instructions.add(new Pop(Register.BASE));
 
-        final String myLbl = "ZEROLOOP" + getLoopNum();
+        if(zeroOut){
+            final String myLbl = "ZEROLOOP" + getLoopNum();
 
-        instructions.add(new Comment("The number of bytes is from 0 to size - 1"));
-        instructions.add(new Dec(Register.COUNTER));
+            instructions.add(new Comment("The number of bytes is from 0 to size - 1"));
+            instructions.add(new Dec(Register.COUNTER));
 
-        instructions.add(new Xor(Register.DATA, Register.DATA));
-        instructions.add(new Comment("Zeroing out the newly allocated values"));
-        instructions.add(new Label(myLbl));
-        instructions.add(new Mov(PointerRegister.ZEROING_REGISTER, Register.DATA));
-        instructions.add(new Loop(myLbl));
-        instructions.add(new Comment("Done zeroing out the newly allocated values"));
+            instructions.add(new Xor(Register.DATA, Register.DATA));
+            instructions.add(new Comment("Zeroing out the newly allocated values"));
+            instructions.add(new Label(myLbl));
+            instructions.add(new Mov(PointerRegister.ZEROING_REGISTER, Register.DATA));
+            instructions.add(new Loop(myLbl));
+            instructions.add(new Comment("Done zeroing out the newly allocated values"));
+        }
+    }
+
+    public static void malloc(InstructionArg bytes, List<Instruction> instructions){
+        malloc(bytes, instructions, true);
     }
 
     public static void externAll(List<Instruction> instructions) {

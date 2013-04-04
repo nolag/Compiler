@@ -1,6 +1,7 @@
 package cs444.codegen;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -99,13 +100,15 @@ import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 import cs444.types.APkgClassResolver;
+import cs444.types.ArrayPkgClassResolver;
+import cs444.types.PkgClassInfo;
 import cs444.types.PkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
 public class CodeGenVisitor implements ICodeGenVisitor {
     private static final String INIT_OBJECT_FUNC = "__init_object";
     private final SelectorIndexedTable selectorITable;
-    private SubtypeIndexedTable subtypeITable;
+    private final SubtypeIndexedTable subtypeITable;
     private final List<Instruction> instructions;
     private boolean hasEntry = false;
     private boolean getVal = true;
@@ -557,12 +560,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             Size size = SizeHelper.getSize(lastDcl.getType().getTypeDclNode().realSize);
             instructions.add(new Comment("Move value of field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
             genMov(size, new PointerRegister(Register.ACCUMULATOR, lastDclOffset), lastDcl.dclName, lastDcl);
-
         }else{
             instructions.add(new Comment("Move reference to field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
             instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
-            lastSize = SizeHelper.getSize(stackSize);
         }
+        lastSize = SizeHelper.getSize(stackSize);
     }
 
     private boolean lookupLink(String value, Iterator<Typeable> lookup, Typeable type,
@@ -747,8 +749,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(LtExprSymbol op) {
         compHelper(op, SetlMaker.maker);
-        instructions.add(new Comment("Zero out the rest of the bytes"));
-
     }
 
     @Override
@@ -854,13 +854,52 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(StringLiteralSymbol stringSymbol) {
-        // TODO Auto-generated method stub
+        instructions.add(new Comment("New String!"));
+        instructions.add(new Comment("allocate the string at the same time (why not)"));
+        final long charsLen = (stringSymbol.strValue.length() + SizeHelper.DEFAULT_STACK_SIZE) * 2 + SizeHelper.getIntSize(Size.DWORD);
+        final long length =  charsLen + stringSymbol.getType().getTypeDclNode().getObjectSize();
 
+        instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(length))));
+        //no need to zero out, it will be set for sure
+        Runtime.malloc(new Immediate(String.valueOf(length)), instructions, false);
+        final String charArray = ArrayPkgClassResolver.getArrayName(JoosNonTerminal.CHAR);
+        ObjectLayout.initialize(PkgClassInfo.instance.getSymbol(charArray), instructions);
+
+        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, 8), new Immediate(String.valueOf(stringSymbol.strValue.length()))));
+
+        final char [] cs = stringSymbol.strValue.toCharArray();
+        for(int i = 0; i < cs.length; i++){
+            final long place = 2 * i + SizeHelper.DEFAULT_STACK_SIZE * 2 + SizeHelper.getIntSize(Size.DWORD);
+            final InstructionArg to = new PointerRegister(Register.ACCUMULATOR, new Immediate(String.valueOf(place)));
+            instructions.add(new Mov(to, new Immediate((cs[i])), Size.WORD));
+        }
+        APkgClassResolver resolver = stringSymbol.getType().getTypeDclNode();
+        try {
+            final String arg = charArray;
+            final ConstructorSymbol constructor = resolver.getConstructor(Arrays.asList(arg), resolver);
+            instructions.add(new Comment("First arg to new String"));
+            instructions.add(new Push(Register.ACCUMULATOR));
+            instructions.add(new Comment("This pointer to new string"));
+            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(charsLen)));
+            ObjectLayout.initialize(resolver, instructions);
+            instructions.add(new Push(Register.ACCUMULATOR));
+
+            InstructionArg carg = new Immediate(APkgClassResolver.generateFullId(constructor));
+            if(constructor.dclInResolver != currentFile) instructions.add(new Extern(carg));
+            instructions.add(new Call(carg));
+            instructions.add(new Pop(Register.ACCUMULATOR));
+            instructions.add(new Add(Register.STACK, new Immediate(SizeHelper.DEFAULT_STACK_SIZE)));
+
+        } catch (UndeclaredException e) {
+            //Should never get here
+            e.printStackTrace();
+        }
+        instructions.add(new Comment("End of New String!"));
     }
 
     @Override
     public void visit(CharacterLiteralSymbol characterSymbol) {
-        instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(characterSymbol.getValue()))));
+        instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(characterSymbol.getValue())));
     }
 
     @Override
@@ -875,17 +914,18 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
         arrayAccess.children.get(1).accept(this);
         instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(SizeHelper.getPushSize(lastSize))));
-        long offset = SizeHelper.DEFAULT_STACK_SIZE * 2 + SizeHelper.getIntSize(Size.DWORD);
-        instructions.add(new Add(Register.ACCUMULATOR, new Immediate(String.valueOf(offset))));
+        final long offset = SizeHelper.DEFAULT_STACK_SIZE * 2 + SizeHelper.getIntSize(Size.DWORD);
+        instructions.add(new Add(Register.ACCUMULATOR, new Immediate(offset)));
         if(gettingValue){
             getVal = true;
             genMov(s, new PointerRegister(Register.ACCUMULATOR, Register.BASE), "array", arrayAccess);
+            lastSize = s;
 
         }else{
             instructions.add(new Add(Register.ACCUMULATOR, Register.BASE));
+            lastSize = SizeHelper.getSize(SizeHelper.DEFAULT_STACK_SIZE);
         }
         instructions.add(new Pop(Register.BASE));
-        lastSize = s;
     }
 
     @Override
@@ -927,7 +967,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     private void compHelper(BinOpExpr bin, UniOpMaker uni){
         binOpHelper(bin, CmpMaker.maker);
-        // clear all bits in register
+        instructions.add(new Comment("clear all bits in register"));
         instructions.add(new Mov(Register.ACCUMULATOR, Immediate.ZERO));
         instructions.add(uni.make(Register.ACCUMULATOR));
     }

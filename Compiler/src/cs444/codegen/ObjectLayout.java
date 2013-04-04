@@ -13,8 +13,7 @@ import cs444.types.APkgClassResolver;
 public class ObjectLayout {
     public final static int SUBTYPE_OFFSET = SizeHelper.DEFAULT_STACK_SIZE;
 
-    public static void initialize(APkgClassResolver typeDclNode,
-            List<Instruction> instructions) {
+    public static void initialize(APkgClassResolver typeDclNode, List<Instruction> instructions) {
 
         instructions.add(new Comment("Initializing Pointer to SIT Column"));
         Immediate classSITLabel = new Immediate(typeDclNode.generateSIT());
@@ -24,8 +23,7 @@ public class ObjectLayout {
         instructions.add(new Comment("Initializing Pointer to Subtype Column"));
         Immediate subtypeITLabel = new Immediate(typeDclNode.generateSubtypeIT());
         instructions.add(new Extern(subtypeITLabel));
-        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, SUBTYPE_OFFSET),
-                subtypeITLabel));
+        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, SUBTYPE_OFFSET), subtypeITLabel));
     }
 
     public static void subtypeCheckCode(TypeSymbol subType, SubtypeIndexedTable subtypeITable,
