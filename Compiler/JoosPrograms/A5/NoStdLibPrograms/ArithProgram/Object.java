@@ -10,6 +10,9 @@ public class Object{
         short s = (short)1;
         i = i + s;
         int z = i + k;
-        return z + k + i + c + s;
+        int a = 0;
+        int b = 0;
+        a = b = 30;
+        return z + k + i + c + s + a + b;
     }
 }

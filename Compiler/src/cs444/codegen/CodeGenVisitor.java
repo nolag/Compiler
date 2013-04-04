@@ -923,9 +923,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             getVal = true;
             genMov(elementSize, new PointerRegister(Register.ACCUMULATOR, Register.BASE), "array", arrayAccess);
             lastSize = elementSize;
-
         }else{
             instructions.add(new Add(Register.ACCUMULATOR, Register.BASE));
+            lastOffset = -1;     // use eax and no frame in assignment
             lastSize = SizeHelper.getSize(SizeHelper.DEFAULT_STACK_SIZE);
         }
         instructions.add(new Pop(Register.BASE));
