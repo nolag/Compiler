@@ -61,6 +61,7 @@ import cs444.types.APkgClassResolver.Castable;
 import cs444.types.exceptions.BadOperandsTypeException;
 import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.ExplicitThisInStaticException;
+import cs444.types.exceptions.ForwardReferenceException;
 import cs444.types.exceptions.IllegalCastAssignmentException;
 import cs444.types.exceptions.IllegalInstanceOfException;
 import cs444.types.exceptions.UndeclaredException;
@@ -83,6 +84,11 @@ public class LocalDclLinker extends EmptyVisitor {
         useCurrentScopeForLookup.add(false);
     }
 
+    public LocalDclLinker(String enclosingClassName, boolean isStatic){
+        this(enclosingClassName);
+        pushNewScope(isStatic);
+    }
+
     // creates root scope which will contain parameters declarations
     @Override
     public void open(MethodOrConstructorSymbol methodSymbol){
@@ -90,7 +96,7 @@ public class LocalDclLinker extends EmptyVisitor {
         int where = methodSymbol.isStatic() ? 2 : 3;
         argOffset = SizeHelper.DEFAULT_STACK_SIZE * where;
         pushNewScope(methodSymbol.isStatic());
-        context.setCurrentMC(methodSymbol);
+        context.setCurrentMember(methodSymbol);
     }
 
     @Override
@@ -107,12 +113,19 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void close(MethodOrConstructorSymbol methodSymbol){
         popCurrentScope();
-        context.setCurrentMC(null);
+        context.setCurrentMember(null);
     }
 
     @Override
-    public void open(DclSymbol dclSymbol){
-        currentScope.initializing(dclSymbol.dclName);
+    public void open(DclSymbol dclSymbol) throws DuplicateDeclarationException{
+        if(!dclSymbol.isLocal){ // field?
+            context.setCurrentMember(dclSymbol);
+            currentScope.initializing(dclSymbol.dclName);
+            currentScope.add(dclSymbol.dclName, dclSymbol);
+            pushNewScope(dclSymbol.isStatic());
+        }else{
+            currentScope.initializing(dclSymbol.dclName);
+        }
     }
 
     @Override
@@ -121,15 +134,20 @@ public class LocalDclLinker extends EmptyVisitor {
 
         assertIsAssignable(initType, dclSymbol.getType(), false, false);
 
-        // in close because we cannot used this variable inside its initializer
-        String varName = dclSymbol.dclName;
-        if (currentScope.isDeclared(varName)) throw new DuplicateDeclarationException(varName, context.enclosingClassName);
-        currentScope.add(varName, dclSymbol);
-        if(methodArgs){
-            argOffset += dclSymbol.getType().getTypeDclNode().stackSize;
-        }else{
-            offset -= dclSymbol.getType().getTypeDclNode().stackSize;
-            dclSymbol.setOffset(offset);
+        if (dclSymbol.isLocal){
+            // in close because we cannot used this variable inside its initializer
+            String varName = dclSymbol.dclName;
+            if (currentScope.isDeclared(varName)) throw new DuplicateDeclarationException(varName, context.enclosingClassName);
+            currentScope.add(varName, dclSymbol);
+            if(methodArgs){
+                argOffset += dclSymbol.getType().getTypeDclNode().stackSize;
+            }else{
+                offset -= dclSymbol.getType().getTypeDclNode().stackSize;
+                dclSymbol.setOffset(offset);
+            }
+        }else{ // field?
+            popCurrentScope();
+            context.setCurrentMember(null);
         }
     }
 
@@ -164,7 +182,10 @@ public class LocalDclLinker extends EmptyVisitor {
             dcl = currentScope.find(invoke.lookupFirst);
             if(dcl == null){
                 List<DclSymbol> dcls = resolver.findDcl(invoke.lookupFirst, isStatic, currentSymbols.isEmpty());
-                dcl = dcls.get(dcls.size() - 1);
+                dcl = dcls.get(0);
+                if (dcl.dclInResolver == resolver && context.insideField()){
+                    throw new ForwardReferenceException(context.getMemberName(), dcl.dclName, context.enclosingClassName);
+                }
                 currentSymbols.addAll(dcls);
             }else{
                 currentSymbols.add(dcl);
@@ -187,7 +208,7 @@ public class LocalDclLinker extends EmptyVisitor {
 
         boolean isStatic = currentScope.isStatic;
         if (isStatic && lookup.lastDcl == null){
-            throw new CompilerException(context.enclosingClassName, context.getMethodName(),
+            throw new CompilerException(context.enclosingClassName, context.getMemberName(),
                     "cannot call a static method without naming the class.");
         }
 
@@ -203,7 +224,7 @@ public class LocalDclLinker extends EmptyVisitor {
             TypeSymbol type = mod.getType();
             //If it's a class this would be like the argument is String.  There is no local String.
             if(type.isClass)
-                throw new UndeclaredException("Class arguments", context.getMethodName());
+                throw new UndeclaredException("Class arguments", context.getMemberName());
 
             String name = type.getTypeDclNode().fullName;
             params.add(name);
@@ -296,7 +317,7 @@ public class LocalDclLinker extends EmptyVisitor {
     private void simpleVistorHelper(TypeableTerminal tt, String visitorType) throws UndeclaredException{
         APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(visitorType);
         if (resolver == null) {
-            throw new UndeclaredException(visitorType, PkgClassResolver.generateUniqueName(context.getCurrentMC(), context.getCurrentMC().dclName));
+            throw new UndeclaredException(visitorType, context.getMemberName());
         }
         TypeSymbol type = new TypeSymbol(resolver.fullName, false, false);
         type.setTypeDclNode(resolver);
@@ -349,10 +370,10 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void visit(ThisSymbol thisSymbol) throws UndeclaredException, ExplicitThisInStaticException {
         if (currentScope.isStatic) {
-        	throw new ExplicitThisInStaticException(context.enclosingClassName, context.getCurrentMC().dclName);
+            throw new ExplicitThisInStaticException(context.enclosingClassName, context.getCurrentMember().dclName);
         }
 
-    	simpleVistorHelper(thisSymbol, context.enclosingClassName);
+        simpleVistorHelper(thisSymbol, context.enclosingClassName);
     }
 
     @Override
@@ -450,9 +471,9 @@ public class LocalDclLinker extends EmptyVisitor {
         TypeSymbol was = currentTypes.peek().getLast().getType();
         APkgClassResolver intType = PkgClassInfo.instance.getSymbol(JoosNonTerminal.INTEGER);
         if(intType.getCastablility(was.getTypeDclNode()) == Castable.NOT_CASTABLE){
-            String where = PkgClassResolver.generateUniqueName(context.getCurrentMC(), context.getCurrentMC().dclName);
+            String where = context.getMemberName();
             String name1 = was.isArray ? ArrayPkgClassResolver.getArrayName(was.value) : was.value;
-            String name2 = context.getCurrentMC().type.isArray ? ArrayPkgClassResolver.getArrayName(context.getCurrentMC().type.value) : context.getCurrentMC().type.value;
+            String name2 = context.getCurrentMember().type.isArray ? ArrayPkgClassResolver.getArrayName(context.getCurrentMember().type.value) : context.getCurrentMember().type.value;
             throw new IllegalCastAssignmentException(context.enclosingClassName, where, name1, name2);
         }
         op.setType(TypeSymbol.getPrimative(JoosNonTerminal.INTEGER));
@@ -462,18 +483,18 @@ public class LocalDclLinker extends EmptyVisitor {
     public void visit(InstanceOfExprSymbol op) throws IllegalInstanceOfException, UndeclaredException {
         TypeSymbol rhs = currentTypes.peek().removeLast().getType();
         TypeSymbol lhs = currentTypes.peek().removeLast().getType();
-        String where = PkgClassResolver.generateUniqueName(context.getCurrentMC(), context.getCurrentMC().dclName);
+        String where = context.getMemberName();
         if(lhs.isClass)
-            throw new IllegalInstanceOfException(context.enclosingClassName, where, "Classes:", context.getCurrentMC().type.value);
+            throw new IllegalInstanceOfException(context.enclosingClassName, where, "Classes:", context.getCurrentMember().type.value);
 
         if(!rhs.isClass)
-            throw new IllegalInstanceOfException(context.enclosingClassName, where, "non class:", context.getCurrentMC().type.value);
+            throw new IllegalInstanceOfException(context.enclosingClassName, where, "non class:", context.getCurrentMember().type.value);
 
         if(!lhs.isArray && JoosNonTerminal.notAllowedForInstanceOfLHS.contains(lhs.value))
-            throw new IllegalInstanceOfException(context.enclosingClassName, where, lhs.value, context.getCurrentMC().type.value);
+            throw new IllegalInstanceOfException(context.enclosingClassName, where, lhs.value, context.getCurrentMember().type.value);
 
         if(!rhs.isArray && JoosNonTerminal.notAllowedForInstanceOfRHS.contains(rhs.value))
-            throw new IllegalInstanceOfException(context.enclosingClassName, where, rhs.value, context.getCurrentMC().type.value);
+            throw new IllegalInstanceOfException(context.enclosingClassName, where, rhs.value, context.getCurrentMember().type.value);
         TypeSymbol boolType = TypeSymbol.getPrimative(JoosNonTerminal.BOOLEAN);
         op.setType(boolType);
         currentTypes.peek().add(boolType);
@@ -493,7 +514,7 @@ public class LocalDclLinker extends EmptyVisitor {
         if(castType == Castable.NOT_CASTABLE  || toType.isClass != secondIsClass || (castType == Castable.DOWN_CAST && !allowDownCast)
                 || type.value.equals(JoosNonTerminal.VOID) || toType.value.equals(JoosNonTerminal.VOID)
                 || (!type.value.equals(toType.value) && type.isArray && JoosNonTerminal.primativeNumbers.contains(toType.value))){
-            String where = PkgClassResolver.generateUniqueName(context.getCurrentMC(), context.getCurrentMC().dclName);
+            String where = context.getMemberName();
             String name1 = type.getTypeDclNode().fullName;
             String name2 = toType.getTypeDclNode().fullName;
             throw new IllegalCastAssignmentException(context.enclosingClassName, where, name1, name2);
@@ -516,12 +537,12 @@ public class LocalDclLinker extends EmptyVisitor {
         if(!returnSymbol.children.isEmpty()) currentType = currentTypes.peek().getLast().getType();
         else currentType = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
         returnSymbol.setType(currentType);
-        if(context.getCurrentMC().type.getTypeDclNode().getCastablility(currentType.getTypeDclNode()) != Castable.UP_CAST  || currentType.isClass
-                || (context.getCurrentMC().type.value == JoosNonTerminal.VOID && !returnSymbol.children.isEmpty())){
-            String where = PkgClassResolver.generateUniqueName(context.getCurrentMC(), context.getCurrentMC().dclName);
+        if(context.getCurrentMember().type.getTypeDclNode().getCastablility(currentType.getTypeDclNode()) != Castable.UP_CAST  || currentType.isClass
+                || (context.getCurrentMember().type.value == JoosNonTerminal.VOID && !returnSymbol.children.isEmpty())){
+            String where = context.getMemberName();
 
             String name1 = currentType.isArray ? ArrayPkgClassResolver.getArrayName(currentType.value) : currentType.value;
-            String name2 = context.getCurrentMC().type.isArray ? ArrayPkgClassResolver.getArrayName(context.getCurrentMC().type.value) : context.getCurrentMC().type.value;
+            String name2 = context.getCurrentMember().type.isArray ? ArrayPkgClassResolver.getArrayName(context.getCurrentMember().type.value) : context.getCurrentMember().type.value;
             throw new IllegalCastAssignmentException(context.enclosingClassName, where, name1, name2);
         }
     }
@@ -558,7 +579,7 @@ public class LocalDclLinker extends EmptyVisitor {
                  || (!isType.value.equals(toType.value) && isType.isArray && JoosNonTerminal.primativeNumbers.contains(toType.value))
                  || (JoosNonTerminal.primativeNumbers.contains(isType.value) && !JoosNonTerminal.primativeNumbers.contains(toType.value))
                  || (!JoosNonTerminal.primativeNumbers.contains(isType.value) && JoosNonTerminal.primativeNumbers.contains(toType.value))){
-             String where = PkgClassResolver.generateUniqueName(context.getCurrentMC(), context.getCurrentMC().dclName);
+             String where = context.getMemberName();
              String name1 = isType.getTypeDclNode().fullName;
              String name2 = toType.getTypeDclNode().fullName;
              throw new IllegalCastAssignmentException(context.enclosingClassName, where, name1, name2);
@@ -647,7 +668,7 @@ public class LocalDclLinker extends EmptyVisitor {
 
         if(resolver.isAbstract()){
             throw new CompilerException(context.enclosingClassName,
-                    context.getMethodName(),
+                    context.getMemberName(),
                     "cannot instantiate abstract type " + typeSymbol.value);
         }
 
@@ -659,7 +680,7 @@ public class LocalDclLinker extends EmptyVisitor {
             TypeSymbol type = mod.getType();
             //If it's a class this would be like the argument is String.  There is no local String.
             if(type.isClass)
-                throw new UndeclaredException("Class arguments", context.getMethodName());
+                throw new UndeclaredException("Class arguments", context.getMemberName());
 
             String name = type.getTypeDclNode().fullName;
             params.add(name);
@@ -677,10 +698,10 @@ public class LocalDclLinker extends EmptyVisitor {
         TypeSymbol in = currentTypes.peek().removeLast().getType();
 
         if(in.isClass)
-            throw new UnsupportedException("Array access for classes in " + context.getCurrentMC().dclName + " " + context.enclosingClassName);
+            throw new UnsupportedException("Array access for classes in " + context.getCurrentMember().dclName + " " + context.enclosingClassName);
 
         if(!isNumeric(value, false))
-            throw new UnsupportedException("Array access with non numeric " + value.getType().value + " " + context.getCurrentMC().dclName + " " + context.enclosingClassName);
+            throw new UnsupportedException("Array access with non numeric " + value.getType().value + " " + context.getCurrentMember().dclName + " " + context.enclosingClassName);
 
         TypeSymbol retType = new TypeSymbol(in.value, false, false);
         retType.setTypeDclNode(in.getTypeDclNode().accessor());
@@ -710,13 +731,13 @@ public class LocalDclLinker extends EmptyVisitor {
       BadOperandsTypeException {
 
         if(type.isArray || type.isClass){
-            String where = PkgClassResolver.generateUniqueName(context.getCurrentMC(), context.getCurrentMC().dclName);
-            throw new BadOperandsTypeException(context.enclosingClassName, where, ArrayPkgClassResolver.getArrayName(type.value), context.getCurrentMC().type.value);
+            String where = context.getMemberName();
+            throw new BadOperandsTypeException(context.enclosingClassName, where, ArrayPkgClassResolver.getArrayName(type.value), context.getCurrentMember().type.value);
         }
 
         if(!type.value.equals(JoosNonTerminal.BOOLEAN)){
-            String where = PkgClassResolver.generateUniqueName(context.getCurrentMC(), context.getCurrentMC().dclName);
-            throw new BadOperandsTypeException(context.enclosingClassName, where, type.value, context.getCurrentMC().type.value);
+            String where = context.getMemberName();
+            throw new BadOperandsTypeException(context.enclosingClassName, where, type.value, context.getCurrentMember().type.value);
         }
     }
 
@@ -724,18 +745,18 @@ public class LocalDclLinker extends EmptyVisitor {
             throws UndeclaredException, BadOperandsTypeException {
 
         if(type.isArray || type.isClass){
-            String where = PkgClassResolver.generateUniqueName(context.getCurrentMC(), context.getCurrentMC().dclName);
-            if (die) throw new BadOperandsTypeException(context.enclosingClassName, where, ArrayPkgClassResolver.getArrayName(type.value), context.getCurrentMC().type.value);
+            String where = context.getMemberName();
+            if (die) throw new BadOperandsTypeException(context.enclosingClassName, where, ArrayPkgClassResolver.getArrayName(type.value), context.getCurrentMember().type.value);
             return false;
         }
 
         APkgClassResolver typeResolver = PkgClassInfo.instance.getSymbol(to);
         if (typeResolver == null) {
-            throw new UndeclaredException(to, PkgClassResolver.generateUniqueName(context.getCurrentMC(), context.getCurrentMC().dclName));
+            throw new UndeclaredException(to, context.getMemberName());
         }
         if(typeResolver.getCastablility(type.getTypeDclNode()) == Castable.NOT_CASTABLE){
-            String where = PkgClassResolver.generateUniqueName(context.getCurrentMC(), context.getCurrentMC().dclName);
-            if (die) throw new BadOperandsTypeException(context.enclosingClassName, where, type.value, context.getCurrentMC().type.value);
+            String where = context.getMemberName();
+            if (die) throw new BadOperandsTypeException(context.enclosingClassName, where, type.value, context.getCurrentMember().type.value);
             return false;
         }
         return true;

@@ -67,7 +67,7 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
 
     @Override
     public void open(MethodOrConstructorSymbol method) throws CompilerException {
-        context.setCurrentMC(method);
+        context.setCurrentMember(method);
         stack.push(MAYBE);
     }
 
@@ -75,11 +75,11 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
     public void close(MethodOrConstructorSymbol method)
             throws CompilerException {
         boolean outMethod = stack.pop();
-        MethodOrConstructorSymbol currentMC = context.getCurrentMC();
+        MethodOrConstructorSymbol currentMC = (MethodOrConstructorSymbol) context.getCurrentMember();
         if (outMethod == MAYBE && !currentMC.isVoid() && !currentMC.isAbstract() && !currentMC.isNative()){
-            throw new MissingReturnStatement(context.enclosingClassName, context.getMethodName());
+            throw new MissingReturnStatement(context.enclosingClassName, context.getMemberName());
         }
-        context.setCurrentMC(null);
+        context.setCurrentMember(null);
     }
 
     @Override
@@ -171,7 +171,7 @@ public class ReachabilityAnalyzer implements ISymbolVisitor {
     }
 
     private void assertIsReachable(String what) throws UnreachableCode, UndeclaredException {
-        if(stack.peek() == NO) throw new UnreachableCode(what, context.enclosingClassName, context.getMethodName());
+        if(stack.peek() == NO) throw new UnreachableCode(what, context.enclosingClassName, context.getMemberName());
     }
     @Override
     public void open(WhileExprSymbol whileExprSymbol) throws CompilerException {

@@ -183,4 +183,11 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     public Iterable<DclSymbol> getUninheritedNonStaticFields() {
         return fieldMap.values();
     }
+
+    public void checkFields() throws CompilerException{
+        LocalDclLinker linker = new LocalDclLinker(fullName, true);
+        for(DclSymbol dcl : getDcls()){
+            dcl.accept(linker);
+        }
+    }
 }

@@ -393,6 +393,19 @@ public class PkgClassResolver extends APkgClassResolver {
         }
     }
 
+    public void checkFields() throws CompilerException{
+        if (start == null) return;
+        LocalDclLinker linker = new LocalDclLinker(fullName, true);
+        for(DclSymbol dcl : this.getUninheritedNonStaticFields()){
+            dcl.accept(linker);
+        }
+
+        linker = new LocalDclLinker(fullName, false);
+        for(DclSymbol dcl : this.getUninheritedStaticFields()){
+            dcl.accept(linker);
+        }
+    }
+
     @Override
     public void reduceToConstantExprs() throws CompilerException {
         if (start == null) return;

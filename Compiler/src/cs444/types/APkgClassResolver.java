@@ -281,12 +281,7 @@ public abstract class APkgClassResolver {
 
     protected abstract Iterable<DclSymbol> getDcls();
 
-    public void checkFields() throws CompilerException{
-        FieldLinker myLinker = new FieldLinker(fullName);
-        for(DclSymbol dcl : getDcls()){
-            dcl.accept(myLinker);
-        }
-    }
+    public abstract void checkFields() throws CompilerException;
 
     public abstract APkgClassResolver findClass(String name) throws UndeclaredException;
 

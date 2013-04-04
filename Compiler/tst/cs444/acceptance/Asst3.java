@@ -19,9 +19,6 @@ public class Asst3 {
     @Test
     public void testMarmosetInvalidTestCases() throws IOException, InterruptedException{
         List<String> ignoreList = new LinkedList<String>(Arrays.asList(
-                "Je_6_FinalField_ArrayLength.java",
-                "Je_16_StaticThis_StaticFieldInitializer.java",
-                "Je_1_Dot_ParenthesizedType_Field.java",
                 "Je_5_ForwardReference_ArrayLength.java",
                 "Je_5_ForwardReference_FieldDeclaredLater.java",
                 "Je_5_ForwardReference_FieldDeclaredLater_ComplexExp.java",
@@ -29,7 +26,9 @@ public class Asst3 {
                 "Je_5_ForwardReference_FieldInOwnInitializer_Direct.java",
                 "Je_5_ForwardReference_FieldInOwnInitializer_ReadAfterAssignment.java",
                 "Je_5_ForwardReference_FieldInOwnInitializer_RightSideOfAssignment.java",
-                "Je_6_Assignable_ToSubtype_FieldInit.java"));
+                "Je_5_ForwardReference_InAssignment.java",
+                "Je_6_FinalField_ArrayLength.java"
+                ));
 
         TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a3/invalid/", 42,  false, ignoreList);
     }
