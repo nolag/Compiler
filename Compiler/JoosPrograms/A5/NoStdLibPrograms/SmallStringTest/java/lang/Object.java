@@ -8,6 +8,7 @@ public class Object{
     }
 
     public static int test(){
+        char [] c1 = new char[3];
         String s1 = "lol";
         String s2 = "lol";
         String s3 = "nope";
