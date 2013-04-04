@@ -10,7 +10,7 @@ public class Object{
     public static int test(){
         char [] cs = new char[3];
         cs[0] = 'l';
-        cs[1] = '0';
+        cs[1] = 'o';
         cs[2] = 'l';
         String s1 = new String(cs);
         String s2 = new String(cs);
@@ -19,10 +19,10 @@ public class Object{
         
         char [] cs2 = new char[6];
         cs2[0] = 'l';
-        cs2[1] = '0';
+        cs2[1] = 'o';
         cs2[2] = 'l';
         cs2[3] = 'l';
-        cs2[4] = '0';
+        cs2[4] = 'o';
         cs2[5] = 'l';
         
         String s4 = new String(cs2);
@@ -32,16 +32,17 @@ public class Object{
         
         cs2 = new char[4];
         cs2[0] = 'l';
-        cs2[1] = '0';
+        cs2[1] = 'o';
         cs2[2] = 'l';
         cs2[3] = '7';
-        s4 = new String(cs2);
         
+        s4 = new String(cs2);
+
         s3 = new String(cs) + 7;
         if(!s3.equals((Object)s4)) i = i + 2;
         
         cs2 = new char[5];
-        cs2[1] = '7';
+        cs2[0] = '7';
         cs2[1] = 'r';
         cs2[2] = 'o';
         cs2[3] = 'f';
