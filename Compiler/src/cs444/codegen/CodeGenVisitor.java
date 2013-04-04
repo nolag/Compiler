@@ -539,6 +539,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         final DclSymbol lastDcl = nameSymbol.getLastLookupDcl();
         long lastDclOffset = lastDcl.getOffset();
         long stackSize = lastDcl.getType().getTypeDclNode().realSize;
+        lastSize = SizeHelper.getSize(stackSize);
 
         if(lastDcl.isLocal){
             genCodeForLocalVar(nameSymbol, lastDcl, lastDclOffset, stackSize);
@@ -564,7 +565,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Comment("Move reference to field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
             instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
         }
-        lastSize = SizeHelper.getSize(stackSize);
     }
 
     private boolean lookupLink(String value, Iterator<Typeable> lookup, Typeable type,
