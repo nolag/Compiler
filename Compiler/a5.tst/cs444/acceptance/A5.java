@@ -50,15 +50,14 @@ public class A5 {
                 "J1_sideeffects_array2",
                 "J1_sideeffects_array3",
                 "J1_sideeffects_array4",
-                "J1_sideeffects_obj",
                 "J1_sideeffects_obj2",
+                "J1_sideeffects_obj",
                 "J1_sideeffects_obj3",
                 "J1_sim_xor",
                 "J1_stringadd",
                 "J1_stringconcat",
-                "J1_typecheck_array",
-                "J1e_divisionbyzero"
-));
+                "J1_typecheck_array"
+                ));
 
         Map<String, String> env = System.getenv();
         String allTest = env.get("all_tests");
