@@ -308,11 +308,13 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             e.printStackTrace();
         }
 
-        methProlog(method, methodName);
-
-        for(ISymbol child : method.children) child.accept(this);
-
-        methEpilogue(method);
+        if(method.isNative()){
+            instructions.add(new Extern(methodName));
+        }else{
+            methProlog(method, methodName);
+            for(ISymbol child : method.children) child.accept(this);
+            methEpilogue(method);
+        }
     }
 
     @Override

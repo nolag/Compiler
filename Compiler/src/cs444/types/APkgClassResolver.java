@@ -40,6 +40,7 @@ public abstract class APkgClassResolver {
     public static final String CLONABLE = LANG + ".Cloneable";
     private static final String IO = "java.io";
     public static final String SERIALIZABLE= IO + ".Serializable";
+    public static final String NATIVE_NAME = "NATIVE";
 
     protected final Set<String> assignableTo = new HashSet<String>();
     protected final Map<String, PkgClassResolver> namedMap = new HashMap<String, PkgClassResolver>();
@@ -92,7 +93,16 @@ public abstract class APkgClassResolver {
         return sb.toString();
     }
 
+    public static String getNativeName(String str){
+        return NATIVE_NAME + str;
+    }
+
     public static String generateUniqueName(MethodOrConstructorSymbol methodSymbol, String name) throws UndeclaredException {
+
+        if(methodSymbol.isNative()){
+            getNativeName(methodSymbol.dclName);
+        }
+
         List<String> types = new LinkedList<String>();
         APkgClassResolver resolver = methodSymbol.resolver;
         for(DclSymbol param : methodSymbol.params){
@@ -103,30 +113,25 @@ public abstract class APkgClassResolver {
         return generateUniqueName(name, types);
     }
 
-    private static String getClassName(APkgClassResolver resolver){
-        return resolver.fullName.replace('.', '_');
-    }
-
     public static String generateFullId(MethodOrConstructorSymbol methodSymbol){
         String name = methodSymbol instanceof ConstructorSymbol ? "this" : methodSymbol.dclName;
         String value = null;
         try{
-            value = getClassName(methodSymbol.dclInResolver) + "_" + generateUniqueName(methodSymbol, name);
+            value = methodSymbol.dclInResolver.fullName + "." + generateUniqueName(methodSymbol, name);
         }catch(UndeclaredException e){ /*Should never happen based on where it is called from*/}
         return value;
     }
 
     public String generateSIT(){
-        return getClassName(this) + "@SIT";
+        return fullName + "@SIT";
     }
 
     public String generateSubtypeIT() {
-        return getClassName(this) + "@Subtype";
+        return fullName + "@Subtype";
     }
 
     public static String getUniqueNameFor(DclSymbol fieldDcl) {
-        String className = getClassName(fieldDcl.dclInResolver);
-        return className + "_field_" + fieldDcl.dclName;
+        return  fieldDcl.dclInResolver.fullName + "_field_" + fieldDcl.dclName;
     }
 
     public abstract APkgClassResolver getClass(String name, boolean die) throws UndeclaredException;
@@ -220,6 +225,15 @@ public abstract class APkgClassResolver {
         final Map<String, AMethodSymbol> getFrom = isStatic ? smethodMap : methodMap;
         String uniqueName = generateUniqueName(name, paramTypes);
         AMethodSymbol retVal = getFrom.get(uniqueName);
+        //NOTE if I change the native name to include the params then I don't need this
+        if(retVal == null){
+            retVal = getFrom.get(getNativeName(name));
+            if(retVal != null){
+                for(DclSymbol dc : retVal.params){
+                    if(!paramTypes.equals(dc.getType().getTypeDclNode().fullName)) return null;
+                }
+            }
+        }
         return retVal;
     }
 
