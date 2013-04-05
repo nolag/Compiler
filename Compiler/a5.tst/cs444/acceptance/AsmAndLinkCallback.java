@@ -48,7 +48,9 @@ import java.util.Scanner;
             }
 
             if (expectedReturnCode != returnCode){
-                System.out.print("WRC" + returnCode + "->");
+                System.out.println("\nWrong return code " + returnCode +
+                        " expected: " + expectedReturnCode);
+                System.out.println("In: " + file);
                 return false;
             }
             return true;

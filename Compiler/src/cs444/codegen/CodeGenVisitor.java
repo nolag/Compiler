@@ -681,9 +681,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Label(castExprEnd));
 
             lastSize = SizeHelper.getPushSize(Size.DWORD);
-        }else{
+        }else{ // Primitive casting:
             lastSize = SizeHelper.getSize(type.getTypeDclNode().realSize);
-            //TODO object cast to primative and other primitives (unbox/box)
+            genMov(lastSize, Register.ACCUMULATOR, "cast to " + type.value, type);
         }
     }
 
