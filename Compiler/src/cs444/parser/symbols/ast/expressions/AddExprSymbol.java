@@ -5,6 +5,7 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.codegen.ICodeGenVisitor;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.INumericLiteral;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
@@ -51,13 +52,13 @@ public class AddExprSymbol extends BinOpExpr {
             return new IntegerLiteralSymbol(val1 + val2);
         } else if (rightOperand instanceof StringLiteralSymbol &&
                 leftOperand instanceof INumericLiteral){
-            int val1 = ((INumericLiteral)leftOperand).getValue();
+            String val1 = getValFrom(leftOperand);
             String val2 = ((StringLiteralSymbol)rightOperand).strValue;
             return new StringLiteralSymbol(val1 + val2);
         } else if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof StringLiteralSymbol){
             String val1 = ((StringLiteralSymbol)leftOperand).strValue;
-            int val2 = ((INumericLiteral)rightOperand).getValue();
+            String val2 = getValFrom(rightOperand);
             return new StringLiteralSymbol(val1 + val2);
         } else if(rightOperand instanceof StringLiteralSymbol && 
                 leftOperand instanceof StringLiteralSymbol){
@@ -67,5 +68,14 @@ public class AddExprSymbol extends BinOpExpr {
         }else{
             return null;
         }
+    }
+
+    private String getValFrom(ISymbol leftOperand) {
+        int val1 = ((INumericLiteral)leftOperand).getValue();
+        String strVal = String.valueOf(val1);
+        if (leftOperand instanceof CharacterLiteralSymbol){
+            strVal = String.valueOf((char)val1);
+        }
+        return strVal;
     }
 }

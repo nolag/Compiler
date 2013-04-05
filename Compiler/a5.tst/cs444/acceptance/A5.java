@@ -28,7 +28,6 @@ public class A5 {
     public void testMarmosetPrograms() throws IOException, InterruptedException{
 
         List<String> failingList = new LinkedList<String>(Arrays.asList(
-                "J1_charadd",
                 "J1_Hello",
                 "J1_implicitstringconcatenation",
                 "J1_intstringadd",
