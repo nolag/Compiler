@@ -31,7 +31,6 @@ public class A5 {
                 "J1_Hello",
                 "J1_implicitstringconcatenation",
                 "J1_sideeffects_array2",
-                "J1_sideeffects_obj3",
                 "J1_sim_xor"
                 ));
 
