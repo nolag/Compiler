@@ -17,6 +17,7 @@ import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Int;
 import cs444.codegen.instructions.Je;
+import cs444.codegen.instructions.Jg;
 import cs444.codegen.instructions.Jmp;
 import cs444.codegen.instructions.Jne;
 import cs444.codegen.instructions.Label;
@@ -281,7 +282,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(AInterfaceOrClassSymbol aInterfaceOrClassSymbol) {
-        // TODO More?
         for(ISymbol child : aInterfaceOrClassSymbol.children) child.accept(this);
     }
 
@@ -368,9 +368,18 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }else{
             instructions.add(new Comment("Getting size for array constuction"));
             creationExpression.children.get(0).accept(this);
+
+            instructions.add(new Comment("Checking array size > 0"));
+            final String ok = "arrayCreateOk" + getNewLblNum();
+            instructions.add(new Xor(Register.DATA, Register.DATA));
+            instructions.add(new Cmp(Register.ACCUMULATOR, Register.DATA));
+
+            instructions.add(new Jg(new Immediate(ok)));
+            Runtime.throwException(instructions, "Invalid array creation");
+            instructions.add(new Label(ok));
+
             instructions.add(new Comment("Save the size of the array"));
             instructions.add(new Push(Register.ACCUMULATOR));
-            //TODO add check that the size is > 0
             instructions.add(new Shl(Register.ACCUMULATOR, Immediate.STACK_SIZE_POWER));
 
             instructions.add(new Comment("Adding space for SIT, cast info, and length" + typeDclNode.fullName));
@@ -381,6 +390,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             Runtime.malloc(Register.ACCUMULATOR, instructions);
             instructions.add(new Comment("Pop the size"));
             instructions.add(new Pop(Register.DATA));
+
 
             final long lengthIndex = SizeHelper.DEFAULT_STACK_SIZE  * 2;
             Immediate li = new Immediate(String.valueOf(lengthIndex));
@@ -977,6 +987,29 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         arrayAccess.children.get(0).accept(this);
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
         arrayAccess.children.get(1).accept(this);
+
+        String ok = "arrayCreateOk" + getNewLblNum();
+        instructions.add(new Xor(Register.DATA, Register.DATA));
+        instructions.add(new Cmp(Register.ACCUMULATOR, Register.DATA));
+
+        instructions.add(new Jg(new Immediate(ok)));
+        Runtime.throwException(instructions, "Invalid array creation");
+        instructions.add(new Label(ok));
+
+        ok = "arrayCreateOk" + getNewLblNum();
+        instructions.add(new Cmp(Register.BASE, Register.DATA));
+
+        instructions.add(new Jne(new Immediate(ok)));
+        Runtime.throwException(instructions, "Invalid array creation");
+        instructions.add(new Label(ok));
+
+        ok = "arrayCreateOk" + getNewLblNum();
+        InstructionArg len = new PointerRegister(Register.BASE, new Immediate(SizeHelper.DEFAULT_STACK_SIZE  * 2));
+        instructions.add(new Cmp(len, Register.ACCUMULATOR));
+
+        instructions.add(new Jg(new Immediate(ok)));
+        Runtime.throwException(instructions, "Invalid array creation");
+        instructions.add(new Label(ok));
 
         long stackSize = arrayAccess.getType().getTypeDclNode().getStackSize();
         final Size elementSize = SizeHelper.getSize(stackSize);
