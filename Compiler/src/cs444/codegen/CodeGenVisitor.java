@@ -614,19 +614,18 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             final String staticFieldLbl = PkgClassResolver.getUniqueNameFor(staticField);
             if(staticField.dclInResolver != currentFile) instructions.add(new Extern(staticFieldLbl));
 
-            if (staticField == lastDcl && getVal){
-                Size size = SizeHelper.getSize(staticField.getType().getTypeDclNode().realSize);
+            if (getVal){
+                lastSize = SizeHelper.getSize(staticField.getType().getTypeDclNode().realSize);
                 instructions.add(new Comment("Move value of static field " + staticField.dclName + " to Accumulator"));
-                instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(new Immediate(staticFieldLbl)), size));
-                return true;
-            }
-            // get reference
-            instructions.add(new Comment("Move label of static field " + staticField.dclName + " to Accumulator"));
-            instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl)));
-            if (staticField == lastDcl){
+                genMov(lastSize, new PointerRegister(new Immediate(staticFieldLbl)), staticFieldLbl, staticField);
+            }else {
+                // get reference
+                instructions.add(new Comment("Move Reference of static field " + staticField.dclName + " to Accumulator"));
+                instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl)));
                 lastSize = SizeHelper.getSize(stackSize);
-                return true;
             }
+            return true;
+
         }else if(forceThis){
             instructions.add(new Comment("Force This pointer"));
             instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
@@ -693,8 +692,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         symbol.getOperandExpression().accept(this);
 
         String typeName = type.getTypeDclNode().fullName;
-        if(!JoosNonTerminal.primativeNumbers.contains(typeName)
-                && !JoosNonTerminal.otherPrimatives.contains(typeName)){
+        if(isReferenceType(typeName)){
             String castExprEnd = "CastExprEnd" + getNewLblNum();
             ifNullJmpCode(Register.ACCUMULATOR, castExprEnd);
 
@@ -710,6 +708,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             lastSize = SizeHelper.getSize(type.getTypeDclNode().realSize);
             genMov(lastSize, Register.ACCUMULATOR, "cast to " + type.value, type);
         }
+    }
+
+    private boolean isReferenceType(String typeName) {
+        return !JoosNonTerminal.primativeNumbers.contains(typeName)
+                && !JoosNonTerminal.otherPrimatives.contains(typeName);
     }
 
     @Override
