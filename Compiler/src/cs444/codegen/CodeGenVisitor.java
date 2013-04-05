@@ -907,8 +907,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(StringLiteralSymbol stringSymbol) {
-        final String value = stringSymbol.strValue.length() == 0 ? "zlen" : stringSymbol.strValue;
-        instructions.add(new Comment("New String: " + value));
+//        final String value = stringSymbol.strValue.length() == 0 ? "zlen" : stringSymbol.strValue;
+//        instructions.add(new Comment("New String: '" + value + "'"));
         instructions.add(new Comment("allocate the string at the same time (why not)"));
         final long charsLen = (stringSymbol.strValue.length() + SizeHelper.DEFAULT_STACK_SIZE) * 2 + SizeHelper.getIntSize(Size.DWORD);
         final long length =  charsLen + stringSymbol.getType().getTypeDclNode().getStackSize();
