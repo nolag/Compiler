@@ -28,8 +28,6 @@ public class A5 {
     public void testMarmosetPrograms() throws IOException, InterruptedException{
 
         List<String> failingList = new LinkedList<String>(Arrays.asList(
-                "J1_1_Instanceof_OfAdditiveExpression",
-                "J1_A_ArrayStoreLoad",
                 "J1_A_ConcatInSimpleInvoke",
                 "J1_A_ConcatInStaticInvoke",
                 "J1_A_String_ByteShortCharInt",
