@@ -395,8 +395,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     private void invokeConstructor(final APkgClassResolver resolver, List<ISymbol> children) {
         List<String> types = new LinkedList<String>();
 
-        //put object in c
-        instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
+        instructions.add(new Comment("Back up addr of obj in Base so it is safe"));
+        instructions.add(new Push(Register.BASE));
+        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
 
         for(ISymbol child : children){
             child.accept(this);
@@ -406,7 +407,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             types.add(ts.getTypeDclNode().fullName);
         }
 
-        instructions.add(new Push(Register.COUNTER));
+        instructions.add(new Push(Register.BASE));
 
         ConstructorSymbol cs = null;
         try {
@@ -419,7 +420,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(cs));
         if(cs.dclInResolver != currentFile) instructions.add(new Extern(arg));
         instructions.add(new Call(arg));
-
         //return value is the new object
         instructions.add(new Pop(Register.ACCUMULATOR));
 
@@ -428,6 +428,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             Immediate by = new Immediate(String.valueOf(mySize));
             instructions.add(new Add(Register.STACK, by));
         }
+        instructions.add(new Comment("Restore Base register"));
+        instructions.add(new Pop(Register.BASE));
     }
 
     @Override
