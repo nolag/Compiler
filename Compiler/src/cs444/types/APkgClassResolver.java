@@ -40,7 +40,6 @@ public abstract class APkgClassResolver {
     public static final String CLONABLE = LANG + ".Cloneable";
     private static final String IO = "java.io";
     public static final String SERIALIZABLE= IO + ".Serializable";
-    public static final String NATIVE_NAME = "NATIVE";
 
     protected final Set<String> assignableTo = new HashSet<String>();
     protected final Map<String, PkgClassResolver> namedMap = new HashMap<String, PkgClassResolver>();
@@ -93,14 +92,11 @@ public abstract class APkgClassResolver {
         return sb.toString();
     }
 
-    public static String getNativeName(String str){
-        return NATIVE_NAME + str;
-    }
 
     public static String generateUniqueName(MethodOrConstructorSymbol methodSymbol, String name) throws UndeclaredException {
 
         if(methodSymbol.isNative()){
-            getNativeName(methodSymbol.dclName);
+            return methodSymbol.dclName;
         }
 
         List<String> types = new LinkedList<String>();
@@ -213,7 +209,7 @@ public abstract class APkgClassResolver {
         return findDcl(name, isStatic, this, allowClass);
     }
 
-    public AMethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes, APkgClassResolver pkgClass) throws UndeclaredException {
+    public AMethodSymbol findMethod(String name, boolean isStatic, List<String> paramTypes, APkgClassResolver pkgClass) throws UndeclaredException {
         String uniqueName = generateUniqueName(name, paramTypes);
         AMethodSymbol retVal = safeFindMethod(name, isStatic, paramTypes);
         if(retVal == null) throw new UndeclaredException(uniqueName, fullName);
@@ -221,16 +217,18 @@ public abstract class APkgClassResolver {
         return retVal;
     }
 
-    public AMethodSymbol safeFindMethod(String name, boolean isStatic, Iterable<String> paramTypes){
+    public AMethodSymbol safeFindMethod(String name, boolean isStatic, List<String> paramTypes){
         final Map<String, AMethodSymbol> getFrom = isStatic ? smethodMap : methodMap;
         String uniqueName = generateUniqueName(name, paramTypes);
         AMethodSymbol retVal = getFrom.get(uniqueName);
         //NOTE if I change the native name to include the params then I don't need this
         if(retVal == null){
-            retVal = getFrom.get(getNativeName(name));
+            retVal = getFrom.get(name);
+
             if(retVal != null){
-                for(DclSymbol dc : retVal.params){
-                    if(!paramTypes.equals(dc.getType().getTypeDclNode().fullName)) return null;
+                if(paramTypes.size() != retVal.params.size()) return null;
+                for(int i = 0; i < paramTypes.size(); i++){
+                    if(!paramTypes.get(i).equals(retVal.params.get(i).getType().value)) return null;
                 }
             }
         }

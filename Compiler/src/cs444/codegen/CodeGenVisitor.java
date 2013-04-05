@@ -109,6 +109,9 @@ import cs444.types.exceptions.UndeclaredException;
 
 public class CodeGenVisitor implements ICodeGenVisitor {
     private static final String INIT_OBJECT_FUNC = "__init_object";
+    public static final String NATIVE_NAME = "NATIVE";
+
+
     private final SelectorIndexedTable selectorITable;
     private final SubtypeIndexedTable subtypeITable;
     private final List<Instruction> instructions;
@@ -239,7 +242,13 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         if(!call.isStatic())instructions.add(new Push(Register.BASE));
 
         if(call.isStatic() || call.getImplementationLevel() == ImplementationLevel.FINAL){
-            InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(invoke.getCallSymbol()));
+            String name = APkgClassResolver.generateFullId(invoke.getCallSymbol());
+            if(call.isNative()) name = NATIVE_NAME + name;
+            InstructionArg arg = new Immediate(name);
+            if(call.isNative()){
+                instructions.add(new Push(Register.BASE));
+                instructions.add(new Extern(arg));
+            }
             if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
             instructions.add(new Call(arg));
         }else{
@@ -267,7 +276,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Add(Register.STACK, by));
         }
 
-        if(!call.isStatic())instructions.add(new Pop(Register.BASE));
+        if(!call.isStatic() || call.isNative())instructions.add(new Pop(Register.BASE));
 
         instructions.add(new Comment("end invoke"));
     }
