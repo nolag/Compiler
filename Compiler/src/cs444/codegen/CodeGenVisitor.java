@@ -267,6 +267,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }
 
         if(!call.isStatic())instructions.add(new Pop(Register.BASE));
+
         instructions.add(new Comment("end invoke"));
     }
 
@@ -387,6 +388,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, li), Register.DATA));
             ObjectLayout.initialize(typeDclNode, instructions);
         }
+        lastSize = Size.DWORD;
         instructions.add(new Comment("Done creating object"));
     }
 
