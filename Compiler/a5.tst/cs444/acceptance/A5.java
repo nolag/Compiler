@@ -30,7 +30,6 @@ public class A5 {
         List<String> failingList = new LinkedList<String>(Arrays.asList(
                 "J1_Hello",
                 "J1_implicitstringconcatenation",
-                "J1_sideeffects_array",
                 "J1_sideeffects_array2",
                 "J1_sideeffects_array3",
                 "J1_sideeffects_obj",

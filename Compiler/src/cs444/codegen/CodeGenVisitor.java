@@ -706,28 +706,33 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(AssignmentExprSymbol op) {
-        op.children.get(1).accept(this);
+        ISymbol leftHandSide = op.children.get(0);
+        ISymbol rightHandSide = op.children.get(1);
+
+        instructions.add(new Comment("Start Assignment " + leftHandSide.getName() + "="
+                + rightHandSide.getName()));
+        // LHS
         boolean tmp = getVal;
         getVal = false;
-        instructions.add(new Push(Register.ACCUMULATOR));
-
-        // LHS
         lastOffset = -1;
-        op.children.get(0).accept(this);
+        leftHandSide.accept(this);
+        instructions.add(new Push(Register.ACCUMULATOR));
+        long LHSAddrOffset = lastOffset;
+        Size LHSSize = lastSize;
+
+        getVal = tmp;
+        rightHandSide.accept(this);
 
         instructions.add(new Pop(Register.DATA));
 
-        if (lastOffset != -1){
-            InstructionArg to = new PointerRegister(Register.FRAME, lastOffset);
-            instructions.add(new Mov(to, Register.DATA, lastSize));
+        if (LHSAddrOffset != -1){
+            InstructionArg to = new PointerRegister(Register.FRAME, LHSAddrOffset);
+            instructions.add(new Mov(to, Register.ACCUMULATOR, LHSSize));
         }else{
-            InstructionArg to = new PointerRegister(Register.ACCUMULATOR);
-            instructions.add(new Mov(to, Register.DATA, lastSize));
+            InstructionArg to = new PointerRegister(Register.DATA);
+            instructions.add(new Mov(to, Register.ACCUMULATOR, LHSSize));
         }
-
-        instructions.add(new Comment("Move result of assignment expr to Accumulator, so it's available to parent"));
-        instructions.add(new Mov(Register.ACCUMULATOR, Register.DATA));
-        getVal = tmp;
+        instructions.add(new Comment("End Assignment"));
     }
 
     @Override
