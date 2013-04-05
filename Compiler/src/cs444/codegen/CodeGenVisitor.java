@@ -744,7 +744,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         final String firstType = ((Typeable)child).getType().getTypeDclNode().fullName;
         child.accept(this);
         AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(firstType));
-        if(ms == null) resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(APkgClassResolver.OBJECT));
+        if(ms == null) ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(APkgClassResolver.OBJECT));
 
         lastSize = SizeHelper.getPushSize(lastSize);
         int pop = SizeHelper.getIntSize(lastSize);
