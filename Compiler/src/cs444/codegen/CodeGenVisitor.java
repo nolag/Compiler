@@ -679,8 +679,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Pop(Register.ACCUMULATOR));
 
             instructions.add(new Label(castExprEnd));
+
+            lastSize = SizeHelper.getPushSize(Size.DWORD);
         }else{
-            //TODO object cast to primative and other primitives
+            lastSize = SizeHelper.getSize(type.getTypeDclNode().realSize);
+            //TODO object cast to primative and other primitives (unbox/box)
         }
     }
 
@@ -946,6 +949,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             //Should never get here
             e.printStackTrace();
         }
+        lastSize = Size.DWORD;
         instructions.add(new Comment("End of New String!"));
     }
 
