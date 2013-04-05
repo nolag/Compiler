@@ -92,7 +92,13 @@ public abstract class APkgClassResolver {
         return sb.toString();
     }
 
+
     public static String generateUniqueName(MethodOrConstructorSymbol methodSymbol, String name) throws UndeclaredException {
+
+        if(methodSymbol.isNative()){
+            return methodSymbol.dclName;
+        }
+
         List<String> types = new LinkedList<String>();
         APkgClassResolver resolver = methodSymbol.resolver;
         for(DclSymbol param : methodSymbol.params){
@@ -103,30 +109,25 @@ public abstract class APkgClassResolver {
         return generateUniqueName(name, types);
     }
 
-    private static String getClassName(APkgClassResolver resolver){
-        return resolver.fullName.replace('.', '_');
-    }
-
     public static String generateFullId(MethodOrConstructorSymbol methodSymbol){
         String name = methodSymbol instanceof ConstructorSymbol ? "this" : methodSymbol.dclName;
         String value = null;
         try{
-            value = getClassName(methodSymbol.dclInResolver) + "_" + generateUniqueName(methodSymbol, name);
+            value = methodSymbol.dclInResolver.fullName + "." + generateUniqueName(methodSymbol, name);
         }catch(UndeclaredException e){ /*Should never happen based on where it is called from*/}
         return value;
     }
 
     public String generateSIT(){
-        return getClassName(this) + "@SIT";
+        return fullName + "@SIT";
     }
 
     public String generateSubtypeIT() {
-        return getClassName(this) + "@Subtype";
+        return fullName + "@Subtype";
     }
 
     public static String getUniqueNameFor(DclSymbol fieldDcl) {
-        String className = getClassName(fieldDcl.dclInResolver);
-        return className + "_field_" + fieldDcl.dclName;
+        return  fieldDcl.dclInResolver.fullName + "_field_" + fieldDcl.dclName;
     }
 
     public abstract APkgClassResolver getClass(String name, boolean die) throws UndeclaredException;
@@ -208,7 +209,7 @@ public abstract class APkgClassResolver {
         return findDcl(name, isStatic, this, allowClass);
     }
 
-    public AMethodSymbol findMethod(String name, boolean isStatic, Iterable<String> paramTypes, APkgClassResolver pkgClass) throws UndeclaredException {
+    public AMethodSymbol findMethod(String name, boolean isStatic, List<String> paramTypes, APkgClassResolver pkgClass) throws UndeclaredException {
         String uniqueName = generateUniqueName(name, paramTypes);
         AMethodSymbol retVal = safeFindMethod(name, isStatic, paramTypes);
         if(retVal == null) throw new UndeclaredException(uniqueName, fullName);
@@ -216,10 +217,21 @@ public abstract class APkgClassResolver {
         return retVal;
     }
 
-    public AMethodSymbol safeFindMethod(String name, boolean isStatic, Iterable<String> paramTypes){
+    public AMethodSymbol safeFindMethod(String name, boolean isStatic, List<String> paramTypes){
         final Map<String, AMethodSymbol> getFrom = isStatic ? smethodMap : methodMap;
         String uniqueName = generateUniqueName(name, paramTypes);
         AMethodSymbol retVal = getFrom.get(uniqueName);
+        //NOTE if I change the native name to include the params then I don't need this
+        if(retVal == null){
+            retVal = getFrom.get(name);
+
+            if(retVal != null){
+                if(paramTypes.size() != retVal.params.size()) return null;
+                for(int i = 0; i < paramTypes.size(); i++){
+                    if(!paramTypes.get(i).equals(retVal.params.get(i).getType().value)) return null;
+                }
+            }
+        }
         return retVal;
     }
 

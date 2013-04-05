@@ -17,7 +17,6 @@ import cs444.codegen.instructions.Global;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Int;
 import cs444.codegen.instructions.Je;
-import cs444.codegen.instructions.Jg;
 import cs444.codegen.instructions.Jmp;
 import cs444.codegen.instructions.Jne;
 import cs444.codegen.instructions.Label;
@@ -109,6 +108,9 @@ import cs444.types.exceptions.UndeclaredException;
 
 public class CodeGenVisitor implements ICodeGenVisitor {
     private static final String INIT_OBJECT_FUNC = "__init_object";
+    public static final String NATIVE_NAME = "NATIVE";
+
+
     private final SelectorIndexedTable selectorITable;
     private final SubtypeIndexedTable subtypeITable;
     private final List<Instruction> instructions;
@@ -239,7 +241,13 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         if(!call.isStatic())instructions.add(new Push(Register.BASE));
 
         if(call.isStatic() || call.getImplementationLevel() == ImplementationLevel.FINAL){
-            InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(invoke.getCallSymbol()));
+            String name = APkgClassResolver.generateFullId(invoke.getCallSymbol());
+            if(call.isNative()) name = NATIVE_NAME + name;
+            InstructionArg arg = new Immediate(name);
+            if(call.isNative()){
+                instructions.add(new Push(Register.BASE));
+                instructions.add(new Extern(arg));
+            }
             if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
             instructions.add(new Call(arg));
         }else{
@@ -267,7 +275,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Add(Register.STACK, by));
         }
 
-        if(!call.isStatic())instructions.add(new Pop(Register.BASE));
+        if(!call.isStatic() || call.isNative())instructions.add(new Pop(Register.BASE));
 
         instructions.add(new Comment("end invoke"));
     }
@@ -282,6 +290,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(AInterfaceOrClassSymbol aInterfaceOrClassSymbol) {
+        // TODO More?
         for(ISymbol child : aInterfaceOrClassSymbol.children) child.accept(this);
     }
 
@@ -308,11 +317,13 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             e.printStackTrace();
         }
 
-        methProlog(method, methodName);
-
-        for(ISymbol child : method.children) child.accept(this);
-
-        methEpilogue(method);
+        if(method.isNative()){
+            instructions.add(new Extern(methodName));
+        }else{
+            methProlog(method, methodName);
+            for(ISymbol child : method.children) child.accept(this);
+            methEpilogue(method);
+        }
     }
 
     @Override
@@ -368,18 +379,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }else{
             instructions.add(new Comment("Getting size for array constuction"));
             creationExpression.children.get(0).accept(this);
-
-            instructions.add(new Comment("Checking array size > 0"));
-            final String ok = "arrayCreateOk" + getNewLblNum();
-            instructions.add(new Xor(Register.DATA, Register.DATA));
-            instructions.add(new Cmp(Register.ACCUMULATOR, Register.DATA));
-
-            instructions.add(new Jg(new Immediate(ok)));
-            Runtime.throwException(instructions, "Invalid array creation");
-            instructions.add(new Label(ok));
-
             instructions.add(new Comment("Save the size of the array"));
             instructions.add(new Push(Register.ACCUMULATOR));
+            //TODO add check that the size is > 0
             instructions.add(new Shl(Register.ACCUMULATOR, Immediate.STACK_SIZE_POWER));
 
             instructions.add(new Comment("Adding space for SIT, cast info, and length" + typeDclNode.fullName));
@@ -390,7 +392,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             Runtime.malloc(Register.ACCUMULATOR, instructions);
             instructions.add(new Comment("Pop the size"));
             instructions.add(new Pop(Register.DATA));
-
 
             final long lengthIndex = SizeHelper.DEFAULT_STACK_SIZE  * 2;
             Immediate li = new Immediate(String.valueOf(lengthIndex));
@@ -603,19 +604,18 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             final String staticFieldLbl = PkgClassResolver.getUniqueNameFor(staticField);
             if(staticField.dclInResolver != currentFile) instructions.add(new Extern(staticFieldLbl));
 
-            if (staticField == lastDcl && getVal){
-                Size size = SizeHelper.getSize(staticField.getType().getTypeDclNode().realSize);
+            if (getVal){
+                lastSize = SizeHelper.getSize(staticField.getType().getTypeDclNode().realSize);
                 instructions.add(new Comment("Move value of static field " + staticField.dclName + " to Accumulator"));
-                instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(new Immediate(staticFieldLbl)), size));
-                return true;
-            }
-            // get reference
-            instructions.add(new Comment("Move label of static field " + staticField.dclName + " to Accumulator"));
-            instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl)));
-            if (staticField == lastDcl){
+                genMov(lastSize, new PointerRegister(new Immediate(staticFieldLbl)), staticFieldLbl, staticField);
+            }else {
+                // get reference
+                instructions.add(new Comment("Move Reference of static field " + staticField.dclName + " to Accumulator"));
+                instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl)));
                 lastSize = SizeHelper.getSize(stackSize);
-                return true;
             }
+            return true;
+
         }else if(forceThis){
             instructions.add(new Comment("Force This pointer"));
             instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
@@ -682,8 +682,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         symbol.getOperandExpression().accept(this);
 
         String typeName = type.getTypeDclNode().fullName;
-        if(!JoosNonTerminal.primativeNumbers.contains(typeName)
-                && !JoosNonTerminal.otherPrimatives.contains(typeName)){
+        if(isReferenceType(typeName)){
             String castExprEnd = "CastExprEnd" + getNewLblNum();
             ifNullJmpCode(Register.ACCUMULATOR, castExprEnd);
 
@@ -699,6 +698,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             lastSize = SizeHelper.getSize(type.getTypeDclNode().realSize);
             genMov(lastSize, Register.ACCUMULATOR, "cast to " + type.value, type);
         }
+    }
+
+    private boolean isReferenceType(String typeName) {
+        return !JoosNonTerminal.primativeNumbers.contains(typeName)
+                && !JoosNonTerminal.otherPrimatives.contains(typeName);
     }
 
     @Override
@@ -987,29 +991,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         arrayAccess.children.get(0).accept(this);
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
         arrayAccess.children.get(1).accept(this);
-
-        String ok = "arrayCreateOk" + getNewLblNum();
-        instructions.add(new Xor(Register.DATA, Register.DATA));
-        instructions.add(new Cmp(Register.ACCUMULATOR, Register.DATA));
-
-        instructions.add(new Jg(new Immediate(ok)));
-        Runtime.throwException(instructions, "Invalid array creation");
-        instructions.add(new Label(ok));
-
-        ok = "arrayCreateOk" + getNewLblNum();
-        instructions.add(new Cmp(Register.BASE, Register.DATA));
-
-        instructions.add(new Jne(new Immediate(ok)));
-        Runtime.throwException(instructions, "Invalid array creation");
-        instructions.add(new Label(ok));
-
-        ok = "arrayCreateOk" + getNewLblNum();
-        InstructionArg len = new PointerRegister(Register.BASE, new Immediate(SizeHelper.DEFAULT_STACK_SIZE  * 2));
-        instructions.add(new Cmp(len, Register.ACCUMULATOR));
-
-        instructions.add(new Jg(new Immediate(ok)));
-        Runtime.throwException(instructions, "Invalid array creation");
-        instructions.add(new Label(ok));
 
         long stackSize = arrayAccess.getType().getTypeDclNode().getStackSize();
         final Size elementSize = SizeHelper.getSize(stackSize);
