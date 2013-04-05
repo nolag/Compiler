@@ -763,7 +763,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         if(op.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.STRING)){
             final APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);
             final ISymbol firstChild = op.children.get(0);
-            final ISymbol secondChild = op.children.get(0);
+            final ISymbol secondChild = op.children.get(1);
 
             instructions.add(new Comment("String add first arg"));
             strPartHelper(firstChild, resolver);
@@ -904,7 +904,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(StringLiteralSymbol stringSymbol) {
-        instructions.add(new Comment("New String!"));
+        final String value = stringSymbol.strValue.length() == 0 ? "zlen" : stringSymbol.strValue;
+        instructions.add(new Comment("New String: " + value));
         instructions.add(new Comment("allocate the string at the same time (why not)"));
         final long charsLen = (stringSymbol.strValue.length() + SizeHelper.DEFAULT_STACK_SIZE) * 2 + SizeHelper.getIntSize(Size.DWORD);
         final long length =  charsLen + stringSymbol.getType().getTypeDclNode().getStackSize();
@@ -936,6 +937,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
             InstructionArg carg = new Immediate(APkgClassResolver.generateFullId(constructor));
             if(constructor.dclInResolver != currentFile) instructions.add(new Extern(carg));
+
             instructions.add(new Call(carg));
             instructions.add(new Pop(Register.ACCUMULATOR));
             instructions.add(new Add(Register.STACK, new Immediate(SizeHelper.DEFAULT_STACK_SIZE)));
