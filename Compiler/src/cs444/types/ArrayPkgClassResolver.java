@@ -56,6 +56,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
             if (implInterf != null) implInterfs.add((PkgClassResolver) implInterf);
         }
         superClass = PkgClassInfo.instance.getSymbol(OBJECT);
+        addSuperTypes((PkgClassResolver) superClass);
     }
 
     private void addArrayConstructorFor(String indType, TypeSymbol ts, NameSymbol name)

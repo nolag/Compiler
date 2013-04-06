@@ -128,6 +128,7 @@ public class PkgClassResolver extends APkgClassResolver {
         if(obj == this) return;
         obj.build();
         this.superClass = obj;
+        addSuperTypes(obj);
 
         for(AMethodSymbol methodSymbol : obj.start.getMethods()){
             String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
@@ -327,6 +328,7 @@ public class PkgClassResolver extends APkgClassResolver {
             if(start.superName != null){
                 building = (PkgClassResolver)findClass(start.superName);
                 copyInfo(building, visited, resolvedSets, false, true);
+                addSuperTypes(building);
 
                 if (building.start.getDefaultConstructor() == null){
                     throw new UnsupportedException("class without default constructor.  Explicit super call is not supported." + building.fullName);
@@ -370,6 +372,7 @@ public class PkgClassResolver extends APkgClassResolver {
                 assignableTo.addAll(building.assignableTo);
                 alreadyImps.add(building.fullName);
                 implInterfs.add(building);
+                addSuperTypes(building);
             }
 
             for(Set<PkgClassResolver> pkgSet : resolvedSets) visited.addAll(pkgSet);
