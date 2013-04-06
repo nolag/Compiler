@@ -18,6 +18,7 @@ import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Int;
 import cs444.codegen.instructions.Je;
 import cs444.codegen.instructions.Jg;
+import cs444.codegen.instructions.Jge;
 import cs444.codegen.instructions.Jmp;
 import cs444.codegen.instructions.Jne;
 import cs444.codegen.instructions.Label;
@@ -381,12 +382,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Comment("Save the size of the array"));
             instructions.add(new Push(Register.ACCUMULATOR));
 
-            instructions.add(new Comment("Checking array size > 0"));
+            instructions.add(new Comment("Checking array size >= 0"));
             final String ok = "arrayCreateOk" + getNewLblNum();
             instructions.add(new Xor(Register.DATA, Register.DATA));
             instructions.add(new Cmp(Register.ACCUMULATOR, Register.DATA));
 
-            instructions.add(new Jg(new Immediate(ok)));
+            instructions.add(new Jge(new Immediate(ok)));
             Runtime.throwException(instructions, "Invalid array creation");
             instructions.add(new Label(ok));
 
@@ -1002,11 +1003,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
         arrayAccess.children.get(1).accept(this);
 
-        instructions.add(new Comment("Checking element > 0"));
+        instructions.add(new Comment("Checking element >= 0"));
         String ok = "arrayAccessOk" + getNewLblNum();
         instructions.add(new Xor(Register.DATA, Register.DATA));
-        instructions.add(new Cmp(Register.BASE, Register.DATA));
-        instructions.add(new Jg(new Immediate(ok)));
+        instructions.add(new Cmp(Register.ACCUMULATOR, Register.DATA));
+        instructions.add(new Jge(new Immediate(ok)));
         Runtime.throwException(instructions, "Invalid array access");
         instructions.add(new Label(ok));
 
