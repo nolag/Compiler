@@ -186,6 +186,9 @@ public abstract class APkgClassResolver {
                 sb.append("." + nameParts[i]);
                 pkgResolver = getClass(sb.toString(), false);
             }
+
+            dclList.add(getDcl(sb.toString(), isStatic, pkgClass, allowClass));
+
             if(pkgResolver != null && i != nameParts.length) dcl = pkgResolver.getDcl(nameParts[i], true, this, false);
             else if(pkgResolver != null) dcl = DclSymbol.getClassSymbol(pkgResolver.fullName, pkgResolver);
             i++;
