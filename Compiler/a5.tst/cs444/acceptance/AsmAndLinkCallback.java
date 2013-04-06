@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.util.Scanner;
 
     public class AsmAndLinkCallback implements ITestCallbacks{
+        private static final int EXPECTED_DEFAULT_RTN_CODE = 123;
         private static final String OUTPUT = "output/";
 
         @Override
@@ -38,13 +39,16 @@ import java.util.Scanner;
 
             int returnCode = execAndWait(new String[] {"./main"});
 
-            if (!file.isDirectory()) return true;
-
             int expectedReturnCode;
-            try{
-                expectedReturnCode = getExpectedReturnCode(file);
-            }catch(FileNotFoundException e){
-                return true;
+            if (!file.isDirectory()){
+                expectedReturnCode = EXPECTED_DEFAULT_RTN_CODE;
+            }else{
+                try{
+                    expectedReturnCode = getExpectedReturnCode(file);
+                }catch(FileNotFoundException e){
+                    expectedReturnCode = EXPECTED_DEFAULT_RTN_CODE;
+                    //return true;
+                }
             }
 
             if (expectedReturnCode != returnCode){
