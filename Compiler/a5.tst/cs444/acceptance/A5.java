@@ -27,22 +27,10 @@ public class A5 {
     @Test
     public void testMarmosetPrograms() throws IOException, InterruptedException{
 
-        List<String> failingList = new LinkedList<String>(Arrays.asList(
-//                "J1_Hello",
-                "J1_implicitstringconcatenation",
-                "J1_sideeffects_array2",
-                "J1_sim_xor"
-                ));
+        List<String> failingList = new LinkedList<String>();
 
-        Map<String, String> env = System.getenv();
-        String allTest = env.get("all_tests");
-        if (allTest != null && allTest.equals("true")){
-            TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a5/", 0, true, true,
-                    true, Collections.<String>emptyList(), new AsmAndLinkCallback());
-        } else{
-            TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a5/", 0, true, true,
-                    true, failingList, new AsmAndLinkCallback());
-        }
+        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a5/", 0, true, true,
+                true, failingList, new AsmAndLinkCallback());
     }
 }
 
