@@ -61,7 +61,8 @@ public class A5 {
     //@Ignore("Ignoring previous tests")
     @Test
     public void testMarmosetA1ValidTestCases() throws IOException, InterruptedException {
-        List<String> failingList = new LinkedList<String>();
+        //J1w_Interface.java is an interface there is no test method
+        List<String> failingList = new LinkedList<String>(Arrays.asList("J1w_Interface.java"));
 
         TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a1/valid/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
