@@ -33,7 +33,6 @@ public abstract class APkgClassResolver {
     protected final boolean isFinal;
     protected APkgClassResolver superClass;
     protected final List<PkgClassResolver> implInterfs = new LinkedList<PkgClassResolver>();
-    protected final List<PkgClassResolver> superTypes = new LinkedList<PkgClassResolver>();
 
     public static final String DEFAULT_PKG = "?default?";
     protected static final String LANG = "java.lang";
@@ -83,11 +82,6 @@ public abstract class APkgClassResolver {
         order.put(add, onField);
         revorder.put(onField, add);
         onField++;
-    }
-
-    protected void addSuperTypes(PkgClassResolver building) {
-        this.superTypes.add(building);
-        this.superTypes.addAll(building.superTypes);
     }
 
     public static String generateUniqueName(String name, Iterable<String> types) {
@@ -360,6 +354,7 @@ public abstract class APkgClassResolver {
     }
 
     public void addToSubtypeIndexedTable(SubtypeIndexedTable subtit) {
+
         String subtypeITLbl = generateSubtypeIT();
 
         if (!this.isAbstract()){
@@ -367,15 +362,19 @@ public abstract class APkgClassResolver {
         }
 
         subtit.addSuperType(this.fullName);
-        for (PkgClassResolver superType : this.superTypes) {
-            subtit.addSuperType(superType.fullName);
+        if(!this.fullName.equals(OBJECT)) subtit.addSuperType(this.superClass.fullName);
+
+        for (APkgClassResolver interf : this.implInterfs) {
+            subtit.addSuperType(interf.fullName);
         }
 
         if(!this.isAbstract()){
             subtit.addIndex(subtypeITLbl, this.fullName);
-            for (PkgClassResolver superType : this.superTypes) {
-                subtit.addIndex(subtypeITLbl, superType.fullName);
+            if(!this.fullName.equals(OBJECT)) subtit.addIndex(subtypeITLbl, this.superClass.fullName);
+
+            for (APkgClassResolver interf : this.implInterfs) {
+                subtit.addIndex(subtypeITLbl, interf.fullName);
             }
         }
-   }
+    }
 }
