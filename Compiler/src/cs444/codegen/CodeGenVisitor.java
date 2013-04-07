@@ -976,6 +976,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(CharacterLiteralSymbol characterSymbol) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(characterSymbol.getValue())));
+        lastSize = Size.WORD;
     }
 
     @Override

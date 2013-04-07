@@ -393,6 +393,7 @@ public class PkgClassResolver extends APkgClassResolver {
         }
     }
 
+    @Override
     public void checkFields() throws CompilerException{
         if (start == null) return;
         LocalDclLinker linker = new LocalDclLinker(fullName, true);
@@ -467,7 +468,7 @@ public class PkgClassResolver extends APkgClassResolver {
 
     @Override
     public long getStackSize() {
-        if (start == null) return realSize;
+        if (start == null) return stackSize;
         return start.getObjectSize();
     }
 
