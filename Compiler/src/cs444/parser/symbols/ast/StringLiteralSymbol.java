@@ -23,16 +23,16 @@ public class StringLiteralSymbol extends TypeableTerminal {
 		int idx = 1;
 		while (idx < value.length() - 1) {
 			char ch = value.charAt(idx);
+			idx++;
 			if (ch != '\\') {
 				builder.append(ch);
-				idx++;
 			} else {
-				idx++;
 				char escapeChar = value.charAt(idx);
 				if (StringEscapeUtils.isOctalDigit(escapeChar)) {
 					String str = "";
 					int offset = 0;
-					while (StringEscapeUtils.isOctalDigit(value.charAt(idx + offset))) {
+					int maxEscape = StringEscapeUtils.isZeroToThree(value.charAt(idx + offset)) ? 3 : 2;
+					for (int x = 0; x < maxEscape && StringEscapeUtils.isOctalDigit(value.charAt(idx + offset)); x++) {
 						str += value.charAt(idx + offset);
 						offset++;
 					}
