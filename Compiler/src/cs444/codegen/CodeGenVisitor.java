@@ -251,8 +251,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
             instructions.add(new Call(arg));
         }else{
-            // TODO: check why this line breaks some tests. Maybe it uncovers a hidden bug:
-            // ifNullJmpCode(Register.BASE, Runtime.EXCEPTION_LBL);
+            ifNullJmpCode(Register.BASE, Runtime.EXCEPTION_LBL);
             instructions.add(new Comment("get SIT column"));
             instructions.add(new Mov(Register.BASE, new PointerRegister(Register.BASE)));
 
@@ -894,7 +893,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     private void ifNullJmpCode(Register register, String ifNullLbl) {
         instructions.add(new Comment("null check"));
-        instructions.add(new Cmp(Register.ACCUMULATOR, Immediate.NULL));
+        instructions.add(new Cmp(register, Immediate.NULL));
         instructions.add(new Je(new Immediate(ifNullLbl)));
     }
 
