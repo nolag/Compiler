@@ -55,16 +55,27 @@ public class StaticFieldInit {
             if (!(aPkgClassResolver instanceof PkgClassResolver)) continue;
             PkgClassResolver resolver = (PkgClassResolver) aPkgClassResolver;
             if (!resolver.shouldGenCode()) continue;
-
             for (DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
                 String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
                 Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
                 PointerRegister toAddr = new PointerRegister(new Immediate(fieldNameLbl));
 
                 instructions.add(new Extern(fieldNameLbl));
-                if(fieldDcl.children.isEmpty()){
-                    instructions.add(new Mov(toAddr, Immediate.NULL, size));
-                }else{
+                instructions.add(new Mov(toAddr, Immediate.NULL, size));
+            }
+        }
+
+        for (APkgClassResolver aPkgClassResolver : resolvers) {
+            if (!(aPkgClassResolver instanceof PkgClassResolver)) continue;
+            PkgClassResolver resolver = (PkgClassResolver) aPkgClassResolver;
+            if (!resolver.shouldGenCode()) continue;
+
+            for (DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
+                String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
+                Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
+                PointerRegister toAddr = new PointerRegister(new Immediate(fieldNameLbl));
+
+                if(!fieldDcl.children.isEmpty()){
                     instructions.add(new Comment("Initializing static field " + fieldNameLbl + "."));
                     fieldDcl.children.get(0).accept(new CodeGenVisitor(sit, subit, instructions));
                     instructions.add(new Mov(toAddr, Register.ACCUMULATOR, size));
