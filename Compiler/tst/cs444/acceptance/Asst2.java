@@ -2,6 +2,7 @@ package cs444.acceptance;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class Asst2 {
@@ -11,11 +12,7 @@ public class Asst2 {
         TestHelper.assertReturnCodeForFiles("JoosPrograms/A2/TypeCorrectPrograms/", 0,  true);
     }
 
-//    @Test
-//    public void testNonTypeCorrectJoosCode() throws IOException, InterruptedException {
-//        TestHelper.assertReturnCodeForFiles("JoosPrograms/NonTypeCorrectPrograms/", 42, false);
-//    }
-
+	@Ignore("Valid Marmoset tests are in A5 with code generated")
     @Test
     public void testMarmosetValidTestCases() throws IOException, InterruptedException {
         TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a2/valid/", 0, true);

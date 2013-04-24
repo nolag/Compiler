@@ -168,7 +168,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         superResolver = resolver.getSuper();
 
-        if (!resolver.fullName.equals(APkgClassResolver.OBJECT)){
+        if (!resolver.fullName.equals(JoosNonTerminal.OBJECT)){
             invokeConstructor(superResolver, Collections.<ISymbol>emptyList());
         }
 
@@ -779,7 +779,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         final String firstType = ((Typeable)child).getType().getTypeDclNode().fullName;
         child.accept(this);
         AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(firstType));
-        if(ms == null) ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(APkgClassResolver.OBJECT));
+        if(ms == null) ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(JoosNonTerminal.OBJECT));
 
         lastSize = SizeHelper.getPushSize(lastSize);
         int pop = SizeHelper.getIntSize(lastSize);

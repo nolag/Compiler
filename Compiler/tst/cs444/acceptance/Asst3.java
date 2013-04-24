@@ -40,8 +40,12 @@ public class Asst3 {
     }
 
     @Test
-    public void a3Testing() throws IOException, InterruptedException{
+    public void a3ValidTests() throws IOException, InterruptedException{
         TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/valid/", 0, true, false);
+    }
+
+    @Test
+    public void a3Testing() throws IOException, InterruptedException{
         TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/invalid/", 42, false, false);
     }
 }

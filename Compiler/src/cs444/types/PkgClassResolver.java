@@ -124,7 +124,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     public void verifyObject() throws CompilerException {
-        PkgClassResolver obj = (PkgClassResolver) getClass(OBJECT, true);
+        PkgClassResolver obj = (PkgClassResolver) getClass(JoosNonTerminal.OBJECT, true);
         if(obj == this) return;
         obj.build();
         this.superClass = obj;
@@ -175,15 +175,14 @@ public class PkgClassResolver extends APkgClassResolver {
                 DclSymbol dcl = (DclSymbol) child;
                 DclSymbol field = fieldMap.get(dcl.dclName);
                 field = field == null ? sfieldMap.get(dcl.dclName) : field;
-                if(field == null){
+                //If another lookup already exists, then this field is hidden.  If it is private, we don't get access to it.
+                if(field == null && dcl.getProtectionLevel() != ProtectionLevel.PRIVATE){
                     Map<String, DclSymbol> addTo = dcl.isStatic() ? sfieldMap : fieldMap;
                     addTo.put(dcl.dclName, dcl);
                     addAll.add(dcl);
-                }else if(field.getProtectionLevel() != ProtectionLevel.PUBLIC && dcl.getProtectionLevel() == ProtectionLevel.PUBLIC){
-                    Map<String, DclSymbol> addTo = dcl.isStatic() ? hfieldMap : hsfieldMap;
-                    addTo.put(dcl.dclName, dcl);
                 }
                 start.children.add(0, dcl);
+            //TODO make sure this is not allowing constructors to be copied
             }else if(child instanceof AMethodSymbol){
                 AMethodSymbol methodSymbol = (AMethodSymbol) child;
                 String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
@@ -261,7 +260,7 @@ public class PkgClassResolver extends APkgClassResolver {
                     namedMap.put(typeName, resolver);
                     break;
                 case STAR_IMPORT:
-                    if(name.value.equals(LANG)) continue;
+                    if(name.value.equals(JoosNonTerminal.LANG)) continue;
                     addAll(name.value, staredMap);
                     break;
                 default:

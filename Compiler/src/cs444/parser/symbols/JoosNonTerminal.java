@@ -43,7 +43,15 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String BOOLEAN = "boolean";
     public static final String VOID = "void";
 
-    public static final String STRING = "java.lang.String";
+    public static final String LANG = "java.lang";
+
+    public static final String OBJECT = LANG + ".Object";
+    public static final String CLONABLE = LANG + ".Cloneable";
+    public static final String STRING = LANG + ".String";
+
+    public static final String IO = "java.io";
+    public static final String SERIALIZABLE = IO + ".Serializable";
+
     public static final String CHAR = "char";
     public static final String INTEGER = "int";
     public static final String SHORT = "short";
@@ -169,8 +177,8 @@ public class JoosNonTerminal extends NonTerminal{
         whiles.add("WHILESTATEMENTNOSHORTIF");
 
         nonPrimativeOperativeTypes.add(STRING);
-        arraysExtend.add(APkgClassResolver.CLONABLE);
-        arraysExtend.add(APkgClassResolver.SERIALIZABLE);
+        arraysExtend.add(JoosNonTerminal.CLONABLE);
+        arraysExtend.add(JoosNonTerminal.SERIALIZABLE);
 
         unsigned.add(CHAR);
         unsigned.add(BOOLEAN);

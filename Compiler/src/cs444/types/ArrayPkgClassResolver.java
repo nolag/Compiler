@@ -55,7 +55,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
             // check for null for the tests that doesn't include StdLib and use arrays
             if (implInterf != null) implInterfs.add((PkgClassResolver) implInterf);
         }
-        superClass = PkgClassInfo.instance.getSymbol(OBJECT);
+        superClass = PkgClassInfo.instance.getSymbol(JoosNonTerminal.OBJECT);
     }
 
     private void addArrayConstructorFor(String indType, TypeSymbol ts, NameSymbol name)
@@ -99,7 +99,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     protected void build(Set<PkgClassResolver> visited, boolean mustBeInterface, boolean mustBeClass){
         if(!isBuilt){
             isBuilt = true;
-            APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(OBJECT);
+            APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.OBJECT);
             smethodMap.putAll(resolver.smethodMap);
             methodMap.putAll(resolver.methodMap);
             sfieldMap.putAll(resolver.sfieldMap);
@@ -114,7 +114,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
                 ce.printStackTrace();
             }
             try{
-                PkgClassResolver obj = (PkgClassResolver) getClass(OBJECT, true);
+                PkgClassResolver obj = (PkgClassResolver) getClass(JoosNonTerminal.OBJECT, true);
                 if(!obj.isBuilt) obj.build();
                 for(AMethodSymbol m : obj.start.getMethods()){
                     String uniqueName = generateUniqueName(m, m.dclName);
@@ -184,6 +184,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         return fieldMap.values();
     }
 
+    @Override
     public void checkFields() throws CompilerException{
         LocalDclLinker linker = new LocalDclLinker(fullName, true);
         for(DclSymbol dcl : getDcls()){

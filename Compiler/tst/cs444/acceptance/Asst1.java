@@ -1,19 +1,16 @@
 package cs444.acceptance;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class Asst1 {
 
     @Test
     public void testValidJoosCode() throws IOException, InterruptedException {
-        List<String> ignoreList = new LinkedList<String>(Arrays.asList("ForNestedIfElse"));
         String path = "JoosPrograms/SyntacticallyValidPrograms/";
-        TestHelper.assertReturnCodeForFiles(path, 0,  true, ignoreList);
+        TestHelper.assertReturnCodeForFiles(path, 0,  true);
     }
 
     @Test
@@ -23,6 +20,7 @@ public class Asst1 {
         TestHelper.assertReturnCodeForFiles(path, 42,  false);
     }
 
+    @Ignore("Valid Marmoset tests are in A5 with code generated")
     @Test
     public void testMarmosetValidCases() throws IOException, InterruptedException{
         String path = "JoosPrograms/MarmosetPrograms/a1/valid/";

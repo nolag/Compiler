@@ -2,6 +2,8 @@ package cs444.types;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -15,6 +17,9 @@ import cs444.types.exceptions.UndeclaredException;
 public class PkgClassInfo {
     private final Map<String, Map<String, PkgClassResolver>> nameSpaces = new HashMap<String, Map<String, PkgClassResolver>>();
     public final Map<String, APkgClassResolver> symbolMap = new HashMap<String, APkgClassResolver>();
+
+    //Used because symbolMap may not be in order after hashing
+    public final List<APkgClassResolver> pkgs = new LinkedList<APkgClassResolver>();
 
     public static final PkgClassInfo instance = new PkgClassInfo();
 
@@ -55,7 +60,7 @@ public class PkgClassInfo {
         }
 
         pkgs.put(resolver.name, resolver);
-        symbolMap.put(resolver.fullName, resolver);
+        putSymbol(resolver);
 
 
         if(JoosNonTerminal.nonPrimativeOperativeTypes.contains(resolver.fullName)){
@@ -77,10 +82,11 @@ public class PkgClassInfo {
 
     public void putSymbol(APkgClassResolver resolver){
         symbolMap.put(resolver.fullName, resolver);
+        pkgs.add(resolver);
     }
 
     public Collection<APkgClassResolver> getSymbols(){
-        return symbolMap.values();
+        return pkgs;
     }
 
     public Iterable<Entry<String, PkgClassResolver>> getNamespaceParts(String nameSpace){
@@ -90,21 +96,22 @@ public class PkgClassInfo {
     private void addInitialSymbols() {
         for(String type : JoosNonTerminal.primativeNumbers){
             APkgClassResolver resolver = PkgClassResolver.getPrimativeResolver(type);
-            symbolMap.put(type, resolver);
+            putSymbol(resolver);
             TypeSymbol.getPrimative(type).setTypeDclNode(resolver);
         }
 
         for(String type : JoosNonTerminal.otherPrimatives){
             APkgClassResolver resolver = PkgClassResolver.getPrimativeResolver(type);
-            symbolMap.put(type, resolver);
+            putSymbol(resolver);
             TypeSymbol.getPrimative(type).setTypeDclNode(resolver);
         }
     }
 
     // NOTE: this method is for tests only
     public void clear(){
-        this.nameSpaces.clear();
-        this.symbolMap.clear();
+        nameSpaces.clear();
+        symbolMap.clear();
+        pkgs.clear();
         addInitialSymbols();
     }
 }

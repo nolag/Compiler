@@ -2,6 +2,7 @@ package cs444.acceptance;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class Asst4 {
@@ -16,6 +17,7 @@ public class Asst4 {
         TestHelper.assertReturnCodeForFiles("JoosPrograms/A4/invalid/", 42, false);
     }
 
+    @Ignore("Valid Marmoset tests are in A5 with code generated")
     @Test
     public void testMarmosetValidTestCases() throws IOException, InterruptedException {
         TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a4/valid/", 0, true);

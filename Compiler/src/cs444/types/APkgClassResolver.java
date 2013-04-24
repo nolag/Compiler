@@ -35,19 +35,11 @@ public abstract class APkgClassResolver {
     protected final List<PkgClassResolver> implInterfs = new LinkedList<PkgClassResolver>();
 
     public static final String DEFAULT_PKG = "?default?";
-    protected static final String LANG = "java.lang";
-    public static final String OBJECT = LANG + ".Object";
-    public static final String CLONABLE = LANG + ".Cloneable";
-    private static final String IO = "java.io";
-    public static final String SERIALIZABLE= IO + ".Serializable";
-
     protected final Set<String> assignableTo = new HashSet<String>();
     protected final Map<String, PkgClassResolver> namedMap = new HashMap<String, PkgClassResolver>();
 
     protected final Map<String, DclSymbol> fieldMap = new HashMap<String, DclSymbol>();
     protected final Map<String, DclSymbol> sfieldMap = new HashMap<String, DclSymbol>();
-    protected final Map<String, DclSymbol> hfieldMap = new HashMap<String, DclSymbol>();
-    protected final Map<String, DclSymbol> hsfieldMap = new HashMap<String, DclSymbol>();
     protected final Map<String, AMethodSymbol> methodMap = new HashMap<String, AMethodSymbol>();
     protected final Map<String, AMethodSymbol> smethodMap = new HashMap<String, AMethodSymbol>();
     protected final Map<String, ConstructorSymbol> constructors = new HashMap<String, ConstructorSymbol>();
@@ -69,7 +61,7 @@ public abstract class APkgClassResolver {
         else fullName = pkg + "." + name;
         this.isFinal = isFinal;
         assignableTo.add(fullName);
-        assignableTo.add(OBJECT);
+        assignableTo.add(JoosNonTerminal.OBJECT);
 
         Set<String> alsoAssignsTo = JoosNonTerminal.defaultAssignables.get(name);
         if(alsoAssignsTo != null) assignableTo.addAll(alsoAssignsTo);
@@ -157,6 +149,9 @@ public abstract class APkgClassResolver {
     }
 
     public List<DclSymbol> findDcl(String name, boolean isStatic, APkgClassResolver pkgClass, boolean allowClass) throws UndeclaredException, ImplicitStaticConversionException {
+        /*TODO check at each part of the lookup if the find is legal (may be private or protected)
+         * a.b.c b may be private or protected
+         */
         String [] nameParts = name.split("\\.");
 
         DclSymbol retVal;
@@ -239,15 +234,20 @@ public abstract class APkgClassResolver {
     }
 
     private void verifyCanRead(AModifiersOptSymbol retVal, APkgClassResolver pkgClass) throws UndeclaredException{
-        if(pkgClass == this) return;
-        if(retVal.getProtectionLevel() == ProtectionLevel.PRIVATE)throw new UndeclaredException(name, fullName);
-        if(retVal.getProtectionLevel() == ProtectionLevel.PUBLIC) return;
+        final ProtectionLevel protection = retVal.getProtectionLevel();
+        if(pkgClass == this || protection == ProtectionLevel.PUBLIC) return;
+        if(protection == ProtectionLevel.PRIVATE)throw new UndeclaredException(retVal.dclName, fullName);
+
         final APkgClassResolver dclResolver = retVal.dclInResolver;
+        //TODO make a way to see if it should allow same pkg to use it in JoosNonTerminal
         if(pkgClass.pkg.equals(dclResolver.pkg)) return;
-        if(assignableTo.contains(pkgClass.fullName) && pkgClass.assignableTo.contains(dclResolver.fullName)) return;
-        if(pkgClass.assignableTo.contains(dclResolver.fullName) && pkgClass.pkg.startsWith(dclResolver.pkg)) return;
-        if(pkgClass.assignableTo.contains(dclResolver.fullName) && retVal.isStatic()) return;
-        throw new UndeclaredException(name, fullName);
+
+        if(protection == ProtectionLevel.PROTECTED && pkgClass.assignableTo.contains(dclResolver.fullName)){
+            if(assignableTo.contains(pkgClass.fullName))return;
+            if(retVal.isStatic()) return;
+        }
+
+        throw new UndeclaredException(retVal.dclName, fullName);
     }
 
     public APkgClassResolver getSuper() {
