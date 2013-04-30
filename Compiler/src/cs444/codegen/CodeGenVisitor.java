@@ -278,6 +278,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         if(!call.isStatic() || call.isNative())instructions.add(new Pop(Register.BASE));
 
+        lastSize = SizeHelper.getSize(invoke.getType().getTypeDclNode().stackSize);
         instructions.add(new Comment("end invoke"));
     }
 

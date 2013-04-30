@@ -18,6 +18,14 @@ public class A5 {
     }
 
     @Test
+    public void testCompileProgramsWithStdLib() throws IOException, InterruptedException{
+        List<String> ignoreList = new LinkedList<String>();
+
+        TestHelper.assertReturnCodeForFiles("JoosPrograms/A5/WithStdLib/", 0, true, true,
+                                            true, ignoreList, new AsmAndLinkCallback());
+    }
+
+    @Test
     public void testMarmosetA5Programs() throws IOException, InterruptedException{
 
         List<String> failingList = new LinkedList<String>();
