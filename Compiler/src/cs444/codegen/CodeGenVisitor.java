@@ -392,7 +392,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Shl(Register.ACCUMULATOR, Immediate.STACK_SIZE_POWER));
 
             instructions.add(new Comment("Adding space for SIT, cast info, and length" + typeDclNode.fullName));
-            final long baseSize = ObjectLayout.objSize();
+            //Int + object's sie
+            final long baseSize = ObjectLayout.objSize() + SizeHelper.getIntSize(Size.DWORD);
             final Immediate sizeI = new Immediate(String.valueOf(baseSize));
             instructions.add(new Add(Register.ACCUMULATOR, sizeI));
             instructions.add(new Comment("Allocate for array" + typeDclNode.fullName));
@@ -400,7 +401,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Comment("Pop the size"));
             instructions.add(new Pop(Register.DATA));
 
-            final long lengthIndex = SizeHelper.DEFAULT_STACK_SIZE  * 2;
+            final long lengthIndex = ObjectLayout.objSize();
             Immediate li = new Immediate(String.valueOf(lengthIndex));
 
             instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, li), Register.DATA));
@@ -815,6 +816,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             if(ms.dclInResolver != currentFile) instructions.add(new Extern(arg));
             instructions.add(new Call(arg));
 
+            //The two arguments for string concat
             instructions.add(new Add(Register.STACK, new Immediate(SizeHelper.DEFAULT_STACK_SIZE * 2)));
             instructions.add(new Pop(Register.BASE));
             instructions.add(new Comment("end of string add"));
@@ -939,7 +941,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     @Override
     public void visit(StringLiteralSymbol stringSymbol) {
         instructions.add(new Comment("allocate the string at the same time (why not)"));
-        final long charsLen = (stringSymbol.strValue.length() + SizeHelper.DEFAULT_STACK_SIZE) * 2 + SizeHelper.getIntSize(Size.DWORD);
+        //2 per char + dword for int + obj size
+        final long charsLen = stringSymbol.strValue.length() * 2 + SizeHelper.getIntSize(Size.DWORD) + ObjectLayout.objSize();
         final long length =  charsLen + stringSymbol.getType().getTypeDclNode().getStackSize();
 
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(length))));
@@ -952,7 +955,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         final char [] cs = stringSymbol.strValue.toCharArray();
         for(int i = 0; i < cs.length; i++){
-            final long place = 2 * i + ObjectLayout.objSize();
+            final long place = 2 * i + ObjectLayout.objSize() + SizeHelper.getIntSize(Size.DWORD);
             final InstructionArg to = new PointerRegister(Register.ACCUMULATOR, new Immediate(String.valueOf(place)));
             instructions.add(new Mov(to, new Immediate((cs[i])), Size.WORD));
         }
@@ -1011,7 +1014,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Label(ok));
 
         ok = "arrayCreateOk" + getNewLblNum();
-        InstructionArg len = new PointerRegister(Register.BASE, new Immediate(SizeHelper.DEFAULT_STACK_SIZE  * 2));
+        InstructionArg len = new PointerRegister(Register.BASE, new Immediate(ObjectLayout.objSize()));
         instructions.add(new Cmp(len, Register.ACCUMULATOR));
         instructions.add(new Jg(new Immediate(ok)));
         Runtime.throwException(instructions, "Invalid array creation");

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import cs444.CompilerException;
 import cs444.codegen.ICodeGenVisitor;
+import cs444.codegen.ObjectLayout;
 import cs444.codegen.SizeHelper;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
@@ -166,7 +167,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
 
     @Override
     public void computeFieldOffsets() {
-        fieldMap.get(JoosNonTerminal.LENGTH).setOffset(2 * SizeHelper.DEFAULT_STACK_SIZE);
+        fieldMap.get(JoosNonTerminal.LENGTH).setOffset(ObjectLayout.objSize());
     }
 
     @Override

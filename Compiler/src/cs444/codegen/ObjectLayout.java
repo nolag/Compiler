@@ -2,7 +2,6 @@ package cs444.codegen;
 
 import java.util.List;
 
-import cs444.codegen.InstructionArg.Size;
 import cs444.codegen.instructions.Comment;
 import cs444.codegen.instructions.Extern;
 import cs444.codegen.instructions.Instruction;
@@ -36,10 +35,6 @@ public class ObjectLayout {
     }
 
     public static long objSize(){
-        return SizeHelper.DEFAULT_STACK_SIZE  * 2 + SizeHelper.getIntSize(Size.DWORD);
-    }
-
-    public static long firstArgLoc(){
-        return SizeHelper.DEFAULT_STACK_SIZE * 2;
+        return SizeHelper.DEFAULT_STACK_SIZE  * 2;
     }
 }
