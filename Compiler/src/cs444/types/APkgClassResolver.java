@@ -42,6 +42,7 @@ public abstract class APkgClassResolver {
     protected final Map<String, DclSymbol> sfieldMap = new HashMap<String, DclSymbol>();
     protected final Map<String, AMethodSymbol> methodMap = new HashMap<String, AMethodSymbol>();
     protected final Map<String, AMethodSymbol> smethodMap = new HashMap<String, AMethodSymbol>();
+
     protected final Map<String, ConstructorSymbol> constructors = new HashMap<String, ConstructorSymbol>();
 
     private final Map<DclSymbol, Integer> order = new HashMap<DclSymbol, Integer>();
@@ -137,6 +138,8 @@ public abstract class APkgClassResolver {
 
         DclSymbol retVal = getFrom.get(name);
 
+        if(!isStatic && notFrom.containsKey(name)) retVal = notFrom.get(name);
+
         if(retVal == null){
             if(notFrom.containsKey(name)) throw new ImplicitStaticConversionException(name);
             APkgClassResolver klass = allowClass ? getClass(name, false) : null;
@@ -148,10 +151,11 @@ public abstract class APkgClassResolver {
         return retVal;
     }
 
-    public List<DclSymbol> findDcl(String name, boolean isStatic, APkgClassResolver pkgClass, boolean allowClass) throws UndeclaredException, ImplicitStaticConversionException {
-        /*TODO check at each part of the lookup if the find is legal (may be private or protected)
-         * a.b.c b may be private or protected
-         */
+    public List<DclSymbol> findDcl(String name, boolean isStatic, APkgClassResolver pkgClass,
+            boolean allowClass, boolean fromSuper) throws UndeclaredException, ImplicitStaticConversionException {
+
+        if(fromSuper) return getSuper().findDcl(name, isStatic, allowClass, fromSuper);
+
         String [] nameParts = name.split("\\.");
 
         DclSymbol retVal;
@@ -203,8 +207,8 @@ public abstract class APkgClassResolver {
         return dclList;
     }
 
-    public List<DclSymbol> findDcl(String name, boolean isStatic, boolean allowClass) throws UndeclaredException, ImplicitStaticConversionException {
-        return findDcl(name, isStatic, this, allowClass);
+    public List<DclSymbol> findDcl(String name, boolean isStatic, boolean allowClass, boolean fromSuper) throws UndeclaredException, ImplicitStaticConversionException {
+        return findDcl(name, isStatic, this, allowClass, fromSuper);
     }
 
     public AMethodSymbol findMethod(String name, boolean isStatic, List<String> paramTypes, APkgClassResolver pkgClass) throws UndeclaredException {
@@ -306,15 +310,6 @@ public abstract class APkgClassResolver {
     public abstract void linkLocalNamesToDcl() throws CompilerException;
 
     public abstract void analyzeReachability() throws CompilerException;
-
-    public List<DclSymbol> findDclOn(String lookupFirst, boolean empty, int on) throws UndeclaredException, ImplicitStaticConversionException {
-        DclSymbol now = revorder.get(on);
-        List<DclSymbol> list = findDcl(lookupFirst, now.isStatic(), empty);
-        DclSymbol dcl = list.get(list.size() - 1);
-        if(order.get(dcl) >= on) throw new UndeclaredException(dcl.dclName, fullName);
-        if(now.isStatic() && !dcl.isStatic()) throw new UndeclaredException(dcl.dclName, fullName);
-        return list;
-    }
 
     public abstract void generateCode(ICodeGenVisitor visitor);
 

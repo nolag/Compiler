@@ -2,6 +2,7 @@ package cs444.codegen;
 
 import java.util.List;
 
+import cs444.codegen.InstructionArg.Size;
 import cs444.codegen.instructions.Comment;
 import cs444.codegen.instructions.Extern;
 import cs444.codegen.instructions.Instruction;
@@ -32,5 +33,13 @@ public class ObjectLayout {
         instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, ObjectLayout.SUBTYPE_OFFSET)));
         PointerRegister instanceOfInfo = new PointerRegister(Register.ACCUMULATOR, subtypeITable.getOffset(subType.getTypeDclNode().fullName));
         instructions.add(new Movzx(Register.ACCUMULATOR, instanceOfInfo, subtypeITable.dataSize));
+    }
+
+    public static long objSize(){
+        return SizeHelper.DEFAULT_STACK_SIZE  * 2 + SizeHelper.getIntSize(Size.DWORD);
+    }
+
+    public static long firstArgLoc(){
+        return SizeHelper.DEFAULT_STACK_SIZE * 2;
     }
 }

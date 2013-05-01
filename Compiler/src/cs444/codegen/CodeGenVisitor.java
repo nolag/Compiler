@@ -112,7 +112,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     private static final String INIT_OBJECT_FUNC = "__init_object";
     public static final String NATIVE_NAME = "NATIVE";
 
-
     private final SelectorIndexedTable selectorITable;
     private final SubtypeIndexedTable subtypeITable;
     private final List<Instruction> instructions;
@@ -123,14 +122,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     //FFFFFFFF is easy to see if something went wrong
     private long lastOffset = 0xFFFFFFFF;
-
     private Size lastSize = Size.DWORD;
-
     private long nextLblnum = 0;
-
     private APkgClassResolver currentFile;
-
     private boolean isFieldLookup = false;
+    private boolean isSuper = false;
 
     private long getNewLblNum(){
         return nextLblnum++;
@@ -288,6 +284,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         isFieldLookup = true;
         field.children.get(1).accept(this);
         isFieldLookup = false;
+        isSuper = false;
     }
 
     @Override
@@ -395,7 +392,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Shl(Register.ACCUMULATOR, Immediate.STACK_SIZE_POWER));
 
             instructions.add(new Comment("Adding space for SIT, cast info, and length" + typeDclNode.fullName));
-            final long baseSize = SizeHelper.DEFAULT_STACK_SIZE  * 2 + SizeHelper.getIntSize(Size.DWORD);
+            final long baseSize = ObjectLayout.objSize();
             final Immediate sizeI = new Immediate(String.valueOf(baseSize));
             instructions.add(new Add(Register.ACCUMULATOR, sizeI));
             instructions.add(new Comment("Allocate for array" + typeDclNode.fullName));
@@ -934,8 +931,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(SuperSymbol superSymbol) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new Comment("This (super) pointer"));
+        instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
+        isSuper = true;
     }
 
     @Override
@@ -954,7 +952,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         final char [] cs = stringSymbol.strValue.toCharArray();
         for(int i = 0; i < cs.length; i++){
-            final long place = 2 * i + SizeHelper.DEFAULT_STACK_SIZE * 2 + SizeHelper.getIntSize(Size.DWORD);
+            final long place = 2 * i + ObjectLayout.objSize();
             final InstructionArg to = new PointerRegister(Register.ACCUMULATOR, new Immediate(String.valueOf(place)));
             instructions.add(new Mov(to, new Immediate((cs[i])), Size.WORD));
         }

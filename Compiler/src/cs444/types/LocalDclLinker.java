@@ -77,6 +77,8 @@ public class LocalDclLinker extends EmptyVisitor {
     private boolean methodArgs = false;
     private long argOffset = 0;
 
+    boolean fromSuper = false;
+
     public LocalDclLinker(String enclosingClassName){
         this.context = new ContextInfo(enclosingClassName);
 
@@ -93,6 +95,7 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void open(MethodOrConstructorSymbol methodSymbol){
         methodArgs = true;
+        //Two from return value location and stack a third for this if it is not static
         int where = methodSymbol.isStatic() ? 2 : 3;
         argOffset = SizeHelper.DEFAULT_STACK_SIZE * where;
         pushNewScope(methodSymbol.isStatic());
@@ -102,6 +105,7 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void middle(MethodOrConstructorSymbol methodOrConstructorSymbol) throws CompilerException {
         methodArgs = false;
+        //Two from return value location and stack
         methodOrConstructorSymbol.setStackSize(argOffset - SizeHelper.DEFAULT_STACK_SIZE * 2);
         for(DclSymbol param : methodOrConstructorSymbol.params){
             long stack = param.getType().getTypeDclNode().stackSize;
@@ -169,6 +173,12 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
+    public void prepare(MethodInvokeSymbol invoke) {
+        currentTypes.push(new ArrayDeque<Typeable>());
+        useCurrentScopeForLookup.push(false);
+    }
+
+    @Override
     public void open(MethodInvokeSymbol invoke) throws CompilerException {
 
         Deque<Typeable> currentSymbols = currentTypes.pop();
@@ -181,7 +191,7 @@ public class LocalDclLinker extends EmptyVisitor {
             DclSymbol dcl = null;
             dcl = currentScope.find(invoke.lookupFirst);
             if(dcl == null){
-                List<DclSymbol> dcls = resolver.findDcl(invoke.lookupFirst, isStatic, currentSymbols.isEmpty());
+                List<DclSymbol> dcls = resolver.findDcl(invoke.lookupFirst, isStatic, currentSymbols.isEmpty(), fromSuper);
                 dcl = dcls.get(0);
                 if (dcl.dclInResolver == resolver && context.insideField()){
                     throw new ForwardReferenceException(context.getMemberName(), dcl.dclName, context.enclosingClassName);
@@ -207,10 +217,8 @@ public class LocalDclLinker extends EmptyVisitor {
         LookupLink lookup = invoke.getLookup();
 
         boolean isStatic = currentScope.isStatic;
-        if (isStatic && lookup.lastDcl == null){
-            throw new CompilerException(context.enclosingClassName, context.getMemberName(),
-                    "cannot call a static method without naming the class.");
-        }
+        if (isStatic && lookup.lastDcl == null) lookup = new LookupLink(Arrays.asList(
+                    new Typeable [] {resolver.findDcl(context.enclosingClassName, true, true, false).get(0)}));
 
         if(lookup.lastDcl != null){
             TypeSymbol type = lookup.getType();
@@ -263,7 +271,9 @@ public class LocalDclLinker extends EmptyVisitor {
             }else{
                 APkgClassResolver resolver = dclNode.type.getTypeDclNode();
                 APkgClassResolver who = PkgClassInfo.instance.getSymbol(context.enclosingClassName);
-                List<DclSymbol> restList = resolver.findDcl(nameSymbol.value.substring(lookupNames[0].length() + 1), false, who, false);
+                List<DclSymbol> restList =
+                        resolver.findDcl(nameSymbol.value.substring(lookupNames[0].length() + 1), false, who, false, fromSuper);
+
                 dclList = new LinkedList<Typeable>(restList);
                 dclList.add(0, dclNode);
 
@@ -281,18 +291,12 @@ public class LocalDclLinker extends EmptyVisitor {
                 allowClass = false;
             }
 
-            List<Typeable> modOp = new LinkedList<Typeable>(resolver.findDcl(nameSymbol.value, isStatic, allowClass));
+            List<Typeable> modOp = new LinkedList<Typeable>(resolver.findDcl(nameSymbol.value, isStatic, allowClass, fromSuper));
             link = new LookupLink(modOp);
         }
 
         nameSymbol.setDclNode(link);
         currentTypes.peek().add(nameSymbol);
-    }
-
-    @Override
-    public void prepare(MethodInvokeSymbol invoke) {
-        currentTypes.push(new ArrayDeque<Typeable>());
-        useCurrentScopeForLookup.push(false);
     }
 
     @Override
@@ -312,6 +316,7 @@ public class LocalDclLinker extends EmptyVisitor {
         Deque<Typeable> typeableDeque = currentTypes.pop();
         useCurrentScopeForLookup.pop();
         currentTypes.peek().add(typeableDeque.getLast());
+        fromSuper = false;
     }
 
     private void simpleVistorHelper(TypeableTerminal tt, String visitorType) throws UndeclaredException{
@@ -378,8 +383,8 @@ public class LocalDclLinker extends EmptyVisitor {
 
     @Override
     public void visit(SuperSymbol superSymbol) throws CompilerException {
-        APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(context.enclosingClassName);
-        simpleVistorHelper(superSymbol, resolver.getSuperName());
+        //Super will not give a type
+        fromSuper = true;
     }
 
     public void bothBooleanHelper(BinOpExpr op) throws UndeclaredException, BadOperandsTypeException{

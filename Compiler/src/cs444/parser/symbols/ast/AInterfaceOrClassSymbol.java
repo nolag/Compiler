@@ -5,6 +5,7 @@ import java.util.List;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
+import cs444.codegen.ObjectLayout;
 import cs444.codegen.SizeHelper;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
@@ -96,8 +97,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
     }
 
     public void computeFieldOffsets() {
-        // first two words are for SIT and SubType Labels
-        long nextOffset = 2 * SizeHelper.DEFAULT_STACK_SIZE;
+        long nextOffset = ObjectLayout.objSize();
         for (DclSymbol fieldDcl : this.getFields()) {
             if (fieldDcl.isStatic()) continue;
 
@@ -106,7 +106,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
                 System.err.println("DOES NOT ADD UP FOR INHERITING " + fieldDcl.dclName + " in " + dclName);
             }
 
-            // no a field from super:
+            // not a field from super:
             fieldDcl.setOffset(nextOffset);
             final TypeSymbol ts = fieldDcl.type;
             if(ts.isArray) nextOffset += SizeHelper.DEFAULT_STACK_SIZE;
