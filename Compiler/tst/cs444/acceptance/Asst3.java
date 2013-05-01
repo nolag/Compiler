@@ -5,12 +5,14 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import cs444.types.PkgClassInfo;
 
 public class Asst3 {
 
+    @Ignore("will run with all tests and check return")
     @Test
     public void testMarmosetValidTestCases() throws IOException, InterruptedException {
         TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a3/valid/", 0, true);
@@ -26,8 +28,7 @@ public class Asst3 {
                 "Je_5_ForwardReference_FieldInOwnInitializer_Direct.java",
                 "Je_5_ForwardReference_FieldInOwnInitializer_ReadAfterAssignment.java",
                 "Je_5_ForwardReference_FieldInOwnInitializer_RightSideOfAssignment.java",
-                "Je_5_ForwardReference_InAssignment.java",
-                "Je_6_FinalField_ArrayLength.java"
+                "Je_5_ForwardReference_InAssignment.java"
                 ));
 
         TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a3/invalid/", 42,  false, ignoreList);

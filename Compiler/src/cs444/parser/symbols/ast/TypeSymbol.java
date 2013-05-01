@@ -12,6 +12,7 @@ import cs444.types.APkgClassResolver;
 public class TypeSymbol extends ATerminal implements Typeable{
     public boolean isArray;
     public final boolean isClass;
+    public boolean isFinal;
     private APkgClassResolver typeResolver;
 
 

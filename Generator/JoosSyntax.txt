@@ -401,6 +401,8 @@ MethodInvocation
 
 ArrayAccess
 
+super
+
 ClassInstanceCreationExpression:
 
 new ClassType lparen [ArgumentList] rparen
@@ -438,8 +440,6 @@ lbracket rbracket
 FieldAccess:
 
 Primary . id
-
-super . id
 
 MethodInvocation:
 

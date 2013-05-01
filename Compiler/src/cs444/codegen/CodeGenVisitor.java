@@ -777,8 +777,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     private void strPartHelper(ISymbol child, APkgClassResolver resolver){
         final String firstType = ((Typeable)child).getType().getTypeDclNode().fullName;
         child.accept(this);
-        AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(firstType));
-        if(ms == null) ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(JoosNonTerminal.OBJECT));
+        AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(firstType), isSuper);
+        if(ms == null) ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(JoosNonTerminal.OBJECT), isSuper);
 
         lastSize = SizeHelper.getPushSize(lastSize);
         int pop = SizeHelper.getIntSize(lastSize);
@@ -811,7 +811,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Comment("Pushing second string as arument then first as this"));
             instructions.add(new Push(Register.ACCUMULATOR));
             instructions.add(new Push(Register.BASE));
-            final AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.STR_ADD, false, Arrays.asList(JoosNonTerminal.STRING));
+            final AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.STR_ADD, false, Arrays.asList(JoosNonTerminal.STRING), isSuper);
             InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(ms));
             if(ms.dclInResolver != currentFile) instructions.add(new Extern(arg));
             instructions.add(new Call(arg));

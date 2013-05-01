@@ -25,7 +25,6 @@ import cs444.types.exceptions.ImplicitStaticConversionException;
 import cs444.types.exceptions.UndeclaredException;
 
 public abstract class APkgClassResolver {
-
     public final String name;
     public final String fullName;
     public final String pkg;
@@ -40,14 +39,17 @@ public abstract class APkgClassResolver {
 
     protected final Map<String, DclSymbol> fieldMap = new HashMap<String, DclSymbol>();
     protected final Map<String, DclSymbol> sfieldMap = new HashMap<String, DclSymbol>();
+    protected final Map<String, DclSymbol> hfieldMap = new HashMap<String, DclSymbol>();
+    protected final Map<String, DclSymbol> hsfieldMap = new HashMap<String, DclSymbol>();
     protected final Map<String, AMethodSymbol> methodMap = new HashMap<String, AMethodSymbol>();
     protected final Map<String, AMethodSymbol> smethodMap = new HashMap<String, AMethodSymbol>();
+    protected final Map<String, AMethodSymbol> hmethodMap = new HashMap<String, AMethodSymbol>();
+    protected final Map<String, AMethodSymbol> hsmethodMap = new HashMap<String, AMethodSymbol>();
 
     protected final Map<String, ConstructorSymbol> constructors = new HashMap<String, ConstructorSymbol>();
 
     private final Map<DclSymbol, Integer> order = new HashMap<DclSymbol, Integer>();
     private final Map<Integer, DclSymbol> revorder = new HashMap<Integer, DclSymbol>();
-    protected final Set<DclSymbol> addAll = new HashSet<DclSymbol>();
     private int onField = 0;
 
     public final long stackSize;
@@ -131,19 +133,26 @@ public abstract class APkgClassResolver {
         build(new HashSet<PkgClassResolver>(), false, false);
     }
 
-    private DclSymbol getDcl(String name, boolean isStatic, APkgClassResolver pkgClass, boolean allowClass) throws UndeclaredException, ImplicitStaticConversionException {
+    private DclSymbol getDcl(String name, boolean isStatic, APkgClassResolver pkgClass, boolean allowClass, boolean fromSuper)
+            throws UndeclaredException, ImplicitStaticConversionException {
 
         Map<String, DclSymbol> getFrom = isStatic ? sfieldMap : fieldMap;
         Map<String, DclSymbol> notFrom = isStatic ? fieldMap : sfieldMap;
 
         DclSymbol retVal = getFrom.get(name);
 
-        if(!isStatic && notFrom.containsKey(name)) retVal = notFrom.get(name);
+        if(retVal == null && !isStatic && notFrom.containsKey(name)) retVal = notFrom.get(name);
 
         if(retVal == null){
             if(notFrom.containsKey(name)) throw new ImplicitStaticConversionException(name);
             APkgClassResolver klass = allowClass ? getClass(name, false) : null;
             return (klass == null)? null : DclSymbol.getClassSymbol(name, klass);
+        }else if(retVal.dclInResolver == this && fromSuper){
+            getFrom = isStatic ? hsfieldMap : hfieldMap;
+            notFrom = isStatic ? hfieldMap : hsfieldMap;
+            retVal = getFrom.get(name);
+            if(retVal == null && !isStatic && notFrom.containsKey(name)) retVal = notFrom.get(name);
+            else if(retVal == null) throw new UndeclaredException(name, getSuperName());
         }
 
         verifyCanRead(retVal, pkgClass);
@@ -154,19 +163,16 @@ public abstract class APkgClassResolver {
     public List<DclSymbol> findDcl(String name, boolean isStatic, APkgClassResolver pkgClass,
             boolean allowClass, boolean fromSuper) throws UndeclaredException, ImplicitStaticConversionException {
 
-        if(fromSuper) return getSuper().findDcl(name, isStatic, allowClass, fromSuper);
-
         String [] nameParts = name.split("\\.");
 
         DclSymbol retVal;
         if(nameParts.length == 1){
-            retVal = getDcl(name, isStatic, pkgClass, allowClass);
+            retVal = getDcl(name, isStatic, pkgClass, allowClass, fromSuper);
             if(retVal == null) throw new UndeclaredException(name, fullName);
-
             return  Arrays.asList(new DclSymbol []{ retVal });
         }
 
-        DclSymbol dcl = getDcl(nameParts[0], isStatic, pkgClass, allowClass);
+        DclSymbol dcl = getDcl(nameParts[0], isStatic, pkgClass, allowClass, fromSuper);
         List<DclSymbol> dclList = new LinkedList<DclSymbol>();
 
         APkgClassResolver pkgResolver = null;
@@ -186,9 +192,9 @@ public abstract class APkgClassResolver {
                 pkgResolver = getClass(sb.toString(), false);
             }
 
-            dclList.add(getDcl(sb.toString(), isStatic, pkgClass, allowClass));
+            dclList.add(getDcl(sb.toString(), isStatic, pkgClass, allowClass, false));
 
-            if(pkgResolver != null && i != nameParts.length) dcl = pkgResolver.getDcl(nameParts[i], true, this, false);
+            if(pkgResolver != null && i != nameParts.length) dcl = pkgResolver.getDcl(nameParts[i], true, this, false, false);
             else if(pkgResolver != null) dcl = DclSymbol.getClassSymbol(pkgResolver.fullName, pkgResolver);
             i++;
         }
@@ -198,7 +204,7 @@ public abstract class APkgClassResolver {
 
         for(; i < nameParts.length; i++){
             if(dcl.type.isArray) pkgResolver = pkgResolver.getArrayVersion();
-            dcl = pkgResolver.getDcl(nameParts[i], dcl.type.isClass, pkgClass, false);
+            dcl = pkgResolver.getDcl(nameParts[i], dcl.type.isClass, pkgClass, false, false);
             if(dcl == null) throw new UndeclaredException(name, fullName);
             dclList.add(dcl);
             pkgResolver = pkgResolver.getClass(dcl.type.value, true);
@@ -211,22 +217,24 @@ public abstract class APkgClassResolver {
         return findDcl(name, isStatic, this, allowClass, fromSuper);
     }
 
-    public AMethodSymbol findMethod(String name, boolean isStatic, List<String> paramTypes, APkgClassResolver pkgClass) throws UndeclaredException {
+    public AMethodSymbol findMethod(String name, boolean isStatic, List<String> paramTypes,
+            APkgClassResolver pkgClass, boolean fromSuper)  throws UndeclaredException {
+
         String uniqueName = generateUniqueName(name, paramTypes);
-        AMethodSymbol retVal = safeFindMethod(name, isStatic, paramTypes);
-        if(retVal == null) throw new UndeclaredException(uniqueName, fullName);
+        AMethodSymbol retVal = safeFindMethod(name, isStatic, paramTypes, fromSuper);
+        if(retVal == null) throw new UndeclaredException(uniqueName, fromSuper ? getSuper().fullName : fullName);
         verifyCanRead(retVal, pkgClass);
         return retVal;
     }
 
-    public AMethodSymbol safeFindMethod(String name, boolean isStatic, List<String> paramTypes){
-        final Map<String, AMethodSymbol> getFrom = isStatic ? smethodMap : methodMap;
-        String uniqueName = generateUniqueName(name, paramTypes);
-        AMethodSymbol retVal = getFrom.get(uniqueName);
+    private AMethodSymbol safeFindHelper(String name, String uniqueName, Map<String, AMethodSymbol> from,
+            Map<String, AMethodSymbol> notFrom, List<String> paramTypes){
+
+        AMethodSymbol retVal = from.get(uniqueName);
+        if(null == retVal && notFrom != null) retVal = notFrom.get(uniqueName);
         //NOTE if I change the native name to include the params then I don't need this
         if(retVal == null){
-            retVal = getFrom.get(name);
-
+            retVal = from.get(name);
             if(retVal != null){
                 if(paramTypes.size() != retVal.params.size()) return null;
                 for(int i = 0; i < paramTypes.size(); i++){
@@ -234,6 +242,19 @@ public abstract class APkgClassResolver {
                 }
             }
         }
+        return retVal;
+    }
+
+    public AMethodSymbol safeFindMethod(String name, boolean isStatic, List<String> paramTypes, boolean fromSuper){
+        String uniqueName = generateUniqueName(name, paramTypes);
+        Map<String, AMethodSymbol> from = isStatic ? smethodMap : methodMap;
+        AMethodSymbol retVal = safeFindHelper(name, uniqueName, from, isStatic ? null : smethodMap, paramTypes);
+
+        if(retVal != null && retVal.dclInResolver == this && fromSuper){
+            from = isStatic ? hsmethodMap : hmethodMap;
+            retVal = safeFindHelper(name, uniqueName, from, isStatic ? null : hsmethodMap, paramTypes);
+        }
+
         return retVal;
     }
 

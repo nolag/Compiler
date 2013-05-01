@@ -110,6 +110,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
             try{
                 DclSymbol length = new DclSymbol("length", null, intType, null, false);
                 length.forcePublic();
+                length.forceFinal();
                 fieldMap.put("length", length);
             }catch (CompilerException ce){
                 ce.printStackTrace();

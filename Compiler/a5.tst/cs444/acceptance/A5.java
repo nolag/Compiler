@@ -34,7 +34,6 @@ public class A5 {
                 true, failingList, new AsmAndLinkCallback());
     }
 
-    //@Ignore("Ignoring previous tests")
     @Test
     public void testMarmosetA4ValidTestCases() throws IOException, InterruptedException {
         List<String> failingList = new LinkedList<String>();
@@ -43,7 +42,6 @@ public class A5 {
                 true, failingList, new AsmAndLinkCallback());
     }
 
-    //@Ignore("Ignoring previous tests")
     @Test
     public void testMarmosetA3ValidTestCases() throws IOException, InterruptedException {
         List<String> failingList = new LinkedList<String>();
@@ -52,7 +50,6 @@ public class A5 {
                 true, failingList, new AsmAndLinkCallback());
     }
 
-    //@Ignore("Ignoring previous tests")
     @Test
     public void testMarmosetA2ValidTestCases() throws IOException, InterruptedException {
         List<String> failingList = new LinkedList<String>();
@@ -61,7 +58,6 @@ public class A5 {
                 true, failingList, new AsmAndLinkCallback());
     }
 
-    //@Ignore("Ignoring previous tests")
     @Test
     public void testMarmosetA1ValidTestCases() throws IOException, InterruptedException {
         //J1w_Interface.java is an interface there is no test method

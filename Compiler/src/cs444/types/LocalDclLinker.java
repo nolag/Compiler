@@ -239,7 +239,7 @@ public class LocalDclLinker extends EmptyVisitor {
         }
 
         APkgClassResolver myResolver = PkgClassInfo.instance.getSymbol(context.enclosingClassName);
-        AMethodSymbol method = resolver.findMethod(invoke.methodName, isStatic, params, myResolver);
+        AMethodSymbol method = resolver.findMethod(invoke.methodName, isStatic, params, myResolver, fromSuper);
         invoke.setCallSymbol(method);
         invoke.setLookup(invoke.getLookup().addWith(method));
         currentTypes.peek().add(method);
@@ -383,7 +383,10 @@ public class LocalDclLinker extends EmptyVisitor {
 
     @Override
     public void visit(SuperSymbol superSymbol) throws CompilerException {
-        //Super will not give a type
+        if (currentScope.isStatic) {
+            throw new ExplicitThisInStaticException(context.enclosingClassName, context.getCurrentMember().dclName);
+        }
+        simpleVistorHelper(superSymbol, context.enclosingClassName);
         fromSuper = true;
     }
 
@@ -560,15 +563,10 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void visit(AssignmentExprSymbol op) throws IllegalCastAssignmentException, UndeclaredException, UnsupportedException {
         Typeable leftHS = currentTypes.peek().removeLast();
+        if(leftHS.getType().isFinal) throw new UnsupportedException("left hand side of assignment cannot be final.");
 
         TypeSymbol rightHSType = currentTypes.peek().removeLast().getType();
-
         assertIsAssignable(rightHSType, leftHS.getType(), false, false);
-
-        if ((leftHS instanceof NameSymbol)){
-            DclSymbol declaration = ((NameSymbol) leftHS).getLastLookupDcl();
-            if (declaration.isFinal) throw new UnsupportedException("left hand side of assignment cannot be final.");
-        }
 
         op.setType(leftHS.getType());
         currentTypes.peek().add(leftHS);

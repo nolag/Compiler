@@ -12,7 +12,6 @@ import cs444.types.APkgClassResolver;
 
 public class DclSymbol extends AModifiersOptSymbol{
     public final boolean isLocal;
-    public boolean isFinal;
     private long offset;
 
     public static DclSymbol getClassSymbol(String fullName, APkgClassResolver resolver){
@@ -28,12 +27,6 @@ public class DclSymbol extends AModifiersOptSymbol{
             throws IllegalModifierException, UnsupportedException {
         this(dclName, from, type, isLocal);
         if(initVal != null) children.addAll(initVal.children);
-    }
-
-    public DclSymbol(String dclName, ANonTerminal from, TypeSymbol type, boolean isLocal, boolean isFinal)
-            throws IllegalModifierException, UnsupportedException {
-        this(dclName, from, type, isLocal);
-        this.isFinal = isFinal;
     }
 
     public DclSymbol(String dclName, ANonTerminal from, TypeSymbol type, boolean isLocal)

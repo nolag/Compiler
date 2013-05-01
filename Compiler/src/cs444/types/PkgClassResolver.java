@@ -173,16 +173,16 @@ public class PkgClassResolver extends APkgClassResolver {
         for(ISymbol child : copyChildren){
             if(child instanceof DclSymbol){
                 DclSymbol dcl = (DclSymbol) child;
-                DclSymbol field = fieldMap.get(dcl.dclName);
-                field = field == null ? sfieldMap.get(dcl.dclName) : field;
-                //If another lookup already exists, then this field is hidden.  If it is private, we don't get access to it.
-                if(field == null && dcl.getProtectionLevel() != ProtectionLevel.PRIVATE){
-                    Map<String, DclSymbol> addTo = dcl.isStatic() ? sfieldMap : fieldMap;
+                if(dcl.getProtectionLevel() != ProtectionLevel.PRIVATE){
+                    DclSymbol field = fieldMap.get(dcl.dclName);
+                    field = field == null ? sfieldMap.get(dcl.dclName) : field;
+                    //If another lookup already exists, then this field is hidden.  If it is private, we don't get access to it.
+                    Map<String, DclSymbol> addTo;
+                    if(field == null) addTo = dcl.isStatic() ? sfieldMap : fieldMap;
+                    else addTo = dcl.isStatic() ? hsfieldMap : hfieldMap;
                     addTo.put(dcl.dclName, dcl);
-                    addAll.add(dcl);
                 }
                 start.children.add(0, dcl);
-            //TODO make sure this is not allowing constructors to be copied
             }else if(child instanceof AMethodSymbol){
                 AMethodSymbol methodSymbol = (AMethodSymbol) child;
                 String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
@@ -199,8 +199,7 @@ public class PkgClassResolver extends APkgClassResolver {
                     if(methodSymbol.getImplementationLevel() == ImplementationLevel.FINAL && has != null)
                         throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "is final, but overrided");
                     if(methodSymbol.getProtectionLevel() == ProtectionLevel.PUBLIC && is.getProtectionLevel() != ProtectionLevel.PUBLIC)
-                        if (has.getImplementationLevel() == ImplementationLevel.ABSTRACT &&
-                          has.resolver != this && !building.start.isClass()){
+                        if (has.getImplementationLevel() == ImplementationLevel.ABSTRACT && has.resolver != this && !building.start.isClass()){
                             // replace "is" for methodSymbol
                             replaceMethod(methodSymbol, is);
                             continue;
@@ -213,9 +212,13 @@ public class PkgClassResolver extends APkgClassResolver {
                     //covarient return types not allowed in JOOS, it was added in java 5
                     if(methodSymbol.resolver.getClass(is.type.value, true) != building.getClass(methodSymbol.type.value, true))
                         throw new IllegalMethodOverloadException(fullName, methodSymbol.dclName, "return types don't match");
+                    final Map<String, AMethodSymbol> addTo = methodSymbol.isStatic() ? hsmethodMap : hmethodMap;
+                    addTo.put(uniqueName, methodSymbol);
                 }else{
                     if(methodSymbol.getImplementationLevel() == ImplementationLevel.ABSTRACT && start.getImplementationLevel() != ImplementationLevel.ABSTRACT)
                         throw new UnimplementedException(fullName, methodSymbol.dclName);
+                    //Can't call the private one
+                    if(methodSymbol.getProtectionLevel() == ProtectionLevel.PRIVATE) continue;
                     final Map<String, AMethodSymbol> addTo = methodSymbol.isStatic() ? smethodMap : methodMap;
                     addTo.put(uniqueName, methodSymbol);
                 }
@@ -225,13 +228,16 @@ public class PkgClassResolver extends APkgClassResolver {
 
     private void replaceMethod(AMethodSymbol newMethod, AMethodSymbol oldMethod)
             throws UndeclaredException {
-        String oldUniqueName = generateUniqueName(oldMethod, oldMethod.dclName);
-        methodMap.remove(oldUniqueName);
-        start.children.remove(oldUniqueName);
+        Map<String, AMethodSymbol> addNewTo = newMethod.isStatic() ? smethodMap : methodMap;
+        Map<String, AMethodSymbol> addOldTo = oldMethod.isStatic() ? hsmethodMap : hmethodMap;
+        Map<String, AMethodSymbol> remOldFrom = oldMethod.isStatic() ? methodMap : smethodMap;
 
-        String newUniqueName = generateUniqueName(newMethod, newMethod.dclName);
-        methodMap.put(newUniqueName, newMethod);
+        String uniqueName = generateUniqueName(oldMethod, oldMethod.dclName);
+        start.children.remove(uniqueName);
         start.children.add(newMethod);
+        remOldFrom.remove(uniqueName);
+        addOldTo.put(uniqueName, oldMethod);
+        addNewTo.put(uniqueName, newMethod);
     }
 
     @Override

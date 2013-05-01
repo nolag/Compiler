@@ -135,6 +135,12 @@ public abstract class AModifiersOptSymbol extends ANonTerminal implements Typeab
         hasPublic = true;
     }
 
+
+    public void forceFinal() {
+        hasFinal = true;
+        type.isFinal = true;
+    }
+
     @Override
     public TypeSymbol getType(){
         return type;
@@ -143,6 +149,7 @@ public abstract class AModifiersOptSymbol extends ANonTerminal implements Typeab
     @Override
     public void setType(TypeSymbol type){
         this.type = type;
+        type.isFinal = hasFinal;
     }
 
     public abstract ProtectionLevel defaultProtectionLevel();
