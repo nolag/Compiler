@@ -8,13 +8,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Scanner;
 
+import cs444.Compiler;
+
     public class AsmAndLinkCallback implements ITestCallbacks{
         private static final int EXPECTED_DEFAULT_RTN_CODE = 123;
-        private static final String OUTPUT = "output/";
 
         @Override
         public boolean beforeCompile(File _) throws IOException {
-            File folder = new File(OUTPUT);
+            File folder = new File(Compiler.OUTPUT_DIRECTORY);
 
             if (!folder.exists()) folder.mkdir();
 
@@ -30,7 +31,7 @@ import java.util.Scanner;
 
         @Override
         public boolean afterCompile(File file) throws IOException, InterruptedException {
-            File folder = new File(OUTPUT);
+            File folder = new File(Compiler.OUTPUT_DIRECTORY);
             if (!assembleOutput(folder)) return false;
 
             String folderAbsPath = folder.getAbsolutePath();

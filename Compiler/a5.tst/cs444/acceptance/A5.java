@@ -11,9 +11,10 @@ public class A5 {
 
     @Test
     public void testCompileProgramsNoStdLib() throws IOException, InterruptedException{
-        List<String> ignoreList = new LinkedList<String>();
+        //SuperMethod is not implemented yet
+        List<String> ignoreList = new LinkedList<String>(Arrays.asList("SuperMethod"));
 
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/A5/NoStdLibPrograms/", 0, true, false,
+        TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "A5/NoStdLibPrograms/", 0, true, false,
                 true, ignoreList, new AsmAndLinkCallback());
     }
 
@@ -21,7 +22,7 @@ public class A5 {
     public void testCompileProgramsWithStdLib() throws IOException, InterruptedException{
         List<String> ignoreList = new LinkedList<String>();
 
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/A5/WithStdLib/", 0, true, true,
+        TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "A5/WithStdLib/", 0, true, true,
                                             true, ignoreList, new AsmAndLinkCallback());
     }
 
@@ -30,7 +31,7 @@ public class A5 {
 
         List<String> failingList = new LinkedList<String>();
 
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a5/", 0, true, true,
+        TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a5/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
     }
 
@@ -38,7 +39,7 @@ public class A5 {
     public void testMarmosetA4ValidTestCases() throws IOException, InterruptedException {
         List<String> failingList = new LinkedList<String>();
 
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a4/valid/", 0, true, true,
+        TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a4/valid/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
     }
 
@@ -46,7 +47,7 @@ public class A5 {
     public void testMarmosetA3ValidTestCases() throws IOException, InterruptedException {
         List<String> failingList = new LinkedList<String>();
 
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a3/valid/", 0, true, true,
+        TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a3/valid/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
     }
 
@@ -54,7 +55,7 @@ public class A5 {
     public void testMarmosetA2ValidTestCases() throws IOException, InterruptedException {
         List<String> failingList = new LinkedList<String>();
 
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a2/valid/", 0, true, true,
+        TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a2/valid/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
     }
 
@@ -63,7 +64,7 @@ public class A5 {
         //J1w_Interface.java is an interface there is no test method
         List<String> failingList = new LinkedList<String>(Arrays.asList("J1w_Interface.java"));
 
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a1/valid/", 0, true, true,
+        TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a1/valid/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
     }
 }

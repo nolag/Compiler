@@ -141,19 +141,22 @@ public abstract class APkgClassResolver {
 
         DclSymbol retVal = getFrom.get(name);
 
-        if(retVal == null && !isStatic && notFrom.containsKey(name)) retVal = notFrom.get(name);
-
         if(retVal == null){
-            if(notFrom.containsKey(name)) throw new ImplicitStaticConversionException(name);
+          //TODO if adding implicit static conversion, add it here
             APkgClassResolver klass = allowClass ? getClass(name, false) : null;
             return (klass == null)? null : DclSymbol.getClassSymbol(name, klass);
-        }else if(retVal.dclInResolver == this && fromSuper){
+        }
+
+        //This is not an else because if I allow implicit static conversion later it may no longer be null
+        if(retVal.dclInResolver == this && fromSuper){
             getFrom = isStatic ? hsfieldMap : hfieldMap;
             notFrom = isStatic ? hfieldMap : hsfieldMap;
             retVal = getFrom.get(name);
-            if(retVal == null && !isStatic && notFrom.containsKey(name)) retVal = notFrom.get(name);
-            else if(retVal == null) throw new UndeclaredException(name, getSuperName());
+            //TODO if adding implicit static conversion, add it here
+            if(retVal == null) return null;
         }
+
+        if(notFrom.containsKey(name)) throw new ImplicitStaticConversionException(name);
 
         verifyCanRead(retVal, pkgClass);
 

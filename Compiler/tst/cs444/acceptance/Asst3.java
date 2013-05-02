@@ -15,7 +15,7 @@ public class Asst3 {
     @Ignore("will run with all tests and check return")
     @Test
     public void testMarmosetValidTestCases() throws IOException, InterruptedException {
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a3/valid/", 0, true);
+        TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a3/valid/", 0, true);
     }
 
     @Test
@@ -31,7 +31,7 @@ public class Asst3 {
                 "Je_5_ForwardReference_InAssignment.java"
                 ));
 
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/MarmosetPrograms/a3/invalid/", 42,  false, ignoreList);
+        TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a3/invalid/", 42,  false, ignoreList);
     }
 
     @Test
@@ -42,11 +42,11 @@ public class Asst3 {
 
     @Test
     public void a3ValidTests() throws IOException, InterruptedException{
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/valid/", 0, true, false);
+        TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "A3/valid/", 0, true, false);
     }
 
     @Test
     public void a3Testing() throws IOException, InterruptedException{
-        TestHelper.assertReturnCodeForFiles("JoosPrograms/A3/invalid/", 42, false, false);
+        TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "A3/invalid/", 42, false, false);
     }
 }

@@ -9,13 +9,13 @@ public class Asst1 {
 
     @Test
     public void testValidJoosCode() throws IOException, InterruptedException {
-        String path = "JoosPrograms/SyntacticallyValidPrograms/";
+        String path = TestHelper.TEST_LOCATION + "SyntacticallyValidPrograms/";
         TestHelper.assertReturnCodeForFiles(path, 0,  true);
     }
 
     @Test
     public void testInvalidJoosCode() throws IOException, InterruptedException {
-        String path = "JoosPrograms/SyntacticallyInvalidPrograms/";
+        String path = TestHelper.TEST_LOCATION + "SyntacticallyInvalidPrograms/";
 
         TestHelper.assertReturnCodeForFiles(path, 42,  false);
     }
@@ -23,13 +23,13 @@ public class Asst1 {
     @Ignore("Valid Marmoset tests are in A5 with code generated")
     @Test
     public void testMarmosetValidCases() throws IOException, InterruptedException{
-        String path = "JoosPrograms/MarmosetPrograms/a1/valid/";
+        String path = TestHelper.TEST_LOCATION + "MarmosetPrograms/a1/valid/";
         TestHelper.assertReturnCodeForFiles(path, 0,  true);
     }
 
     @Test
     public void testMarmosetInvalidCases() throws IOException, InterruptedException {
-        String path = "JoosPrograms/MarmosetPrograms/a1/invalid/";
+        String path = TestHelper.TEST_LOCATION + "MarmosetPrograms/a1/invalid/";
         TestHelper.assertReturnCodeForFiles(path, 42, false);
     }
 }

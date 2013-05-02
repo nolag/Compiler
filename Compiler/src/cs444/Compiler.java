@@ -28,8 +28,11 @@ import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassInfo;
 
 public class Compiler {
+    public static final String BASE_DIRECTORY = "/mnt/hgfs/RAM/";
+    //public static final String BASE_DIRECTORY = "";
+    public static final String OUTPUT_DIRECTORY = BASE_DIRECTORY + "output/";
 
-    private static final int COMPILER_ERROR_CODE = 42;
+    public static final int COMPILER_ERROR_CODE = 42;
 
     /**
      * @param args
@@ -122,17 +125,16 @@ public class Compiler {
     }
 
     private static void generateCode(List<APkgClassResolver> resolvers, boolean outputFile) throws IOException{
-        String directory = "output/";
         PrintStream printer;
 
-        SelectorIndexedTable sit = SelectorIndexedTable.generateSIT(resolvers, outputFile, directory);
-        SubtypeIndexedTable subIt = SubtypeIndexedTable.generateTable(resolvers, outputFile, directory);
+        SelectorIndexedTable sit = SelectorIndexedTable.generateSIT(resolvers, outputFile, OUTPUT_DIRECTORY);
+        SubtypeIndexedTable subIt = SubtypeIndexedTable.generateTable(resolvers, outputFile, OUTPUT_DIRECTORY);
 
         for (APkgClassResolver resolver : resolvers) {
             resolver.computeFieldOffsets();
         }
 
-        StaticFieldInit.generateCode(resolvers, sit, subIt, outputFile, directory);
+        StaticFieldInit.generateCode(resolvers, sit, subIt, outputFile, OUTPUT_DIRECTORY);
         CodeGenVisitor codeGen = new CodeGenVisitor(sit, subIt);
         for(APkgClassResolver resolver : resolvers){
             if(!resolver.shouldGenCode()) continue;
@@ -141,8 +143,8 @@ public class Compiler {
             resolver.generateCode(codeGen);
             if (outputFile){
                 File file;
-                if(resolver.pkg == APkgClassResolver.DEFAULT_PKG) file = new File(directory + resolver.name + ".s");
-                else file = new File(directory + resolver.fullName + ".s");
+                if(resolver.pkg == APkgClassResolver.DEFAULT_PKG) file = new File(OUTPUT_DIRECTORY + resolver.name + ".s");
+                else file = new File(OUTPUT_DIRECTORY + resolver.fullName + ".s");
                 file.createNewFile();
                 printer = new PrintStream(file);
             }else{

@@ -17,6 +17,8 @@ public class TestHelper {
     private static ITestCallbacks callbacks;
     private static boolean outputAsmFiles;
 
+    public static final String TEST_LOCATION = Compiler.BASE_DIRECTORY + "JoosPrograms/";
+
 	public static void assertReturnCodeForFiles(String path, int expectedReturnCode, boolean printErrors, boolean includeStdLib,
 	        boolean outputAsmFiles, List<String> ignoreList, ITestCallbacks testCallbacks) throws IOException, InterruptedException {
 	    TestHelper.callbacks = testCallbacks;
@@ -31,7 +33,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.contains("Je_6_FinalField_ArrayLength")) continue;
+			//if (!fileName.contains("J1_3_Resolve_LinkToCorrectPackage")) continue;
 
 			if (ignoreList.contains(fileName)){
 			    System.out.print("*"); // skip file
@@ -39,13 +41,9 @@ public class TestHelper {
                 continue;
 			}
 
-			if (file.isFile() && fileName.toLowerCase().endsWith(".java")){
-			    runTestCase(path, expectedReturnCode, printErrors,
-                        includeStdLib, failFiles, file, fileName);
-				totalTests++;
-			} else if (file.isDirectory() && !fileName.toLowerCase().endsWith(".skip")) {
-			    runTestCase(path, expectedReturnCode, printErrors,
-                        includeStdLib, failFiles, file, fileName);
+			if (file.isFile() && fileName.toLowerCase().endsWith(".java") ||
+			        (file.isDirectory() && !fileName.toLowerCase().endsWith(".skip"))){
+			    runTestCase(path, expectedReturnCode, printErrors, includeStdLib, failFiles, file, fileName);
 				totalTests++;
 			} else {
 				System.out.print("*"); // skip file
@@ -60,13 +58,11 @@ public class TestHelper {
 
     private static void runTestCase(String path, int expectedReturnCode,
             boolean printErrors, boolean includeStdLib, List<String> failFiles,
-            File file, String fileName) throws IOException,
-            InterruptedException {
+            File file, String fileName) throws IOException, InterruptedException {
         List<String> sourceFiles = getAllFiles(file, includeStdLib);
 
         String[] array = new String[sourceFiles.size()];
-        for (int i = 0; i < array.length; i++)
-            array[i] = sourceFiles.get(i);
+        sourceFiles.toArray(array);
 
         if (callbacks.beforeCompile(file)
                 && compileAndTest(array, printErrors) == expectedReturnCode
@@ -103,7 +99,7 @@ public class TestHelper {
 		Stack<File> toVisit = new Stack<File>();
 
 		if(includeStdLib){
-		    File stdLib = new File("JoosPrograms/StdLib");
+		    File stdLib = new File(TEST_LOCATION + "StdLib");
 		    toVisit.push(stdLib);
 		}
 
@@ -114,7 +110,8 @@ public class TestHelper {
 			if (currentFile.isFile()) {
 				String fileName = currentFile.getAbsolutePath();
 				if (fileName.endsWith(".java"))
-					result.add(fileName);
+					if(fileName.endsWith("Main.java"))result.add(0, fileName);
+					else result.add(fileName);
 			} else if (currentFile.isDirectory()) {
 				for (File sourceFile : currentFile.listFiles())
 					toVisit.push(sourceFile);

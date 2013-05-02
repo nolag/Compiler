@@ -329,18 +329,21 @@ public class PkgClassResolver extends APkgClassResolver {
 
             List<Set<PkgClassResolver>> resolvedSets = new LinkedList<Set<PkgClassResolver>>();
 
-            if(start.superName != null){
-                building = (PkgClassResolver)findClass(start.superName);
-                copyInfo(building, visited, resolvedSets, false, true);
+            if(!fullName.equals(JoosNonTerminal.OBJECT)){
+                if(start.superName != null || start.getImplementationLevel() != ImplementationLevel.ABSTRACT){
+                    if(start.superName == null) start.superName = JoosNonTerminal.OBJECT;
+                    building = (PkgClassResolver)findClass(start.superName);
+                    copyInfo(building, visited, resolvedSets, false, true);
 
-                if (building.start.getDefaultConstructor() == null){
-                    throw new UnsupportedException("class without default constructor.  Explicit super call is not supported." + building.fullName);
+                    if (building.start.getDefaultConstructor() == null){
+                        throw new UnsupportedException("class without default constructor.  Explicit super call is not supported." + building.fullName);
+                    }
+
+                    assignableTo.addAll(building.assignableTo);
+                    this.superClass = building;
+                }else{
+                    verifyObject();
                 }
-
-                assignableTo.addAll(building.assignableTo);
-                this.superClass = building;
-            }else{
-                verifyObject();
             }
 
             Set<String> alreadyImps = new HashSet<String>();

@@ -14,8 +14,10 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 
 public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
     public final Iterable<String> impls;
-    public final String superName;
     public final Iterable<NameSymbol> pkgImports;
+
+    public String superName;
+
     private ConstructorSymbol defaultConstructor;
     private long objectSize = 0;
 

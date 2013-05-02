@@ -5,7 +5,13 @@ public class Super{
     public int getValue(){
         return 11;
     }
-    public static int test(){
+    
+    public int helper(){
         return super.getValue();
+    }
+    
+    public static int test(){
+        Super s = new Super();
+        return s.helper();
     }
 }
