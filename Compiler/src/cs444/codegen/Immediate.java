@@ -3,27 +3,34 @@ package cs444.codegen;
 public class Immediate extends InstructionArg{
     private final String value;
 
-    public static final Immediate TRUE = new Immediate("1");
-    public static final Immediate FALSE = new Immediate("0");
+    public static final Immediate ONE = new Immediate("1");
+    public static final Immediate ZERO = new Immediate("0");
     public static final Immediate SOFTWARE_INTERUPT = new Immediate("80h");
     public static final Immediate PREP_EDX = new Immediate("31");
     public static final Immediate DWORD_I = new Immediate("4");
-    public static final Immediate WORD_I = new Immediate("2");
+    public static final Immediate TWO = new Immediate("2");
     public static final Immediate STACK_SIZE_POWER = new Immediate(String.valueOf(SizeHelper.DEFAULT_STACK_POWER));
-    public static final Immediate C_TIMES_4 = new Immediate(Register.COUNTER, "*", SizeHelper.DEFAULT_STACK_SIZE);
 
-    //Same value as true
-    public static final Immediate EXIT = TRUE;
-    public static final Immediate BYTE_I = TRUE;
-    public static final Immediate WORD_S = TRUE;
+    public static final Immediate C_TIMES_4 = new Immediate(Register.COUNTER, "*", 4);
+    public static final Immediate C_TIMES_2 = new Immediate(Register.COUNTER, "*", 4);
 
-    //same value as false;
-    public static final Immediate NULL = FALSE;
-    public static final Immediate ZERO = FALSE;
-    public static final Immediate BYTE_S = FALSE;
+    public static final Immediate NOTHING = new Immediate(";this should never actually be used, palce holder arg");
 
-    //same value as WORD_I
-    public static final Immediate DWORD_S = new Immediate("2");
+    //Same value as ONE
+    public static final Immediate TRUE = ONE;
+    public static final Immediate EXIT = ONE;
+    public static final Immediate BYTE_I = ONE;
+    public static final Immediate WORD_S = ONE;
+
+
+    //same value as ONE
+    public static final Immediate NULL = ZERO;
+    public static final Immediate FALSE = ZERO;
+    public static final Immediate BYTE_S = ZERO;
+
+    //same value as TWO
+    public static final Immediate WORD_I = TWO;
+    public static final Immediate DWORD_S = TWO;
 
     public Immediate(String value){
         this.value = value;

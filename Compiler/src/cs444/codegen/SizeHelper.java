@@ -48,4 +48,27 @@ public class SizeHelper {
         default: return 1;
         }
     }
+
+    public static InstructionArg getPowerSizeImd(Size size) {
+        switch(size){
+        case DWORD: return Immediate.TWO;
+        case WORD: return Immediate.ONE;
+        default: return Immediate.ZERO;
+        }
+    }
+
+    public static InstructionArg getZeroImd(Size size){
+        switch(size){
+        case DWORD: return PointerRegister.ZEROING_REGISTER_4;
+        case WORD: return PointerRegister.ZEROING_REGISTER_2;
+        default: return PointerRegister.ZEROING_REGISTER_1;
+        }
+    }
+
+
+    public static Size getBestZero(long size) {
+        if(size % 4 == 0)  return Size.DWORD;
+        if(size % 2 == 0)  return Size.WORD;
+        return Size.HIGH;
+    }
 }

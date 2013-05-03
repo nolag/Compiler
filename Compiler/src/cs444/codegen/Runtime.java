@@ -2,6 +2,7 @@ package cs444.codegen;
 
 import java.util.List;
 
+import cs444.codegen.InstructionArg.Size;
 import cs444.codegen.instructions.Call;
 import cs444.codegen.instructions.Comment;
 import cs444.codegen.instructions.Dec;
@@ -27,11 +28,11 @@ public class Runtime {
         return loopnum++;
     }
 
-    public static void malloc(InstructionArg bytes, List<Instruction> instructions, boolean zeroOut) {
+    public static void malloc(InstructionArg bytes, List<Instruction> instructions, Size size, boolean zeroOut) {
         // backup regs used by malloc
         instructions.add(new Push(Register.BASE));
         if(bytes != Register.COUNTER)instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
-        instructions.add(new Sar(Register.COUNTER, Immediate.STACK_SIZE_POWER));
+        instructions.add(new Sar(Register.COUNTER, SizeHelper.getPowerSizeImd(size)));
         instructions.add(new Call(MALLOC));
         instructions.add(new Pop(Register.BASE));
 
@@ -44,14 +45,14 @@ public class Runtime {
             instructions.add(new Xor(Register.DATA, Register.DATA));
             instructions.add(new Comment("Zeroing out the newly allocated values"));
             instructions.add(new Label(myLbl));
-            instructions.add(new Mov(PointerRegister.ZEROING_REGISTER, Register.DATA));
+            instructions.add(new Mov(SizeHelper.getZeroImd(size), Register.DATA));
             instructions.add(new Loop(myLbl));
             instructions.add(new Comment("Done zeroing out the newly allocated values"));
         }
     }
 
-    public static void malloc(InstructionArg bytes, List<Instruction> instructions){
-        malloc(bytes, instructions, true);
+    public static void malloc(InstructionArg bytes, List<Instruction> instructions, Size size){
+        malloc(bytes, instructions, size, true);
     }
 
     public static void externAll(List<Instruction> instructions) {

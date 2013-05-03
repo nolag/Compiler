@@ -361,10 +361,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         APkgClassResolver typeDclNode = creationExpression.getType().getTypeDclNode();
 
         if (!creationExpression.getType().isArray){
-            InstructionArg bytes = new Immediate(String.valueOf(typeDclNode.getStackSize()));
+            long allocSize = typeDclNode.getStackSize();
+            InstructionArg bytes = new Immediate(String.valueOf(allocSize));
             instructions.add(new Comment("Allocate " + bytes.getValue() + " bytes for " + typeDclNode.fullName));
             instructions.add(new Mov(Register.ACCUMULATOR, bytes));
-            Runtime.malloc(bytes, instructions);
+
+            Runtime.malloc(bytes, instructions, SizeHelper.getBestZero(allocSize));
 
             ObjectLayout.initialize(typeDclNode, instructions);
 
@@ -389,7 +391,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             Runtime.throwException(instructions, "Invalid array creation");
             instructions.add(new Label(ok));
 
-            instructions.add(new Shl(Register.ACCUMULATOR, Immediate.STACK_SIZE_POWER));
+            if(lastSize != Size.LOW && lastSize != Size.HIGH)
+                instructions.add(new Shl(Register.ACCUMULATOR, SizeHelper.getPowerSizeImd(lastSize)));
 
             instructions.add(new Comment("Adding space for SIT, cast info, and length" + typeDclNode.fullName));
             //Int + object's sie
@@ -397,7 +400,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             final Immediate sizeI = new Immediate(String.valueOf(baseSize));
             instructions.add(new Add(Register.ACCUMULATOR, sizeI));
             instructions.add(new Comment("Allocate for array" + typeDclNode.fullName));
-            Runtime.malloc(Register.ACCUMULATOR, instructions);
+            Runtime.malloc(Register.ACCUMULATOR, instructions, lastSize);
             instructions.add(new Comment("Pop the size"));
             instructions.add(new Pop(Register.DATA));
 
@@ -946,8 +949,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         final long length =  charsLen + stringSymbol.getType().getTypeDclNode().getStackSize();
 
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(length))));
-        //no need to zero out, it will be set for sure
-        Runtime.malloc(new Immediate(String.valueOf(length)), instructions, false);
+        //no need to zero out, it will be set for sure so the second last arg does not matter
+        Runtime.malloc(new Immediate(String.valueOf(length)), instructions, Size.HIGH, false);
         final String charArray = ArrayPkgClassResolver.getArrayName(JoosNonTerminal.CHAR);
         ObjectLayout.initialize(PkgClassInfo.instance.getSymbol(charArray), instructions);
 
