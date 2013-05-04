@@ -238,7 +238,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         if(!call.isStatic())instructions.add(new Push(Register.BASE));
 
-        if(call.isStatic() || call.getImplementationLevel() == ImplementationLevel.FINAL){
+        if(call.isStatic() || call.getImplementationLevel() == ImplementationLevel.FINAL || isSuper){
             String name = APkgClassResolver.generateFullId(invoke.getCallSymbol());
             if(call.isNative()) name = NATIVE_NAME + name;
             InstructionArg arg = new Immediate(name);
@@ -280,7 +280,10 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void visit(FieldAccessSymbol field) {
+        boolean wasSuper = isSuper;
         field.children.get(0).accept(this);
+        //super.x().y() x should be from super but not y
+        if(wasSuper) isSuper = false;
         isFieldLookup = true;
         field.children.get(1).accept(this);
         isFieldLookup = false;

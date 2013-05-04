@@ -5,4 +5,8 @@ public class Object{
     public int getValue(){
         return 0;
     }
+    
+    public Object getObj(){
+        return this;
+    }
 }

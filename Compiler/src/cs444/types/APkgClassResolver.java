@@ -234,7 +234,8 @@ public abstract class APkgClassResolver {
             Map<String, AMethodSymbol> notFrom, List<String> paramTypes){
 
         AMethodSymbol retVal = from.get(uniqueName);
-        if(null == retVal && notFrom != null) retVal = notFrom.get(uniqueName);
+        //TODO this line will allow instances to call static funcs.
+        //if(null == retVal && notFrom != null) retVal = notFrom.get(uniqueName);
         //NOTE if I change the native name to include the params then I don't need this
         if(retVal == null){
             retVal = from.get(name);

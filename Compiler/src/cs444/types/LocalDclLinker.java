@@ -224,6 +224,7 @@ public class LocalDclLinker extends EmptyVisitor {
             TypeSymbol type = lookup.getType();
             resolver = type.getTypeDclNode();
             isStatic = type.isClass;
+            fromSuper = false;
         }
 
         List<String> params = new LinkedList<String>();

@@ -12,7 +12,8 @@ public class A5 {
     @Test
     public void testCompileProgramsNoStdLib() throws IOException, InterruptedException{
         //SuperMethod is not implemented yet
-        List<String> ignoreList = new LinkedList<String>(Arrays.asList("SuperMethod"));
+        //List<String> ignoreList = new LinkedList<String>(Arrays.asList("SuperMethod"));
+        List<String> ignoreList = new LinkedList<String>();
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "A5/NoStdLibPrograms/", 0, true, false,
                 true, ignoreList, new AsmAndLinkCallback());
