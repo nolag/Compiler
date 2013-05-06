@@ -33,7 +33,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.contains("Super")) continue;
+			//if (!fileName.contains("primativeArrayAsObjArray")) continue;
 
 			if (ignoreList.contains(fileName)){
 			    System.out.print("*"); // skip file

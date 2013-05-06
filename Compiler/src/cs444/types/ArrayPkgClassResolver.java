@@ -33,7 +33,13 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         super(getArrayName(resolver.name), resolver.pkg, true);
         this.resolver = resolver;
         build(null, false, false);
-        for(String s : resolver.assignableTo) assignableTo.add(getArrayName(s));
+        for(String s : resolver.assignableTo){
+        	//Array of primative is not assignable to array of object.
+        	if(!((JoosNonTerminal.primativeNumbers.contains(resolver.name) ||
+        			JoosNonTerminal.otherPrimatives.contains(resolver.name)) &&
+        			JoosNonTerminal.OBJECT.equals(s))) 
+        		assignableTo.add(getArrayName(s));
+        }
 
         PkgClassInfo.instance.symbolMap.put(fullName, this);
 
