@@ -28,8 +28,8 @@ import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassInfo;
 
 public class Compiler {
-    public static final String BASE_DIRECTORY = "/mnt/hgfs/RAM/";
-    //public static final String BASE_DIRECTORY = "";
+    //public static final String BASE_DIRECTORY = "/mnt/hgfs/RAM/";
+    public static final String BASE_DIRECTORY = "";
     public static final String OUTPUT_DIRECTORY = BASE_DIRECTORY + "output/";
 
     public static final int COMPILER_ERROR_CODE = 42;
