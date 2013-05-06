@@ -33,7 +33,7 @@ public class TestHelper {
 			String fileName = file.getName();
 
 			// Use this line to test a single file
-			//if (!fileName.contains("primativeArrayAsObjArray")) continue;
+			//if (!fileName.contains("ThisClass")) continue;
 
 			if (ignoreList.contains(fileName)){
 			    System.out.print("*"); // skip file

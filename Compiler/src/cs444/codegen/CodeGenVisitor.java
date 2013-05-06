@@ -599,6 +599,23 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
         }
     }
+    
+    private boolean staticHelper(DclSymbol staticField, long stackSize){
+        final String staticFieldLbl = PkgClassResolver.getUniqueNameFor(staticField);
+        if(staticField.dclInResolver != currentFile) instructions.add(new Extern(staticFieldLbl));
+
+        if (getVal){
+            lastSize = SizeHelper.getSize(staticField.getType().getTypeDclNode().realSize);
+            instructions.add(new Comment("Move value of static field " + staticField.dclName + " to Accumulator"));
+            genMov(lastSize, new PointerRegister(new Immediate(staticFieldLbl)), staticFieldLbl, staticField);
+        }else {
+            // get reference
+            instructions.add(new Comment("Move Reference of static field " + staticField.dclName + " to Accumulator"));
+            instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl)));
+            lastSize = SizeHelper.getSize(stackSize);
+        }
+        return true;
+    }
 
     private boolean lookupLink(String value, Iterator<Typeable> lookup, Typeable type,
             ISymbol lastDcl,  long stackSize, boolean forceThis){
@@ -614,23 +631,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             // is using static fields
             // TODO: test using chain of types a1.a2.a3...
             while(lookup.hasNext() && (type = lookup.next()).getType().isClass);
-            DclSymbol staticField = (DclSymbol) type;
-            final String staticFieldLbl = PkgClassResolver.getUniqueNameFor(staticField);
-            if(staticField.dclInResolver != currentFile) instructions.add(new Extern(staticFieldLbl));
+            return staticHelper((DclSymbol) type, stackSize);
 
-            if (getVal){
-                lastSize = SizeHelper.getSize(staticField.getType().getTypeDclNode().realSize);
-                instructions.add(new Comment("Move value of static field " + staticField.dclName + " to Accumulator"));
-                genMov(lastSize, new PointerRegister(new Immediate(staticFieldLbl)), staticFieldLbl, staticField);
-            }else {
-                // get reference
-                instructions.add(new Comment("Move Reference of static field " + staticField.dclName + " to Accumulator"));
-                instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl)));
-                lastSize = SizeHelper.getSize(stackSize);
-            }
-            return true;
-
-        }else if(forceThis){
+        }else if(forceThis && !first.isStatic()){
             instructions.add(new Comment("Force This pointer"));
             instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
 
@@ -640,6 +643,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Comment("Move reference to field " + dclSymbol.dclName + " in " + value + " to Accumulator"));
             PointerRegister from = new PointerRegister(Register.ACCUMULATOR, dclSymbol.getOffset());
             instructions.add(new Mov(Register.ACCUMULATOR, from));
+        }else if (first.isStatic()){
+        	return staticHelper((DclSymbol) type, stackSize);
         }
 
         // the rest are non static fields
