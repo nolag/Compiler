@@ -954,7 +954,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         if(call.isStatic() || call.getImplementationLevel() == ImplementationLevel.FINAL || isSuper){
             String name = APkgClassResolver.generateFullId(call);
-            if(call.isNative()) name = NATIVE_NAME + call.name;
+            if(call.isNative()) name = NATIVE_NAME + name;
             final InstructionArg arg = new Immediate(name);
             if(call.dclInResolver != currentFile || call.isNative()) instructions.add(new Extern(arg));
             instructions.add(new Call(arg));
