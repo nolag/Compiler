@@ -2,6 +2,7 @@ package cs444.parser;
 
 import java.util.Arrays;
 
+import cs444.CompilerException;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
@@ -30,9 +31,6 @@ import cs444.parser.symbols.ast.factories.expressions.IfExprFactory;
 import cs444.parser.symbols.ast.factories.expressions.ReturnExprFractory;
 import cs444.parser.symbols.ast.factories.expressions.UniOpExprFactory;
 import cs444.parser.symbols.ast.factories.expressions.WhileExprFactory;
-import cs444.parser.symbols.exceptions.IllegalModifierException;
-import cs444.parser.symbols.exceptions.OutOfRangeException;
-import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.exceptions.InvalidFileNameException;
 
 public class JoosASTBuilder implements IASTBuilder {
@@ -45,19 +43,20 @@ public class JoosASTBuilder implements IASTBuilder {
             new IfExprFactory(), new WhileExprFactory(), new ForExprFactory()});
 
     private final String fileName;
-    public JoosASTBuilder(String fileName){
+    public JoosASTBuilder(final String fileName){
         this.fileName = fileName;
     }
 
-    public ISymbol build(ANonTerminal start) throws OutOfRangeException, UnsupportedException, IllegalModifierException, InvalidFileNameException {
-    	for(ASTSymbolFactory astSymbol : simplifications){
-    		start = (ANonTerminal)astSymbol.convertAll(start);
-    	}
+    @Override
+    public ISymbol build(ANonTerminal start) throws CompilerException {
+        for(final ASTSymbolFactory astSymbol : simplifications){
+            start = (ANonTerminal)astSymbol.convertAll(start);
+        }
 
-    	AInterfaceOrClassSymbol publicClassInterface = (AInterfaceOrClassSymbol) start;
-    	if (!fileName.equals(publicClassInterface.dclName + ".java"))
-    		throw new InvalidFileNameException(publicClassInterface.dclName, fileName);
+        final AInterfaceOrClassSymbol publicClassInterface = (AInterfaceOrClassSymbol) start;
+        if (!fileName.equals(publicClassInterface.dclName + ".java"))
+            throw new InvalidFileNameException(publicClassInterface.dclName, fileName);
 
-    	return start;
+        return start;
     }
 }

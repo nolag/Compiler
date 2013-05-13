@@ -14,6 +14,7 @@ public final class Terminal extends ATerminal{
         empty = Token.typeToParse.get(token.type) != Parse.VALID;
     }
 
+    @Override
     public boolean empty() {
         return empty;
     }

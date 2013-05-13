@@ -22,6 +22,8 @@ import cs444.parser.symbols.ast.SuperSymbol;
 import cs444.parser.symbols.ast.ThisSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
+import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
+import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
@@ -115,6 +117,8 @@ public interface ISymbolVisitor {
     void visit(final ArrayAccessExprSymbol arrayAccess) throws CompilerException;
     void visit(final ShortLiteralSymbol shortLiteral) throws CompilerException;
     void visit(final ByteLiteralSymbol byteLiteral) throws CompilerException;
+    void visit(final SimpleNameSymbol name) throws CompilerException;
+    void visit(final SimpleMethodInvoke invoke) throws CompilerException;
 
     void visit(final ISymbol symbol) throws CompilerException;
     void middle(MethodOrConstructorSymbol methodOrConstructorSymbol) throws CompilerException;

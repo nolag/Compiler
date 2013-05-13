@@ -14,8 +14,12 @@ public class Super{
         return  super.getObj().getValue() - 1;
     }
     
+    public int arg(){
+        return super.retVal(getValue()) - 1;
+    }
+    
     public static int test(){
         Super s = new Super();
-        return s.helper() + s.helper2();
+        return s.helper() + s.helper2() + s.arg();
     }
 }

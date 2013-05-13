@@ -1,7 +1,6 @@
 package cs444.acceptance;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,13 +12,13 @@ public class A5 {
     public void testCompileProgramsNoStdLib() throws IOException, InterruptedException{
         //SuperMethod is not implemented yet
         //List<String> ignoreList = new LinkedList<String>(Arrays.asList("SuperMethod"));
-        List<String> ignoreList = new LinkedList<String>();
+        final List<String> ignoreList = new LinkedList<String>();
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "A5/NoStdLibPrograms/", 0, true, false,
                 true, ignoreList, new AsmAndLinkCallback());
     }
 
-    @Test
+    /*    @Test
     public void testCompileProgramsWithStdLib() throws IOException, InterruptedException{
         List<String> ignoreList = new LinkedList<String>();
 
@@ -67,6 +66,6 @@ public class A5 {
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a1/valid/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
-    }
+    }*/
 }
 

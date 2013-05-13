@@ -11,6 +11,9 @@ public class SizeHelper {
     public static final int DEFAULT_STACK_SIZE = 4;
     public static final int MIN_STACK_SHIFT = 2;
     public static final int DEFAULT_STACK_POWER = 2;
+
+    public static final Size DEFAULT_STACK = getSize(DEFAULT_STACK_SIZE);
+
     public static final Map<String, Integer> stackSizes = new HashMap<String, Integer>();
 
     static{
@@ -21,27 +24,27 @@ public class SizeHelper {
         SizeHelper.stackSizes.put(JoosNonTerminal.BOOLEAN, 1);
     }
 
-    public static int getByteSizeOfType(String typeName) {
+    public static int getByteSizeOfType(final String typeName) {
         return SizeHelper.stackSizes.containsKey(typeName) ? SizeHelper.stackSizes.get(typeName) : DEFAULT_STACK_SIZE;
     }
 
 
-    public static Size getSize(long stackSize) {
+    public static Size getSize(final long stackSize) {
         if(stackSize == 2) return Size.WORD;
         if(stackSize == 1) return Size.LOW;
         return Size.DWORD;
     }
 
-    public static Size getSizeOfType(String typeName) {
+    public static Size getSizeOfType(final String typeName) {
         return getSize(getByteSizeOfType(typeName));
     }
 
-    public static Size getPushSize(Size size){
+    public static Size getPushSize(final Size size){
         if(size == Size.HIGH || size == Size.LOW) return Size.WORD;
         return size;
     }
 
-    public static int getIntSize(Size size){
+    public static int getIntSize(final Size size){
         switch(size){
         case DWORD: return 4;
         case WORD: return 2;
@@ -49,7 +52,7 @@ public class SizeHelper {
         }
     }
 
-    public static InstructionArg getPowerSizeImd(Size size) {
+    public static InstructionArg getPowerSizeImd(final Size size) {
         switch(size){
         case DWORD: return Immediate.TWO;
         case WORD: return Immediate.ONE;
@@ -57,7 +60,7 @@ public class SizeHelper {
         }
     }
 
-    public static InstructionArg getZeroImd(Size size){
+    public static InstructionArg getZeroImd(final Size size){
         switch(size){
         case DWORD: return PointerRegister.ZEROING_REGISTER_4;
         case WORD: return PointerRegister.ZEROING_REGISTER_2;
@@ -66,7 +69,7 @@ public class SizeHelper {
     }
 
 
-    public static Size getBestZero(long size) {
+    public static Size getBestZero(final long size) {
         if(size % 4 == 0)  return Size.DWORD;
         if(size % 2 == 0)  return Size.WORD;
         return Size.HIGH;

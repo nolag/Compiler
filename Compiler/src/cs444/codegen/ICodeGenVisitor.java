@@ -3,24 +3,24 @@ package cs444.codegen;
 import java.io.PrintStream;
 
 import cs444.parser.symbols.ANonTerminal;
-import cs444.parser.symbols.ATerminal;
+import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 import cs444.parser.symbols.ast.ByteLiteralSymbol;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.EmptyStatementSymbol;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
-import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
-import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.NullSymbol;
 import cs444.parser.symbols.ast.ShortLiteralSymbol;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
 import cs444.parser.symbols.ast.SuperSymbol;
 import cs444.parser.symbols.ast.ThisSymbol;
-import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
+import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
@@ -47,7 +47,7 @@ import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
 public interface ICodeGenVisitor {
-    void visit(final MethodInvokeSymbol invoke);
+    void visit(final SimpleMethodInvoke invoke);
     void visit(final FieldAccessSymbol field);
     void visit(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol);
     void visit(final MethodSymbol method);
@@ -58,9 +58,6 @@ public interface ICodeGenVisitor {
     void visit(final ForExprSymbol forExprSymbol);
     void visit(final IfExprSymbol ifExprSymbol);
     void visit(final ReturnExprSymbol retSymbol);
-    void visit(final TypeSymbol typeSymbol);
-    void visit(final NameSymbol nameSymbol);
-    void visit(final ATerminal terminal);
     void visit(final CastExpressionSymbol symbol);
     void visit(final NegOpExprSymbol op);
     void visit(final NotOpExprSymbol op);
@@ -90,6 +87,11 @@ public interface ICodeGenVisitor {
     void visit(final DclSymbol dclSymbol);
     void visit(final ByteLiteralSymbol byteLiteral);
     void visit(final ShortLiteralSymbol shortLiteral);
+    void visit(final SimpleNameSymbol name);
+    void visit(EmptyStatementSymbol empty);
+
+    void visit(final ISymbol other);
 
     void printToFileAndEmpty(PrintStream printer);
+
 }

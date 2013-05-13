@@ -6,6 +6,10 @@ public class Object{
         return 0;
     }
     
+    public int retVal(int val){
+        return val;
+    }
+    
     public Object getObj(){
         return this;
     }

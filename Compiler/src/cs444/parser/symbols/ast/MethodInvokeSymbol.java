@@ -18,10 +18,10 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
     private MethodOrConstructorSymbol call;
 
 
-    public MethodInvokeSymbol(String name, List<ISymbol> params, ISymbol on) {
+    public MethodInvokeSymbol(String name, final List<ISymbol> params, final ISymbol on) {
         super("Method Invoke");
         if(on != null)children.add(on);
-        String [] parts = name.split("\\.");
+        final String [] parts = name.split("\\.");
 
         if(parts.length != 1){
             name = name.substring(0, name.lastIndexOf("."));
@@ -42,7 +42,7 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
+    public void accept(final ISymbolVisitor visitor) throws CompilerException {
         visitor.prepare(this);
         int i = 0;
         if(hasFirst){
@@ -51,7 +51,7 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
         }
         visitor.open(this);
         for(; i < children.size(); i++){
-            ISymbol param = children.get(i);
+            final ISymbol param = children.get(i);
             param.accept(visitor);
         }
         visitor.close(this);
@@ -62,7 +62,7 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
         return false;
     }
 
-    public void setLookup(LookupLink link){
+    public void setLookup(final LookupLink link){
         this.link = link;
     }
 
@@ -70,12 +70,12 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
         return link;
     }
 
-    public Iterable<ISymbol> getArgs(){
+    public List<ISymbol> getArgs(){
         if(hasFirst) return children.subList(1, children.size());
         return children;
     }
 
-    public void setCallSymbol(MethodOrConstructorSymbol call){
+    public void setCallSymbol(final MethodOrConstructorSymbol call){
         this.call = call;
     }
 
@@ -89,10 +89,10 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
     }
 
     @Override
-    public void setType(TypeSymbol type) { }
+    public void setType(final TypeSymbol type) { }
 
     @Override
-    public void accept(ICodeGenVisitor visitor) {
+    public void accept(final ICodeGenVisitor visitor) {
         visitor.visit(this);
     }
 }

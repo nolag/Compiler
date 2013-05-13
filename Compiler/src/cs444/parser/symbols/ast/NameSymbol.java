@@ -17,6 +17,7 @@ public class NameSymbol extends ATerminal implements Typeable{
         this.type = type;
     }
 
+    @Override
     public boolean empty() {
         return false;
     }
@@ -30,6 +31,10 @@ public class NameSymbol extends ATerminal implements Typeable{
         this.dclNode = node;
     }
 
+    public LookupLink getDclNode(){
+        return dclNode;
+    }
+
     public Iterable<Typeable> getLookupPath(){
         return this.dclNode.dcls;
     }
@@ -38,6 +43,7 @@ public class NameSymbol extends ATerminal implements Typeable{
         return (DclSymbol) this.dclNode.lastDcl;
     }
 
+    @Override
     public TypeSymbol getType(){
         return this.dclNode.lastDcl.getType();
     }
