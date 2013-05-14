@@ -10,10 +10,15 @@ public class FieldAccessSymbol extends ANonTerminal implements Typeable {
 
     private TypeSymbol type;
 
-    public FieldAccessSymbol(ISymbol iSymbol, NameSymbol me) {
+    public FieldAccessSymbol(final ISymbol iSymbol, final ISymbol me) {
+        this(iSymbol, me, null);
+    }
+
+    public FieldAccessSymbol(final ISymbol iSymbol, final ISymbol me, final TypeSymbol type) {
         super("FieldAccess");
         children.add(iSymbol);
         children.add(me);
+        this.type = type;
     }
 
     @Override
@@ -22,7 +27,7 @@ public class FieldAccessSymbol extends ANonTerminal implements Typeable {
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
+    public void accept(final ISymbolVisitor visitor) throws CompilerException {
         visitor.prepare(this);
         children.get(0).accept(visitor);
         visitor.open(this);
@@ -36,7 +41,7 @@ public class FieldAccessSymbol extends ANonTerminal implements Typeable {
     }
 
     @Override
-    public void setType(TypeSymbol type) {
+    public void setType(final TypeSymbol type) {
         this.type = type;
     }
 
@@ -46,8 +51,7 @@ public class FieldAccessSymbol extends ANonTerminal implements Typeable {
     }
 
     @Override
-    public void accept(ICodeGenVisitor visitor) {
+    public void accept(final ICodeGenVisitor visitor) {
         visitor.visit(this);
     }
-
 }

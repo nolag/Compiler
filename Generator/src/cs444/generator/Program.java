@@ -12,18 +12,18 @@ import cs444.generator.parser.ParserGenerator;
 
 public class Program {
 
-    private static void tryClose(Writer writer) {
+    private static void tryClose(final Writer writer) {
 
         try {
             if (null != writer)
                 writer.close();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             System.err.println("Error closing output file.");
         }
     }
 
-    private static Writer createFileAndWriter(String loc) throws IOException{
-        File file = new File(loc);
+    private static Writer createFileAndWriter(final String loc) throws IOException{
+        final File file = new File(loc);
         file.createNewFile();
 
         return new FileWriter(file);
@@ -33,17 +33,17 @@ public class Program {
      * @param args
      * @throws IOException
      */
-    public static void main(String[] args){
+    public static void main(final String[] args){
 
         Writer writer = null;
-        JoosGrammar grammar = new JoosGrammar();
+        final JoosGrammar grammar = new JoosGrammar();
 
         try {
             writer = createFileAndWriter("../Compiler/src/cs444/lexer/Token.java");
-            TokenClassGenerator token = new TokenClassGenerator(grammar, writer);
+            final TokenClassGenerator token = new TokenClassGenerator(grammar, writer);
             token.generate();
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
 
             System.err.println("Error writing to Token.java.");
 
@@ -54,10 +54,10 @@ public class Program {
 
         try {
             writer = createFileAndWriter("../Compiler/src/cs444/lexer/JoosDFA.java");
-            DFAClassGenerator lexer = new DFAClassGenerator(grammar, writer);
+            final DFAClassGenerator lexer = new DFAClassGenerator(grammar, writer);
             lexer.generate();
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
 
             System.err.println("Error writing to JoosDFA.java.");
 
@@ -72,7 +72,7 @@ public class Program {
             writer = createFileAndWriter("../Compiler/bin/JoosRules.txt");
 
             ParserGenerator.generate(writer);
-        } catch (IOException e) {
+        } catch (final IOException e) {
 
             System.err.println("Error writing to JoosRules.txt.");
 
@@ -85,12 +85,12 @@ public class Program {
     }
 
     private static void createCompilerBin() {
-        File theDir = new File("../Compiler/bin");
+        final File theDir = new File("../Compiler/bin");
         if (!theDir.exists()){
-          boolean result = theDir.mkdir();
-          if(!result){
-             System.out.println("Failed creating directory");
-           }
+            final boolean result = theDir.mkdir();
+            if(!result){
+                System.out.println("Failed creating directory");
+            }
         }
     }
 }

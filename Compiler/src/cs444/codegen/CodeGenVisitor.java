@@ -3,7 +3,6 @@ package cs444.codegen;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,7 +51,6 @@ import cs444.codegen.instructions.factories.SetneMaker;
 import cs444.codegen.instructions.factories.SubOpMaker;
 import cs444.codegen.instructions.factories.UniOpMaker;
 import cs444.parser.symbols.ANonTerminal;
-import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
@@ -64,12 +62,11 @@ import cs444.parser.symbols.ast.ByteLiteralSymbol;
 import cs444.parser.symbols.ast.CharacterLiteralSymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.EmptyStatementSymbol;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
-import cs444.parser.symbols.ast.MethodInvokeSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
-import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.NullSymbol;
 import cs444.parser.symbols.ast.ShortLiteralSymbol;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
@@ -77,6 +74,8 @@ import cs444.parser.symbols.ast.SuperSymbol;
 import cs444.parser.symbols.ast.ThisSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
+import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
+import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
@@ -120,37 +119,34 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     private boolean lastWasFunc = false;
 
-    //FFFFFFFF is easy to see if something went wrong
-    private long lastOffset = 0xFFFFFFFF;
     private Size lastSize = Size.DWORD;
     private long nextLblnum = 0;
     private APkgClassResolver currentFile;
-    private boolean isFieldLookup = false;
     private boolean isSuper = false;
 
     private long getNewLblNum(){
         return nextLblnum++;
     }
 
-    public CodeGenVisitor(SelectorIndexedTable sit, SubtypeIndexedTable subIt) {
+    public CodeGenVisitor(final SelectorIndexedTable sit, final SubtypeIndexedTable subIt) {
         this.instructions = new LinkedList<Instruction>();
         this.selectorITable = sit;
         this.subtypeITable = subIt;
     }
 
-    public CodeGenVisitor(SelectorIndexedTable sit, SubtypeIndexedTable subIt, List<Instruction> startInstructions) {
+    public CodeGenVisitor(final SelectorIndexedTable sit, final SubtypeIndexedTable subIt, final List<Instruction> startInstructions) {
         this(null, sit, subIt, startInstructions);
     }
 
-    public CodeGenVisitor(APkgClassResolver resolver,
-            SelectorIndexedTable sit, SubtypeIndexedTable subIt, List<Instruction> startInstructions) {
+    public CodeGenVisitor(final APkgClassResolver resolver,
+            final SelectorIndexedTable sit, final SubtypeIndexedTable subIt, final List<Instruction> startInstructions) {
         this.currentFile = resolver;
         this.instructions = startInstructions;
         this.selectorITable = sit;
         this.subtypeITable = subIt;
     }
 
-    public void genHeader(APkgClassResolver resolver) {
+    public void genHeader(final APkgClassResolver resolver) {
         this.currentFile = resolver;
 
         Runtime.externAll(instructions);
@@ -171,10 +167,10 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment("Store pointer to object in edx"));
         instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR));
 
-        for (DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
-            Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
+        for (final DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
+            final Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
 
-            PointerRegister fieldAddr = new PointerRegister(Register.DATA, fieldDcl.getOffset());
+            final PointerRegister fieldAddr = new PointerRegister(Register.DATA, fieldDcl.getOffset());
             if(!fieldDcl.children.isEmpty()){
                 instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
                 // save pointer to object
@@ -189,115 +185,45 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(Ret.RET);
     }
 
-    public void genLayoutForStaticFields(Iterable<DclSymbol> staticFields) {
+    public void genLayoutForStaticFields(final Iterable<DclSymbol> staticFields) {
         if (staticFields.iterator().hasNext()){
             instructions.add(new Comment("Static fields:"));
             instructions.add(new Section(SectionType.BSS));
         }
 
-        for (DclSymbol fieldDcl : staticFields) {
-            Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
+        for (final DclSymbol fieldDcl : staticFields) {
+            final Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
 
-            String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
+            final String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
             instructions.add(new Global(fieldLbl));
-            ReserveInstruction data = ReserveInstructionMaker.make(fieldLbl, size, 1);
+            final ReserveInstruction data = ReserveInstructionMaker.make(fieldLbl, size, 1);
             instructions.add(data);
         }
     }
 
     @Override
-    public void visit(MethodInvokeSymbol invoke) {
-        MethodOrConstructorSymbol call = invoke.getCallSymbol();
-        if(!call.isStatic()){
-            instructions.add(new Comment("Backing up ebx because having this in ecx is bad"));
-            instructions.add(new Push(Register.BASE));
-            instructions.add(new Comment("Preping this"));
-            final Iterator<Typeable> lookup = invoke.getLookup().dcls.iterator();
-            Typeable first = lookup.next();
-
-            if(invoke.hasFirst){
-                invoke.children.get(0).accept(this);
-                first = lookup.next();
-            }
-
-            if(first != call){
-                lookupLink(call.dclName, lookup, first, call, 0, !isFieldLookup && ! invoke.hasFirst);
-                instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
-            }else if(invoke.hasFirst || isFieldLookup){
-                instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
-            }else{
-                instructions.add(new Mov(Register.BASE, PointerRegister.THIS));
-            }
-        }
-
-        instructions.add(new Comment("Pushing args"));
-        for(ISymbol arg : invoke.getArgs()){
-            arg.accept(this);
-            instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
-        }
-
-        if(!call.isStatic())instructions.add(new Push(Register.BASE));
-
-        if(call.isStatic() || call.getImplementationLevel() == ImplementationLevel.FINAL || isSuper){
-            String name = APkgClassResolver.generateFullId(invoke.getCallSymbol());
-            if(call.isNative()) name = NATIVE_NAME + name;
-            InstructionArg arg = new Immediate(name);
-            if(call.isNative()){
-                instructions.add(new Push(Register.BASE));
-                instructions.add(new Extern(arg));
-            }
-            if(invoke.getCallSymbol().dclInResolver != currentFile) instructions.add(new Extern(arg));
-            instructions.add(new Call(arg));
-        }else{
-            ifNullJmpCode(Register.BASE, Runtime.EXCEPTION_LBL);
-            instructions.add(new Comment("get SIT column"));
-            instructions.add(new Mov(Register.BASE, new PointerRegister(Register.BASE)));
-
-            PointerRegister methodAddr = null;
-            try {
-                methodAddr = new PointerRegister(Register.BASE, selectorITable.getOffset(PkgClassResolver.generateUniqueName(call, call.dclName)));
-            } catch (UndeclaredException e) {
-                // shouldn't get here
-                e.printStackTrace();
-            }
-            instructions.add(new Mov(Register.BASE,  methodAddr));
-            instructions.add(new Call(Register.BASE));
-        }
-
-        // NOTE: do not use INVOKE in here, invoke gets size from method,
-        // but visitor may visit InvokeSymbol before MethodSymbol
-        long mySize =  call.getStackSize();
-        if(mySize != 0){
-            Immediate by = new Immediate(String.valueOf(mySize));
-            instructions.add(new Add(Register.STACK, by));
-        }
-
-        if(!call.isStatic() || call.isNative())instructions.add(new Pop(Register.BASE));
-
-        lastSize = SizeHelper.getSize(invoke.getType().getTypeDclNode().stackSize);
-        instructions.add(new Comment("end invoke"));
-    }
-
-    @Override
-    public void visit(FieldAccessSymbol field) {
-        boolean wasSuper = isSuper;
+    public void visit(final FieldAccessSymbol field) {
+        final boolean wasGetVal = getVal;
+        final boolean wasSuper = isSuper;
+        getVal = true;
         field.children.get(0).accept(this);
+        ifNullJmpCode(Register.ACCUMULATOR, Runtime.EXCEPTION_LBL);
         //super.x().y() x should be from super but not y
+        getVal = wasGetVal;
         if(wasSuper) isSuper = false;
-        isFieldLookup = true;
         field.children.get(1).accept(this);
-        isFieldLookup = false;
         isSuper = false;
+
     }
 
     @Override
-    public void visit(AInterfaceOrClassSymbol aInterfaceOrClassSymbol) {
-        for(ISymbol child : aInterfaceOrClassSymbol.children) child.accept(this);
+    public void visit(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) {
+        for(final ISymbol child : aInterfaceOrClassSymbol.children) child.accept(this);
     }
 
     @Override
-    public void visit(MethodSymbol method){
-        String methodName = APkgClassResolver.generateFullId(method);
+    public void visit(final MethodSymbol method){
+        final String methodName = APkgClassResolver.generateFullId(method);
 
         try{
             if(APkgClassResolver.generateUniqueName(method, method.dclName).equals(JoosNonTerminal.ENTRY)
@@ -313,7 +239,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
                 instructions.add(new Mov(Register.ACCUMULATOR, Immediate.EXIT));
                 instructions.add(new Int(Immediate.SOFTWARE_INTERUPT));
             }
-        }catch(Exception e){
+        }catch(final Exception e){
             //Should never get here.
             e.printStackTrace();
         }
@@ -322,26 +248,26 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Extern(methodName));
         }else{
             methProlog(method, methodName);
-            for(ISymbol child : method.children) child.accept(this);
+            for(final ISymbol child : method.children) child.accept(this);
             methEpilogue(method);
         }
     }
 
     @Override
-    public void visit(ConstructorSymbol constructor) {
-        String constrName = APkgClassResolver.generateFullId(constructor);
+    public void visit(final ConstructorSymbol constructor) {
+        final String constrName = APkgClassResolver.generateFullId(constructor);
         methProlog(constructor, constrName);
 
         instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
 
         instructions.add(new Call(new Immediate(INIT_OBJECT_FUNC)));
 
-        for(ISymbol child : constructor.children) child.accept(this);
+        for(final ISymbol child : constructor.children) child.accept(this);
 
         methEpilogue(constructor);
     }
 
-    private void methProlog(MethodOrConstructorSymbol method, String methodName) {
+    private void methProlog(final MethodOrConstructorSymbol method, final String methodName) {
         if(method.getProtectionLevel() != ProtectionLevel.PRIVATE) instructions.add(new Global(methodName));
         instructions.add(new Label(methodName));
 
@@ -351,7 +277,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Mov(Register.FRAME, Register.STACK));
     }
 
-    private void methEpilogue(MethodOrConstructorSymbol method) {
+    private void methEpilogue(final MethodOrConstructorSymbol method) {
         //Don't fall though void funcs
         instructions.add(Leave.LEAVE);
         instructions.add(Ret.RET);
@@ -360,12 +286,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(CreationExpression creationExpression) {
-        APkgClassResolver typeDclNode = creationExpression.getType().getTypeDclNode();
+    public void visit(final CreationExpression creationExpression) {
+        final APkgClassResolver typeDclNode = creationExpression.getType().getTypeDclNode();
 
         if (!creationExpression.getType().isArray){
-            long allocSize = typeDclNode.getStackSize();
-            InstructionArg bytes = new Immediate(String.valueOf(allocSize));
+            final long allocSize = typeDclNode.getStackSize();
+            final InstructionArg bytes = new Immediate(String.valueOf(allocSize));
             instructions.add(new Comment("Allocate " + bytes.getValue() + " bytes for " + typeDclNode.fullName));
             instructions.add(new Mov(Register.ACCUMULATOR, bytes));
 
@@ -375,7 +301,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
             final APkgClassResolver resolver = creationExpression.getType().getTypeDclNode();
 
-            List<ISymbol> children = creationExpression.children;
+            final List<ISymbol> children = creationExpression.children;
 
             instructions.add(new Comment("invoke Constructor"));
             invokeConstructor(resolver, children);
@@ -408,7 +334,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Pop(Register.DATA));
 
             final long lengthIndex = ObjectLayout.objSize();
-            Immediate li = new Immediate(String.valueOf(lengthIndex));
+            final Immediate li = new Immediate(String.valueOf(lengthIndex));
 
             instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, li), Register.DATA));
             ObjectLayout.initialize(typeDclNode, instructions);
@@ -417,18 +343,18 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment("Done creating object"));
     }
 
-    private void invokeConstructor(final APkgClassResolver resolver, List<ISymbol> children) {
-        List<String> types = new LinkedList<String>();
+    private void invokeConstructor(final APkgClassResolver resolver, final List<ISymbol> children) {
+        final List<String> types = new LinkedList<String>();
 
         instructions.add(new Comment("Back up addr of obj in Base so it is safe"));
         instructions.add(new Push(Register.BASE));
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
 
-        for(ISymbol child : children){
+        for(final ISymbol child : children){
             child.accept(this);
             instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
-            Typeable typeable = (Typeable) child;
-            TypeSymbol ts = typeable.getType();
+            final Typeable typeable = (Typeable) child;
+            final TypeSymbol ts = typeable.getType();
             types.add(ts.getTypeDclNode().fullName);
         }
 
@@ -437,20 +363,20 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         ConstructorSymbol cs = null;
         try {
             cs = resolver.getConstructor(types, resolver);
-        } catch (UndeclaredException e) {
+        } catch (final UndeclaredException e) {
             //Should never get here
             e.printStackTrace();
         }
 
-        InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(cs));
+        final InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(cs));
         if(cs.dclInResolver != currentFile) instructions.add(new Extern(arg));
         instructions.add(new Call(arg));
         //return value is the new object
         instructions.add(new Pop(Register.ACCUMULATOR));
 
-        long mySize = cs.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE;
+        final long mySize = cs.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE;
         if(mySize != 0){
-            Immediate by = new Immediate(String.valueOf(mySize));
+            final Immediate by = new Immediate(String.valueOf(mySize));
             instructions.add(new Add(Register.STACK, by));
         }
         instructions.add(new Comment("Restore Base register"));
@@ -458,17 +384,17 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(ANonTerminal aNonTerminal) {
-        boolean isBlock = aNonTerminal.getName().equals(JoosNonTerminal.BLOCK);
-        boolean lastFunc = lastWasFunc;
+    public void visit(final ANonTerminal aNonTerminal) {
+        final boolean isBlock = aNonTerminal.getName().equals(JoosNonTerminal.BLOCK);
+        final boolean lastFunc = lastWasFunc;
         lastWasFunc = false;
 
-        for(ISymbol child : aNonTerminal.children) child.accept(this);
+        for(final ISymbol child : aNonTerminal.children) child.accept(this);
 
         if(isBlock && !lastFunc){
-            long size = aNonTerminal.getStackSize();
+            final long size = aNonTerminal.getStackSize();
             if(0 != size){
-                Immediate by = new Immediate(String.valueOf(size));
+                final Immediate by = new Immediate(String.valueOf(size));
                 instructions.add(new Add(Register.STACK, by));
             }
         }
@@ -476,11 +402,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(WhileExprSymbol whileExprSymbol) {
-        long mynum = getNewLblNum();
+    public void visit(final WhileExprSymbol whileExprSymbol) {
+        final long mynum = getNewLblNum();
         instructions.add(new Comment("while start " + mynum));
-        String loopStart = "loopStart" + mynum;
-        String loopEnd = "loopEnd" + mynum;
+        final String loopStart = "loopStart" + mynum;
+        final String loopEnd = "loopEnd" + mynum;
 
         instructions.add(new Label(loopStart));
         whileExprSymbol.getConditionSymbol().accept(this);
@@ -495,11 +421,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(ForExprSymbol forExprSymbol) {
-        long mynum = getNewLblNum();
+    public void visit(final ForExprSymbol forExprSymbol) {
+        final long mynum = getNewLblNum();
         instructions.add(new Comment("for start " + mynum));
-        String loopStart = "loopStart" + mynum;
-        String loopEnd = "loopEnd" + mynum;
+        final String loopStart = "loopStart" + mynum;
+        final String loopEnd = "loopEnd" + mynum;
 
         instructions.add(new Comment("Init for " + mynum));
         forExprSymbol.getForInit().accept(this);
@@ -520,9 +446,9 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Label(loopEnd));
 
         //This takes care of the init if they dcl something there
-        long size = forExprSymbol.getStackSize();
+        final long size = forExprSymbol.getStackSize();
         if(0 != size){
-            Immediate by = new Immediate(String.valueOf(size));
+            final Immediate by = new Immediate(String.valueOf(size));
             instructions.add(new Comment("for stack " + mynum));
             instructions.add(new Add(Register.STACK, by));
         }
@@ -531,11 +457,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(IfExprSymbol ifExprSymbol) {
-        long myid = getNewLblNum();
+    public void visit(final IfExprSymbol ifExprSymbol) {
+        final long myid = getNewLblNum();
         instructions.add(new Comment("if start" + myid));
-        String falseLbl = "false" + myid;
-        String trueLbl = "true" + myid;
+        final String falseLbl = "false" + myid;
+        final String trueLbl = "true" + myid;
         ifExprSymbol.getConditionSymbol().accept(this);
 
         setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, falseLbl);
@@ -554,121 +480,16 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(ReturnExprSymbol retSymbol) {
+    public void visit(final ReturnExprSymbol retSymbol) {
         if(retSymbol.children.size() == 1) retSymbol.children.get(0).accept(this);
         //value is already in eax from the rule therefore we just need to ret
         instructions.add(Leave.LEAVE);
         instructions.add(Ret.RET);
     }
 
-    @Override
-    public void visit(TypeSymbol typeSymbol) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(NameSymbol nameSymbol) {
-        final DclSymbol lastDcl = nameSymbol.getLastLookupDcl();
-        long lastDclOffset = lastDcl.getOffset();
-        long stackSize = lastDcl.getType().getTypeDclNode().realSize;
-        lastSize = SizeHelper.getSize(stackSize);
-
-        if(lastDcl.isLocal){
-            genCodeForLocalVar(nameSymbol, lastDcl, lastDclOffset, stackSize);
-            return;
-        }
-        // instance fields called on local var or on Class
-        Iterator<Typeable> lookup = nameSymbol.getLookupPath().iterator();
-        Typeable type = lookup.next();
-        if (!(type instanceof DclSymbol)){
-            // Not sure if this is possible:
-            System.err.println("WARNING: got a type that is not DclSymbol when visiting a NameSymbol.");
-            return;
-        }
-
-        if(lookupLink(nameSymbol.value, lookup, type, lastDcl, stackSize, !isFieldLookup)) return;
-
-        // now type is last in qualified name => target field
-        if(getVal){
-            Size size = SizeHelper.getSize(lastDcl.getType().getTypeDclNode().realSize);
-            instructions.add(new Comment("Move value of field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
-            genMov(size, new PointerRegister(Register.ACCUMULATOR, lastDclOffset), lastDcl.dclName, lastDcl);
-        }else{
-            instructions.add(new Comment("Move reference to field " + lastDcl.dclName + " in " + nameSymbol.value + " to Accumulator"));
-            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(Long.toString(lastDclOffset))));
-        }
-    }
-    
-    private boolean staticHelper(DclSymbol staticField, long stackSize){
-        final String staticFieldLbl = PkgClassResolver.getUniqueNameFor(staticField);
-        if(staticField.dclInResolver != currentFile) instructions.add(new Extern(staticFieldLbl));
-
-        if (getVal){
-            lastSize = SizeHelper.getSize(staticField.getType().getTypeDclNode().realSize);
-            instructions.add(new Comment("Move value of static field " + staticField.dclName + " to Accumulator"));
-            genMov(lastSize, new PointerRegister(new Immediate(staticFieldLbl)), staticFieldLbl, staticField);
-        }else {
-            // get reference
-            instructions.add(new Comment("Move Reference of static field " + staticField.dclName + " to Accumulator"));
-            instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl)));
-            lastSize = SizeHelper.getSize(stackSize);
-        }
-        return true;
-    }
-
-    private boolean lookupLink(String value, Iterator<Typeable> lookup, Typeable type,
-            ISymbol lastDcl,  long stackSize, boolean forceThis){
-
-        DclSymbol first = (DclSymbol) type;
-        if (first.isLocal){
-            final long localObjOffset = first.getOffset();
-            instructions.add(new Comment("Move pointer of obj " + first.dclName + " in " + value + " to Accumulator"));
-            instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.FRAME, localObjOffset)));
-
-            ifNullJmpCode(Register.ACCUMULATOR, Runtime.EXCEPTION_LBL);
-        }else if (first.getType().isClass){
-            // is using static fields
-            // TODO: test using chain of types a1.a2.a3...
-            while(lookup.hasNext() && (type = lookup.next()).getType().isClass);
-            return staticHelper((DclSymbol) type, stackSize);
-
-        }else if(forceThis && !first.isStatic()){
-            instructions.add(new Comment("Force This pointer"));
-            instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
-
-            // use first as instance field if it's not last one in the chain
-            if (type == lastDcl) return false;
-            DclSymbol dclSymbol = (DclSymbol) type;
-            instructions.add(new Comment("Move reference to field " + dclSymbol.dclName + " in " + value + " to Accumulator"));
-            PointerRegister from = new PointerRegister(Register.ACCUMULATOR, dclSymbol.getOffset());
-            instructions.add(new Mov(Register.ACCUMULATOR, from));
-        }else if (first.isStatic()){
-        	return staticHelper((DclSymbol) type, stackSize);
-        }
-
-        // the rest are non static fields
-        while(lookup.hasNext() && (type = lookup.next()) != lastDcl){
-            DclSymbol dclSymbol = (DclSymbol) type;
-            instructions.add(new Comment("Move reference to field " + dclSymbol.dclName + " in " + value + " to Accumulator"));
-            PointerRegister from = new PointerRegister(Register.ACCUMULATOR, dclSymbol.getOffset());
-            instructions.add(new Mov(Register.ACCUMULATOR, from));
-        }
-        return false;
-    }
-
-    private void genCodeForLocalVar(NameSymbol nameSymbol, final DclSymbol dcl,
-            long offset, long stackSize) {
-        if(getVal){
-            genCodeForLocalVarGetValue(nameSymbol, dcl, offset, stackSize);
-        }else{
-            lastOffset = offset;
-            lastSize = SizeHelper.getSize(stackSize);
-        }
-    }
-
-    private void genMov(Size size, InstructionArg from, String value, Typeable dcl){
+    private void genMov(final Size size, final InstructionArg from, final String value, final Typeable dcl){
         Instruction instruction;
+
         if(size == Size.DWORD){
             instruction = new Mov(Register.ACCUMULATOR, from);
         }else if(JoosNonTerminal.unsigned.contains(dcl.getType().getTypeDclNode().fullName)){
@@ -676,33 +497,20 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }else{
             instruction = new Movsx(Register.ACCUMULATOR, from, size);
         }
+
         instructions.add(new Comment("getting value of " + value));
         instructions.add(instruction);
     }
 
-    private void genCodeForLocalVarGetValue(NameSymbol nameSymbol,
-            final DclSymbol dcl, long offset, long stackSize) {
-        Size size = SizeHelper.getSize(stackSize);
-        final InstructionArg from = new PointerRegister(Register.FRAME, offset);
-        genMov(size, from, nameSymbol.value, dcl);
-    }
-
     @Override
-    public void visit(ATerminal terminal) {
-        // TODO Auto-generated method stub
+    public void visit(final CastExpressionSymbol symbol) {
+        final TypeSymbol type = symbol.getType();
 
-    }
-
-    @Override
-    public void visit(CastExpressionSymbol symbol) {
-        TypeSymbol type = symbol.getType();
-
-        type.accept(this);
         symbol.getOperandExpression().accept(this);
 
-        String typeName = type.getTypeDclNode().fullName;
+        final String typeName = type.getTypeDclNode().fullName;
         if(isReferenceType(typeName)){
-            String castExprEnd = "CastExprEnd" + getNewLblNum();
+            final String castExprEnd = "CastExprEnd" + getNewLblNum();
             ifNullJmpCode(Register.ACCUMULATOR, castExprEnd);
 
             instructions.add(new Push(Register.ACCUMULATOR));
@@ -712,91 +520,86 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
             instructions.add(new Label(castExprEnd));
 
-            lastSize = SizeHelper.getPushSize(Size.DWORD);
         }else{ // Primitive casting:
-            lastSize = SizeHelper.getSize(type.getTypeDclNode().realSize);
-            genMov(lastSize, Register.ACCUMULATOR, "cast to " + type.value, type);
+            final Size curSize = SizeHelper.getSize(type.getTypeDclNode().realSize);
+            genMov(curSize, Register.ACCUMULATOR, "cast to " + type.value, type);
         }
+
+        //We will move to make the size default so that the default is always stored in the register
+        lastSize = SizeHelper.DEFAULT_STACK;
     }
 
-    private boolean isReferenceType(String typeName) {
+    private boolean isReferenceType(final String typeName) {
         return !JoosNonTerminal.primativeNumbers.contains(typeName)
                 && !JoosNonTerminal.otherPrimatives.contains(typeName);
     }
 
     @Override
-    public void visit(NegOpExprSymbol op) {
+    public void visit(final NegOpExprSymbol op) {
         op.children.get(0).accept(this);
         instructions.add(new Neg(Register.ACCUMULATOR));
     }
 
     @Override
-    public void visit(NotOpExprSymbol op) {
+    public void visit(final NotOpExprSymbol op) {
         op.children.get(0).accept(this);
         instructions.add(new Xor(Register.ACCUMULATOR, Immediate.TRUE));
     }
 
     @Override
-    public void visit(MultiplyExprSymbol op) {
+    public void visit(final MultiplyExprSymbol op) {
         binUniOpHelper(op, IMulMaker.maker, false);
     }
 
     @Override
-    public void visit(AssignmentExprSymbol op) {
-        ISymbol leftHandSide = op.children.get(0);
-        ISymbol rightHandSide = op.children.get(1);
+    public void visit(final AssignmentExprSymbol op) {
+        final ISymbol leftHandSide = op.children.get(0);
+        final ISymbol rightHandSide = op.children.get(1);
 
         instructions.add(new Comment("Start Assignment " + leftHandSide.getName() + "="
                 + rightHandSide.getName()));
         // LHS
-        boolean tmp = getVal;
+        final boolean tmp = getVal;
         getVal = false;
-        lastOffset = -1;
         leftHandSide.accept(this);
         instructions.add(new Push(Register.ACCUMULATOR));
-        long LHSAddrOffset = lastOffset;
-        Size LHSSize = lastSize;
+        final Size LHSSize = lastSize;
 
         getVal = tmp;
         rightHandSide.accept(this);
 
         instructions.add(new Pop(Register.DATA));
 
-        if (LHSAddrOffset != -1){
-            InstructionArg to = new PointerRegister(Register.FRAME, LHSAddrOffset);
-            instructions.add(new Mov(to, Register.ACCUMULATOR, LHSSize));
-        }else{
-            InstructionArg to = new PointerRegister(Register.DATA);
-            instructions.add(new Mov(to, Register.ACCUMULATOR, LHSSize));
-        }
+        final InstructionArg to = new PointerRegister(Register.DATA);
+        instructions.add(new Mov(to, Register.ACCUMULATOR, LHSSize));
         instructions.add(new Comment("End Assignment"));
     }
 
     @Override
-    public void visit(DivideExprSymbol op) {
+    public void visit(final DivideExprSymbol op) {
         instructions.add(new Comment("START"));
         binUniOpHelper(op, IDivMaker.maker, true);
         instructions.add(new Comment("END"));
     }
 
     @Override
-    public void visit(RemainderExprSymbol op) {
+    public void visit(final RemainderExprSymbol op) {
         binUniOpHelper(op, IDivMaker.maker, true);
         instructions.add(new Mov(Register.ACCUMULATOR, Register.DATA));
     }
 
-    private void strPartHelper(ISymbol child, APkgClassResolver resolver){
+    private void strPartHelper(final ISymbol child, final APkgClassResolver resolver){
         final String firstType = ((Typeable)child).getType().getTypeDclNode().fullName;
         child.accept(this);
         AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(firstType), isSuper);
         if(ms == null) ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(JoosNonTerminal.OBJECT), isSuper);
 
         lastSize = SizeHelper.getPushSize(lastSize);
-        int pop = SizeHelper.getIntSize(lastSize);
+        final int pop = SizeHelper.getIntSize(lastSize);
 
         instructions.add(new Push(Register.ACCUMULATOR, lastSize));
 
-        InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(ms));
+        final InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(ms));
         if(ms.dclInResolver != currentFile) instructions.add(new Extern(arg));
         instructions.add(new Call(arg));
 
@@ -804,7 +607,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(AddExprSymbol op) {
+    public void visit(final AddExprSymbol op) {
         if(op.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.STRING)){
             final APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);
             final ISymbol firstChild = op.children.get(0);
@@ -823,7 +626,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Push(Register.ACCUMULATOR));
             instructions.add(new Push(Register.BASE));
             final AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.STR_ADD, false, Arrays.asList(JoosNonTerminal.STRING), isSuper);
-            InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(ms));
+            final InstructionArg arg = new Immediate(APkgClassResolver.generateFullId(ms));
             if(ms.dclInResolver != currentFile) instructions.add(new Extern(arg));
             instructions.add(new Call(arg));
 
@@ -838,29 +641,29 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(SubtractExprSymbol op) {
+    public void visit(final SubtractExprSymbol op) {
         binOpHelper(op, SubOpMaker.maker);
     }
 
     @Override
-    public void visit(LtExprSymbol op) {
+    public void visit(final LtExprSymbol op) {
         compHelper(op, SetlMaker.maker);
     }
 
     @Override
-    public void visit(EqExprSymbol op) {
+    public void visit(final EqExprSymbol op) {
         compHelper(op, SeteMaker.maker);
     }
 
     @Override
-    public void visit(NeExprSymbol op) {
+    public void visit(final NeExprSymbol op) {
         compHelper(op, SetneMaker.maker);
 
     }
 
     @Override
-    public void visit(AndExprSymbol op) {
-        String andEnd = "and" + getNewLblNum();
+    public void visit(final AndExprSymbol op) {
+        final String andEnd = "and" + getNewLblNum();
         op.children.get(0).accept(this);
         setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, andEnd);
         op.children.get(1).accept(this);
@@ -869,8 +672,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(OrExprSymbol op) {
-        String orEnd = "or" + getNewLblNum();
+    public void visit(final OrExprSymbol op) {
+        final String orEnd = "or" + getNewLblNum();
         op.children.get(0).accept(this);
         setupJumpNe(Register.ACCUMULATOR, Immediate.FALSE, orEnd);
         op.children.get(1).accept(this);
@@ -879,30 +682,30 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(EAndExprSymbol op) {
+    public void visit(final EAndExprSymbol op) {
         binOpHelper(op, AndOpMaker.maker);
     }
 
     @Override
-    public void visit(EOrExprSymbol op) {
+    public void visit(final EOrExprSymbol op) {
         binOpHelper(op, OrOpMaker.maker);
     }
 
     @Override
-    public void visit(LeExprSymbol op) {
+    public void visit(final LeExprSymbol op) {
         compHelper(op, SetleMaker.maker);
     }
 
     @Override
-    public void visit(InstanceOfExprSymbol op) {
+    public void visit(final InstanceOfExprSymbol op) {
         op.getLeftOperand().accept(this);
         // eax should have reference to object
-        String nullObjectLbl = "nullObject" + getNewLblNum();
+        final String nullObjectLbl = "nullObject" + getNewLblNum();
         ifNullJmpCode(Register.ACCUMULATOR, nullObjectLbl);
 
         ObjectLayout.subtypeCheckCode((TypeSymbol) op.getRightOperand(), subtypeITable, instructions);
 
-        String endLbl = "instanceOfEnd" + getNewLblNum();
+        final String endLbl = "instanceOfEnd" + getNewLblNum();
         instructions.add(new Jmp(new Immediate(endLbl)));
 
         instructions.add(new Label(nullObjectLbl));
@@ -912,45 +715,45 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Label(endLbl));
     }
 
-    private void ifNullJmpCode(Register register, String ifNullLbl) {
+    private void ifNullJmpCode(final Register register, final String ifNullLbl) {
         instructions.add(new Comment("null check"));
         instructions.add(new Cmp(register, Immediate.NULL));
         instructions.add(new Je(new Immediate(ifNullLbl)));
     }
 
     @Override
-    public void visit(IntegerLiteralSymbol intLiteral) {
+    public void visit(final IntegerLiteralSymbol intLiteral) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(intLiteral.getValue()))));
         lastSize = Size.DWORD;
     }
 
     @Override
-    public void visit(NullSymbol nullSymbol) {
+    public void visit(final NullSymbol nullSymbol) {
         instructions.add(new Mov(Register.ACCUMULATOR, Immediate.NULL));
         lastSize = Size.DWORD;
     }
 
     @Override
-    public void visit(BooleanLiteralSymbol boolSymbol) {
+    public void visit(final BooleanLiteralSymbol boolSymbol) {
         instructions.add(new Mov(Register.ACCUMULATOR, boolSymbol.boolValue ? Immediate.TRUE : Immediate.FALSE));
         lastSize = Size.WORD;
     }
 
     @Override
-    public void visit(ThisSymbol thisSymbol) {
+    public void visit(final ThisSymbol thisSymbol) {
         instructions.add(new Comment("This pointer"));
         instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
     }
 
     @Override
-    public void visit(SuperSymbol superSymbol) {
+    public void visit(final SuperSymbol superSymbol) {
         instructions.add(new Comment("This (super) pointer"));
         instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
         isSuper = true;
     }
 
     @Override
-    public void visit(StringLiteralSymbol stringSymbol) {
+    public void visit(final StringLiteralSymbol stringSymbol) {
         instructions.add(new Comment("allocate the string at the same time (why not)"));
         //2 per char + dword for int + obj size
         final long charsLen = stringSymbol.strValue.length() * 2 + SizeHelper.getIntSize(Size.DWORD) + ObjectLayout.objSize();
@@ -970,7 +773,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             final InstructionArg to = new PointerRegister(Register.ACCUMULATOR, new Immediate(String.valueOf(place)));
             instructions.add(new Mov(to, new Immediate((cs[i])), Size.WORD));
         }
-        APkgClassResolver resolver = stringSymbol.getType().getTypeDclNode();
+        final APkgClassResolver resolver = stringSymbol.getType().getTypeDclNode();
         try {
             final String arg = charArray;
             final ConstructorSymbol constructor = resolver.getConstructor(Arrays.asList(arg), resolver);
@@ -981,14 +784,14 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             ObjectLayout.initialize(resolver, instructions);
             instructions.add(new Push(Register.ACCUMULATOR));
 
-            InstructionArg carg = new Immediate(APkgClassResolver.generateFullId(constructor));
+            final InstructionArg carg = new Immediate(APkgClassResolver.generateFullId(constructor));
             if(constructor.dclInResolver != currentFile) instructions.add(new Extern(carg));
 
             instructions.add(new Call(carg));
             instructions.add(new Pop(Register.ACCUMULATOR));
             instructions.add(new Add(Register.STACK, new Immediate(SizeHelper.DEFAULT_STACK_SIZE)));
 
-        } catch (UndeclaredException e) {
+        } catch (final UndeclaredException e) {
             //Should never get here
             e.printStackTrace();
         }
@@ -997,14 +800,14 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     @Override
-    public void visit(CharacterLiteralSymbol characterSymbol) {
+    public void visit(final CharacterLiteralSymbol characterSymbol) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(characterSymbol.getValue())));
         lastSize = Size.WORD;
     }
 
     @Override
-    public void visit(ArrayAccessExprSymbol arrayAccess) {
-        boolean gettingValue = getVal;
+    public void visit(final ArrayAccessExprSymbol arrayAccess) {
+        final boolean gettingValue = getVal;
         //always want the value of the array when accessing it's member.
         getVal = true;
         instructions.add(new Comment("Accessing array"));
@@ -1024,14 +827,14 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         Runtime.throwException(instructions, "Invalid array access");
         instructions.add(new Label(ok));
 
-        ok = "arrayCreateOk" + getNewLblNum();
-        InstructionArg len = new PointerRegister(Register.BASE, new Immediate(ObjectLayout.objSize()));
+        ok = "arrayAccessOk" + getNewLblNum();
+        final InstructionArg len = new PointerRegister(Register.BASE, new Immediate(ObjectLayout.objSize()));
         instructions.add(new Cmp(len, Register.ACCUMULATOR));
         instructions.add(new Jg(new Immediate(ok)));
         Runtime.throwException(instructions, "Invalid array creation");
         instructions.add(new Label(ok));
 
-        long stackSize = arrayAccess.getType().getTypeDclNode().getStackSize();
+        final long stackSize = arrayAccess.getType().getTypeDclNode().getStackSize();
         final Size elementSize = SizeHelper.getSize(stackSize);
         instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(SizeHelper.getPushSize(elementSize))));
         final long offset = SizeHelper.DEFAULT_STACK_SIZE * 2 + SizeHelper.getIntSize(Size.DWORD);
@@ -1043,38 +846,38 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             lastSize = elementSize;
         }else{
             instructions.add(new Add(Register.ACCUMULATOR, Register.BASE));
-            lastOffset = -1;     // use eax and no frame in assignment
             lastSize = SizeHelper.getSize(SizeHelper.DEFAULT_STACK_SIZE);
         }
         instructions.add(new Pop(Register.BASE));
     }
 
     @Override
-    public void visit(DclSymbol dclSymbol) {
+    public void visit(final DclSymbol dclSymbol) {
         if(dclSymbol.children.isEmpty()) new IntegerLiteralSymbol(0).accept(this);
         else dclSymbol.children.get(0).accept(this);
-        instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getSize(dclSymbol.getType().getTypeDclNode().stackSize)));
+        lastSize = SizeHelper.getSize(dclSymbol.getType().getTypeDclNode().stackSize);
+        instructions.add(new Push(Register.ACCUMULATOR, lastSize));
     }
 
     @Override
-    public void visit(ByteLiteralSymbol byteLiteral) {
+    public void visit(final ByteLiteralSymbol byteLiteral) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(byteLiteral.getValue()))));
         lastSize = Size.WORD;
     }
 
     @Override
-    public void visit(ShortLiteralSymbol shortLiteral) {
+    public void visit(final ShortLiteralSymbol shortLiteral) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(shortLiteral.getValue()))));
         lastSize = Size.WORD;
     }
 
     @Override
-    public void printToFileAndEmpty(PrintStream printer){
-        for(Instruction instruction : instructions) printer.println(instruction.generate());
+    public void printToFileAndEmpty(final PrintStream printer){
+        for(final Instruction instruction : instructions) printer.println(instruction.generate());
         instructions.clear();
     }
 
-    private void binOpHelper(BinOpExpr bin, BinOpMaker maker){
+    private void binOpHelper(final BinOpExpr bin, final BinOpMaker maker){
         instructions.add(new Push(Register.BASE));
 
         bin.children.get(0).accept(this);
@@ -1087,14 +890,16 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Pop(Register.BASE));
     }
 
-    private void compHelper(BinOpExpr bin, UniOpMaker uni){
+    private void compHelper(final BinOpExpr bin, final UniOpMaker uni){
         binOpHelper(bin, CmpMaker.maker);
+        instructions.add(new Comment("Xor here CAN change the setl bit"));
+        instructions.add(uni.make(Register.DATA));
         instructions.add(new Comment("clear all bits in register"));
-        instructions.add(new Mov(Register.ACCUMULATOR, Immediate.ZERO));
-        instructions.add(uni.make(Register.ACCUMULATOR));
+        instructions.add(new Xor(Register.ACCUMULATOR, Register.ACCUMULATOR));
+        instructions.add(new Mov(Register.ACCUMULATOR, Register.DATA, Size.LOW));
     }
 
-    private void binUniOpHelper(BinOpExpr bin, BinUniOpMaker maker, boolean sar){
+    private void binUniOpHelper(final BinOpExpr bin, final BinUniOpMaker maker, final boolean sar){
         instructions.add(new Push(Register.BASE));
 
         bin.children.get(0).accept(this);
@@ -1109,7 +914,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         if(sar){
             instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR));
             instructions.add(new Sar(Register.DATA, Immediate.PREP_EDX));
-            String safeDiv = "safeDiv" + getNewLblNum();
+            final String safeDiv = "safeDiv" + getNewLblNum();
             setupJumpNe(Register.BASE, Immediate.ZERO, safeDiv);
             Runtime.throwException(instructions, "Divide by zero");
             instructions.add(new Label(safeDiv));
@@ -1119,8 +924,108 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Pop(Register.BASE));
     }
 
-    private void setupJumpNe(Register reg, Immediate when, String lblTo){
+    private void setupJumpNe(final Register reg, final Immediate when, final String lblTo){
         instructions.add(new Cmp(reg, when));
         instructions.add(new Jne(new Immediate(lblTo)));
+    }
+
+    @Override
+    public void visit(final SimpleMethodInvoke invoke) {
+        final MethodOrConstructorSymbol call = invoke.call;
+        if(!call.isStatic()){
+            instructions.add(new Comment("Backing up ebx because having this in ecx is bad"));
+            instructions.add(new Push(Register.BASE));
+            instructions.add(new Comment("Preping this"));
+            instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR));
+        }
+
+        if(call.isNative()){
+            //TODO push all the registers that should be stored
+            instructions.add(new Push(Register.BASE));
+        }
+
+        instructions.add(new Comment("Pushing args"));
+        for(final ISymbol arg : invoke.children){
+            arg.accept(this);
+            instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
+        }
+
+        if(!call.isStatic())instructions.add(new Push(Register.BASE));
+
+        if(call.isStatic() || call.getImplementationLevel() == ImplementationLevel.FINAL || isSuper){
+            String name = APkgClassResolver.generateFullId(call);
+            if(call.isNative()) name = NATIVE_NAME + name;
+            final InstructionArg arg = new Immediate(name);
+            if(call.dclInResolver != currentFile || call.isNative()) instructions.add(new Extern(arg));
+            instructions.add(new Call(arg));
+        }else{
+            instructions.add(new Comment("get SIT column"));
+            instructions.add(new Mov(Register.BASE, new PointerRegister(Register.BASE)));
+
+            PointerRegister methodAddr = null;
+            try {
+                methodAddr = new PointerRegister(Register.BASE, selectorITable.getOffset(PkgClassResolver.generateUniqueName(call, call.dclName)));
+            } catch (final UndeclaredException e) {
+                // shouldn't get here
+                e.printStackTrace();
+            }
+            instructions.add(new Mov(Register.BASE,  methodAddr));
+            instructions.add(new Call(Register.BASE));
+        }
+
+        // NOTE: do not use INVOKE in here, invoke gets size from method,
+        // but visitor may visit InvokeSymbol before MethodSymbol
+        final long mySize =  call.getStackSize();
+        if(mySize != 0){
+            final Immediate by = new Immediate(String.valueOf(mySize));
+            instructions.add(new Add(Register.STACK, by));
+        }
+
+        if(!call.isStatic() || call.isNative())instructions.add(new Pop(Register.BASE));
+
+        //Note: it is not the line below since anything smaller would have been extended when loaded into return register.
+        //lastSize = SizeHelper.getSize(invoke.getType().getTypeDclNode().stackSize);
+        lastSize = SizeHelper.DEFAULT_STACK;
+        instructions.add(new Comment("end invoke"));
+    }
+
+    @Override
+    public void visit(final SimpleNameSymbol name) {
+        final DclSymbol dcl = name.dcl;
+        final Size size = SizeHelper.getSize(dcl.getType().getTypeDclNode().realSize);
+        final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
+        lastSize = SizeHelper.getSize(dcl.getType().getTypeDclNode().stackSize);
+
+        if(dcl.isStatic() && dcl.dclInResolver != currentFile) instructions.add(new Extern(staticFieldLbl));
+
+        if(getVal){
+            InstructionArg base = Register.ACCUMULATOR;
+            if(dcl.isLocal) base = Register.FRAME;
+            else if(dcl.isStatic()) base = new Immediate(staticFieldLbl);
+
+            final InstructionArg from = new PointerRegister(base, dcl.getOffset());
+            genMov(size, from, dcl.dclName, dcl);
+            return;
+        }
+
+
+        Instruction instruction = new Add(Register.ACCUMULATOR, new Immediate(dcl.getOffset()));
+        if(dcl.isStatic()){
+            instruction = new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl));
+        }else if(dcl.isLocal){
+            instructions.add(new Comment("mov frame to accumulator because it is local"));
+            instructions.add(new Mov(Register.ACCUMULATOR, Register.FRAME));
+        }
+
+        instructions.add(new Comment("Move reference of " + dcl.dclName + " in to Accumulator"));
+        instructions.add(instruction);
+    }
+
+    @Override
+    public void visit(final EmptyStatementSymbol empty){ }
+
+    @Override
+    public void visit(final ISymbol other){
+        throw new IllegalArgumentException(other.toString());
     }
 }

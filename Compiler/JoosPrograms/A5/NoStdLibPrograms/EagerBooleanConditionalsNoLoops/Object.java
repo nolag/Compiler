@@ -7,19 +7,16 @@ public class Object{
         int k = 20;
         boolean b = true;
         
-        
         if(false | b){
             i = i + 10;
             k = k + 30;
             b = false;
         }else{
-            i = -1;
-            k = -1;
+            return 0;
         }
         
         if(b){
-            k = -1;
-            i = -1;
+            return 1;
         }else if(k > i){
             int j = 10;
             i = i + k + j;
@@ -29,11 +26,9 @@ public class Object{
             b = !b;
             i = k * i;
         }else if(true){
-            i = -1;
-            k = -1;
+            return 3;
         }else{
-            k = -2;
-            i = -2;
+            return 4;
         }
         
         char c = (char)1;

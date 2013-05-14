@@ -41,12 +41,12 @@ public class PkgClassResolver extends APkgClassResolver {
     public static final PkgClassResolver badResolve = new PkgClassResolver("!invalid");
     private static final Map<AInterfaceOrClassSymbol, PkgClassResolver> resolverMap = new HashMap<AInterfaceOrClassSymbol, PkgClassResolver>();
 
-    private static String getPkg(AInterfaceOrClassSymbol start){
+    private static String getPkg(final AInterfaceOrClassSymbol start){
         String mypkg = DEFAULT_PKG;
-        Iterator<NameSymbol> pkg = start.pkgImports.iterator();
+        final Iterator<NameSymbol> pkg = start.pkgImports.iterator();
 
         if(pkg.hasNext()){
-            NameSymbol first = pkg.next();
+            final NameSymbol first = pkg.next();
             if(first.type == NameSymbol.Type.PACKAGE){
                 mypkg = first.value;
             }
@@ -54,19 +54,19 @@ public class PkgClassResolver extends APkgClassResolver {
         return mypkg;
     }
 
-    private PkgClassResolver(String name) {
+    private PkgClassResolver(final String name) {
         super(name, null, true);
         this.start = null;
         isBuilt = true;
     }
 
-    private PkgClassResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
+    private PkgClassResolver(final AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
         super(start.dclName, getPkg(start), start.getImplementationLevel() == ImplementationLevel.FINAL);
         namedMap.put(start.dclName, this);
         this.start = start;
     }
 
-    public static PkgClassResolver getResolver(AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException {
+    public static PkgClassResolver getResolver(final AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException {
         PkgClassResolver resolver = resolverMap.get(start);
 
         if(resolver == null){
@@ -77,14 +77,14 @@ public class PkgClassResolver extends APkgClassResolver {
         return resolver;
     }
 
-    public static PkgClassResolver getPrimativeResolver(String name) {
+    public static PkgClassResolver getPrimativeResolver(final String name) {
         return new PkgClassResolver(name);
     }
 
-    private void addAll(String firstPart, Map<String, PkgClassResolver> entryMap) throws DuplicateDeclarationException {
+    private void addAll(final String firstPart, final Map<String, PkgClassResolver> entryMap) throws DuplicateDeclarationException {
         if(imported.contains(firstPart)) return;
-        for(Entry<String, PkgClassResolver> entry : PkgClassInfo.instance.getNamespaceParts(firstPart)){
-            String ename = entry.getKey();
+        for(final Entry<String, PkgClassResolver> entry : PkgClassInfo.instance.getNamespaceParts(firstPart)){
+            final String ename = entry.getKey();
             if(namedMap.containsKey(ename)) continue;
             //According to trying in java, this is fine as long as you don't go to use it, so don't let them use it.
             //if(entryMap.containsKey(ename)) throw new DuplicateDeclarationException(ename, start.dclName);
@@ -95,7 +95,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public APkgClassResolver getClass(String name, boolean die) throws UndeclaredException {
+    public APkgClassResolver getClass(final String name, final boolean die) throws UndeclaredException {
         APkgClassResolver retVal = null;
         if(namedMap.containsKey(name)) retVal = namedMap.get(name);
         else if(samepkgMap.containsKey(name)) retVal =  samepkgMap.get(name);
@@ -107,9 +107,9 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public APkgClassResolver findClass(String name) throws UndeclaredException {
-        String [] nameParts = name.split("\\.");
-        StringBuilder sb = new StringBuilder();
+    public APkgClassResolver findClass(final String name) throws UndeclaredException {
+        final String [] nameParts = name.split("\\.");
+        final StringBuilder sb = new StringBuilder();
 
         for(int i = 0; i < nameParts.length - 1; i++){
             sb.append(nameParts[i]);
@@ -124,16 +124,16 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     public void verifyObject() throws CompilerException {
-        PkgClassResolver obj = (PkgClassResolver) getClass(JoosNonTerminal.OBJECT, true);
+        final PkgClassResolver obj = (PkgClassResolver) getClass(JoosNonTerminal.OBJECT, true);
         if(obj == this) return;
         obj.build();
         this.superClass = obj;
 
-        for(AMethodSymbol methodSymbol : obj.start.getMethods()){
-            String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
+        for(final AMethodSymbol methodSymbol : obj.start.getMethods()){
+            final String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
             AMethodSymbol has = methodMap.get(uniqueName);
             has = has == null ? smethodMap.get(uniqueName) : has;
-            AMethodSymbol is = has == null ? methodSymbol : has;
+            final AMethodSymbol is = has == null ? methodSymbol : has;
 
             if (start.isClass()){
                 //If it has it move it to the front so that it's in the correct place for the super's this
@@ -159,20 +159,20 @@ public class PkgClassResolver extends APkgClassResolver {
         }
     }
 
-    private void copyInfo(PkgClassResolver building, Set<PkgClassResolver> visited, List<Set<PkgClassResolver>> resolvedSets, boolean mustBeInterface, boolean mustBeClass) throws CompilerException {
+    private void copyInfo(final PkgClassResolver building, final Set<PkgClassResolver> visited, final List<Set<PkgClassResolver>> resolvedSets, final boolean mustBeInterface, final boolean mustBeClass) throws CompilerException {
 
         if(building.isFinal) throw new IllegalExtendsException(start.superName);
-        Set<PkgClassResolver> cpySet = new HashSet<PkgClassResolver>(visited);
+        final Set<PkgClassResolver> cpySet = new HashSet<PkgClassResolver>(visited);
         building.build(cpySet, mustBeInterface, mustBeClass);
         resolvedSets.add(cpySet);
 
         //copy in reverse order so that when they are added to the start they are in order
-        List<ISymbol> copyChildren = new LinkedList<ISymbol>(building.start.children);
+        final List<ISymbol> copyChildren = new LinkedList<ISymbol>(building.start.children);
         Collections.reverse(copyChildren);
 
-        for(ISymbol child : copyChildren){
+        for(final ISymbol child : copyChildren){
             if(child instanceof DclSymbol){
-                DclSymbol dcl = (DclSymbol) child;
+                final DclSymbol dcl = (DclSymbol) child;
                 if(dcl.getProtectionLevel() != ProtectionLevel.PRIVATE){
                     DclSymbol field = fieldMap.get(dcl.dclName);
                     field = field == null ? sfieldMap.get(dcl.dclName) : field;
@@ -184,11 +184,11 @@ public class PkgClassResolver extends APkgClassResolver {
                 }
                 start.children.add(0, dcl);
             }else if(child instanceof AMethodSymbol){
-                AMethodSymbol methodSymbol = (AMethodSymbol) child;
-                String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
+                final AMethodSymbol methodSymbol = (AMethodSymbol) child;
+                final String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
                 AMethodSymbol has = methodMap.get(uniqueName);
                 has = has == null ? smethodMap.get(uniqueName) : has;
-                AMethodSymbol is = has == null ? methodSymbol : has;
+                final AMethodSymbol is = has == null ? methodSymbol : has;
 
                 //If it has it move it to the front so that it's in the correct place for the super's this
                 start.children.remove(is);
@@ -226,13 +226,13 @@ public class PkgClassResolver extends APkgClassResolver {
         }
     }
 
-    private void replaceMethod(AMethodSymbol newMethod, AMethodSymbol oldMethod)
+    private void replaceMethod(final AMethodSymbol newMethod, final AMethodSymbol oldMethod)
             throws UndeclaredException {
-        Map<String, AMethodSymbol> addNewTo = newMethod.isStatic() ? smethodMap : methodMap;
-        Map<String, AMethodSymbol> addOldTo = oldMethod.isStatic() ? hsmethodMap : hmethodMap;
-        Map<String, AMethodSymbol> remOldFrom = oldMethod.isStatic() ? methodMap : smethodMap;
+        final Map<String, AMethodSymbol> addNewTo = newMethod.isStatic() ? smethodMap : methodMap;
+        final Map<String, AMethodSymbol> addOldTo = oldMethod.isStatic() ? hsmethodMap : hmethodMap;
+        final Map<String, AMethodSymbol> remOldFrom = oldMethod.isStatic() ? methodMap : smethodMap;
 
-        String uniqueName = generateUniqueName(oldMethod, oldMethod.dclName);
+        final String uniqueName = generateUniqueName(oldMethod, oldMethod.dclName);
         start.children.remove(uniqueName);
         start.children.add(newMethod);
         remOldFrom.remove(uniqueName);
@@ -241,7 +241,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    protected void build(Set<PkgClassResolver> visited, boolean mustBeInterface, boolean mustBeClass) throws CompilerException {
+    protected void build(final Set<PkgClassResolver> visited, boolean mustBeInterface, final boolean mustBeClass) throws CompilerException {
         if(visited.contains(this)) throw new CircularDependancyException(start.dclName);
         if(mustBeInterface && start.isClass()) throw new UnsupportedException("Interface extending a class");
         if(mustBeClass && !start.isClass()) throw new UnsupportedException("Class extending interface");
@@ -249,15 +249,16 @@ public class PkgClassResolver extends APkgClassResolver {
         visited.add(this);
 
         if(!isBuilt){
-            for(NameSymbol symbol : start.pkgImports){
-                NameSymbol name = symbol;
+            isBuilt = true;
+            for(final NameSymbol symbol : start.pkgImports){
+                final NameSymbol name = symbol;
 
                 switch(name.type){
                 case IMPORT:
-                    PkgClassResolver resolver = (PkgClassResolver)PkgClassInfo.instance.getSymbol(name.value);
+                    final PkgClassResolver resolver = (PkgClassResolver)PkgClassInfo.instance.getSymbol(name.value);
                     if(resolver == null) throw new UndeclaredException(name.value, start.dclName);
 
-                    String typeName = name.value.substring(name.value.lastIndexOf(".") + 1, name.value.length());
+                    final String typeName = name.value.substring(name.value.lastIndexOf(".") + 1, name.value.length());
 
                     if(namedMap.containsKey(typeName) && namedMap.get(typeName) != resolver)
                         throw new DuplicateDeclarationException(name.value, start.dclName);
@@ -277,9 +278,9 @@ public class PkgClassResolver extends APkgClassResolver {
             addAll(pkg, samepkgMap);
             addAll("java.lang", staredMap);
 
-            for (AMethodSymbol methodSymbol : start.getMethods()){
+            for (final AMethodSymbol methodSymbol : start.getMethods()){
                 methodSymbol.resolver = methodSymbol.type.isArray ? getArrayVersion() : this;
-                String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
+                final String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
                 if(methodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
                 if(smethodMap.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
 
@@ -291,7 +292,7 @@ public class PkgClassResolver extends APkgClassResolver {
                 methodSymbol.dclInResolver = this;
             }
 
-            for(DclSymbol fieldSymbol : start.getFields()){
+            for(final DclSymbol fieldSymbol : start.getFields()){
                 if(fieldMap.containsKey(fieldSymbol.dclName) || sfieldMap.containsKey(fieldSymbol.dclName))
                     throw new UndeclaredException(fieldSymbol.dclName, fullName);
 
@@ -305,12 +306,12 @@ public class PkgClassResolver extends APkgClassResolver {
                 fieldSymbol.dclInResolver = this;
             }
 
-            for(ConstructorSymbol constructorSymbol : start.getConstructors()){
+            for(final ConstructorSymbol constructorSymbol : start.getConstructors()){
                 constructorSymbol.resolver = this;
-                String uniqueName = generateUniqueName(constructorSymbol, "this");
+                final String uniqueName = generateUniqueName(constructorSymbol, "this");
                 if(constructors.containsKey(uniqueName)) throw new DuplicateDeclarationException(uniqueName, start.dclName);
                 constructors.put(uniqueName, constructorSymbol);
-                TypeSymbol voidType = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
+                final TypeSymbol voidType = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
 
                 if(voidType.getTypeDclNode() == null)
                     voidType.setTypeDclNode(PkgClassInfo.instance.getSymbol("void"));
@@ -327,7 +328,7 @@ public class PkgClassResolver extends APkgClassResolver {
 
             PkgClassResolver building = null;
 
-            List<Set<PkgClassResolver>> resolvedSets = new LinkedList<Set<PkgClassResolver>>();
+            final List<Set<PkgClassResolver>> resolvedSets = new LinkedList<Set<PkgClassResolver>>();
 
             if(!fullName.equals(JoosNonTerminal.OBJECT)){
                 if(start.superName != null || start.getImplementationLevel() != ImplementationLevel.ABSTRACT){
@@ -346,9 +347,9 @@ public class PkgClassResolver extends APkgClassResolver {
                 }
             }
 
-            Set<String> alreadyImps = new HashSet<String>();
+            final Set<String> alreadyImps = new HashSet<String>();
 
-            for(String impl : start.impls){
+            for(final String impl : start.impls){
                 building = (PkgClassResolver) findClass(impl);
                 if(alreadyImps.contains(building.fullName)) throw new DuplicateDeclarationException(impl, fullName);
 
@@ -356,16 +357,16 @@ public class PkgClassResolver extends APkgClassResolver {
                 if(start.getImplementationLevel() == ImplementationLevel.ABSTRACT){
                     copyInfo(building, visited, resolvedSets, true, false);
                 }else{
-                    Set<PkgClassResolver> cpySet = new HashSet<PkgClassResolver>(visited);
+                    final Set<PkgClassResolver> cpySet = new HashSet<PkgClassResolver>(visited);
                     building.build(cpySet, true, false);
                     resolvedSets.add(cpySet);
                     //we only have methods in interfaces in JOOS
-                    for(AMethodSymbol methodSymbol : building.start.getMethods()){
-                        String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
+                    for(final AMethodSymbol methodSymbol : building.start.getMethods()){
+                        final String uniqueName = generateUniqueName(methodSymbol, methodSymbol.dclName);
                         //No method can be static in an interface.
                         if(!methodMap.containsKey(uniqueName)) throw new UndeclaredException(uniqueName, fullName);
-                        AMethodSymbol hasMethod = methodMap.get(uniqueName);
-                        APkgClassResolver hasResolver = hasMethod.resolver;
+                        final AMethodSymbol hasMethod = methodMap.get(uniqueName);
+                        final APkgClassResolver hasResolver = hasMethod.resolver;
                         if(hasResolver.findClass(hasMethod.type.value) != methodSymbol.resolver.findClass(methodSymbol.type.value))
                                 throw new UndeclaredException(uniqueName, fullName);
 
@@ -380,23 +381,22 @@ public class PkgClassResolver extends APkgClassResolver {
                 implInterfs.add(building);
             }
 
-            for(Set<PkgClassResolver> pkgSet : resolvedSets) visited.addAll(pkgSet);
+            for(final Set<PkgClassResolver> pkgSet : resolvedSets) visited.addAll(pkgSet);
 
             start.accept(new TypeResolverVisitor(this));
-            isBuilt = true;
         }else{
-            for(String s : assignableTo) visited.add((PkgClassResolver)PkgClassInfo.instance.getSymbol(s));
+            for(final String s : assignableTo) visited.add((PkgClassResolver)PkgClassInfo.instance.getSymbol(s));
         }
     }
 
     @Override
     public void linkLocalNamesToDcl() throws CompilerException {
         if(start == null) return;
-        for(AMethodSymbol method : start.getUninheritedMethods()){
+        for(final AMethodSymbol method : start.getUninheritedMethods()){
             method.resolveLocalVars(fullName);
         }
 
-        for(ConstructorSymbol consturctor : start.getConstructors()){
+        for(final ConstructorSymbol consturctor : start.getConstructors()){
             consturctor.resolveLocalVars(fullName);
         }
     }
@@ -405,12 +405,12 @@ public class PkgClassResolver extends APkgClassResolver {
     public void checkFields() throws CompilerException{
         if (start == null) return;
         LocalDclLinker linker = new LocalDclLinker(fullName, true);
-        for(DclSymbol dcl : this.getUninheritedNonStaticFields()){
+        for(final DclSymbol dcl : this.getUninheritedNonStaticFields()){
             dcl.accept(linker);
         }
 
         linker = new LocalDclLinker(fullName, false);
-        for(DclSymbol dcl : this.getUninheritedStaticFields()){
+        for(final DclSymbol dcl : this.getUninheritedStaticFields()){
             dcl.accept(linker);
         }
     }
@@ -418,18 +418,18 @@ public class PkgClassResolver extends APkgClassResolver {
     @Override
     public void reduceToConstantExprs() throws CompilerException {
         if (start == null) return;
-        IASTBuilder builder = new ConstantExprBuilder();
+        final IASTBuilder builder = new ConstantExprBuilder();
         this.start = (AInterfaceOrClassSymbol) builder.build(start);
     }
 
     @Override
     public void analyzeReachability() throws CompilerException {
         if(start == null) return;
-        for(AMethodSymbol method : start.getUninheritedMethods()){
+        for(final AMethodSymbol method : start.getUninheritedMethods()){
             method.analyzeReachability(fullName);
         }
 
-        for(ConstructorSymbol constructor : start.getConstructors()){
+        for(final ConstructorSymbol constructor : start.getConstructors()){
             constructor.analyzeReachability(fullName);
         }
     }
@@ -457,11 +457,11 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void generateCode(ICodeGenVisitor visitor) {
+    public void generateCode(final ICodeGenVisitor visitor) {
         if(!shouldGenCode()) return;
 
-        for(AMethodSymbol methodSymbol : start.getUninheritedMethods()) methodSymbol.accept(visitor);
-        for(ConstructorSymbol cs : start.getConstructors()) cs.accept(visitor);
+        for(final AMethodSymbol methodSymbol : start.getUninheritedMethods()) methodSymbol.accept(visitor);
+        for(final ConstructorSymbol cs : start.getConstructors()) cs.accept(visitor);
     }
 
     @Override
@@ -486,9 +486,9 @@ public class PkgClassResolver extends APkgClassResolver {
 
     @Override
     public Iterable<DclSymbol> getUninheritedStaticFields() {
-        List<DclSymbol> fieldsDcls = new LinkedList<DclSymbol>();
+        final List<DclSymbol> fieldsDcls = new LinkedList<DclSymbol>();
 
-        for(DclSymbol dcl : start.getFields()){
+        for(final DclSymbol dcl : start.getFields()){
             if(!dcl.isStatic() || dcl.dclInResolver != this) continue;
 
             fieldsDcls.add(dcl);
@@ -499,9 +499,9 @@ public class PkgClassResolver extends APkgClassResolver {
 
     @Override
     public Iterable<DclSymbol> getUninheritedNonStaticFields() {
-        List<DclSymbol> fieldsDcls = new LinkedList<DclSymbol>();
+        final List<DclSymbol> fieldsDcls = new LinkedList<DclSymbol>();
 
-        for(DclSymbol dcl : start.getFields()){
+        for(final DclSymbol dcl : start.getFields()){
             if(dcl.isStatic() || dcl.dclInResolver != this) continue;
 
             fieldsDcls.add(dcl);

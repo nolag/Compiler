@@ -22,6 +22,8 @@ import cs444.parser.symbols.ast.SuperSymbol;
 import cs444.parser.symbols.ast.ThisSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
+import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
+import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
@@ -236,4 +238,10 @@ public class EmptyVisitor implements ISymbolVisitor {
 
     @Override
     public void visit(ByteLiteralSymbol byteLiteral) throws CompilerException { }
+
+    @Override
+    public void visit(SimpleNameSymbol name) throws CompilerException {	}
+
+    @Override
+    public void visit(SimpleMethodInvoke invoke) throws CompilerException { }
 }

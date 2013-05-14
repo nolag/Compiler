@@ -1,6 +1,8 @@
 package cs444.parser.symbols.ast;
 
-public interface Typeable {
+import cs444.parser.symbols.ISymbol;
+
+public interface Typeable extends ISymbol {
     public TypeSymbol getType();
     public void setType(TypeSymbol type);
 }
