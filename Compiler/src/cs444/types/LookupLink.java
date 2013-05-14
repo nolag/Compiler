@@ -23,6 +23,8 @@ public class LookupLink{
     public LookupLink(final List<Typeable> dcls){
         this.dcls = dcls;
         list = dcls;
+        //Not sure how that happens.  Need to look into it.
+        while(list.size() > 1 && list.get(1).getType().isClass) list.remove(1);
         lastDcl = dcls.isEmpty() ? null : dcls.get(dcls.size() - 1);
     }
 

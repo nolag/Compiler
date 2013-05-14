@@ -1,6 +1,7 @@
 package cs444.acceptance;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,10 +27,10 @@ public class A5 {
                                             true, ignoreList, new AsmAndLinkCallback());
     }
 
-    /*@Test
+    @Test
     public void testMarmosetA5Programs() throws IOException, InterruptedException{
 
-        List<String> failingList = new LinkedList<String>();
+        final List<String> failingList = new LinkedList<String>();
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a5/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
@@ -37,7 +38,7 @@ public class A5 {
 
     @Test
     public void testMarmosetA4ValidTestCases() throws IOException, InterruptedException {
-        List<String> failingList = new LinkedList<String>();
+        final List<String> failingList = new LinkedList<String>();
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a4/valid/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
@@ -45,7 +46,7 @@ public class A5 {
 
     @Test
     public void testMarmosetA3ValidTestCases() throws IOException, InterruptedException {
-        List<String> failingList = new LinkedList<String>();
+        final List<String> failingList = new LinkedList<String>();
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a3/valid/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
@@ -53,7 +54,7 @@ public class A5 {
 
     @Test
     public void testMarmosetA2ValidTestCases() throws IOException, InterruptedException {
-        List<String> failingList = new LinkedList<String>();
+        final List<String> failingList = new LinkedList<String>();
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a2/valid/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
@@ -62,10 +63,10 @@ public class A5 {
     @Test
     public void testMarmosetA1ValidTestCases() throws IOException, InterruptedException {
         //J1w_Interface.java is an interface there is no test method
-        List<String> failingList = new LinkedList<String>(Arrays.asList("J1w_Interface.java"));
+        final List<String> failingList = new LinkedList<String>(Arrays.asList("J1w_Interface.java"));
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a1/valid/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
-    }*/
+    }
 }
 
