@@ -401,12 +401,10 @@ public abstract class APkgClassResolver {
         }
     }
 
-    private void cleanHelper(final Map<String, ? extends MethodOrConstructorSymbol> from) throws CompilerException{
-        for(final MethodOrConstructorSymbol method : from.values()){
+    private void cleanHelper(final Map<String, ? extends AModifiersOptSymbol> from) throws CompilerException{
+        for(final AModifiersOptSymbol method : from.values()){
             for(final ASTSymbolFactory cleaner : CLEANERS){
-                if(method.dclInResolver == this) {
-                    cleaner.convertAll(method);
-                }
+                if(method.dclInResolver == this) cleaner.convertAll(method);
             }
         }
     }
@@ -415,5 +413,7 @@ public abstract class APkgClassResolver {
         cleanHelper(methodMap);
         cleanHelper(smethodMap);
         cleanHelper(constructors);
+        cleanHelper(fieldMap);
+        cleanHelper(sfieldMap);
     }
 }
