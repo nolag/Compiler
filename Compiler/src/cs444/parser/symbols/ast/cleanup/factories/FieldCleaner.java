@@ -4,6 +4,7 @@ import cs444.CompilerException;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.ThisSymbol;
+import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 
@@ -24,7 +25,8 @@ public class FieldCleaner extends ASTSymbolFactory {
                 final FieldAccessSymbol fas2 = (FieldAccessSymbol) second;
                 final ISymbol secondFirst = fas2.children.get(0);
                 if(secondFirst instanceof ThisSymbol){
-                    return new FieldAccessSymbol(fas.children.get(0), fas2.children.get(1));
+                    final Typeable typeable = (Typeable)fas2.children.get(1);
+                    return new FieldAccessSymbol(fas.children.get(0), typeable, typeable.getType());
                 }
             }
         }

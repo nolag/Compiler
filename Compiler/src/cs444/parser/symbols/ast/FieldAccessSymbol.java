@@ -11,9 +11,14 @@ public class FieldAccessSymbol extends ANonTerminal implements Typeable {
     private TypeSymbol type;
 
     public FieldAccessSymbol(final ISymbol iSymbol, final ISymbol me) {
+        this(iSymbol, me, null);
+    }
+
+    public FieldAccessSymbol(final ISymbol iSymbol, final ISymbol me, final TypeSymbol type) {
         super("FieldAccess");
         children.add(iSymbol);
         children.add(me);
+        this.type = type;
     }
 
     @Override
