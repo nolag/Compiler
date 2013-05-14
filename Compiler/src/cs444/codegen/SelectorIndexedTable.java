@@ -13,30 +13,30 @@ import cs444.codegen.instructions.Instruction;
 import cs444.types.APkgClassResolver;
 
 public class SelectorIndexedTable {
-    private IndexedTableData table = new IndexedTableData(new SelectorCellGen(), SizeHelper.getIntSize(Size.DWORD));
+    private final IndexedTableData table = new IndexedTableData(new SelectorCellGen(), SizeHelper.getIntSize(Size.DWORD));
 
-    public void addIndex(String className, String selector, String methodImplLabel) {
+    public void addIndex(final String className, final String selector, final String methodImplLabel) {
         table.addIndex(className, selector, methodImplLabel);
     }
 
-    public Map<String, String> addClass(String fullName) {
+    public Map<String, String> addClass(final String fullName) {
         return table.addColumn(fullName);
     }
 
-    public void addSelector(String selector) {
+    public void addSelector(final String selector) {
         table.addRow(selector);
     }
 
-    public long getOffset(String selector){
+    public long getOffset(final String selector){
         return table.getOffset(selector);
     }
 
-    public static SelectorIndexedTable generateSIT(List<APkgClassResolver> resolvers, boolean outputFile, String directory)
+    public static SelectorIndexedTable generateSIT(final List<APkgClassResolver> resolvers, final boolean outputFile, final String directory)
                     throws IOException, FileNotFoundException {
 
-        SelectorIndexedTable sit = new SelectorIndexedTable();
+        final SelectorIndexedTable sit = new SelectorIndexedTable();
 
-        for(APkgClassResolver resolver : resolvers){
+        for(final APkgClassResolver resolver : resolvers){
             if(resolver.shouldGenCode()) resolver.addToSelectorIndexedTable(sit);
         }
 
@@ -52,14 +52,14 @@ public class SelectorIndexedTable {
     public class SelectorCellGen implements ICellCodeGenerator {
 
         @Override
-        public void genEmptyCelCode(String colHeaderLabel, String rowName, List<Instruction> instructions) {
+        public void genEmptyCelCode(final String colHeaderLabel, final String rowName, final List<Instruction> instructions) {
             instructions.add(new Comment(colHeaderLabel + " does not have access to " + rowName + ":"));
             instructions.add(new Dd(Immediate.NULL));
         }
 
         @Override
-        public void genCellCode(String colHeaderLabel, String rowName,
-                String data, List<Instruction> instructions) {
+        public void genCellCode(final String colHeaderLabel, final String rowName,
+                final String data, final List<Instruction> instructions) {
             instructions.add(new Extern(data));
             instructions.add(new Dd(new Immediate(data)));
         }

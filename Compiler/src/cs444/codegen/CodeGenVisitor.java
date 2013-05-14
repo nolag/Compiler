@@ -50,6 +50,8 @@ import cs444.codegen.instructions.factories.SetleMaker;
 import cs444.codegen.instructions.factories.SetneMaker;
 import cs444.codegen.instructions.factories.SubOpMaker;
 import cs444.codegen.instructions.factories.UniOpMaker;
+import cs444.codegen.peephole.InstructionHolder;
+import cs444.codegen.peephole.InstructionPrinter;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -113,7 +115,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     private final SelectorIndexedTable selectorITable;
     private final SubtypeIndexedTable subtypeITable;
-    private final List<Instruction> instructions;
+    private final InstructionHolder instructions;
     private boolean hasEntry = false;
     private boolean getVal = true;
 
@@ -129,17 +131,17 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     }
 
     public CodeGenVisitor(final SelectorIndexedTable sit, final SubtypeIndexedTable subIt) {
-        this.instructions = new LinkedList<Instruction>();
+        this.instructions = new InstructionPrinter();
         this.selectorITable = sit;
         this.subtypeITable = subIt;
     }
 
-    public CodeGenVisitor(final SelectorIndexedTable sit, final SubtypeIndexedTable subIt, final List<Instruction> startInstructions) {
+    public CodeGenVisitor(final SelectorIndexedTable sit, final SubtypeIndexedTable subIt, final InstructionHolder startInstructions) {
         this(null, sit, subIt, startInstructions);
     }
 
     public CodeGenVisitor(final APkgClassResolver resolver,
-            final SelectorIndexedTable sit, final SubtypeIndexedTable subIt, final List<Instruction> startInstructions) {
+            final SelectorIndexedTable sit, final SubtypeIndexedTable subIt, final InstructionHolder startInstructions) {
         this.currentFile = resolver;
         this.instructions = startInstructions;
         this.selectorITable = sit;
@@ -873,8 +875,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     @Override
     public void printToFileAndEmpty(final PrintStream printer){
-        for(final Instruction instruction : instructions) printer.println(instruction.generate());
-        instructions.clear();
+        instructions.passToNext(printer);
     }
 
     private void binOpHelper(final BinOpExpr bin, final BinOpMaker maker){
@@ -1007,7 +1008,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             genMov(size, from, dcl.dclName, dcl);
             return;
         }
-
 
         Instruction instruction = new Add(Register.ACCUMULATOR, new Immediate(dcl.getOffset()));
         if(dcl.isStatic()){

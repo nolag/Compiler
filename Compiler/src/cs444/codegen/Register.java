@@ -1,5 +1,6 @@
 package cs444.codegen;
 
+
 public class Register extends InstructionArg{
 
     public static final Register ACCUMULATOR = new Register("a", 'x');

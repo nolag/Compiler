@@ -1,13 +1,10 @@
 package cs444.codegen;
 
-import java.util.List;
-
 import cs444.codegen.InstructionArg.Size;
 import cs444.codegen.instructions.Call;
 import cs444.codegen.instructions.Comment;
 import cs444.codegen.instructions.Dec;
 import cs444.codegen.instructions.Extern;
-import cs444.codegen.instructions.Instruction;
 import cs444.codegen.instructions.Label;
 import cs444.codegen.instructions.Loop;
 import cs444.codegen.instructions.Mov;
@@ -15,6 +12,7 @@ import cs444.codegen.instructions.Pop;
 import cs444.codegen.instructions.Push;
 import cs444.codegen.instructions.Sar;
 import cs444.codegen.instructions.Xor;
+import cs444.codegen.peephole.InstructionHolder;
 
 public class Runtime {
     public static final String EXCEPTION_LBL = "__exception";
@@ -28,7 +26,7 @@ public class Runtime {
         return loopnum++;
     }
 
-    public static void malloc(InstructionArg bytes, List<Instruction> instructions, Size size, boolean zeroOut) {
+    public static void malloc(final InstructionArg bytes, final InstructionHolder instructions, final Size size, final boolean zeroOut) {
         // backup regs used by malloc
         instructions.add(new Push(Register.BASE));
         if(bytes != Register.COUNTER)instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
@@ -51,16 +49,16 @@ public class Runtime {
         }
     }
 
-    public static void malloc(InstructionArg bytes, List<Instruction> instructions, Size size){
+    public static void malloc(final InstructionArg bytes, final InstructionHolder instructions, final Size size){
         malloc(bytes, instructions, size, true);
     }
 
-    public static void externAll(List<Instruction> instructions) {
+    public static void externAll(final InstructionHolder instructions) {
         instructions.add(new Extern(MALLOC));
         instructions.add(new Extern(EXCEPTION));
     }
 
-    public static void throwException(List<Instruction> instructions, String debugString){
+    public static void throwException(final InstructionHolder instructions, final String debugString){
         instructions.add(new Comment(debugString));
         instructions.add(new Call(EXCEPTION));
     }

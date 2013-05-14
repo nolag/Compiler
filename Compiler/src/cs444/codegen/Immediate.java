@@ -1,5 +1,6 @@
 package cs444.codegen;
 
+
 public class Immediate extends InstructionArg{
     private final String value;
 

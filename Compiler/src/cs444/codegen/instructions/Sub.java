@@ -1,7 +1,7 @@
 package cs444.codegen.instructions;
 
-import cs444.codegen.InstructionArg.Size;
 import cs444.codegen.Register;
+import cs444.codegen.InstructionArg.Size;
 
 public class Sub implements Instruction {
     public final Register minuend;

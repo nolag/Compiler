@@ -14,15 +14,15 @@ public class SubtypeIndexedTable {
     public class SubtypeCellGen implements ICellCodeGenerator {
 
         @Override
-        public void genEmptyCelCode(String colHeaderLabel, String rowName,
-                List<Instruction> instructions) {
+        public void genEmptyCelCode(final String colHeaderLabel, final String rowName,
+                final List<Instruction> instructions) {
             instructions.add(new Comment(colHeaderLabel + " is not subtype of " + rowName));
             instructions.add(DataInstructionMaker.make(Immediate.FALSE, dataSize));
         }
 
         @Override
-        public void genCellCode(String colHeaderLabel, String rowName,
-                String data, List<Instruction> instructions) {
+        public void genCellCode(final String colHeaderLabel, final String rowName,
+                final String data, final List<Instruction> instructions) {
             instructions.add(new Comment(colHeaderLabel + " is subtype of " + rowName));
             instructions.add(DataInstructionMaker.make(Immediate.TRUE, dataSize));
         }
@@ -30,31 +30,31 @@ public class SubtypeIndexedTable {
     }
 
     public final Size dataSize = Size.WORD;
-    private IndexedTableData table = new IndexedTableData(new SubtypeCellGen(), SizeHelper.getIntSize(dataSize));
+    private final IndexedTableData table = new IndexedTableData(new SubtypeCellGen(), SizeHelper.getIntSize(dataSize));
 
-    public Map<String, String> addSubtype(String fullName) {
+    public Map<String, String> addSubtype(final String fullName) {
         return table.addColumn(fullName);
     }
 
-    public void addSuperType(String className) {
+    public void addSuperType(final String className) {
         table.addRow(className);
     }
 
-    public void addIndex(String subtypeITLbl, String superType) {
+    public void addIndex(final String subtypeITLbl, final String superType) {
         table.addIndex(subtypeITLbl, superType);
     }
 
-    public long getOffset(String superType) {
+    public long getOffset(final String superType) {
         return table.getOffset(superType);
     }
 
     public static SubtypeIndexedTable generateTable(
-            List<APkgClassResolver> resolvers, boolean outputFile,
-            String directory) throws IOException {
+            final List<APkgClassResolver> resolvers, final boolean outputFile,
+            final String directory) throws IOException {
 
-        SubtypeIndexedTable sit = new SubtypeIndexedTable();
+        final SubtypeIndexedTable sit = new SubtypeIndexedTable();
 
-        for(APkgClassResolver resolver : resolvers){
+        for(final APkgClassResolver resolver : resolvers){
             if(resolver.shouldGenCode()) resolver.addToSubtypeIndexedTable(sit);
         }
 
