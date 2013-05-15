@@ -10,9 +10,9 @@ import java.util.Set;
 
 import cs444.CompilerException;
 import cs444.codegen.ICodeGenVisitor;
-import cs444.codegen.SelectorIndexedTable;
-import cs444.codegen.SizeHelper;
-import cs444.codegen.SubtypeIndexedTable;
+import cs444.codegen.x86.SelectorIndexedTable;
+import cs444.codegen.x86.SizeHelper;
+import cs444.codegen.x86.SubtypeIndexedTable;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol;

@@ -6,17 +6,27 @@ import java.util.List;
 
 import cs444.codegen.instructions.Instruction;
 
-public class InstructionPrinter implements InstructionHolder {
-    final List<Instruction> instructions = new LinkedList<Instruction>();
+public class InstructionPrinter<T extends Instruction> implements InstructionHolder<T> {
+    final List<T> instructions = new LinkedList<T>();
 
     @Override
     public void passToNext(final PrintStream printer) {
-        for(final Instruction instruction : instructions) printer.println(instruction.generate());
+        for(final T instruction : instructions) printer.println(instruction.generate());
+    }
+
+    @Override
+    public void passToNextClear(final PrintStream printer) {
+        for(final T instruction : instructions) printer.println(instruction.generate());
         instructions.clear();
     }
 
     @Override
-    public void add(final Instruction instruction) {
+    public void add(final T instruction) {
         instructions.add(instruction);
+    }
+
+    @Override
+    public void addAll(final List<T> instructions) {
+        this.instructions.addAll(instructions);
     }
 }

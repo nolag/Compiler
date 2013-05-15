@@ -1,15 +1,9 @@
 package cs444.codegen;
 
-import java.util.List;
-
 import cs444.codegen.instructions.Instruction;
+import cs444.codegen.peephole.InstructionHolder;
 
-public interface ICellCodeGenerator {
-
-    void genEmptyCelCode(String colHeaderLabel, String rowName,
-            List<Instruction> instructions);
-
-    void genCellCode(String colHeaderLabel, String rowName, String data,
-            List<Instruction> instructions);
-
+public interface ICellCodeGenerator<T extends Instruction> {
+    void genEmptyCelCode(String colHeaderLabel, String rowName, InstructionHolder<T> instructions);
+    void genCellCode(String colHeaderLabel, String rowName, String data, InstructionHolder<T> instructions);
 }

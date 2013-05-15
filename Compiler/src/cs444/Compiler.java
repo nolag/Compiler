@@ -11,10 +11,10 @@ import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
-import cs444.codegen.CodeGenVisitor;
-import cs444.codegen.SelectorIndexedTable;
-import cs444.codegen.StaticFieldInit;
-import cs444.codegen.SubtypeIndexedTable;
+import cs444.codegen.x86.SelectorIndexedTable;
+import cs444.codegen.x86.StaticFieldInit;
+import cs444.codegen.x86.SubtypeIndexedTable;
+import cs444.codegen.x86_32bit.CodeGenVisitor;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
@@ -28,9 +28,9 @@ import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassInfo;
 
 public class Compiler {
-    //public static final String BASE_DIRECTORY = "/mnt/hgfs/RAM/";
+    public static final String BASE_DIRECTORY = "/mnt/hgfs/RAM/";
     //public static final String BASE_DIRECTORY = "E:/RAM/";
-    public static final String BASE_DIRECTORY = "";
+    //public static final String BASE_DIRECTORY = "";
     public static final String OUTPUT_DIRECTORY = BASE_DIRECTORY + "output/";
 
     public static final int COMPILER_ERROR_CODE = 42;

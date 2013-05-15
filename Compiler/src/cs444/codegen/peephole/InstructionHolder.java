@@ -1,10 +1,13 @@
 package cs444.codegen.peephole;
 
 import java.io.PrintStream;
+import java.util.List;
 
 import cs444.codegen.instructions.Instruction;
 
-public interface InstructionHolder {
+public interface InstructionHolder <T extends Instruction> {
     void passToNext(PrintStream printer);
-    void add(Instruction instruction);
+    void passToNextClear(PrintStream printer);
+    void add(T instruction);
+    void addAll(List<T> instructions);
 }

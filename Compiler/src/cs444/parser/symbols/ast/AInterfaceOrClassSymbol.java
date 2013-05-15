@@ -5,8 +5,8 @@ import java.util.List;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
-import cs444.codegen.ObjectLayout;
-import cs444.codegen.SizeHelper;
+import cs444.codegen.x86.X86ObjectLayout;
+import cs444.codegen.x86.SizeHelper;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
@@ -99,7 +99,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
     }
 
     public void computeFieldOffsets() {
-        long nextOffset = ObjectLayout.objSize();
+        long nextOffset = X86ObjectLayout.objSize();
         for (DclSymbol fieldDcl : this.getFields()) {
             if (fieldDcl.isStatic()) continue;
 

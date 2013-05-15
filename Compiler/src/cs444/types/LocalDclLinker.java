@@ -9,7 +9,7 @@ import java.util.Stack;
 
 import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
-import cs444.codegen.SizeHelper;
+import cs444.codegen.x86.SizeHelper;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
