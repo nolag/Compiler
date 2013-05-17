@@ -1,5 +1,9 @@
 package cs444.codegen.x86;
 
+import cs444.codegen.IPlatform;
+import cs444.codegen.instructions.x86.bases.X86Instruction;
+
+
 
 
 public class Immediate extends InstructionArg{
@@ -13,11 +17,6 @@ public class Immediate extends InstructionArg{
     public static final Immediate DWORD_I = new Immediate("4");
     public static final Immediate TWO = new Immediate("2");
     public static final Immediate QWORD_S = new Immediate("3");;
-    public static final Immediate STACK_SIZE_POWER = new Immediate(String.valueOf(SizeHelper.DEFAULT_STACK_POWER));
-
-    public static final Immediate C_TIMES_8 = new Immediate(Register.COUNTER, "*", 8);
-    public static final Immediate C_TIMES_4 = new Immediate(Register.COUNTER, "*", 4);
-    public static final Immediate C_TIMES_2 = new Immediate(Register.COUNTER, "*", 2);
 
     public static final Immediate NOTHING = new Immediate(";this should never actually be used, palce holder arg");
 
@@ -39,10 +38,6 @@ public class Immediate extends InstructionArg{
 
     public Immediate(final String value){
         this.value = value;
-    }
-
-    private Immediate(final InstructionArg arg, final String op, final int val){
-        this(arg.getValue() + " " + op + " " + val);
     }
 
     public Immediate(final long value){
@@ -68,7 +63,15 @@ public class Immediate extends InstructionArg{
     }
 
     @Override
-    public String getValue(final Size size) {
+    public final String getValue(final Size size, final X86SizeHelper sizeHelper) {
+        return value;
+    }
+
+    public final Immediate getStackSizePower(final IPlatform<X86Instruction> platform){
+        return new Immediate(platform.getSizeHelper().getDefaultStackPower());
+    }
+
+    public final String getValue(){
         return value;
     }
 }

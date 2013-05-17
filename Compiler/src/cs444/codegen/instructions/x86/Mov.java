@@ -1,26 +1,16 @@
 package cs444.codegen.instructions.x86;
 
+import cs444.codegen.instructions.x86.bases.BinInstruction;
 import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.X86SizeHelper;
 
-public class Mov implements X86Instruction{
-
-    private final InstructionArg src;
-    private final InstructionArg dest;
-    private final Size size;
-
-    public Mov(InstructionArg dest, InstructionArg src, Size size){
-        this.src = src;
-        this.dest = dest;
-        this.size = size;
+public class Mov extends BinInstruction{
+    public Mov(final InstructionArg dest, final InstructionArg src, final Size size, final X86SizeHelper sizeHelper){
+        super("mov", dest, src, sizeHelper);
     }
 
-    public Mov(InstructionArg dest, InstructionArg src){
-        this(dest, src, Size.DWORD);
-    }
-
-    @Override
-    public String generate() {
-        return "mov " + InstructionArg.getSizeStr(size) + " " + dest.getValue(size) + ", " + src.getValue(size);
+    public Mov(final InstructionArg dest, final InstructionArg src, final X86SizeHelper sizeHelper){
+        super("mov", dest, src, sizeHelper);
     }
 }

@@ -1,4 +1,4 @@
-package cs444.codegen.x86_32bit;
+package cs444.codegen;
 
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import cs444.codegen.ICodeGenVisitor;
 import cs444.codegen.instructions.x86.Add;
 import cs444.codegen.instructions.x86.Call;
 import cs444.codegen.instructions.x86.Cmp;
@@ -33,12 +32,12 @@ import cs444.codegen.instructions.x86.Sar;
 import cs444.codegen.instructions.x86.Section;
 import cs444.codegen.instructions.x86.Section.SectionType;
 import cs444.codegen.instructions.x86.Shl;
-import cs444.codegen.instructions.x86.X86Instruction;
 import cs444.codegen.instructions.x86.Xor;
+import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.instructions.x86.factories.AddOpMaker;
 import cs444.codegen.instructions.x86.factories.AndOpMaker;
 import cs444.codegen.instructions.x86.factories.BinOpMaker;
-import cs444.codegen.instructions.x86.factories.BinUniOpMaker;
+import cs444.codegen.instructions.x86.factories.UniOpMaker;
 import cs444.codegen.instructions.x86.factories.CmpMaker;
 import cs444.codegen.instructions.x86.factories.IDivMaker;
 import cs444.codegen.instructions.x86.factories.IMulMaker;
@@ -57,11 +56,11 @@ import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.PointerRegister;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.SelectorIndexedTable;
-import cs444.codegen.x86.SizeHelper;
 import cs444.codegen.x86.StaticFieldInit;
-import cs444.codegen.x86.SubtypeIndexedTable;
 import cs444.codegen.x86.X86ObjectLayout;
+import cs444.codegen.x86.X86SizeHelper;
+import cs444.codegen.x86.X86SubtypeIndexedTable;
+import cs444.codegen.x86_32linux.Runtime;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -119,12 +118,13 @@ import cs444.types.PkgClassInfo;
 import cs444.types.PkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
-public class CodeGenVisitor implements ICodeGenVisitor {
+public class CodeGenVisitor{
     private static final String INIT_OBJECT_FUNC = "__init_object";
     public static final String NATIVE_NAME = "NATIVE";
 
-    private final SelectorIndexedTable selectorITable;
-    private final SubtypeIndexedTable subtypeITable;
+    //TODO remove x86 stuff from here.
+    private final SelectorIndexedTable<X86Instruction> selectorITable;
+    private final X86SubtypeIndexedTable subtypeITable;
     private final InstructionHolder<X86Instruction> instructions;
     private boolean hasEntry = false;
     private boolean getVal = true;
@@ -136,26 +136,24 @@ public class CodeGenVisitor implements ICodeGenVisitor {
     private APkgClassResolver currentFile;
     private boolean isSuper = false;
 
+    private final X86SizeHelper sizeHelper;
+
     private long getNewLblNum(){
         return nextLblnum++;
     }
 
-    public CodeGenVisitor(final SelectorIndexedTable sit, final SubtypeIndexedTable subIt) {
-        this.instructions = new InstructionPrinter<X86Instruction>();
-        this.selectorITable = sit;
-        this.subtypeITable = subIt;
-    }
-
-    public CodeGenVisitor(final SelectorIndexedTable sit, final SubtypeIndexedTable subIt, final InstructionHolder<X86Instruction> startInstructions) {
-        this(null, sit, subIt, startInstructions);
+    public CodeGenVisitor(final IPlatform<X86Instruction> platform) {
+        this(null, new InstructionPrinter<X86Instruction>(), platform);
     }
 
     public CodeGenVisitor(final APkgClassResolver resolver,
-            final SelectorIndexedTable sit, final SubtypeIndexedTable subIt, final InstructionHolder<X86Instruction> startInstructions) {
+            final InstructionHolder<X86Instruction> startInstructions, final IPlatform<X86Instruction> platform) {
+
         this.currentFile = resolver;
         this.instructions = startInstructions;
-        this.selectorITable = sit;
+        this.selectorITable = platform.getSelectorIndex();
         this.subtypeITable = subIt;
+        this.sizeHelper = platform.getSizeHelper();
     }
 
     public void genHeader(final APkgClassResolver resolver) {
@@ -180,14 +178,15 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR));
 
         for (final DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
-            final Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
+            final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
 
             final PointerRegister fieldAddr = new PointerRegister(Register.DATA, fieldDcl.getOffset());
             if(!fieldDcl.children.isEmpty()){
                 instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
                 // save pointer to object
                 instructions.add(new Push(Register.DATA));
-                fieldDcl.children.get(0).accept(new CodeGenVisitor(currentFile, selectorITable, subtypeITable, instructions));
+                final CodeGenVisitor visitor = new CodeGenVisitor(currentFile, selectorITable, subtypeITable, instructions, sizeHelper);
+                fieldDcl.children.get(0).accept(visitor);
                 instructions.add(new Comment("Pop the object address to edx"));
                 instructions.add(new Pop(Register.DATA));
                 instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, size));
@@ -204,7 +203,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }
 
         for (final DclSymbol fieldDcl : staticFields) {
-            final Size size = SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
+            final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
 
             final String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
             instructions.add(new Global(fieldLbl));
@@ -213,7 +212,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }
     }
 
-    @Override
     public void visit(final FieldAccessSymbol field) {
         final boolean wasGetVal = getVal;
         final boolean wasSuper = isSuper;
@@ -228,12 +226,10 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
     }
 
-    @Override
     public void visit(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) {
         for(final ISymbol child : aInterfaceOrClassSymbol.children) child.accept(this);
     }
 
-    @Override
     public void visit(final MethodSymbol method){
         final String methodName = APkgClassResolver.generateFullId(method);
 
@@ -265,7 +261,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         }
     }
 
-    @Override
     public void visit(final ConstructorSymbol constructor) {
         final String constrName = APkgClassResolver.generateFullId(constructor);
         methProlog(constructor, constrName);
@@ -297,7 +292,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment("End of method " + method.dclName));
     }
 
-    @Override
     public void visit(final CreationExpression creationExpression) {
         final APkgClassResolver typeDclNode = creationExpression.getType().getTypeDclNode();
 
@@ -307,7 +301,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Comment("Allocate " + bytes.getValue() + " bytes for " + typeDclNode.fullName));
             instructions.add(new Mov(Register.ACCUMULATOR, bytes));
 
-            Runtime.instance.malloc(bytes, instructions, SizeHelper.getBestZero(allocSize));
+            Runtime.instance.malloc(bytes, instructions, sizeHelper.getBestZero(allocSize));
 
             X86ObjectLayout.instance.initialize(typeDclNode, instructions);
 
@@ -333,11 +327,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Label(ok));
 
             if(lastSize != Size.LOW && lastSize != Size.HIGH)
-                instructions.add(new Shl(Register.ACCUMULATOR, SizeHelper.getPowerSizeImd(lastSize)));
+                instructions.add(new Shl(Register.ACCUMULATOR, X86SizeHelper.getPowerSizeImd(lastSize)));
 
             instructions.add(new Comment("Adding space for SIT, cast info, and length" + typeDclNode.fullName));
             //Int + object's sie
-            final long baseSize = X86ObjectLayout.objSize() + SizeHelper.getIntSize(Size.DWORD);
+            final long baseSize = X86ObjectLayout.objSize() + X86SizeHelper.getIntSize(Size.DWORD);
             final Immediate sizeI = new Immediate(String.valueOf(baseSize));
             instructions.add(new Add(Register.ACCUMULATOR, sizeI));
             instructions.add(new Comment("Allocate for array" + typeDclNode.fullName));
@@ -364,7 +358,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         for(final ISymbol child : children){
             child.accept(this);
-            instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
+            instructions.add(new Push(Register.ACCUMULATOR, X86SizeHelper.getPushSize(lastSize)));
             final Typeable typeable = (Typeable) child;
             final TypeSymbol ts = typeable.getType();
             types.add(ts.getTypeDclNode().fullName);
@@ -386,7 +380,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         //return value is the new object
         instructions.add(new Pop(Register.ACCUMULATOR));
 
-        final long mySize = cs.getStackSize() - SizeHelper.DEFAULT_STACK_SIZE;
+        final long mySize = cs.getStackSize() - sizeHelper.defaultStackSize;
         if(mySize != 0){
             final Immediate by = new Immediate(String.valueOf(mySize));
             instructions.add(new Add(Register.STACK, by));
@@ -395,7 +389,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Pop(Register.BASE));
     }
 
-    @Override
     public void visit(final ANonTerminal aNonTerminal) {
         final boolean isBlock = aNonTerminal.getName().equals(JoosNonTerminal.BLOCK);
         final boolean lastFunc = lastWasFunc;
@@ -413,7 +406,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         lastWasFunc = lastFunc;
     }
 
-    @Override
     public void visit(final WhileExprSymbol whileExprSymbol) {
         final long mynum = getNewLblNum();
         instructions.add(new Comment("while start " + mynum));
@@ -432,7 +424,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment("while end " + mynum));
     }
 
-    @Override
     public void visit(final ForExprSymbol forExprSymbol) {
         final long mynum = getNewLblNum();
         instructions.add(new Comment("for start " + mynum));
@@ -468,7 +459,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment("for end " + mynum));
     }
 
-    @Override
     public void visit(final IfExprSymbol ifExprSymbol) {
         final long myid = getNewLblNum();
         instructions.add(new Comment("if start" + myid));
@@ -491,7 +481,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment("if end" + myid));
     }
 
-    @Override
     public void visit(final ReturnExprSymbol retSymbol) {
         if(retSymbol.children.size() == 1) retSymbol.children.get(0).accept(this);
         //value is already in eax from the rule therefore we just need to ret
@@ -514,7 +503,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(instruction);
     }
 
-    @Override
     public void visit(final CastExpressionSymbol symbol) {
         final TypeSymbol type = symbol.getType();
 
@@ -533,12 +521,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Label(castExprEnd));
 
         }else{ // Primitive casting:
-            final Size curSize = SizeHelper.getSize(type.getTypeDclNode().realSize);
+            final Size curSize = X86SizeHelper.getSize(type.getTypeDclNode().realSize);
             genMov(curSize, Register.ACCUMULATOR, "cast to " + type.value, type);
         }
 
         //We will move to make the size default so that the default is always stored in the register
-        lastSize = SizeHelper.DEFAULT_STACK;
+        lastSize = sizeHelper.defaultStack;
     }
 
     private boolean isReferenceType(final String typeName) {
@@ -546,24 +534,20 @@ public class CodeGenVisitor implements ICodeGenVisitor {
                 && !JoosNonTerminal.otherPrimatives.contains(typeName);
     }
 
-    @Override
     public void visit(final NegOpExprSymbol op) {
         op.children.get(0).accept(this);
         instructions.add(new Neg(Register.ACCUMULATOR));
     }
 
-    @Override
     public void visit(final NotOpExprSymbol op) {
         op.children.get(0).accept(this);
         instructions.add(new Xor(Register.ACCUMULATOR, Immediate.TRUE));
     }
 
-    @Override
     public void visit(final MultiplyExprSymbol op) {
         binUniOpHelper(op, IMulMaker.maker, false);
     }
 
-    @Override
     public void visit(final AssignmentExprSymbol op) {
         final ISymbol leftHandSide = op.children.get(0);
         final ISymbol rightHandSide = op.children.get(1);
@@ -587,14 +571,12 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment("End Assignment"));
     }
 
-    @Override
     public void visit(final DivideExprSymbol op) {
         instructions.add(new Comment("START"));
         binUniOpHelper(op, IDivMaker.maker, true);
         instructions.add(new Comment("END"));
     }
 
-    @Override
     public void visit(final RemainderExprSymbol op) {
         binUniOpHelper(op, IDivMaker.maker, true);
         instructions.add(new Mov(Register.ACCUMULATOR, Register.DATA));
@@ -606,8 +588,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(firstType), isSuper);
         if(ms == null) ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(JoosNonTerminal.OBJECT), isSuper);
 
-        lastSize = SizeHelper.getPushSize(lastSize);
-        final int pop = SizeHelper.getIntSize(lastSize);
+        lastSize = X86SizeHelper.getPushSize(lastSize);
+        final int pop = X86SizeHelper.getIntSize(lastSize);
 
         instructions.add(new Push(Register.ACCUMULATOR, lastSize));
 
@@ -618,7 +600,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Add(Register.STACK, new Immediate(pop)));
     }
 
-    @Override
     public void visit(final AddExprSymbol op) {
         if(op.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.STRING)){
             final APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);
@@ -643,37 +624,32 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             instructions.add(new Call(arg));
 
             //The two arguments for string concat
-            instructions.add(new Add(Register.STACK, new Immediate(SizeHelper.DEFAULT_STACK_SIZE * 2)));
+            instructions.add(new Add(Register.STACK, new Immediate(sizeHelper.defaultStackSize * 2)));
             instructions.add(new Pop(Register.BASE));
             instructions.add(new Comment("end of string add"));
-            lastSize = SizeHelper.getSize(SizeHelper.DEFAULT_STACK_SIZE);
+            lastSize = X86SizeHelper.getSize(sizeHelper.defaultStackSize);
         }else{
             binOpHelper(op, AddOpMaker.maker);
         }
     }
 
-    @Override
     public void visit(final SubtractExprSymbol op) {
         binOpHelper(op, SubOpMaker.maker);
     }
 
-    @Override
     public void visit(final LtExprSymbol op) {
         compHelper(op, SetlMaker.maker);
     }
 
-    @Override
     public void visit(final EqExprSymbol op) {
         compHelper(op, SeteMaker.maker);
     }
 
-    @Override
     public void visit(final NeExprSymbol op) {
         compHelper(op, SetneMaker.maker);
 
     }
 
-    @Override
     public void visit(final AndExprSymbol op) {
         final String andEnd = "and" + getNewLblNum();
         op.children.get(0).accept(this);
@@ -683,7 +659,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Label(andEnd));
     }
 
-    @Override
     public void visit(final OrExprSymbol op) {
         final String orEnd = "or" + getNewLblNum();
         op.children.get(0).accept(this);
@@ -693,22 +668,18 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Label(orEnd));
     }
 
-    @Override
     public void visit(final EAndExprSymbol op) {
         binOpHelper(op, AndOpMaker.maker);
     }
 
-    @Override
     public void visit(final EOrExprSymbol op) {
         binOpHelper(op, OrOpMaker.maker);
     }
 
-    @Override
     public void visit(final LeExprSymbol op) {
         compHelper(op, SetleMaker.maker);
     }
 
-    @Override
     public void visit(final InstanceOfExprSymbol op) {
         op.getLeftOperand().accept(this);
         // eax should have reference to object
@@ -733,42 +704,36 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Je(new Immediate(ifNullLbl)));
     }
 
-    @Override
     public void visit(final IntegerLiteralSymbol intLiteral) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(intLiteral.getValue()))));
         lastSize = Size.DWORD;
     }
 
-    @Override
     public void visit(final NullSymbol nullSymbol) {
         instructions.add(new Mov(Register.ACCUMULATOR, Immediate.NULL));
         lastSize = Size.DWORD;
     }
 
-    @Override
     public void visit(final BooleanLiteralSymbol boolSymbol) {
         instructions.add(new Mov(Register.ACCUMULATOR, boolSymbol.boolValue ? Immediate.TRUE : Immediate.FALSE));
         lastSize = Size.WORD;
     }
 
-    @Override
     public void visit(final ThisSymbol thisSymbol) {
         instructions.add(new Comment("This pointer"));
         instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
     }
 
-    @Override
     public void visit(final SuperSymbol superSymbol) {
         instructions.add(new Comment("This (super) pointer"));
         instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
         isSuper = true;
     }
 
-    @Override
     public void visit(final StringLiteralSymbol stringSymbol) {
         instructions.add(new Comment("allocate the string at the same time (why not)"));
         //2 per char + dword for int + obj size
-        final long charsLen = stringSymbol.strValue.length() * 2 + SizeHelper.getIntSize(Size.DWORD) + X86ObjectLayout.objSize();
+        final long charsLen = stringSymbol.strValue.length() * 2 + X86SizeHelper.getIntSize(Size.DWORD) + X86ObjectLayout.objSize();
         final long length =  charsLen + stringSymbol.getType().getTypeDclNode().getStackSize();
 
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(length))));
@@ -781,7 +746,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         final char [] cs = stringSymbol.strValue.toCharArray();
         for(int i = 0; i < cs.length; i++){
-            final long place = 2 * i + X86ObjectLayout.objSize() + SizeHelper.getIntSize(Size.DWORD);
+            final long place = 2 * i + X86ObjectLayout.objSize() + X86SizeHelper.getIntSize(Size.DWORD);
             final InstructionArg to = new PointerRegister(Register.ACCUMULATOR, new Immediate(String.valueOf(place)));
             instructions.add(new Mov(to, new Immediate((cs[i])), Size.WORD));
         }
@@ -801,7 +766,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
             instructions.add(new Call(carg));
             instructions.add(new Pop(Register.ACCUMULATOR));
-            instructions.add(new Add(Register.STACK, new Immediate(SizeHelper.DEFAULT_STACK_SIZE)));
+            instructions.add(new Add(Register.STACK, new Immediate(sizeHelper.defaultStackSize)));
 
         } catch (final UndeclaredException e) {
             //Should never get here
@@ -811,13 +776,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment("End of New String!"));
     }
 
-    @Override
     public void visit(final CharacterLiteralSymbol characterSymbol) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(characterSymbol.getValue())));
         lastSize = Size.WORD;
     }
 
-    @Override
     public void visit(final ArrayAccessExprSymbol arrayAccess) {
         final boolean gettingValue = getVal;
         //always want the value of the array when accessing it's member.
@@ -848,11 +811,11 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         final long stackSize = arrayAccess.getType().getTypeDclNode().getStackSize();
         Size elementSize;
-        if(stackSize >= SizeHelper.DEFAULT_STACK_SIZE) elementSize = SizeHelper.DEFAULT_STACK;
-        else elementSize = SizeHelper.getSize(stackSize);
+        if(stackSize >= sizeHelper.defaultStackSize) elementSize = sizeHelper.defaultStack;
+        else elementSize = X86SizeHelper.getSize(stackSize);
 
-        instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(SizeHelper.getPushSize(elementSize))));
-        final long offset = SizeHelper.DEFAULT_STACK_SIZE * 2 + SizeHelper.getIntSize(Size.DWORD);
+        instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(X86SizeHelper.getPushSize(elementSize))));
+        final long offset = sizeHelper.defaultStackSize * 2 + X86SizeHelper.getIntSize(Size.DWORD);
         instructions.add(new Add(Register.ACCUMULATOR, new Immediate(offset)));
 
         if(gettingValue){
@@ -861,32 +824,28 @@ public class CodeGenVisitor implements ICodeGenVisitor {
             lastSize = elementSize;
         }else{
             instructions.add(new Add(Register.ACCUMULATOR, Register.BASE));
-            lastSize = SizeHelper.getSize(SizeHelper.DEFAULT_STACK_SIZE);
+            lastSize = X86SizeHelper.getSize(sizeHelper.defaultStackSize);
         }
         instructions.add(new Pop(Register.BASE));
     }
 
-    @Override
     public void visit(final DclSymbol dclSymbol) {
         if(dclSymbol.children.isEmpty()) new IntegerLiteralSymbol(0).accept(this);
         else dclSymbol.children.get(0).accept(this);
-        lastSize = SizeHelper.getSize(dclSymbol.getType().getTypeDclNode().stackSize);
+        lastSize = X86SizeHelper.getSize(dclSymbol.getType().getTypeDclNode().stackSize);
         instructions.add(new Push(Register.ACCUMULATOR, lastSize));
     }
 
-    @Override
     public void visit(final ByteLiteralSymbol byteLiteral) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(byteLiteral.getValue()))));
         lastSize = Size.WORD;
     }
 
-    @Override
     public void visit(final ShortLiteralSymbol shortLiteral) {
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(String.valueOf(shortLiteral.getValue()))));
         lastSize = Size.WORD;
     }
 
-    @Override
     public void printToFileAndEmpty(final PrintStream printer){
         instructions.passToNextClear(printer);
     }
@@ -913,7 +872,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Mov(Register.ACCUMULATOR, Register.DATA, Size.LOW));
     }
 
-    private void binUniOpHelper(final BinOpExpr bin, final BinUniOpMaker maker, final boolean sar){
+    private void binUniOpHelper(final BinOpExpr bin, final UniOpMaker maker, final boolean sar){
         instructions.add(new Push(Register.BASE));
 
         bin.children.get(0).accept(this);
@@ -943,7 +902,6 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Jne(new Immediate(lblTo)));
     }
 
-    @Override
     public void visit(final SimpleMethodInvoke invoke) {
         final MethodOrConstructorSymbol call = invoke.call;
         if(!call.isStatic()){
@@ -960,7 +918,7 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(new Comment("Pushing args"));
         for(final ISymbol arg : invoke.children){
             arg.accept(this);
-            instructions.add(new Push(Register.ACCUMULATOR, SizeHelper.getPushSize(lastSize)));
+            instructions.add(new Push(Register.ACCUMULATOR, X86SizeHelper.getPushSize(lastSize)));
         }
 
         if(!call.isStatic())instructions.add(new Push(Register.BASE));
@@ -998,16 +956,15 @@ public class CodeGenVisitor implements ICodeGenVisitor {
 
         //Note: it is not the line below since anything smaller would have been extended when loaded into return register.
         //lastSize = SizeHelper.getSize(invoke.getType().getTypeDclNode().stackSize);
-        lastSize = SizeHelper.DEFAULT_STACK;
+        lastSize = sizeHelper.defaultStack;
         instructions.add(new Comment("end invoke"));
     }
 
-    @Override
     public void visit(final SimpleNameSymbol name) {
         final DclSymbol dcl = name.dcl;
-        final Size size = SizeHelper.getSize(dcl.getType().getTypeDclNode().realSize);
+        final Size size = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().realSize);
         final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
-        lastSize = SizeHelper.getSize(dcl.getType().getTypeDclNode().stackSize);
+        lastSize = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().stackSize);
 
         if(dcl.isStatic() && dcl.dclInResolver != currentFile) instructions.add(new Extern(staticFieldLbl));
 
@@ -1033,10 +990,8 @@ public class CodeGenVisitor implements ICodeGenVisitor {
         instructions.add(instruction);
     }
 
-    @Override
     public void visit(final EmptyStatementSymbol empty){ }
 
-    @Override
     public void visit(final ISymbol other){
         throw new IllegalArgumentException(other.toString());
     }

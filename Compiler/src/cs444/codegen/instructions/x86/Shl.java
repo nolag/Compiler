@@ -1,20 +1,12 @@
 package cs444.codegen.instructions.x86;
 
+import cs444.codegen.instructions.x86.bases.BinInstruction;
 import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.X86SizeHelper;
 
-public class Shl implements X86Instruction{
-    private final Register reg;
-    private final InstructionArg arg;
-
-    public Shl(Register reg, InstructionArg arg){
-        this.reg = reg;
-        this.arg = arg;
-    }
-
-    @Override
-    public String generate() {
-        return "shl " + reg.get32() + ", " + arg.getValue(Size.DWORD);
+public class Shl extends BinInstruction{
+    public Shl(final Register reg, final InstructionArg arg, final X86SizeHelper sizeHelper){
+        super("shl", reg, arg, sizeHelper);
     }
 }

@@ -6,9 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import cs444.CompilerException;
-import cs444.codegen.ICodeGenVisitor;
-import cs444.codegen.x86.SizeHelper;
-import cs444.codegen.x86.X86ObjectLayout;
+import cs444.codegen.CodeGenVisitor;
+import cs444.codegen.IPlatform;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
@@ -46,12 +45,9 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         try{
             final TypeSymbol ts = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
             final NameSymbol name = new NameSymbol(JoosNonTerminal.THIS, Type.ID_SYMBOL);
-
             final String [] indexTypes = { JoosNonTerminal.INTEGER, JoosNonTerminal.CHAR, JoosNonTerminal.BYTE, JoosNonTerminal.SHORT };
 
-            for (final String indexType : indexTypes) {
-                addArrayConstructorFor(indexType, ts, name);
-            }
+            for (final String indexType : indexTypes) addArrayConstructorFor(indexType, ts, name, null);
         }catch (final Exception e){
             e.printStackTrace();
         }
@@ -65,7 +61,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         superClass = PkgClassInfo.instance.getSymbol(JoosNonTerminal.OBJECT);
     }
 
-    private void addArrayConstructorFor(final String indType, final TypeSymbol ts, final NameSymbol name)
+    private void addArrayConstructorFor(final String indType, final TypeSymbol ts, final NameSymbol name, final IPlatform<?> platform)
             throws IllegalModifierException, UnsupportedException, UndeclaredException {
 
         List<DclSymbol> dcls = new LinkedList<DclSymbol>();
@@ -83,7 +79,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         cs.dclInResolver = this;
         //set the size
         try{
-            cs.accept(new LocalDclLinker(fullName));
+            cs.accept(new LocalDclLinker(fullName, platform));
         }catch(final Exception e){
             //never should get here
             e.printStackTrace();
@@ -139,7 +135,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void linkLocalNamesToDcl() throws CompilerException { }
+    public void linkLocalNamesToDcl(final IPlatform<?> platform) throws CompilerException { }
 
     @Override
     public void analyzeReachability() throws CompilerException { }
@@ -163,7 +159,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void generateCode(final ICodeGenVisitor visitor) {
+    public void generateCode(final CodeGenVisitor visitor) {
         for(final ConstructorSymbol cs : constructors.values()) cs.accept(visitor);
     }
 
@@ -173,13 +169,13 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void computeFieldOffsets() {
-        fieldMap.get(JoosNonTerminal.LENGTH).setOffset(X86ObjectLayout.objSize());
+    public void computeFieldOffsets(final IPlatform<?> platform){
+        fieldMap.get(JoosNonTerminal.LENGTH).setOffset(platform.getObjectLayout().objSize());
     }
 
     @Override
-    public long getStackSize() {
-        return SizeHelper.DEFAULT_STACK_SIZE;
+    public long getStackSize(final IPlatform<?> platform) {
+        return platform.getSizeHelper().getDefaultStackSize();
     }
 
     @Override
@@ -193,8 +189,8 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void checkFields() throws CompilerException{
-        final LocalDclLinker linker = new LocalDclLinker(fullName, true);
+    public void checkFields(final IPlatform<?> platform) throws CompilerException{
+        final LocalDclLinker linker = new LocalDclLinker(fullName, true, platform);
         for(final DclSymbol dcl : getDcls()){
             dcl.accept(linker);
         }

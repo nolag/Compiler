@@ -1,4 +1,4 @@
-package cs444.codegen.x86_32bit;
+package cs444.codegen.x86_32linux;
 
 import cs444.codegen.IRuntime;
 import cs444.codegen.instructions.x86.Call;
@@ -11,14 +11,14 @@ import cs444.codegen.instructions.x86.Mov;
 import cs444.codegen.instructions.x86.Pop;
 import cs444.codegen.instructions.x86.Push;
 import cs444.codegen.instructions.x86.Sar;
-import cs444.codegen.instructions.x86.X86Instruction;
 import cs444.codegen.instructions.x86.Xor;
+import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.SizeHelper;
+import cs444.codegen.x86.X86SizeHelper;
 
 public class Runtime implements IRuntime<X86Instruction>{
     public static final String EXCEPTION_LBL = "__exception";
@@ -43,7 +43,7 @@ public class Runtime implements IRuntime<X86Instruction>{
         // backup regs used by malloc
         instructions.add(new Push(Register.BASE));
         if(bytes != Register.COUNTER)instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR));
-        instructions.add(new Sar(Register.COUNTER, SizeHelper.getPowerSizeImd(size)));
+        instructions.add(new Sar(Register.COUNTER, X86SizeHelper.getPowerSizeImd(size)));
         instructions.add(new Call(MALLOC));
         instructions.add(new Pop(Register.BASE));
 
@@ -56,7 +56,7 @@ public class Runtime implements IRuntime<X86Instruction>{
             instructions.add(new Xor(Register.DATA, Register.DATA));
             instructions.add(new Comment("Zeroing out the newly allocated values"));
             instructions.add(new Label(myLbl));
-            instructions.add(new Mov(SizeHelper.getZeroImd(size), Register.DATA));
+            instructions.add(new Mov(X86SizeHelper.getZeroImd(size), Register.DATA));
             instructions.add(new Loop(myLbl));
             instructions.add(new Comment("Done zeroing out the newly allocated values"));
         }

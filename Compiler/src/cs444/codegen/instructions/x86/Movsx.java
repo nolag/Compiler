@@ -1,24 +1,13 @@
 package cs444.codegen.instructions.x86;
 
+import cs444.codegen.instructions.x86.bases.BinInstruction;
 import cs444.codegen.x86.InstructionArg;
-import cs444.codegen.x86.Register;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Register;
+import cs444.codegen.x86.X86SizeHelper;
 
-public class Movsx implements X86Instruction{
-
-    public final Register dst;
-    public final InstructionArg src;
-    public final Size size;
-
-    //NOTE register register is legal, but I don't see why we would want it.
-    public Movsx(Register dst, InstructionArg src, Size size){
-        this.dst = dst;
-        this.src = src;
-        this.size = size;
-    }
-
-    @Override
-    public String generate() {
-        return "movsx " + dst.getValue(Size.DWORD) + ", " + InstructionArg.getSizeStr(size) + " " + src.getValue(size);
+public class Movsx extends BinInstruction{
+    public Movsx(final Register dst, final InstructionArg src, final Size size, final X86SizeHelper sizeHelper){
+        super("movsx", dst, src, sizeHelper, size);
     }
 }

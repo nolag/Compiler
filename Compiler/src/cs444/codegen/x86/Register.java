@@ -2,8 +2,8 @@ package cs444.codegen.x86;
 
 
 
-public class Register extends InstructionArg{
 
+public class Register extends InstructionArg{
     public static final Register ACCUMULATOR = new Register("a", 'x');
     public static final Register COUNTER = new Register("c", 'x');
     public static final Register DATA = new Register("d", 'x');
@@ -42,7 +42,7 @@ public class Register extends InstructionArg{
     }
 
     @Override
-    public String getValue(final Size size) {
+    public String getValue(final Size size, final X86SizeHelper sizeHelper) {
         switch(size){
         case LOW: return get8Low();
         case HIGH: return get8High();

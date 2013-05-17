@@ -9,7 +9,7 @@ import java.util.Stack;
 
 import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
-import cs444.codegen.x86.SizeHelper;
+import cs444.codegen.IPlatform;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
@@ -80,15 +80,18 @@ public class LocalDclLinker extends EmptyVisitor {
     boolean fromSuper = false;
     boolean superSaver = false;
 
-    public LocalDclLinker(final String enclosingClassName){
+    private final IPlatform<?> platform;
+
+    public LocalDclLinker(final String enclosingClassName, final IPlatform<?> platform){
         this.context = new ContextInfo(enclosingClassName);
 
         currentTypes.add(new ArrayDeque<Typeable>());
         useCurrentScopeForLookup.add(false);
+        this.platform = platform;
     }
 
-    public LocalDclLinker(final String enclosingClassName, final boolean isStatic){
-        this(enclosingClassName);
+    public LocalDclLinker(final String enclosingClassName, final boolean isStatic, final IPlatform<?> platform){
+        this(enclosingClassName, platform);
         pushNewScope(isStatic);
     }
 
@@ -98,7 +101,7 @@ public class LocalDclLinker extends EmptyVisitor {
         methodArgs = true;
         //Two from return value location and stack a third for this if it is not static
         final int where = methodSymbol.isStatic() ? 2 : 3;
-        argOffset = SizeHelper.DEFAULT_STACK_SIZE * where;
+        argOffset = platform.getSizeHelper().getDefaultStackSize() * where;
         pushNewScope(methodSymbol.isStatic());
         context.setCurrentMember(methodSymbol);
     }
@@ -107,9 +110,9 @@ public class LocalDclLinker extends EmptyVisitor {
     public void middle(final MethodOrConstructorSymbol methodOrConstructorSymbol) throws CompilerException {
         methodArgs = false;
         //Two from return value location and stack
-        methodOrConstructorSymbol.setStackSize(argOffset - SizeHelper.DEFAULT_STACK_SIZE * 2);
+        methodOrConstructorSymbol.setStackSize(argOffset - platform.getSizeHelper().getDefaultStackSize() * 2);
         for(final DclSymbol param : methodOrConstructorSymbol.params){
-            final long stack = param.getType().getTypeDclNode().stackSize;
+            final long stack = param.getType().getTypeDclNode().getStackSize(platform);
             argOffset -= stack;
             param.setOffset(argOffset);
         }
@@ -145,9 +148,9 @@ public class LocalDclLinker extends EmptyVisitor {
             if (currentScope.isDeclared(varName)) throw new DuplicateDeclarationException(varName, context.enclosingClassName);
             currentScope.add(varName, dclSymbol);
             if(methodArgs){
-                argOffset += dclSymbol.getType().getTypeDclNode().stackSize;
+                argOffset += dclSymbol.getType().getTypeDclNode().getStackSize(platform);
             }else{
-                offset -= dclSymbol.getType().getTypeDclNode().stackSize;
+                offset -= dclSymbol.getType().getTypeDclNode().getStackSize(platform);
                 dclSymbol.setOffset(offset);
             }
         }else{ // field?

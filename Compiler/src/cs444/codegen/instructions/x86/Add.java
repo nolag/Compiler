@@ -1,20 +1,12 @@
 package cs444.codegen.instructions.x86;
 
+import cs444.codegen.instructions.x86.bases.BinInstruction;
 import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.X86SizeHelper;
 
-public class Add implements X86Instruction {
-    public final Register addTo;
-    public final InstructionArg addWith;
-
-    public Add(Register addTo, InstructionArg addWith){
-        this.addTo = addTo;
-        this.addWith = addWith;
-    }
-
-    @Override
-    public String generate() {
-        return "add " + addTo.getValue(Size.DWORD) + ", " + addWith.getValue(Size.DWORD);
+public class Add extends BinInstruction{
+    public Add(final Register addTo, final InstructionArg addWith, final X86SizeHelper sizeHelper){
+        super("add", addTo, addWith, sizeHelper);
     }
 }

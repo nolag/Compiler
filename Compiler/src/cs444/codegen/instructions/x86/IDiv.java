@@ -1,17 +1,11 @@
 package cs444.codegen.instructions.x86;
 
+import cs444.codegen.instructions.x86.bases.UniInstruction;
 import cs444.codegen.x86.InstructionArg;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.X86SizeHelper;
 
-public class IDiv implements X86Instruction {
-    private final InstructionArg with;
-
-    public IDiv(InstructionArg with){
-        this.with = with;
-    }
-
-    @Override
-    public String generate() {
-        return "idiv " + with.getValue(Size.DWORD);
+public class IDiv extends UniInstruction{
+    public IDiv(final InstructionArg arg1, final X86SizeHelper sizeHelper){
+        super("idv", arg1, sizeHelper);
     }
 }

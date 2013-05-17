@@ -1,15 +1,16 @@
 package cs444.codegen.instructions.x86;
 
-import cs444.codegen.x86.InstructionArg;
+import cs444.codegen.instructions.x86.bases.X86Instruction;
+import cs444.codegen.x86.Immediate;
 
 public class Extern implements X86Instruction {
     private final String lbl;
 
-    public Extern(String lbl){
+    public Extern(final String lbl){
         this.lbl = "extern " + lbl;
     }
 
-    public Extern(InstructionArg what){
+    public Extern(final Immediate what){
         this(what.getValue());
     }
 

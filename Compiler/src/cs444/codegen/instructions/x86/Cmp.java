@@ -1,19 +1,16 @@
 package cs444.codegen.instructions.x86;
 
+import cs444.codegen.instructions.x86.bases.BinInstruction;
 import cs444.codegen.x86.InstructionArg;
+import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.X86SizeHelper;
 
-public class Cmp implements X86Instruction{
-    private final InstructionArg arg1;
-    private final InstructionArg arg2;
-
-    public Cmp(InstructionArg arg1, InstructionArg arg2){
-        this.arg1 = arg1;
-        this.arg2 = arg2;
+public class Cmp extends BinInstruction{
+    public Cmp(final InstructionArg arg1, final InstructionArg arg2, final X86SizeHelper sizeHelper){
+        super("cmp", arg1, arg2, sizeHelper);
     }
 
-    @Override
-    public String generate() {
-        return "cmp " + arg1.getValue() + ", " + arg2.getValue();
+    public Cmp(final InstructionArg arg1, final InstructionArg arg2, final X86SizeHelper sizeHelper, final Size size){
+        super("cmp", arg1, arg2, sizeHelper, size);
     }
-
 }

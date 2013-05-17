@@ -1,6 +1,5 @@
 package cs444.codegen.x86;
 
-
 public abstract class InstructionArg {
     public enum Size { LOW, HIGH, WORD, DWORD, QWORD };
 
@@ -20,9 +19,9 @@ public abstract class InstructionArg {
         return null;
     }
 
-    public abstract String getValue(Size size);
+    public abstract String getValue(final Size size, final X86SizeHelper sizeHelper);
 
-    public String getValue(){
-        return getValue(SizeHelper.DEFAULT_STACK);
+    public final String getValue(final X86SizeHelper sizeHelper){
+        return getValue(sizeHelper.defaultStack, sizeHelper);
     }
 }

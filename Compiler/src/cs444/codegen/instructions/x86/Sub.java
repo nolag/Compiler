@@ -1,19 +1,11 @@
 package cs444.codegen.instructions.x86;
 
+import cs444.codegen.instructions.x86.bases.BinInstruction;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.X86SizeHelper;
 
-public class Sub implements X86Instruction {
-    public final Register minuend;
-    public final Register subtrahend;
-
-    public Sub(Register minuend, Register subtrahend){
-        this.minuend = minuend;
-        this.subtrahend = subtrahend;
-    }
-
-    @Override
-    public String generate() {
-        return "sub " + minuend.getValue(Size.DWORD) + ", " + subtrahend.getValue(Size.DWORD);
+public class Sub extends BinInstruction {
+    public Sub(final Register minuend, final Register subtrahend, final X86SizeHelper sizeHelper){
+        super("sub", minuend, subtrahend, sizeHelper);
     }
 }

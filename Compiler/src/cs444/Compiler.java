@@ -11,10 +11,13 @@ import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
-import cs444.codegen.x86.SelectorIndexedTable;
+import cs444.codegen.CodeGenVisitor;
+import cs444.codegen.IPlatform;
+import cs444.codegen.SelectorIndexedTable;
+import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86.StaticFieldInit;
-import cs444.codegen.x86.SubtypeIndexedTable;
-import cs444.codegen.x86_32bit.CodeGenVisitor;
+import cs444.codegen.x86.X86SubtypeIndexedTable;
+import cs444.codegen.x86_32linux.X86_32LinuxPlatform;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
@@ -123,14 +126,17 @@ public class Compiler {
 
     private static void generateCode(final List<APkgClassResolver> resolvers, final boolean outputFile) throws IOException{
         PrintStream printer;
-
-        final SelectorIndexedTable sit = SelectorIndexedTable.generateSIT(resolvers, outputFile, OUTPUT_DIRECTORY);
-        final SubtypeIndexedTable subIt = SubtypeIndexedTable.generateTable(resolvers, outputFile, OUTPUT_DIRECTORY);
+        //TODO this should be all that needs changing.
+        final IPlatform<?> platform = new X86_32LinuxPlatform();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SelectorIndexedTable<?> sit = platform.getSelectorIndex();
+        final X86SubtypeIndexedTable subIt = X86SubtypeIndexedTable.generateTable(resolvers, outputFile, OUTPUT_DIRECTORY);
 
         for (final APkgClassResolver resolver : resolvers) resolver.computeFieldOffsets();
 
         StaticFieldInit.generateCode(resolvers, sit, subIt, outputFile, OUTPUT_DIRECTORY);
-        final CodeGenVisitor codeGen = new CodeGenVisitor(sit, subIt);
+
+        final CodeGenVisitor codeGen = new CodeGenVisitor(sit, subIt, sizeHelper);
         for(final APkgClassResolver resolver : resolvers){
             if(!resolver.shouldGenCode()) continue;
             codeGen.genLayoutForStaticFields(resolver.getUninheritedStaticFields());

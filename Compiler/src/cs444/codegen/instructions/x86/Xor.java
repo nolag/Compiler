@@ -1,18 +1,11 @@
 package cs444.codegen.instructions.x86;
 
+import cs444.codegen.instructions.x86.bases.BinInstruction;
 import cs444.codegen.x86.InstructionArg;
+import cs444.codegen.x86.X86SizeHelper;
 
-public class Xor implements X86Instruction {
-    public final InstructionArg arg1;
-    public final InstructionArg arg2;
-
-    public Xor(InstructionArg arg1, InstructionArg arg2){
-        this.arg1 = arg1;
-        this.arg2 = arg2;
-    }
-
-    @Override
-    public String generate() {
-        return "xor " + arg1.getValue() + ", " + arg2.getValue();
+public class Xor extends BinInstruction {
+    public Xor(final InstructionArg arg1, final InstructionArg arg2, final X86SizeHelper sizeHelper){
+        super("xor", arg1, arg2, sizeHelper);
     }
 }

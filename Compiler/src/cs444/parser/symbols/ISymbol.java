@@ -2,7 +2,7 @@ package cs444.parser.symbols;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
-import cs444.codegen.ICodeGenVisitor;
+import cs444.codegen.CodeGenVisitor;
 
 
 public interface ISymbol {
@@ -32,5 +32,5 @@ public interface ISymbol {
      */
     public void accept(final ISymbolVisitor visitor) throws CompilerException;
 
-    public void accept(final ICodeGenVisitor visitor);
+    public void accept(final CodeGenVisitor visitor);
 }

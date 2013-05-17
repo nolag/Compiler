@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Set;
 
 import cs444.CompilerException;
-import cs444.codegen.ICodeGenVisitor;
-import cs444.codegen.x86.SelectorIndexedTable;
-import cs444.codegen.x86.SizeHelper;
-import cs444.codegen.x86.SubtypeIndexedTable;
+import cs444.codegen.CodeGenVisitor;
+import cs444.codegen.IPlatform;
+import cs444.codegen.SelectorIndexedTable;
+import cs444.codegen.SubtypeIndexedTable;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol;
@@ -60,12 +60,10 @@ public abstract class APkgClassResolver {
     private final Map<Integer, DclSymbol> revorder = new HashMap<Integer, DclSymbol>();
     private int onField = 0;
 
-    public final long stackSize;
-    public final long realSize;
-
     public static enum Castable { UP_CAST, DOWN_CAST, NOT_CASTABLE };
 
     protected APkgClassResolver(final String name, final String pkg, final boolean isFinal){
+
         this.name = name;
         this.pkg = pkg;
         if(pkg == null) fullName = name;
@@ -76,8 +74,6 @@ public abstract class APkgClassResolver {
 
         final Set<String> alsoAssignsTo = JoosNonTerminal.defaultAssignables.get(name);
         if(alsoAssignsTo != null) assignableTo.addAll(alsoAssignsTo);
-        this.realSize = SizeHelper.getByteSizeOfType(name);
-        this.stackSize = realSize < SizeHelper.MIN_STACK_SHIFT ? SizeHelper.MIN_STACK_SHIFT : realSize;
     }
 
 
@@ -336,29 +332,28 @@ public abstract class APkgClassResolver {
 
     protected abstract Iterable<DclSymbol> getDcls();
 
-    public abstract void checkFields() throws CompilerException;
+    public abstract void checkFields(final IPlatform<?> platform) throws CompilerException;
 
     public abstract APkgClassResolver findClass(String name) throws UndeclaredException;
 
-    public abstract void linkLocalNamesToDcl() throws CompilerException;
+    public abstract void linkLocalNamesToDcl(final IPlatform<?> platform) throws CompilerException;
 
     public abstract void analyzeReachability() throws CompilerException;
 
-    public abstract void generateCode(ICodeGenVisitor visitor);
+    public abstract void generateCode(CodeGenVisitor visitor);
 
     public abstract boolean shouldGenCode();
 
     public abstract void reduceToConstantExprs() throws CompilerException;
 
-    public abstract void computeFieldOffsets();
-
-    public abstract long getStackSize();
+    public abstract void computeFieldOffsets(IPlatform<?> platform);
+    public abstract long getStackSize(IPlatform<?> platform);
 
     public abstract Iterable<DclSymbol> getUninheritedStaticFields();
 
     public abstract Iterable<DclSymbol> getUninheritedNonStaticFields();
 
-    public void addToSelectorIndexedTable(final SelectorIndexedTable sit) {
+    public void addToSelectorIndexedTable(final SelectorIndexedTable<?> sit) {
         final String classSITLbl = this.generateSIT();
 
         if(!this.isAbstract()){
@@ -381,7 +376,7 @@ public abstract class APkgClassResolver {
         }
     }
 
-    public void addToSubtypeIndexedTable(final SubtypeIndexedTable subtit) {
+    public void addToSubtypeIndexedTable(final SubtypeIndexedTable<?> subtit) {
         final String subtypeITLbl = generateSubtypeIT();
 
         if (!this.isAbstract()){

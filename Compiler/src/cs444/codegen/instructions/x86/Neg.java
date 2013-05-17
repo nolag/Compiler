@@ -1,5 +1,6 @@
 package cs444.codegen.instructions.x86;
 
+import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.x86.Register;
 
 public class Neg implements X86Instruction{

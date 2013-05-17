@@ -1,12 +1,7 @@
 package cs444.codegen.x86;
 
 
-
 public class PointerRegister extends InstructionArg{
-    public static final PointerRegister THIS = new PointerRegister(Register.FRAME, SizeHelper.DEFAULT_STACK_SIZE * 2);
-    public static final PointerRegister ZEROING_REGISTER_8 = new PointerRegister(Register.ACCUMULATOR, Immediate.C_TIMES_8);
-    public static final PointerRegister ZEROING_REGISTER_4 = new PointerRegister(Register.ACCUMULATOR, Immediate.C_TIMES_4);
-    public static final PointerRegister ZEROING_REGISTER_2 = new PointerRegister(Register.ACCUMULATOR, Immediate.C_TIMES_2);
     public static final PointerRegister ZEROING_REGISTER_1 = new PointerRegister(Register.ACCUMULATOR, Register.COUNTER);
 
     public final InstructionArg arg;
@@ -32,9 +27,9 @@ public class PointerRegister extends InstructionArg{
     }
 
     @Override
-    public String getValue(final Size size) {
-        if(offset == 0 && offsetArg == null) return "[" + arg.getValue() + "]";
-        if(null != offsetArg) return "[" + arg.getValue() + " + " + offsetArg.getValue() + "]";
-        return "[" + arg.getValue() + " + " + offset + "]";
+    public String getValue(final Size size, final X86SizeHelper sizeHelper) {
+        if(offset == 0 && offsetArg == null) return "[" + arg.getValue(sizeHelper) + "]";
+        if(null != offsetArg) return "[" + arg.getValue(sizeHelper) + " + " + offsetArg.getValue(sizeHelper) + "]";
+        return "[" + arg.getValue(sizeHelper) + " + " + offset + "]";
     }
 }
