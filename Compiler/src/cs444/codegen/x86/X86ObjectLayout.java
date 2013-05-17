@@ -38,9 +38,8 @@ public class X86ObjectLayout implements ObjectLayout<X86Instruction> {
     }
 
     @Override
-    public void subtypeCheckCode(final TypeSymbol subType, final InstructionHolder<X86Instruction> instructions,
-            final IPlatform<X86Instruction> platform) {
-
+    public void subtypeCheckCode(final TypeSymbol subType, final IPlatform<X86Instruction> platform) {
+        final InstructionHolder<X86Instruction> instructions = platform.getInstructionHolder();
         instructions.add(new Comment("Subtype lookup"));
         instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, SUBTYPE_OFFSET), sizeHelper));
         final long offset = platform.getSubtypeTable().getOffset(subType.getTypeDclNode().fullName);

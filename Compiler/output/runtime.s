@@ -3,6 +3,7 @@ section .text
 ; Allocates eax bytes of memory. Pointer to allocated memory returned in eax.
     global __malloc
 __malloc:
+	push ebx
     push eax
     mov eax, 45  ; sys_brk system call
     mov ebx, 0   ; 0 bytes - query current brk
@@ -16,9 +17,50 @@ __malloc:
     cmp eax, 0   ; on error, exit with code 22
     jne ok
     mov eax, 22
+    pop ebx
     call __debexit
 ok:
     mov eax, ebx
+    pop ebx
+    ret
+    
+    global __malloc_clear
+__malloc_clear:
+    push ebx
+    mov eax, ecx
+    mov eax, 45  ; sys_brk system call
+    mov ebx, 0   ; 0 bytes - query current brk
+    int 0x80
+    mov ebx, ecx
+    push eax
+    add ebx, eax ; move brk ahead by number of bytes requested
+    mov eax, 45  ; sys_brk system call
+    int 0x80
+    pop ebx
+    cmp eax, 0   ; on error, exit with code 22
+    jne ok
+    mov eax, 22
+    pop ebx
+    call __debexit
+ok:
+    mov eax, ebx
+    ;clear
+    xor edx, edx
+    xor edi, edi
+    sar ecx, 2
+    adc edi, 0
+    shl edi, 1
+    sub ecx, 1
+    ;edi holds 2 or 0 
+    ;This is the last byte, or a repeate of the other
+    add eax, edi
+    mov [eax + ecx * 4], edx
+    sub eax, edi
+__zero_loop:
+    mov [eax + ecx * 4], edx
+    loop __zero_loop
+    ;end clear
+    pop ebx
     ret
 
 ; Debugging exit: ends the process, returning the value of

@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.util.List;
 
 import cs444.codegen.CodeGenVisitor;
+import cs444.codegen.IPlatform;
 import cs444.codegen.instructions.x86.Comment;
 import cs444.codegen.instructions.x86.Extern;
 import cs444.codegen.instructions.x86.Global;
@@ -16,9 +17,8 @@ import cs444.codegen.instructions.x86.Section;
 import cs444.codegen.instructions.x86.Section.SectionType;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.peephole.InstructionHolder;
-import cs444.codegen.peephole.InstructionPrinter;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86_32linux.Runtime;
+import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassResolver;
@@ -27,13 +27,14 @@ public class StaticFieldInit {
     public static final String STATIC_FIELD_INIT_LBL = "__init_static_fields";
     private static final String STATIC_FIELD_INIT_FILE = "_static_init.s";
     private final InstructionHolder<X86Instruction> instructions;
+    private final X86Platform platform;
 
-    public static void generateCode(final List<APkgClassResolver> resolvers,
-            final X86Platform platform, final boolean outputFile, final String directory) throws IOException {
-        final StaticFieldInit fInit = new StaticFieldInit();
+    public static void generateCode(final List<APkgClassResolver> resolvers, final X86Platform platform,
+            final boolean outputFile, final String directory) throws IOException{
 
-        fInit.genCode(resolvers, platform);
+        final StaticFieldInit fInit = new StaticFieldInit(platform);
 
+        fInit.genCode(resolvers);
         if(outputFile){
             final File file = new File(directory + STATIC_FIELD_INIT_FILE);
             file.createNewFile();
@@ -43,15 +44,16 @@ public class StaticFieldInit {
         }
     }
 
-    public StaticFieldInit(){
-        instructions = new InstructionPrinter<X86Instruction>();
+    private StaticFieldInit(final IPlatform<X86Instruction> platform){
+        instructions = platform.getInstructionHolder();
+        this.platform = (X86Platform) platform;
     }
 
     private void print(final PrintStream printer) {
         instructions.passToNext(printer);
     }
 
-    private void genCode(final List<APkgClassResolver> resolvers, final X86Platform platform) {
+    private void genCode(final List<APkgClassResolver> resolvers) {
         instructions.add(new Section(SectionType.TEXT));
         instructions.add(new Global(STATIC_FIELD_INIT_LBL));
         Runtime.instance.externAll(instructions);
@@ -63,8 +65,7 @@ public class StaticFieldInit {
             if (!resolver.shouldGenCode()) continue;
             for (final DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
                 final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
-                //Note this changed from realsize, but it should still work
-                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getStackSize(platform));
+                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
                 final PointerRegister toAddr = new PointerRegister(new Immediate(fieldNameLbl));
 
                 instructions.add(new Extern(fieldNameLbl));
@@ -79,13 +80,12 @@ public class StaticFieldInit {
 
             for (final DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
                 final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
-              //Note this changed from realsize, but it should still work
-                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getStackSize(platform));
+                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
                 final PointerRegister toAddr = new PointerRegister(new Immediate(fieldNameLbl));
 
                 if(!fieldDcl.children.isEmpty()){
                     instructions.add(new Comment("Initializing static field " + fieldNameLbl + "."));
-                    fieldDcl.children.get(0).accept(new CodeGenVisitor(resolver, instructions, platform));
+                    fieldDcl.children.get(0).accept(new CodeGenVisitor(resolver, platform));
                     instructions.add(new Mov(toAddr, Register.ACCUMULATOR, size, platform.getSizeHelper()));
                 }
             }

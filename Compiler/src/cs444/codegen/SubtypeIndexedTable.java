@@ -10,8 +10,10 @@ import cs444.types.APkgClassResolver;
 public abstract class SubtypeIndexedTable <T extends Instruction> {
     private final IndexedTableData<T> table;
 
-    protected SubtypeIndexedTable(final IndexedTableData<T> table){
+    protected SubtypeIndexedTable(final IndexedTableData<T> table, final List<APkgClassResolver> resolvers,
+            final boolean outputFile, final String directory) throws IOException{
         this.table = table;
+        generateTable(resolvers, outputFile, directory);
     }
 
     public Map<String, String> addSubtype(final String fullName) {
@@ -30,8 +32,7 @@ public abstract class SubtypeIndexedTable <T extends Instruction> {
         return table.getOffset(superType);
     }
 
-    public void generateTable(
-            final List<APkgClassResolver> resolvers, final boolean outputFile,
+    public void generateTable(final List<APkgClassResolver> resolvers, final boolean outputFile,
             final String directory) throws IOException {
 
 

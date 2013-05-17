@@ -6,4 +6,10 @@ import cs444.codegen.instructions.x86.bases.X86Instruction;
 public interface X86Platform extends IPlatform<X86Instruction>{
     @Override
     public X86SizeHelper getSizeHelper();
+
+    @Override
+    public X86ObjectLayout getObjectLayout();
+
+   @Override
+   public X86SelectorIndexedTable getSelectorIndex();
 }
