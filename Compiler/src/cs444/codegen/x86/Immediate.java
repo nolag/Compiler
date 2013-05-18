@@ -1,6 +1,9 @@
 package cs444.codegen.x86;
 
-import cs444.codegen.IPlatform;
+import java.util.HashMap;
+import java.util.Map;
+
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 
 
@@ -8,6 +11,8 @@ import cs444.codegen.instructions.x86.bases.X86Instruction;
 
 public class Immediate extends InstructionArg{
     private final String value;
+
+    public static Map<SizeHelper<X86Instruction>, Immediate> stackPowers = new HashMap<SizeHelper<X86Instruction>, Immediate>();
 
     public static final Immediate ONE = new Immediate("1");
     public static final Immediate ZERO = new Immediate("0");
@@ -67,8 +72,13 @@ public class Immediate extends InstructionArg{
         return value;
     }
 
-    public final Immediate getStackSizePower(final IPlatform<X86Instruction> platform){
-        return new Immediate(platform.getSizeHelper().getDefaultStackPower());
+    public final Immediate getStackSizePower(final SizeHelper<X86Instruction> sizeHelper){
+        Immediate immediate = stackPowers.get(sizeHelper);
+        if(immediate == null){
+            immediate = new Immediate(sizeHelper.getDefaultStackPower());
+            stackPowers.put(sizeHelper, immediate);
+        }
+        return immediate;
     }
 
     public final String getValue(){

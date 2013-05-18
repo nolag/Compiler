@@ -179,6 +179,11 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
+    public long getRealSize(final IPlatform<?> platform) {
+        return platform.getSizeHelper().getDefaultStackSize();
+    }
+
+    @Override
     public Iterable<DclSymbol> getUninheritedStaticFields() {
         return Collections.emptySet();
     }

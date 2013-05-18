@@ -1,8 +1,11 @@
 package cs444.codegen.x86;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class PointerRegister extends InstructionArg{
-    public static final PointerRegister ZEROING_REGISTER_1 = new PointerRegister(Register.ACCUMULATOR, Register.COUNTER);
+    public static final Map<X86SizeHelper, PointerRegister> thisPointers = new HashMap<X86SizeHelper, PointerRegister>();
 
     public final InstructionArg arg;
     public final InstructionArg offsetArg;
@@ -24,6 +27,15 @@ public class PointerRegister extends InstructionArg{
 
     public PointerRegister(final InstructionArg arg){
         this(arg, null, 0);
+    }
+
+    public static PointerRegister getThisPointer(final X86SizeHelper sizeHelper){
+        PointerRegister pr = thisPointers.get(sizeHelper);
+        if(pr == null){
+            pr = new PointerRegister(Register.FRAME, sizeHelper.getDefaultStackSize() * 2);
+            thisPointers.put(sizeHelper, pr);
+        }
+        return pr;
     }
 
     @Override

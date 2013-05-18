@@ -65,7 +65,7 @@ public class StaticFieldInit {
             if (!resolver.shouldGenCode()) continue;
             for (final DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
                 final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
-                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
+                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(platform));
                 final PointerRegister toAddr = new PointerRegister(new Immediate(fieldNameLbl));
 
                 instructions.add(new Extern(fieldNameLbl));
@@ -80,7 +80,7 @@ public class StaticFieldInit {
 
             for (final DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
                 final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
-                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
+                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(platform));
                 final PointerRegister toAddr = new PointerRegister(new Immediate(fieldNameLbl));
 
                 if(!fieldDcl.children.isEmpty()){

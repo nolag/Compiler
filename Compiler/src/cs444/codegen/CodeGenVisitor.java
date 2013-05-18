@@ -173,7 +173,7 @@ public class CodeGenVisitor{
         instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR, sizeHelper));
 
         for (final DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
-            final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
+            final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(platform));
 
             final PointerRegister fieldAddr = new PointerRegister(Register.DATA, fieldDcl.getOffset());
             if(!fieldDcl.children.isEmpty()){
@@ -198,7 +198,7 @@ public class CodeGenVisitor{
         }
 
         for (final DclSymbol fieldDcl : staticFields) {
-            final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().realSize);
+            final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(platform));
 
             final String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
             instructions.add(new Global(fieldLbl));
@@ -260,7 +260,7 @@ public class CodeGenVisitor{
         final String constrName = APkgClassResolver.generateFullId(constructor);
         methProlog(constructor, constrName);
 
-        instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS));
+        instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.getThisPointer(sizeHelper), sizeHelper));
 
         instructions.add(new Call(new Immediate(INIT_OBJECT_FUNC), sizeHelper));
 
@@ -516,7 +516,7 @@ public class CodeGenVisitor{
             instructions.add(new Label(castExprEnd));
 
         }else{ // Primitive casting:
-            final Size curSize = X86SizeHelper.getSize(type.getTypeDclNode().realSize);
+            final Size curSize = X86SizeHelper.getSize(type.getTypeDclNode().getRealSize(platform));
             genMov(curSize, Register.ACCUMULATOR, "cast to " + type.value, type);
         }
 
@@ -716,12 +716,12 @@ public class CodeGenVisitor{
 
     public void visit(final ThisSymbol thisSymbol) {
         instructions.add(new Comment("This pointer"));
-        instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS, sizeHelper));
+        instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.getThisPointer(sizeHelper), sizeHelper));
     }
 
     public void visit(final SuperSymbol superSymbol) {
         instructions.add(new Comment("This (super) pointer"));
-        instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.THIS, sizeHelper));
+        instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.getThisPointer(sizeHelper), sizeHelper));
         isSuper = true;
     }
 
@@ -958,7 +958,7 @@ public class CodeGenVisitor{
 
     public void visit(final SimpleNameSymbol name) {
         final DclSymbol dcl = name.dcl;
-        final Size size = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().realSize);
+        final Size size = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(platform));
         final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
         lastSize = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getStackSize(platform));
 
