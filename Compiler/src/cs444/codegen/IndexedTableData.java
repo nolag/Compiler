@@ -62,7 +62,7 @@ public abstract class IndexedTableData<T extends Instruction> {
         final File file = new File(filePath);
         file.createNewFile();
         final PrintStream printer = new PrintStream(file);
-        instructions.passToNext(printer);
+        instructions.flush(printer);
         printer.close();
     }
 }

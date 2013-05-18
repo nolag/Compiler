@@ -482,7 +482,7 @@ public class PkgClassResolver extends APkgClassResolver {
 
     @Override
     public long getStackSize(final SizeHelper<?> sizeHelper) {
-        if(start != null)return start.getObjectSize();
+        if(start != null)return sizeHelper.getDefaultStackSize();
         return getRefStackSize(sizeHelper);
     }
 

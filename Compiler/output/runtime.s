@@ -38,11 +38,11 @@ __malloc_clear:
     int 0x80
     pop ebx
     cmp eax, 0   ; on error, exit with code 22
-    jne ok
+    jne cok
     mov eax, 22
     pop ebx
     call __debexit
-ok:
+cok:
     mov eax, ebx
     pop ebx
     ret

@@ -10,12 +10,7 @@ public class InstructionPrinter<T extends Instruction> implements InstructionHol
     final List<T> instructions = new LinkedList<T>();
 
     @Override
-    public void passToNext(final PrintStream printer) {
-        for(final T instruction : instructions) printer.println(instruction.generate());
-    }
-
-    @Override
-    public void passToNextClear(final PrintStream printer) {
+    public void flush(final PrintStream printer) {
         for(final T instruction : instructions) printer.println(instruction.generate());
         instructions.clear();
     }

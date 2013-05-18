@@ -33,6 +33,7 @@ public class Runtime implements IRuntime<X86Instruction>{
     @Override
     public void externAll(final InstructionHolder<X86Instruction> instructions) {
         instructions.add(new Extern(MALLOC));
+        instructions.add(new Extern(MALLOC_CLEAR));
         instructions.add(new Extern(EXCEPTION));
     }
 

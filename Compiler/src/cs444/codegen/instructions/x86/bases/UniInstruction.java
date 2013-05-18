@@ -23,6 +23,6 @@ public abstract class UniInstruction implements X86Instruction{
 
     @Override
     public final String generate() {
-        return "dd " + data.getValue(size, sizeHelper);
+        return what + " " + data.getValue(size, sizeHelper);
     }
 }

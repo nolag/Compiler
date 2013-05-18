@@ -52,7 +52,7 @@ public class StaticFieldInit {
     }
 
     private void print(final PrintStream printer) {
-        instructions.passToNext(printer);
+        instructions.flush(printer);
     }
 
     private void genCode(final List<APkgClassResolver> resolvers) {

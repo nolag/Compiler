@@ -842,7 +842,7 @@ public class CodeGenVisitor{
     }
 
     public void printToFileAndEmpty(final PrintStream printer){
-        instructions.passToNextClear(printer);
+        instructions.flush(printer);
     }
 
     private void binOpHelper(final BinOpExpr bin, final BinOpMaker maker){
