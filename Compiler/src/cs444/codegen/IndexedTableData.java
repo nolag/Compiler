@@ -53,7 +53,7 @@ public abstract class IndexedTableData<T extends Instruction> {
     }
 
     public final long getOffset(final String rowName) {
-        return this.offset.get(rowName);
+        return offset.get(rowName);
     }
 
     public abstract void genCode();

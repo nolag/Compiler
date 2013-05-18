@@ -10,6 +10,7 @@ import java.util.Stack;
 import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
 import cs444.codegen.IPlatform;
+import cs444.codegen.SizeHelper;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
@@ -81,6 +82,7 @@ public class LocalDclLinker extends EmptyVisitor {
     boolean superSaver = false;
 
     private final IPlatform<?> platform;
+    private final SizeHelper<?> sizeHelper;
 
     public LocalDclLinker(final String enclosingClassName, final IPlatform<?> platform){
         this.context = new ContextInfo(enclosingClassName);
@@ -88,6 +90,7 @@ public class LocalDclLinker extends EmptyVisitor {
         currentTypes.add(new ArrayDeque<Typeable>());
         useCurrentScopeForLookup.add(false);
         this.platform = platform;
+        sizeHelper = platform.getSizeHelper();
     }
 
     public LocalDclLinker(final String enclosingClassName, final boolean isStatic, final IPlatform<?> platform){
@@ -112,7 +115,7 @@ public class LocalDclLinker extends EmptyVisitor {
         //Two from return value location and stack
         methodOrConstructorSymbol.setStackSize(argOffset - platform.getSizeHelper().getDefaultStackSize() * 2);
         for(final DclSymbol param : methodOrConstructorSymbol.params){
-            final long stack = param.getType().getTypeDclNode().getStackSize(platform);
+            final long stack = param.getType().getTypeDclNode().getStackSize(sizeHelper);
             argOffset -= stack;
             param.setOffset(argOffset);
         }
@@ -148,9 +151,9 @@ public class LocalDclLinker extends EmptyVisitor {
             if (currentScope.isDeclared(varName)) throw new DuplicateDeclarationException(varName, context.enclosingClassName);
             currentScope.add(varName, dclSymbol);
             if(methodArgs){
-                argOffset += dclSymbol.getType().getTypeDclNode().getStackSize(platform);
+                argOffset += dclSymbol.getType().getTypeDclNode().getStackSize(sizeHelper);
             }else{
-                offset -= dclSymbol.getType().getTypeDclNode().getStackSize(platform);
+                offset -= dclSymbol.getType().getTypeDclNode().getStackSize(sizeHelper);
                 dclSymbol.setOffset(offset);
             }
         }else{ // field?

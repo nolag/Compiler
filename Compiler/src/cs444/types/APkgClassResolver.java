@@ -12,6 +12,7 @@ import cs444.CompilerException;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.IPlatform;
 import cs444.codegen.SelectorIndexedTable;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.SubtypeIndexedTable;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
@@ -347,8 +348,14 @@ public abstract class APkgClassResolver {
     public abstract void reduceToConstantExprs() throws CompilerException;
 
     public abstract void computeFieldOffsets(IPlatform<?> platform);
-    public abstract long getStackSize(IPlatform<?> platform);
-    public abstract long getRealSize(IPlatform<?> platform);
+    public abstract long getStackSize(final SizeHelper<?> sizeHelper);
+    public abstract long getRealSize(final SizeHelper<?> sizeHelper);
+
+    public long getRefStackSize(final SizeHelper<?> sizeHelper){
+        final long size = sizeHelper.getByteSizeOfType(name);
+        final int minSize = sizeHelper.getMinSize();
+        return size > minSize ? size : minSize;
+    }
 
     public abstract Iterable<DclSymbol> getUninheritedStaticFields();
 

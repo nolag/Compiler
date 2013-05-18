@@ -7,6 +7,7 @@ import java.util.List;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.IPlatform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.Comment;
 import cs444.codegen.instructions.x86.Extern;
 import cs444.codegen.instructions.x86.Global;
@@ -23,6 +24,7 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassResolver;
 
+//TODO make this as generic as possible and pull to a base class for all platforms
 public class StaticFieldInit {
     public static final String STATIC_FIELD_INIT_LBL = "__init_static_fields";
     private static final String STATIC_FIELD_INIT_FILE = "_static_init.s";
@@ -58,6 +60,7 @@ public class StaticFieldInit {
         instructions.add(new Global(STATIC_FIELD_INIT_LBL));
         Runtime.instance.externAll(instructions);
         instructions.add(new Label(STATIC_FIELD_INIT_LBL));
+        final SizeHelper<?> sizeHelper = platform.getSizeHelper();
 
         for (final APkgClassResolver aPkgClassResolver : resolvers) {
             if (!(aPkgClassResolver instanceof PkgClassResolver)) continue;
@@ -65,7 +68,7 @@ public class StaticFieldInit {
             if (!resolver.shouldGenCode()) continue;
             for (final DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
                 final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
-                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(platform));
+                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
                 final PointerRegister toAddr = new PointerRegister(new Immediate(fieldNameLbl));
 
                 instructions.add(new Extern(fieldNameLbl));
@@ -80,7 +83,7 @@ public class StaticFieldInit {
 
             for (final DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
                 final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
-                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(platform));
+                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
                 final PointerRegister toAddr = new PointerRegister(new Immediate(fieldNameLbl));
 
                 if(!fieldDcl.children.isEmpty()){

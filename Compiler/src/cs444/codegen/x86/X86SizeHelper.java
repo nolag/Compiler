@@ -20,6 +20,7 @@ public class X86SizeHelper implements SizeHelper<X86Instruction>{
     public final Size defaultStack;
     public final boolean use64;
 
+    //TODO move this stuff to SizeHelper and make it abstract
     static{
         stackSizes.put(JoosNonTerminal.BYTE, 1);
         stackSizes.put(JoosNonTerminal.SHORT, 2);

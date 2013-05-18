@@ -8,6 +8,7 @@ import java.util.Set;
 import cs444.CompilerException;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.IPlatform;
+import cs444.codegen.SizeHelper;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
@@ -77,13 +78,6 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         cs.forcePublic();
         cs.resolver = this;
         cs.dclInResolver = this;
-        //set the size
-        try{
-            cs.accept(new LocalDclLinker(fullName, platform));
-        }catch(final Exception e){
-            //never should get here
-            e.printStackTrace();
-        }
         final String uniqueName = generateUniqueName(cs, JoosNonTerminal.THIS);
         constructors.put(uniqueName, cs);
     }
@@ -135,7 +129,11 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void linkLocalNamesToDcl(final IPlatform<?> platform) throws CompilerException { }
+    public void linkLocalNamesToDcl(final IPlatform<?> platform) throws CompilerException {
+        for(final ConstructorSymbol cs : constructors.values()){
+            cs.resolveLocalVars(fullName, platform);
+        }
+    }
 
     @Override
     public void analyzeReachability() throws CompilerException { }
@@ -174,13 +172,13 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public long getStackSize(final IPlatform<?> platform) {
-        return platform.getSizeHelper().getDefaultStackSize();
+    public long getStackSize(final SizeHelper<?> sizeHelper) {
+        return sizeHelper.getDefaultStackSize();
     }
 
     @Override
-    public long getRealSize(final IPlatform<?> platform) {
-        return platform.getSizeHelper().getDefaultStackSize();
+    public long getRealSize(final SizeHelper<?> sizeHelper) {
+        return sizeHelper.getDefaultStackSize();
     }
 
     @Override

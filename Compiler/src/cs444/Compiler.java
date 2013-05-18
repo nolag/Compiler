@@ -27,8 +27,8 @@ import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassInfo;
 
 public class Compiler {
-    public static final String BASE_DIRECTORY = "/mnt/hgfs/RAM/";
-    //public static final String BASE_DIRECTORY = "E:/RAM/";
+    //public static final String BASE_DIRECTORY = "/mnt/hgfs/RAM/";
+    public static final String BASE_DIRECTORY = "E:/RAM/";
     //public static final String BASE_DIRECTORY = "";
     public static final String OUTPUT_DIRECTORY = BASE_DIRECTORY + "output/";
 
@@ -127,6 +127,10 @@ public class Compiler {
 
     private static void generateCode(final List<APkgClassResolver> resolvers, final boolean outputFile) throws IOException{
         PrintStream printer;
+
+        platform.getSelectorIndex().generateSIT(resolvers, outputFile, OUTPUT_DIRECTORY);
+        platform.makeSubtypeTable(resolvers, outputFile, OUTPUT_DIRECTORY);
+
         for (final APkgClassResolver resolver : resolvers) resolver.computeFieldOffsets(platform);
 
         platform.generateStaticCode(resolvers, outputFile, OUTPUT_DIRECTORY);

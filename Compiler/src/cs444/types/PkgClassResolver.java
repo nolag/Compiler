@@ -481,18 +481,13 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public long getStackSize(final IPlatform<?> platform) {
-        if(start != null) return start.getObjectSize();
-        final SizeHelper<?> sizeHelper = platform.getSizeHelper();
-        final long size = sizeHelper.getByteSizeOfType(name);
-        final int minSize = sizeHelper.getMinSize();
-        return size > minSize ? size : minSize;
+    public long getStackSize(final SizeHelper<?> sizeHelper) {
+        if(start != null)return start.getObjectSize();
+        return getRefStackSize(sizeHelper);
     }
 
     @Override
-    public long getRealSize(final IPlatform<?> platform) {
-        if(start != null) return start.getObjectSize();
-        final SizeHelper<?> sizeHelper = platform.getSizeHelper();
+    public long getRealSize(final SizeHelper<?> sizeHelper) {
         return sizeHelper.getByteSizeOfType(name);
     }
 

@@ -173,7 +173,7 @@ public class CodeGenVisitor{
         instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR, sizeHelper));
 
         for (final DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
-            final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(platform));
+            final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
             final PointerRegister fieldAddr = new PointerRegister(Register.DATA, fieldDcl.getOffset());
             if(!fieldDcl.children.isEmpty()){
@@ -198,7 +198,7 @@ public class CodeGenVisitor{
         }
 
         for (final DclSymbol fieldDcl : staticFields) {
-            final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(platform));
+            final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
             final String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
             instructions.add(new Global(fieldLbl));
@@ -291,7 +291,7 @@ public class CodeGenVisitor{
         final APkgClassResolver typeDclNode = creationExpression.getType().getTypeDclNode();
 
         if (!creationExpression.getType().isArray){
-            final long allocSize = typeDclNode.getStackSize(platform);
+            final long allocSize = typeDclNode.getStackSize(sizeHelper);
             final InstructionArg bytes = new Immediate(String.valueOf(allocSize));
             instructions.add(new Comment("Allocate " + bytes.getValue(sizeHelper) + " bytes for " + typeDclNode.fullName));
             instructions.add(new Mov(Register.ACCUMULATOR, bytes, sizeHelper));
@@ -516,7 +516,7 @@ public class CodeGenVisitor{
             instructions.add(new Label(castExprEnd));
 
         }else{ // Primitive casting:
-            final Size curSize = X86SizeHelper.getSize(type.getTypeDclNode().getRealSize(platform));
+            final Size curSize = X86SizeHelper.getSize(type.getTypeDclNode().getRealSize(sizeHelper));
             genMov(curSize, Register.ACCUMULATOR, "cast to " + type.value, type);
         }
 
@@ -729,7 +729,7 @@ public class CodeGenVisitor{
         instructions.add(new Comment("allocate the string at the same time (why not)"));
         //2 per char + dword for int + obj size
         final long charsLen = stringSymbol.strValue.length() * 2 + X86SizeHelper.getIntSize(Size.DWORD) + platform.getObjectLayout().objSize();
-        final long length =  charsLen + stringSymbol.getType().getTypeDclNode().getStackSize(platform);
+        final long length =  charsLen + stringSymbol.getType().getTypeDclNode().getStackSize(sizeHelper);
 
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(length), sizeHelper));
         //no need to zero out, it will be set for sure so the second last arg does not matter
@@ -804,7 +804,7 @@ public class CodeGenVisitor{
         Runtime.instance.throwException(instructions, "Invalid array creation");
         instructions.add(new Label(ok));
 
-        final long stackSize = arrayAccess.getType().getTypeDclNode().getStackSize(platform);
+        final long stackSize = arrayAccess.getType().getTypeDclNode().getStackSize(sizeHelper);
         Size elementSize;
         if(stackSize >= sizeHelper.defaultStackSize) elementSize = sizeHelper.defaultStack;
         else elementSize = X86SizeHelper.getSize(stackSize);
@@ -827,7 +827,7 @@ public class CodeGenVisitor{
     public void visit(final DclSymbol dclSymbol) {
         if(dclSymbol.children.isEmpty()) new IntegerLiteralSymbol(0).accept(this);
         else dclSymbol.children.get(0).accept(this);
-        lastSize = X86SizeHelper.getSize(dclSymbol.getType().getTypeDclNode().getStackSize(platform));
+        lastSize = X86SizeHelper.getSize(dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper));
         instructions.add(new Push(Register.ACCUMULATOR, lastSize, sizeHelper));
     }
 
@@ -958,9 +958,9 @@ public class CodeGenVisitor{
 
     public void visit(final SimpleNameSymbol name) {
         final DclSymbol dcl = name.dcl;
-        final Size size = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(platform));
+        final Size size = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
         final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
-        lastSize = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getStackSize(platform));
+        lastSize = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRefStackSize(sizeHelper));
 
         if(dcl.isStatic() && dcl.dclInResolver != currentFile) instructions.add(new Extern(staticFieldLbl));
 
