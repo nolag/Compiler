@@ -7,18 +7,6 @@ import java.util.List;
 import org.junit.Test;
 
 public class A5 {
-
-    /*public static void main(final String [] args) throws IOException, InterruptedException{
-        final A5 a5 = new A5();
-        a5.testCompileProgramsNoStdLib();
-        a5.testCompileProgramsWithStdLib();
-        a5.testMarmosetA1ValidTestCases();
-        a5.testMarmosetA2ValidTestCases();
-        a5.testMarmosetA3ValidTestCases();
-        a5.testMarmosetA4ValidTestCases();
-        a5.testMarmosetA5Programs();
-    }*/
-
     @Test
     public void testCompileProgramsNoStdLib() throws IOException, InterruptedException{
         //SuperMethod is not implemented yet

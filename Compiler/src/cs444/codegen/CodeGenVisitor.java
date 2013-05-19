@@ -727,9 +727,13 @@ public class CodeGenVisitor{
 
     public void visit(final StringLiteralSymbol stringSymbol) {
         instructions.add(new Comment("allocate the string at the same time (why not)"));
+
+        final APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);
+
         //2 per char + dword for int + obj size
-        final long charsLen = stringSymbol.strValue.length() * 2 + X86SizeHelper.getIntSize(Size.DWORD) + platform.getObjectLayout().objSize();
-        final long length =  charsLen + stringSymbol.getType().getTypeDclNode().getStackSize(sizeHelper);
+        final long objlen = platform.getObjectLayout().objSize();
+        final long charsLen = stringSymbol.strValue.length() * 2 + X86SizeHelper.getIntSize(Size.DWORD) + objlen;
+        final long length =  charsLen + resolver.getStackSize(sizeHelper) + objlen;
 
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(length), sizeHelper));
         //no need to zero out, it will be set for sure so the second last arg does not matter
@@ -745,7 +749,6 @@ public class CodeGenVisitor{
             final InstructionArg to = new PointerRegister(Register.ACCUMULATOR, new Immediate(String.valueOf(place)));
             instructions.add(new Mov(to, new Immediate((cs[i])), Size.WORD, sizeHelper));
         }
-        final APkgClassResolver resolver = stringSymbol.getType().getTypeDclNode();
         try {
             final String arg = charArray;
             final ConstructorSymbol constructor = resolver.getConstructor(Arrays.asList(arg), resolver);
