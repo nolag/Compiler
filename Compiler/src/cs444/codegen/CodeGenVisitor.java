@@ -292,8 +292,8 @@ public class CodeGenVisitor{
 
         if (!creationExpression.getType().isArray){
             final long allocSize = typeDclNode.getStackSize(sizeHelper) + platform.getObjectLayout().objSize();
-            final InstructionArg bytes = new Immediate(String.valueOf(allocSize));
-            instructions.add(new Comment("Allocate " + bytes.getValue(sizeHelper) + " bytes for " + typeDclNode.fullName));
+            final InstructionArg bytes = new Immediate(allocSize);
+            instructions.add(new Comment("Allocate " + allocSize + " bytes for " + typeDclNode.fullName));
             instructions.add(new Mov(Register.ACCUMULATOR, bytes, sizeHelper));
 
             platform.getRunime().mallocClear(instructions);
@@ -925,7 +925,7 @@ public class CodeGenVisitor{
             if(call.dclInResolver != currentFile || call.isNative()) instructions.add(new Extern(arg));
             instructions.add(new Call(arg, sizeHelper));
         }else{
-            instructions.add(new Comment("get SIT column"));
+            instructions.add(new Comment("get SIT column of " + call.dclName));
             instructions.add(new Mov(Register.BASE, new PointerRegister(Register.BASE), sizeHelper));
 
             PointerRegister methodAddr = null;
@@ -944,7 +944,7 @@ public class CodeGenVisitor{
         // but visitor may visit InvokeSymbol before MethodSymbol
         final long mySize =  call.getStackSize();
         if(mySize != 0){
-            final Immediate by = new Immediate(String.valueOf(mySize));
+            final Immediate by = new Immediate(mySize);
             instructions.add(new Add(Register.STACK, by, sizeHelper));
         }
 
