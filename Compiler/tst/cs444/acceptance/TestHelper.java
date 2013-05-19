@@ -34,7 +34,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.equals("NonStaticFuncLinkedLookup")) continue;
+            //if (!fileName.equals("StaticFieldsReadWrite")) continue;
 
             if (ignoreList.contains(fileName)){
                 System.out.print("*"); // skip file

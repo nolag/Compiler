@@ -88,7 +88,8 @@ public class StaticFieldInit {
 
                 if(!fieldDcl.children.isEmpty()){
                     instructions.add(new Comment("Initializing static field " + fieldNameLbl + "."));
-                    fieldDcl.children.get(0).accept(new CodeGenVisitor(resolver, platform));
+                    //null because we are not in a resolver so it will need to extern
+                    fieldDcl.children.get(0).accept(new CodeGenVisitor(null, platform));
                     instructions.add(new Mov(toAddr, Register.ACCUMULATOR, size, platform.getSizeHelper()));
                 }
             }
