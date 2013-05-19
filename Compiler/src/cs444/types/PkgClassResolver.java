@@ -398,13 +398,13 @@ public class PkgClassResolver extends APkgClassResolver {
     @Override
     public void linkLocalNamesToDcl(final IPlatform<?> platform) throws CompilerException {
         if(start == null) return;
-        for(final AMethodSymbol method : start.getUninheritedMethods()){
-            method.resolveLocalVars(fullName, platform);
-        }
+        for(final AMethodSymbol method : start.getUninheritedMethods()) method.resolveLocalVars(fullName, platform);
 
-        for(final ConstructorSymbol consturctor : start.getConstructors()){
-            consturctor.resolveLocalVars(fullName, platform);
-        }
+        for(final ConstructorSymbol consturctor : start.getConstructors()) consturctor.resolveLocalVars(fullName, platform);
+
+        long mySize = 0;
+        for(final DclSymbol dcl : fieldMap.values()) mySize += dcl.getType().getTypeDclNode().getRefStackSize(platform.getSizeHelper());
+        start.setStackSize(mySize);
     }
 
     @Override
@@ -481,9 +481,19 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
+    public long getStackSize(final SizeHelper<?> sizeHelper){
+        if(start != null) return start.getStackSize();
+        final long size = sizeHelper.getByteSizeOfType(name);
+        final int minSize = sizeHelper.getMinSize();
+        return size > minSize ? size : minSize;
+    }
+
+    @Override
     public long getRefStackSize(final SizeHelper<?> sizeHelper) {
         if(start != null)return sizeHelper.getDefaultStackSize();
-        return getStackSize(sizeHelper);
+        final long size = sizeHelper.getByteSizeOfType(name);
+        final int minSize = sizeHelper.getMinSize();
+        return size > minSize ? size : minSize;
     }
 
     @Override
