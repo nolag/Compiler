@@ -115,7 +115,7 @@ public class LocalDclLinker extends EmptyVisitor {
         //Two from return value location and stack
         methodOrConstructorSymbol.setStackSize(argOffset - platform.getSizeHelper().getDefaultStackSize() * 2);
         for(final DclSymbol param : methodOrConstructorSymbol.params){
-            final long stack = param.getType().getTypeDclNode().getStackSize(sizeHelper);
+            final long stack = param.getType().getTypeDclNode().getRefStackSize(sizeHelper);
             argOffset -= stack;
             param.setOffset(argOffset);
         }
@@ -151,9 +151,9 @@ public class LocalDclLinker extends EmptyVisitor {
             if (currentScope.isDeclared(varName)) throw new DuplicateDeclarationException(varName, context.enclosingClassName);
             currentScope.add(varName, dclSymbol);
             if(methodArgs){
-                argOffset += dclSymbol.getType().getTypeDclNode().getStackSize(sizeHelper);
+                argOffset += dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper);
             }else{
-                offset -= dclSymbol.getType().getTypeDclNode().getStackSize(sizeHelper);
+                offset -= dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper);
                 dclSymbol.setOffset(offset);
             }
         }else{ // field?

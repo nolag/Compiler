@@ -12,4 +12,8 @@ public class X86_32LinuxPlatform extends X86_32Platform{
     public Runtime getRunime() {
         return Runtime.instance;
     }
+
+    public static void reset(){
+        platform = new X86_32LinuxPlatform();
+    }
 }

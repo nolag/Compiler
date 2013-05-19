@@ -172,7 +172,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public long getStackSize(final SizeHelper<?> sizeHelper) {
+    public long getRefStackSize(final SizeHelper<?> sizeHelper) {
         return sizeHelper.getDefaultStackSize();
     }
 

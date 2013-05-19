@@ -348,10 +348,10 @@ public abstract class APkgClassResolver {
     public abstract void reduceToConstantExprs() throws CompilerException;
 
     public abstract void computeFieldOffsets(IPlatform<?> platform);
-    public abstract long getStackSize(final SizeHelper<?> sizeHelper);
+    public abstract long getRefStackSize(final SizeHelper<?> sizeHelper);
     public abstract long getRealSize(final SizeHelper<?> sizeHelper);
 
-    public long getRefStackSize(final SizeHelper<?> sizeHelper){
+    public long getStackSize(final SizeHelper<?> sizeHelper){
         final long size = sizeHelper.getByteSizeOfType(name);
         final int minSize = sizeHelper.getMinSize();
         return size > minSize ? size : minSize;

@@ -291,7 +291,7 @@ public class CodeGenVisitor{
         final APkgClassResolver typeDclNode = creationExpression.getType().getTypeDclNode();
 
         if (!creationExpression.getType().isArray){
-            final long allocSize = typeDclNode.getStackSize(sizeHelper);
+            final long allocSize = typeDclNode.getStackSize(sizeHelper) + platform.getObjectLayout().objSize();
             final InstructionArg bytes = new Immediate(String.valueOf(allocSize));
             instructions.add(new Comment("Allocate " + bytes.getValue(sizeHelper) + " bytes for " + typeDclNode.fullName));
             instructions.add(new Mov(Register.ACCUMULATOR, bytes, sizeHelper));
@@ -327,7 +327,7 @@ public class CodeGenVisitor{
             instructions.add(new Comment("Adding space for SIT, cast info, and length" + typeDclNode.fullName));
             //Int + object's sie
             final long baseSize = platform.getObjectLayout().objSize() + X86SizeHelper.getIntSize(Size.DWORD);
-            final Immediate sizeI = new Immediate(String.valueOf(baseSize));
+            final Immediate sizeI = new Immediate(baseSize);
             instructions.add(new Add(Register.ACCUMULATOR, sizeI, sizeHelper));
             instructions.add(new Comment("Allocate for array" + typeDclNode.fullName));
             platform.getRunime().mallocClear(instructions);
@@ -375,7 +375,7 @@ public class CodeGenVisitor{
         //return value is the new object
         instructions.add(new Pop(Register.ACCUMULATOR, sizeHelper));
 
-        final long mySize = cs.getStackSize() - sizeHelper.defaultStackSize;
+        final long mySize = cs.getStackSize() - sizeHelper.getDefaultStackSize();
         if(mySize != 0){
             final Immediate by = new Immediate(String.valueOf(mySize));
             instructions.add(new Add(Register.STACK, by, sizeHelper));

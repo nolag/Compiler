@@ -1,13 +1,23 @@
 package cs444.acceptance;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Test;
 
 public class A5 {
+
+    /*public static void main(final String [] args) throws IOException, InterruptedException{
+        final A5 a5 = new A5();
+        a5.testCompileProgramsNoStdLib();
+        a5.testCompileProgramsWithStdLib();
+        a5.testMarmosetA1ValidTestCases();
+        a5.testMarmosetA2ValidTestCases();
+        a5.testMarmosetA3ValidTestCases();
+        a5.testMarmosetA4ValidTestCases();
+        a5.testMarmosetA5Programs();
+    }*/
 
     @Test
     public void testCompileProgramsNoStdLib() throws IOException, InterruptedException{
@@ -19,7 +29,7 @@ public class A5 {
                 true, ignoreList, new AsmAndLinkCallback());
     }
 
-    @Test
+    /*@Test
     public void testCompileProgramsWithStdLib() throws IOException, InterruptedException{
         final List<String> ignoreList = new LinkedList<String>();
 
@@ -67,6 +77,6 @@ public class A5 {
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a1/valid/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
-    }
+    }*/
 }
 
