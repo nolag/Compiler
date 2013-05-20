@@ -807,7 +807,7 @@ public class CodeGenVisitor{
         Runtime.instance.throwException(instructions, "Invalid array creation");
         instructions.add(new Label(ok));
 
-        final long stackSize = arrayAccess.getType().getTypeDclNode().getStackSize(sizeHelper);
+        final long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
         Size elementSize;
         if(stackSize >= sizeHelper.defaultStackSize) elementSize = sizeHelper.defaultStack;
         else elementSize = X86SizeHelper.getSize(stackSize);
