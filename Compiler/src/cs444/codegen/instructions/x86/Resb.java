@@ -1,12 +1,12 @@
 package cs444.codegen.instructions.x86;
 
-import cs444.codegen.instructions.x86.bases.X86Instruction;
+import cs444.codegen.instructions.x86.bases.ReserveInstruction;
 
 
-public class Resb extends ReserveInstruction implements X86Instruction {
+public class Resb extends ReserveInstruction {
 
-    public Resb(String name, long quantity) {
-        super(name, quantity);
+    public Resb(final String name, final long quantity) {
+        super(name, quantity, 0);
     }
 
     @Override

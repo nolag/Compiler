@@ -6,6 +6,7 @@ import cs444.codegen.x86.X86SizeHelper;
 
 public class Jg extends UniInstruction{
     public Jg(final Immediate arg1, final X86SizeHelper sizeHelper){
-        super("jg", arg1, sizeHelper);
+      //1 w/o jump 3 with ~= 2
+        super("jg", arg1, sizeHelper, 2);
     }
 }

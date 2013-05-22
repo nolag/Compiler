@@ -9,7 +9,7 @@ import cs444.codegen.instructions.x86.bases.X86Instruction;
 
 
 
-public class Immediate extends InstructionArg{
+public class Immediate extends NotMemory{
     private final String value;
 
     public static Map<SizeHelper<X86Instruction>, Immediate> stackPowers = new HashMap<SizeHelper<X86Instruction>, Immediate>();

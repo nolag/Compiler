@@ -3,7 +3,7 @@ package cs444.codegen.x86;
 
 
 
-public class Register extends InstructionArg{
+public class Register extends NotMemory{
     public static final Register ACCUMULATOR = new Register("a", 'x');
     public static final Register COUNTER = new Register("c", 'x');
     public static final Register DATA = new Register("d", 'x');

@@ -82,11 +82,20 @@ public class X86SizeHelper implements SizeHelper<X86Instruction>{
         }
     }
 
-    public final Size getBestZero(final long size) {
-        if(size % 8 == 0 && use64)  return Size.QWORD;
-        if(size % 4 == 0)  return Size.DWORD;
-        if(size % 2 == 0)  return Size.WORD;
-        return Size.HIGH;
+    public static String getStrVal(final Size size){
+        switch(size){
+        case LOW:
+        case HIGH:
+            return "byte";
+        case WORD:
+            return "word";
+        case DWORD:
+            return "dword";
+        case QWORD:
+            return "qword";
+        default:
+            return "ERROR!";
+        }
     }
 
     @Override

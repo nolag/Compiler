@@ -5,6 +5,7 @@ import java.util.List;
 
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.peephole.InstructionHolder;
+import cs444.codegen.tiles.TileSet;
 import cs444.types.APkgClassResolver;
 
 public interface IPlatform<T extends Instruction> {
@@ -19,4 +20,6 @@ public interface IPlatform<T extends Instruction> {
     public InstructionHolder<T> getInstructionHolder();
     public void generateStaticCode(final List<APkgClassResolver> resolvers,
             final boolean outputFile, final String directory) throws IOException;
+
+    public TileSet<T> getTiles();
 }

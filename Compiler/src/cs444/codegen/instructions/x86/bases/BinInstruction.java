@@ -4,7 +4,7 @@ import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.X86SizeHelper;
 
-public abstract class BinInstruction implements X86Instruction{
+public abstract class BinInstruction extends X86Instruction{
     public final String what;
     public final InstructionArg arg1;
     public final InstructionArg arg2;
@@ -12,8 +12,8 @@ public abstract class BinInstruction implements X86Instruction{
     public final Size size;
 
     protected BinInstruction(final String what, final InstructionArg arg1, final InstructionArg arg2,
-            final X86SizeHelper sizeHelper, final Size size){
-
+            final X86SizeHelper sizeHelper, final Size size, final long cost){
+        super(cost);
         this.what = what;
         this.arg1 = arg1;
         this.arg2 = arg2;
@@ -21,8 +21,10 @@ public abstract class BinInstruction implements X86Instruction{
         this.size  = size;
     }
 
-    protected BinInstruction(final String what, final InstructionArg arg1, final InstructionArg arg2, final X86SizeHelper sizeHelper){
-        this(what, arg1, arg2, sizeHelper, sizeHelper.defaultStack);
+    protected BinInstruction(final String what, final InstructionArg arg1, final InstructionArg arg2,
+            final X86SizeHelper sizeHelper, final long cost){
+
+        this(what, arg1, arg2, sizeHelper, sizeHelper.defaultStack, cost);
     }
 
     @Override

@@ -26,13 +26,13 @@ import cs444.codegen.instructions.x86.Movzx;
 import cs444.codegen.instructions.x86.Neg;
 import cs444.codegen.instructions.x86.Pop;
 import cs444.codegen.instructions.x86.Push;
-import cs444.codegen.instructions.x86.ReserveInstruction;
 import cs444.codegen.instructions.x86.Ret;
 import cs444.codegen.instructions.x86.Sar;
 import cs444.codegen.instructions.x86.Section;
 import cs444.codegen.instructions.x86.Section.SectionType;
 import cs444.codegen.instructions.x86.Shl;
 import cs444.codegen.instructions.x86.Xor;
+import cs444.codegen.instructions.x86.bases.ReserveInstruction;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.instructions.x86.factories.AddOpMaker;
 import cs444.codegen.instructions.x86.factories.AndOpMaker;
@@ -52,12 +52,12 @@ import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.PointerRegister;
+import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.StaticFieldInit;
 import cs444.codegen.x86.X86SizeHelper;
+import cs444.codegen.x86_32.X86_32Platform;
 import cs444.codegen.x86_32.linux.Runtime;
-import cs444.codegen.x86_32.linux.X86_32LinuxPlatform;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -119,9 +119,7 @@ public class CodeGenVisitor{
     private static final String INIT_OBJECT_FUNC = "__init_object";
     public static final String NATIVE_NAME = "NATIVE";
 
-    //TODO make this any type of platform when I have tiles
-    //private final IPlatform<?> platform;
-    private final X86_32LinuxPlatform platform;
+    private final X86_32Platform platform;
 
     private boolean hasEntry = false;
     private boolean getVal = true;
@@ -145,7 +143,7 @@ public class CodeGenVisitor{
     }
 
     public CodeGenVisitor(final APkgClassResolver resolver, final IPlatform<?> platform) {
-        this.platform = (X86_32LinuxPlatform)platform;
+        this.platform = (X86_32Platform)platform;
         this.currentFile = resolver;
         this.instructions = this.platform.getInstructionHolder();
         this.sizeHelper = this.platform.getSizeHelper();
@@ -175,7 +173,7 @@ public class CodeGenVisitor{
         for (final DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
             final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
-            final PointerRegister fieldAddr = new PointerRegister(Register.DATA, fieldDcl.getOffset());
+            final Memory fieldAddr = new Memory(Register.DATA, fieldDcl.getOffset());
             if(!fieldDcl.children.isEmpty()){
                 instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
                 // save pointer to object
@@ -260,7 +258,7 @@ public class CodeGenVisitor{
         final String constrName = APkgClassResolver.generateFullId(constructor);
         methProlog(constructor, constrName);
 
-        instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.getThisPointer(sizeHelper), sizeHelper));
+        instructions.add(new Mov(Register.ACCUMULATOR, Memory.getThisPointer(sizeHelper), sizeHelper));
 
         instructions.add(new Call(new Immediate(INIT_OBJECT_FUNC), sizeHelper));
 
@@ -337,7 +335,7 @@ public class CodeGenVisitor{
             final long lengthIndex = platform.getObjectLayout().objSize();
             final Immediate li = new Immediate(String.valueOf(lengthIndex));
 
-            instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, li), Register.DATA, sizeHelper));
+            instructions.add(new Mov(new Memory(Register.ACCUMULATOR, li), Register.DATA, sizeHelper));
             platform.getObjectLayout().initialize(typeDclNode, instructions);
         }
         lastSize = Size.DWORD;
@@ -531,7 +529,7 @@ public class CodeGenVisitor{
 
     public void visit(final NegOpExprSymbol op) {
         op.children.get(0).accept(this);
-        instructions.add(new Neg(Register.ACCUMULATOR));
+        instructions.add(new Neg(Register.ACCUMULATOR, sizeHelper));
     }
 
     public void visit(final NotOpExprSymbol op) {
@@ -561,7 +559,7 @@ public class CodeGenVisitor{
 
         instructions.add(new Pop(Register.DATA, sizeHelper));
 
-        final InstructionArg to = new PointerRegister(Register.DATA);
+        final Memory to = new Memory(Register.DATA);
         instructions.add(new Mov(to, Register.ACCUMULATOR, LHSSize, sizeHelper));
         instructions.add(new Comment("End Assignment"));
     }
@@ -716,12 +714,12 @@ public class CodeGenVisitor{
 
     public void visit(final ThisSymbol thisSymbol) {
         instructions.add(new Comment("This pointer"));
-        instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.getThisPointer(sizeHelper), sizeHelper));
+        instructions.add(new Mov(Register.ACCUMULATOR, Memory.getThisPointer(sizeHelper), sizeHelper));
     }
 
     public void visit(final SuperSymbol superSymbol) {
         instructions.add(new Comment("This (super) pointer"));
-        instructions.add(new Mov(Register.ACCUMULATOR, PointerRegister.getThisPointer(sizeHelper), sizeHelper));
+        instructions.add(new Mov(Register.ACCUMULATOR, Memory.getThisPointer(sizeHelper), sizeHelper));
         isSuper = true;
     }
 
@@ -741,12 +739,12 @@ public class CodeGenVisitor{
         final String charArray = ArrayPkgClassResolver.getArrayName(JoosNonTerminal.CHAR);
         platform.getObjectLayout().initialize(PkgClassInfo.instance.getSymbol(charArray), instructions);
 
-        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, 8), new Immediate(stringSymbol.strValue.length()), sizeHelper));
+        instructions.add(new Mov(new Memory(Register.ACCUMULATOR, 8), new Immediate(stringSymbol.strValue.length()), sizeHelper));
 
         final char [] cs = stringSymbol.strValue.toCharArray();
         for(int i = 0; i < cs.length; i++){
             final long place = 2 * i + platform.getObjectLayout().objSize() + X86SizeHelper.getIntSize(Size.DWORD);
-            final InstructionArg to = new PointerRegister(Register.ACCUMULATOR, new Immediate(String.valueOf(place)));
+            final Memory to = new Memory(Register.ACCUMULATOR, new Immediate(String.valueOf(place)));
             instructions.add(new Mov(to, new Immediate((cs[i])), Size.WORD, sizeHelper));
         }
         try {
@@ -801,7 +799,7 @@ public class CodeGenVisitor{
         instructions.add(new Label(ok));
 
         ok = "arrayAccessOk" + getNewLblNum();
-        final InstructionArg len = new PointerRegister(Register.BASE, new Immediate(platform.getObjectLayout().objSize()));
+        final Memory len = new Memory(Register.BASE, new Immediate(platform.getObjectLayout().objSize()));
         instructions.add(new Cmp(len, Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Jg(new Immediate(ok), sizeHelper));
         Runtime.instance.throwException(instructions, "Invalid array creation");
@@ -818,7 +816,7 @@ public class CodeGenVisitor{
 
         if(gettingValue){
             getVal = true;
-            genMov(elementSize, new PointerRegister(Register.ACCUMULATOR, Register.BASE), "array", arrayAccess);
+            genMov(elementSize, new Memory(Register.ACCUMULATOR, Register.BASE), "array", arrayAccess);
             lastSize = elementSize;
         }else{
             instructions.add(new Add(Register.ACCUMULATOR, Register.BASE, sizeHelper));
@@ -929,12 +927,12 @@ public class CodeGenVisitor{
             instructions.add(new Call(arg, sizeHelper));
         }else{
             instructions.add(new Comment("get SIT column of " + call.dclName));
-            instructions.add(new Mov(Register.BASE, new PointerRegister(Register.BASE), sizeHelper));
+            instructions.add(new Mov(Register.BASE, new Memory(Register.BASE), sizeHelper));
 
-            PointerRegister methodAddr = null;
+            Memory methodAddr = null;
             try {
                 final long by = platform.getSelectorIndex().getOffset(PkgClassResolver.generateUniqueName(call, call.dclName));
-                methodAddr = new PointerRegister(Register.BASE, by);
+                methodAddr = new Memory(Register.BASE, by);
             } catch (final UndeclaredException e) {
                 // shouldn't get here
                 e.printStackTrace();
@@ -961,18 +959,19 @@ public class CodeGenVisitor{
 
     public void visit(final SimpleNameSymbol name) {
         final DclSymbol dcl = name.dcl;
-        final Size size = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
-        final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
         lastSize = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRefStackSize(sizeHelper));
-
+        final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
         if(dcl.isStatic() && dcl.dclInResolver != currentFile) instructions.add(new Extern(staticFieldLbl));
+
+
+        final Size size = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
         if(getVal){
             InstructionArg base = Register.ACCUMULATOR;
             if(dcl.isLocal) base = Register.FRAME;
             else if(dcl.isStatic()) base = new Immediate(staticFieldLbl);
 
-            final InstructionArg from = new PointerRegister(base, dcl.getOffset());
+            final InstructionArg from = new Memory(base, dcl.getOffset());
             genMov(size, from, dcl.dclName, dcl);
             return;
         }

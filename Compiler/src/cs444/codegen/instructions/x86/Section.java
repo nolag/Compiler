@@ -3,11 +3,12 @@ package cs444.codegen.instructions.x86;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 
 
-public class Section implements X86Instruction {
+public class Section extends X86Instruction {
     public enum SectionType { DATA, BSS, TEXT }
 
     private final SectionType type;
-    public Section(SectionType type){
+    public Section(final SectionType type){
+        super(0);
         this.type = type;
     }
 

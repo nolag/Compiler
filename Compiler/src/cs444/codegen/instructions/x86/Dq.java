@@ -8,6 +8,6 @@ import cs444.codegen.x86.InstructionArg.Size;
 public class Dq extends UniInstruction{
     public Dq(final Immediate data) {
         //Immediate won't need a sizeHelper
-        super("dq", data, Size.DWORD, null);
+        super("dq", data, Size.DWORD, null, 0);
     }
 }

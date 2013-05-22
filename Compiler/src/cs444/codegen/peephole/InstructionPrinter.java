@@ -1,6 +1,7 @@
 package cs444.codegen.peephole;
 
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class InstructionPrinter<T extends Instruction> implements InstructionHol
     }
 
     @Override
-    public void addAll(final List<T> instructions) {
+    public void addAll(final Collection<T> instructions) {
         this.instructions.addAll(instructions);
     }
 }

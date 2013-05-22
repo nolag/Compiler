@@ -2,9 +2,9 @@ package cs444.codegen.instructions.x86.factories;
 
 import cs444.codegen.instructions.x86.Resb;
 import cs444.codegen.instructions.x86.Resd;
-import cs444.codegen.instructions.x86.ReserveInstruction;
 import cs444.codegen.instructions.x86.Resq;
 import cs444.codegen.instructions.x86.Resw;
+import cs444.codegen.instructions.x86.bases.ReserveInstruction;
 import cs444.codegen.x86.InstructionArg.Size;
 
 public class ReserveInstructionMaker {

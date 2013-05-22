@@ -1,5 +1,6 @@
 package cs444.codegen.instructions.x86;
 
+import cs444.codegen.instructions.x86.bases.MovX;
 import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;

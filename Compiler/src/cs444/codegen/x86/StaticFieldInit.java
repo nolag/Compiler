@@ -24,7 +24,7 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassResolver;
 
-//TODO make this as generic as possible and pull to a base class for all platforms
+
 public class StaticFieldInit {
     public static final String STATIC_FIELD_INIT_LBL = "__init_static_fields";
     private static final String STATIC_FIELD_INIT_FILE = "_static_init.s";
@@ -69,7 +69,7 @@ public class StaticFieldInit {
             for (final DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
                 final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
                 final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
-                final PointerRegister toAddr = new PointerRegister(new Immediate(fieldNameLbl));
+                final Memory toAddr = new Memory(new Immediate(fieldNameLbl));
 
                 instructions.add(new Extern(fieldNameLbl));
                 instructions.add(new Mov(toAddr, Immediate.NULL, size, platform.getSizeHelper()));
@@ -84,7 +84,7 @@ public class StaticFieldInit {
             for (final DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
                 final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
                 final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
-                final PointerRegister toAddr = new PointerRegister(new Immediate(fieldNameLbl));
+                final Memory toAddr = new Memory(new Immediate(fieldNameLbl));
 
                 if(!fieldDcl.children.isEmpty()){
                     instructions.add(new Comment("Initializing static field " + fieldNameLbl + "."));

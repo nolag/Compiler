@@ -7,6 +7,6 @@ import cs444.codegen.x86.InstructionArg.Size;
 public class Dd extends UniInstruction{
     public Dd(final Immediate data) {
         //Immediate won't need a sizeHelper
-        super("dd", data, Size.DWORD, null);
+        super("dd", data, Size.DWORD, null, 0);
     }
 }

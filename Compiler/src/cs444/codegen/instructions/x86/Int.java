@@ -6,6 +6,6 @@ import cs444.codegen.x86.X86SizeHelper;
 
 public class Int extends UniInstruction{
     public Int(final Immediate arg1, final X86SizeHelper sizeHelper){
-        super("int", arg1, sizeHelper);
+        super("int", arg1, sizeHelper, 26);
     }
 }

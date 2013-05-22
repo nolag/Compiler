@@ -29,21 +29,21 @@ public class X86ObjectLayout implements ObjectLayout<X86Instruction> {
         instructions.add(new Comment("Initializing Pointer to SIT Column"));
         final Immediate classSITLabel = new Immediate(typeDclNode.generateSIT());
         instructions.add(new Extern(classSITLabel));
-        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR), classSITLabel, sizeHelper));
+        instructions.add(new Mov(new Memory(Register.ACCUMULATOR), classSITLabel, sizeHelper));
 
         instructions.add(new Comment("Initializing Pointer to Subtype Column"));
         final Immediate subtypeITLabel = new Immediate(typeDclNode.generateSubtypeIT());
         instructions.add(new Extern(subtypeITLabel));
-        instructions.add(new Mov(new PointerRegister(Register.ACCUMULATOR, SUBTYPE_OFFSET), subtypeITLabel, sizeHelper));
+        instructions.add(new Mov(new Memory(Register.ACCUMULATOR, SUBTYPE_OFFSET), subtypeITLabel, sizeHelper));
     }
 
     @Override
     public void subtypeCheckCode(final TypeSymbol subType, final IPlatform<X86Instruction> platform) {
         final InstructionHolder<X86Instruction> instructions = platform.getInstructionHolder();
         instructions.add(new Comment("Subtype lookup"));
-        instructions.add(new Mov(Register.ACCUMULATOR, new PointerRegister(Register.ACCUMULATOR, SUBTYPE_OFFSET), sizeHelper));
+        instructions.add(new Mov(Register.ACCUMULATOR, new Memory(Register.ACCUMULATOR, SUBTYPE_OFFSET), sizeHelper));
         final long offset = platform.getSubtypeTable().getOffset(subType.getTypeDclNode().fullName);
-        final PointerRegister instanceOfInfo = new PointerRegister(Register.ACCUMULATOR, offset);
+        final Memory instanceOfInfo = new Memory(Register.ACCUMULATOR, offset);
         instructions.add(new Movzx(Register.ACCUMULATOR, instanceOfInfo, SubtypeCellGen.dataSize, sizeHelper));
     }
 

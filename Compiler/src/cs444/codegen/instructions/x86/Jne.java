@@ -6,6 +6,7 @@ import cs444.codegen.x86.X86SizeHelper;
 
 public class Jne extends UniInstruction{
     public Jne(final Immediate arg1, final X86SizeHelper sizeHelper){
-        super("jne", arg1, sizeHelper);
+        //1 w/o jump 3 with ~= 2
+        super("jne", arg1, sizeHelper, 2);
     }
 }

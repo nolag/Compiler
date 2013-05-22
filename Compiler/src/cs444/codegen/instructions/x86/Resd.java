@@ -1,17 +1,16 @@
 package cs444.codegen.instructions.x86;
 
-import cs444.codegen.instructions.x86.bases.X86Instruction;
+import cs444.codegen.instructions.x86.bases.ReserveInstruction;
 
 
-public class Resd extends ReserveInstruction implements X86Instruction {
+public class Resd extends ReserveInstruction{
 
-    public Resd(String name, long quantity) {
-        super(name, quantity);
+    public Resd(final String name, final long quantity) {
+        super(name, quantity, 0);
     }
 
     @Override
     protected String getResName() {
         return "resd";
     }
-
 }

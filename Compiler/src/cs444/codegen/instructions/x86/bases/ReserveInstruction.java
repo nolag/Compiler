@@ -1,15 +1,15 @@
-package cs444.codegen.instructions.x86;
-
-import cs444.codegen.instructions.x86.bases.X86Instruction;
+package cs444.codegen.instructions.x86.bases;
 
 
-public abstract class ReserveInstruction implements X86Instruction {
+
+public abstract class ReserveInstruction extends X86Instruction {
     protected final String name;
     protected final long quantity;
 
     protected abstract String getResName();
 
-    public ReserveInstruction(String name, long quantity) {
+    public ReserveInstruction(final String name, final long quantity, final long cost) {
+        super(cost);
         this.name = name;
         this.quantity = quantity;
     }
