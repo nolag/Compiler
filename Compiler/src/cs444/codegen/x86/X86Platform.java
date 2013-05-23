@@ -9,6 +9,7 @@ import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.peephole.InstructionPrinter;
 import cs444.codegen.tiles.TileSet;
+import cs444.codegen.x86.tiles.X86TileInit;
 import cs444.types.APkgClassResolver;
 
 public abstract class X86Platform implements IPlatform<X86Instruction>{
@@ -17,6 +18,7 @@ public abstract class X86Platform implements IPlatform<X86Instruction>{
 
     protected X86Platform(){
         instrucitons = new InstructionPrinter<X86Instruction>();
+        X86TileInit.init();
     }
 
     @Override

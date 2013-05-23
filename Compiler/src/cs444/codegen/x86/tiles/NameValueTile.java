@@ -16,7 +16,10 @@ import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.types.PkgClassResolver;
 
 public final class NameValueTile implements ITile<X86Instruction, SimpleNameSymbol>{
-    public static final NameValueTile instance = new NameValueTile();
+
+    public static void init(){
+        new NameValueTile();
+    }
 
     private NameValueTile(){
         TileSet.<X86Instruction>getOrMake(X86Instruction.class).nameValues.add(this);
@@ -43,10 +46,5 @@ public final class NameValueTile implements ITile<X86Instruction, SimpleNameSymb
         TileHelper.genMov(size, from, dcl.dclName, dcl, instructions, sizeHelper);
 
         return instructions;
-    }
-
-    @Override
-    public boolean isBaseTile() {
-        return true;
     }
 }

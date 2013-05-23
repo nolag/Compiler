@@ -15,6 +15,7 @@ public class TileSet <T extends Instruction>{
             new HashMap<Class<? extends Instruction>, TileSet<? extends Instruction>>();
 
     public final List<ITile<T, SimpleNameSymbol>> nameValues = new LinkedList<ITile<T, SimpleNameSymbol>>();
+    public final List<ITile<T, SimpleNameSymbol>> nameRefs = new LinkedList<ITile<T, SimpleNameSymbol>>();
 
     public static <T extends Instruction> TileSet<T> getOrMake(final Class<T> klass){
         @SuppressWarnings("unchecked")
@@ -22,6 +23,7 @@ public class TileSet <T extends Instruction>{
 
         if(tileSet == null){
             tileSet = new TileSet<T>();
+            classMap.put(klass, tileSet);
         }
 
         return tileSet;
@@ -45,6 +47,6 @@ public class TileSet <T extends Instruction>{
        this.<SimpleNameSymbol>addBest(nameValues, name, platform);
     }
     public void getRef(final SimpleNameSymbol name, final IPlatform<T> platform){
-        //TODO
+        this.<SimpleNameSymbol>addBest(nameRefs, name, platform);
     }
 }

@@ -118,14 +118,12 @@ import cs444.types.exceptions.UndeclaredException;
 public class CodeGenVisitor{
     private static final String INIT_OBJECT_FUNC = "__init_object";
     public static final String NATIVE_NAME = "NATIVE";
-
+    //TODO generic
     private final X86_32Platform platform;
-
     private boolean hasEntry = false;
     private boolean getVal = true;
-
     private boolean lastWasFunc = false;
-
+    //TODO generic
     private Size lastSize = Size.DWORD;
     private long nextLblnum = 0;
     private APkgClassResolver currentFile;
@@ -959,33 +957,17 @@ public class CodeGenVisitor{
 
     public void visit(final SimpleNameSymbol name) {
         final DclSymbol dcl = name.dcl;
-        lastSize = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRefStackSize(sizeHelper));
         final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
+
+        //TODO generic next two lines
         if(dcl.isStatic() && dcl.dclInResolver != currentFile) instructions.add(new Extern(staticFieldLbl));
-
-
-        final Size size = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
+        lastSize = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRefStackSize(sizeHelper));
 
         if(getVal){
-            InstructionArg base = Register.ACCUMULATOR;
-            if(dcl.isLocal) base = Register.FRAME;
-            else if(dcl.isStatic()) base = new Immediate(staticFieldLbl);
-
-            final InstructionArg from = new Memory(base, dcl.getOffset());
-            genMov(size, from, dcl.dclName, dcl);
-            return;
+            platform.getTiles().getValue(name, platform);
+        }else{
+            platform.getTiles().getRef(name, platform);
         }
-
-        X86Instruction instruction = new Add(Register.ACCUMULATOR, new Immediate(dcl.getOffset()), sizeHelper);
-        if(dcl.isStatic()){
-            instruction = new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl), sizeHelper);
-        }else if(dcl.isLocal){
-            instructions.add(new Comment("mov frame to accumulator because it is local"));
-            instructions.add(new Mov(Register.ACCUMULATOR, Register.FRAME, sizeHelper));
-        }
-
-        instructions.add(new Comment("Move reference of " + dcl.dclName + " in to Accumulator"));
-        instructions.add(instruction);
     }
 
     public void visit(final EmptyStatementSymbol empty){ }
