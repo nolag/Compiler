@@ -8,6 +8,8 @@ public class X86TileInit {
         AndTile.init();
         ANonTerminalTile.init();
         ArrayCreationTile.init();
+        ArrayRefTile.init();
+        ArrayValueTile.init();
         AssignmentTile.init();
         BoolTile.init();
         CastNonPrimTile.init();

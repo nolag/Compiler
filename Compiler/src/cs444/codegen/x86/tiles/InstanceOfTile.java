@@ -28,8 +28,7 @@ public class InstanceOfTile implements ITile<X86Instruction, InstanceOfExprSymbo
 
     @Override
     public boolean fits(final InstanceOfExprSymbol symbol) {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
