@@ -10,24 +10,24 @@ import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
-import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
+import cs444.parser.symbols.ast.Thisable;
 
-public class ThisTile implements ITile<X86Instruction, NegOpExprSymbol>{
+public class ThisTile implements ITile<X86Instruction, Thisable>{
     public static void init(){
         new ThisTile();
     }
 
     private ThisTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).negs.add(this);
+        TileSet.<X86Instruction>getOrMake(X86Instruction.class).thisables.add(this);
     }
 
     @Override
-    public boolean fits(final NegOpExprSymbol op) {
+    public boolean fits(final Thisable op) {
         return true;
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final NegOpExprSymbol symbol, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final Thisable symbol, final Platform<X86Instruction> platform) {
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
         instructions.add(new Comment("This (or super) pointer"));

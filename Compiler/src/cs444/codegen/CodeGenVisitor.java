@@ -214,6 +214,8 @@ public class CodeGenVisitor{
 
         //TODO generic this
         lastSize = Size.DWORD;
+
+        tiles.<CreationExpression>addBest(tiles.creation, creationExpression, platform);
     }
 
     public void visit(final ANonTerminal aNonTerminal) {
@@ -461,7 +463,9 @@ public class CodeGenVisitor{
         }
     }
 
-    public void visit(final EmptyStatementSymbol empty){ }
+    public void visit(final EmptyStatementSymbol empty){
+        tiles.addEmpty(empty, platform);
+    }
 
     public void visit(final ISymbol other){
         throw new IllegalArgumentException(other.toString());

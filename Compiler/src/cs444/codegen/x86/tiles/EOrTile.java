@@ -19,6 +19,6 @@ public class EOrTile extends BinOpTile<EOrExprSymbol> {
 
     @Override
     public boolean fits(final EOrExprSymbol op) {
-        return op.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.INTEGER);
+        return op.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.BOOLEAN);
     }
 }

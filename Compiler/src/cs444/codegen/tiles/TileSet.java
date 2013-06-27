@@ -82,4 +82,8 @@ public class TileSet <T extends Instruction>{
 
         platform.addBest(symbol, best);
     }
+
+    public final <S extends ISymbol> void addEmpty(final S symbol, final Platform<T> platform){
+        platform.addBest(symbol, new InstructionsAndTiming<T>());
+    }
 }
