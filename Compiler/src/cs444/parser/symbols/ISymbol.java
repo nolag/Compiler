@@ -5,7 +5,7 @@ import cs444.ast.ISymbolVisitor;
 import cs444.codegen.CodeGenVisitor;
 
 
-public interface ISymbol {
+public interface ISymbol{
 
     /**
      *

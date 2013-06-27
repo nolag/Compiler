@@ -5,7 +5,7 @@ import java.util.List;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
-import cs444.codegen.IPlatform;
+import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
@@ -98,7 +98,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         return this.defaultConstructor;
     }
 
-    public void computeFieldOffsets(final IPlatform<?> platform) {
+    public void computeFieldOffsets(final Platform<?> platform) {
         long nextOffset = platform.getObjectLayout().objSize();
         for (final DclSymbol fieldDcl : this.getFields()) {
             if (fieldDcl.isStatic()) continue;

@@ -12,7 +12,7 @@ import java.util.Set;
 
 import cs444.CompilerException;
 import cs444.codegen.CodeGenVisitor;
-import cs444.codegen.IPlatform;
+import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.parser.IASTBuilder;
 import cs444.parser.symbols.ISymbol;
@@ -396,7 +396,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void linkLocalNamesToDcl(final IPlatform<?> platform) throws CompilerException {
+    public void linkLocalNamesToDcl(final Platform<?> platform) throws CompilerException {
         if(start == null) return;
         for(final AMethodSymbol method : start.getUninheritedMethods()) method.resolveLocalVars(fullName, platform);
 
@@ -408,7 +408,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void checkFields(final IPlatform<?> platform) throws CompilerException{
+    public void checkFields(final Platform<?> platform) throws CompilerException{
         if (start == null) return;
         LocalDclLinker linker = new LocalDclLinker(fullName, true, platform);
         for(final DclSymbol dcl : this.getUninheritedNonStaticFields()){
@@ -476,7 +476,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void computeFieldOffsets(final IPlatform<?> platform) {
+    public void computeFieldOffsets(final Platform<?> platform) {
         if (shouldGenCode()) start.computeFieldOffsets(platform);
     }
 

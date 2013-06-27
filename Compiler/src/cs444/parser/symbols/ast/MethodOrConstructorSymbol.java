@@ -4,7 +4,7 @@ import java.util.List;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
-import cs444.codegen.IPlatform;
+import cs444.codegen.Platform;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -62,7 +62,7 @@ public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
     }
 
     private boolean arelocalVarsLinked = false;
-    public void resolveLocalVars(final String enclosingClassName, final IPlatform<?> platform) throws CompilerException {
+    public void resolveLocalVars(final String enclosingClassName, final Platform<?> platform) throws CompilerException {
         if (arelocalVarsLinked) return;
 
         this.accept(new LocalDclLinker(enclosingClassName, platform));

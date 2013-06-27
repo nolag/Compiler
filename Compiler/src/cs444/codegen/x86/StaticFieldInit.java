@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import java.util.List;
 
 import cs444.codegen.CodeGenVisitor;
-import cs444.codegen.IPlatform;
+import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.Comment;
 import cs444.codegen.instructions.x86.Extern;
@@ -46,7 +46,7 @@ public class StaticFieldInit {
         }
     }
 
-    private StaticFieldInit(final IPlatform<X86Instruction> platform){
+    private StaticFieldInit(final Platform<X86Instruction> platform){
         instructions = platform.getInstructionHolder();
         this.platform = (X86Platform) platform;
     }
@@ -89,7 +89,7 @@ public class StaticFieldInit {
                 if(!fieldDcl.children.isEmpty()){
                     instructions.add(new Comment("Initializing static field " + fieldNameLbl + "."));
                     //null because we are not in a resolver so it will need to extern
-                    fieldDcl.children.get(0).accept(new CodeGenVisitor(null, platform));
+                    fieldDcl.children.get(0).accept(new CodeGenVisitor(platform));
                     instructions.add(new Mov(toAddr, Register.ACCUMULATOR, size, platform.getSizeHelper()));
                 }
             }

@@ -1,6 +1,6 @@
 package cs444.codegen.x86.tiles;
 
-import cs444.codegen.IPlatform;
+import cs444.codegen.Platform;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
@@ -8,6 +8,7 @@ import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.tiles.helpers.TileHelper;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
@@ -31,7 +32,7 @@ public final class NameValueTile implements ITile<X86Instruction, SimpleNameSymb
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final SimpleNameSymbol name, final IPlatform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final SimpleNameSymbol name, final Platform<X86Instruction> platform) {
         final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final DclSymbol dcl = name.dcl;
@@ -43,7 +44,7 @@ public final class NameValueTile implements ITile<X86Instruction, SimpleNameSymb
         else if(dcl.isStatic()) base = new Immediate(staticFieldLbl);
 
         final InstructionArg from = new Memory(base, dcl.getOffset());
-        TileHelper.genMov(size, from, dcl.dclName, dcl, instructions, sizeHelper);
+        instructions.addAll(TileHelper.genMov(size, from, dcl.dclName, dcl, sizeHelper));
 
         return instructions;
     }

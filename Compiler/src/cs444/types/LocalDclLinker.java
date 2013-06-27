@@ -9,7 +9,7 @@ import java.util.Stack;
 
 import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
-import cs444.codegen.IPlatform;
+import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
@@ -81,10 +81,10 @@ public class LocalDclLinker extends EmptyVisitor {
     boolean fromSuper = false;
     boolean superSaver = false;
 
-    private final IPlatform<?> platform;
+    private final Platform<?> platform;
     private final SizeHelper<?> sizeHelper;
 
-    public LocalDclLinker(final String enclosingClassName, final IPlatform<?> platform){
+    public LocalDclLinker(final String enclosingClassName, final Platform<?> platform){
         this.context = new ContextInfo(enclosingClassName);
 
         currentTypes.add(new ArrayDeque<Typeable>());
@@ -93,7 +93,7 @@ public class LocalDclLinker extends EmptyVisitor {
         sizeHelper = platform.getSizeHelper();
     }
 
-    public LocalDclLinker(final String enclosingClassName, final boolean isStatic, final IPlatform<?> platform){
+    public LocalDclLinker(final String enclosingClassName, final boolean isStatic, final Platform<?> platform){
         this(enclosingClassName, platform);
         pushNewScope(isStatic);
     }

@@ -10,7 +10,7 @@ import java.util.Set;
 
 import cs444.CompilerException;
 import cs444.codegen.CodeGenVisitor;
-import cs444.codegen.IPlatform;
+import cs444.codegen.Platform;
 import cs444.codegen.SelectorIndexedTable;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.SubtypeIndexedTable;
@@ -333,11 +333,11 @@ public abstract class APkgClassResolver {
 
     protected abstract Iterable<DclSymbol> getDcls();
 
-    public abstract void checkFields(final IPlatform<?> platform) throws CompilerException;
+    public abstract void checkFields(final Platform<?> platform) throws CompilerException;
 
     public abstract APkgClassResolver findClass(String name) throws UndeclaredException;
 
-    public abstract void linkLocalNamesToDcl(final IPlatform<?> platform) throws CompilerException;
+    public abstract void linkLocalNamesToDcl(final Platform<?> platform) throws CompilerException;
 
     public abstract void analyzeReachability() throws CompilerException;
 
@@ -347,7 +347,7 @@ public abstract class APkgClassResolver {
 
     public abstract void reduceToConstantExprs() throws CompilerException;
 
-    public abstract void computeFieldOffsets(IPlatform<?> platform);
+    public abstract void computeFieldOffsets(Platform<?> platform);
     public abstract long getRefStackSize(final SizeHelper<?> sizeHelper);
     public abstract long getRealSize(final SizeHelper<?> sizeHelper);
     public abstract long getStackSize(final SizeHelper<?> sizeHelper);

@@ -6,8 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cs444.codegen.instructions.Instruction;
+import cs444.codegen.tiles.InstructionsAndTiming;
 
-public class InstructionPrinter<T extends Instruction> implements InstructionHolder<T> {
+public class InstructionPrinter<T extends Instruction> implements InstructionHolder<T>{
     private List<T> instructions = new LinkedList<T>();
 
     @Override
@@ -24,5 +25,10 @@ public class InstructionPrinter<T extends Instruction> implements InstructionHol
     @Override
     public void addAll(final Collection<T> instructions) {
         this.instructions.addAll(instructions);
+    }
+
+    @Override
+    public void addAll(final InstructionsAndTiming<T> other) {
+        other.addToHolder(this);
     }
 }

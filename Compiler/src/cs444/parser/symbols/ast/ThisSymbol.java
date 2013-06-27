@@ -4,7 +4,7 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.codegen.CodeGenVisitor;
 
-public class ThisSymbol extends TypeableTerminal{
+public class ThisSymbol extends TypeableTerminal implements Thisable{
     public final boolean implied;
 
     public ThisSymbol() {
