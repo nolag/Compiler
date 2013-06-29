@@ -38,7 +38,7 @@ public class ConstructorTile implements ITile<X86Instruction, ConstructorSymbol>
         final String constrName = APkgClassResolver.generateFullId(constructor);
         final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
 
-        instructions.addAll(TileHelper.methProlog(constructor, constrName, sizeHelper));
+        TileHelper.methProlog(constructor, constrName, sizeHelper, instructions);
 
         instructions.add(new Mov(Register.ACCUMULATOR, Memory.getThisPointer(sizeHelper), sizeHelper));
 
@@ -46,7 +46,7 @@ public class ConstructorTile implements ITile<X86Instruction, ConstructorSymbol>
 
         for(final ISymbol child : constructor.children) instructions.addAll(platform.getBest(child));
 
-        instructions.addAll(TileHelper.methEpilogue(constructor));
+        TileHelper.methEpilogue(constructor, instructions);
         return instructions;
     }
 

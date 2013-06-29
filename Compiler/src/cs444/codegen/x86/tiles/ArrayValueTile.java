@@ -1,6 +1,7 @@
 package cs444.codegen.x86.tiles;
 
 import cs444.codegen.Platform;
+import cs444.codegen.instructions.x86.Pop;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
@@ -36,7 +37,8 @@ public final class ArrayValueTile extends ArrayBaseTile{
         if(stackSize >= sizeHelper.defaultStackSize) elementSize = sizeHelper.defaultStack;
         else elementSize = X86SizeHelper.getSize(stackSize);
         final Memory mem = new Memory(Register.ACCUMULATOR, Register.BASE);
-        instructions.addAll(TileHelper.genMov(elementSize, mem, "array", arrayAccess, sizeHelper));
+        TileHelper.genMov(elementSize, mem, "array", arrayAccess, sizeHelper, instructions);
+        instructions.add(new Pop(Register.BASE, sizeHelper));
         return instructions;
     }
 }

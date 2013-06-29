@@ -41,7 +41,7 @@ public class WhileTile implements ITile<X86Instruction, WhileExprSymbol>{
         instructions.addAll(platform.getBest(whileExprSymbol.getConditionSymbol()));
 
         final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
-        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, loopEnd, sizeHelper);
+        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, loopEnd, sizeHelper, instructions);
 
         instructions.addAll(platform.getBest((whileExprSymbol.getBody())));
 

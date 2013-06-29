@@ -45,7 +45,7 @@ public class ForTile implements ITile<X86Instruction, ForExprSymbol>{
         instructions.add(new Comment("Compare for " + mynum));
         instructions.addAll(platform.getBest(forExprSymbol.getConditionExpr()));
 
-        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, loopEnd, sizeHelper);
+        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, loopEnd, sizeHelper, instructions);
 
         instructions.add(new Comment("for body" + mynum));
 

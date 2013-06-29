@@ -39,10 +39,10 @@ public class CastNonPrimTile implements ITile<X86Instruction, CastExpressionSymb
         final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));
-        TileHelper.ifNullJmpCode(Register.ACCUMULATOR, castExprEnd, sizeHelper);
+        TileHelper.ifNullJmpCode(Register.ACCUMULATOR, castExprEnd, sizeHelper, instructions);
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
         instructions.addAll(platform.getObjectLayout().subtypeCheckCode(type, platform));
-        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, Runtime.EXCEPTION_LBL, sizeHelper);
+        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, Runtime.EXCEPTION_LBL, sizeHelper, instructions);
         instructions.add(new Pop(Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Label(castExprEnd));
 

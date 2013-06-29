@@ -21,10 +21,9 @@ import cs444.types.APkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
 public class TileHelper {
-    public static List<X86Instruction> genMov(final Size size, final InstructionArg from, final String value,
-            final Typeable dcl, final X86SizeHelper sizeHelper){
+    public static void genMov(final Size size, final InstructionArg from, final String value,
+            final Typeable dcl, final X86SizeHelper sizeHelper, final Addable<X86Instruction> instructions){
 
-        final List<X86Instruction> instructions = new LinkedList<X86Instruction>();
 
         X86Instruction instruction;
 
@@ -38,45 +37,35 @@ public class TileHelper {
 
         instructions.add(new Comment("getting value of " + value));
         instructions.add(instruction);
-        return instructions;
     }
 
-    public static List<X86Instruction> ifNullJmpCode(final Register register, final String ifNullLbl, final X86SizeHelper sizeHelper) {
-        final List<X86Instruction> instructions = new LinkedList<X86Instruction>();
+    public static void ifNullJmpCode(final Register register, final String ifNullLbl,
+            final X86SizeHelper sizeHelper, final Addable<X86Instruction> instructions) {
         instructions.add(new Comment("null check"));
         instructions.add(new Cmp(register, Immediate.NULL, sizeHelper));
         instructions.add(new Je(new Immediate(ifNullLbl), sizeHelper));
-        return instructions;
     }
 
-    public static List<X86Instruction> methProlog(final MethodOrConstructorSymbol method,
-            final String methodName, final X86SizeHelper sizeHelper){
-
-        final List<X86Instruction> instructions = new LinkedList<X86Instruction>();
+    public static void methProlog(final MethodOrConstructorSymbol method,
+            final String methodName, final X86SizeHelper sizeHelper, final Addable<X86Instruction> instructions){
         if(method.getProtectionLevel() != ProtectionLevel.PRIVATE) instructions.add(new Global(methodName));
         instructions.add(new Label(methodName));
         instructions.add(Push.getStackPush(sizeHelper));
         instructions.add(new Mov(Register.FRAME, Register.STACK, sizeHelper));
-        return instructions;
     }
 
-    public static List<X86Instruction> methEpilogue(final MethodOrConstructorSymbol method) {
-        final List<X86Instruction> instructions = new LinkedList<X86Instruction>();
+    public static void methEpilogue(final MethodOrConstructorSymbol method, final Addable<X86Instruction> instructions) {
         //Don't fall though void funcs
         instructions.add(Leave.LEAVE);
         instructions.add(Ret.RET);
 
         instructions.add(new Comment("End of method " + method.dclName));
-        return instructions;
     }
 
-    public static List<X86Instruction> setupJumpNe(final Register reg, final Immediate when,
-            final String lblTo, final X86SizeHelper sizeHelper){
-
-        final List<X86Instruction> instructions = new LinkedList<X86Instruction>();
+    public static void setupJumpNe(final Register reg, final Immediate when,
+            final String lblTo, final X86SizeHelper sizeHelper, final Addable<X86Instruction> instructions){
         instructions.add(new Cmp(reg, when, sizeHelper));
         instructions.add(new Jne(new Immediate(lblTo), sizeHelper));
-        return instructions;
     }
 
     public static void invokeConstructor(final APkgClassResolver resolver, final List<ISymbol> children,

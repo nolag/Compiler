@@ -6,9 +6,9 @@ import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
+import cs444.codegen.x86.tiles.helpers.TileHelper;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 
@@ -34,7 +34,7 @@ public class CastPrimTile implements ITile<X86Instruction, CastExpressionSymbol>
         final Size curSize = X86SizeHelper.getSize(type.getTypeDclNode().getRealSize(sizeHelper));
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));
-        TileHelper.genMov(curSize, Register.ACCUMULATOR, "cast to " + type.value, type, sizeHelper);
+        TileHelper.genMov(curSize, Register.ACCUMULATOR, "cast to " + type.value, type, sizeHelper, instructions);
         return instructions;
     }
 }

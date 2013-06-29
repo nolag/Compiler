@@ -40,11 +40,11 @@ public class IfTile implements ITile<X86Instruction, IfExprSymbol>{
         instructions.add(new Comment("if start" + myid));
         final String falseLbl = "false" + myid;
         final String trueLbl = "true" + myid;
-        platform.getBest(ifExprSymbol.getConditionSymbol());
+        instructions.addAll(platform.getBest(ifExprSymbol.getConditionSymbol()));
 
-        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, falseLbl, sizeHelper);
+        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, falseLbl, sizeHelper, instructions);
 
-        platform.getBest(ifExprSymbol.getifBody());
+        instructions.addAll(platform.getBest(ifExprSymbol.getifBody()));
 
         instructions.add(new Jmp(new Immediate(trueLbl), sizeHelper));
         instructions.add(new Label(falseLbl));

@@ -1,7 +1,5 @@
 package cs444.codegen.x86.tiles;
 
-import java.util.List;
-
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.instructions.x86.Label;
@@ -37,10 +35,9 @@ public class OrTile implements ITile<X86Instruction, OrExprSymbol>{
 
         final String orEnd = "or" + codeGen.getNewLblNum();
         instructions.addAll(platform.getBest(op.children.get(0)));
-        final List<X86Instruction> jne =  TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.FALSE, orEnd, sizeHelper);
-        instructions.addAll(jne);
+        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.FALSE, orEnd, sizeHelper, instructions);
         instructions.addAll(platform.getBest(op.children.get(1)));
-        instructions.addAll(jne);
+        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.FALSE, orEnd, sizeHelper, instructions);
         instructions.add(new Label(orEnd));
 
         return instructions;

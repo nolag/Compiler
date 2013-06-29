@@ -39,7 +39,7 @@ public class InstanceOfTile implements ITile<X86Instruction, InstanceOfExprSymbo
         instructions.addAll(platform.getBest(op.getLeftOperand()));
         // eax should have reference to object
         final String nullObjectLbl = "nullObject" + visitor.getNewLblNum();
-        TileHelper.ifNullJmpCode(Register.ACCUMULATOR, nullObjectLbl, sizeHelper);
+        TileHelper.ifNullJmpCode(Register.ACCUMULATOR, nullObjectLbl, sizeHelper, instructions);
 
         instructions.addAll(platform.getObjectLayout().subtypeCheckCode((TypeSymbol) op.getRightOperand(), platform));
 

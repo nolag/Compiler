@@ -31,7 +31,7 @@ public class FieldAccessTile implements ITile<X86Instruction, FieldAccessSymbol>
         final X86Platform x86Platform = (X86Platform)platform;
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         instructions.addAll(platform.getBest(field.children.get(0)));
-        instructions.addAll(TileHelper.ifNullJmpCode(Register.ACCUMULATOR, Runtime.EXCEPTION_LBL, x86Platform.getSizeHelper()));
+        TileHelper.ifNullJmpCode(Register.ACCUMULATOR, Runtime.EXCEPTION_LBL, x86Platform.getSizeHelper(), instructions);
         instructions.addAll(platform.getBest(field.children.get(1)));
         return instructions;
     }

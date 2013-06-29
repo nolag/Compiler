@@ -21,7 +21,7 @@ public abstract class ArrayBaseTile implements ITile<X86Instruction, ArrayAccess
         instructions.add(new Comment("Accessing array"));
         instructions.addAll(platform.getBest(arrayAccess.children.get(0)));
 
-        TileHelper.ifNullJmpCode(Register.ACCUMULATOR, Runtime.EXCEPTION_LBL, sizeHelper);
+        TileHelper.ifNullJmpCode(Register.ACCUMULATOR, Runtime.EXCEPTION_LBL, sizeHelper, instructions);
 
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));
@@ -50,7 +50,6 @@ public abstract class ArrayBaseTile implements ITile<X86Instruction, ArrayAccess
         instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(X86SizeHelper.getPushSize(elementSize)), sizeHelper));
         final long offset = sizeHelper.defaultStackSize * 2 + X86SizeHelper.getIntSize(Size.DWORD);
         instructions.add(new Add(Register.ACCUMULATOR, new Immediate(offset), sizeHelper));
-        instructions.add(new Pop(Register.BASE, sizeHelper));
         return instructions;
     }
 

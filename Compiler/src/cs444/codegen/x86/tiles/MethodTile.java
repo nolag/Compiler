@@ -36,9 +36,9 @@ public class MethodTile implements ITile<X86Instruction, MethodSymbol>{
         if(method.isNative()){
             instructions.add(new Extern(methodName));
         }else{
-            instructions.addAll(TileHelper.methProlog(method, methodName, sizeHelper));
+            TileHelper.methProlog(method, methodName, sizeHelper, instructions);
             for(final ISymbol child : method.children) instructions.addAll(platform.getBest(child));
-            instructions.addAll(TileHelper.methEpilogue(method));
+            TileHelper.methEpilogue(method, instructions);
         }
         return instructions;
     }

@@ -34,8 +34,9 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            if (!fileName.equals("BasicArray")) continue;
-            //if(totalTests == 10) break;
+            if (!fileName.equals("FunCall")) continue;
+            //Use this line to stop when there are infinite loops
+            //if(totalTests == 20) break;
 
             if (ignoreList.contains(fileName)){
                 System.out.print("*"); // skip file
