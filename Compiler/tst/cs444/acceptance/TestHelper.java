@@ -34,7 +34,8 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.equals("J1_3_SingleTypeImport_MultipleFromSamePackage")) continue;
+            if (!fileName.equals("BasicArray")) continue;
+            //if(totalTests == 10) break;
 
             if (ignoreList.contains(fileName)){
                 System.out.print("*"); // skip file

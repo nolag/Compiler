@@ -108,6 +108,7 @@ public class TileHelper {
         }
 
         final Immediate arg = new Immediate(APkgClassResolver.generateFullId(cs));
+        if(resolver != CodeGenVisitor.getCurrentCodeGen().currentFile) instructions.add(new Extern(arg));
 
         instructions.add(new Call(arg, sizeHelper));
         //return value is the new object
