@@ -25,9 +25,10 @@ public class NegTile implements ITile<X86Instruction, NegOpExprSymbol>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final NegOpExprSymbol symbol, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final NegOpExprSymbol negSymbol, final Platform<X86Instruction> platform) {
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        instructions.addAll(platform.getBest(negSymbol.children.get(0)));
         instructions.add(new Neg(Register.ACCUMULATOR, sizeHelper));
         return instructions;
     }

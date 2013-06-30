@@ -26,9 +26,10 @@ public class NotTile implements ITile<X86Instruction, NotOpExprSymbol>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final NotOpExprSymbol symbol, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final NotOpExprSymbol notSymbol, final Platform<X86Instruction> platform) {
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        instructions.addAll(platform.getBest(notSymbol.children.get(0)));
         instructions.add(new Xor(Register.ACCUMULATOR, Immediate.TRUE, sizeHelper));
         return instructions;
     }
