@@ -106,7 +106,9 @@ public class CodeGenVisitor{
                 instructions.add(new Push(Register.DATA, sizeHelper));
                 final CodeGenVisitor visitor = new CodeGenVisitor(currentFile, platform);
                 currentVisitor = this;
-                fieldDcl.children.get(0).accept(visitor);
+                final ISymbol field = fieldDcl.children.get(0);
+                field.accept(visitor);
+                instructions.addAll(platform.getBest(field));
                 instructions.add(new Comment("Pop the object address to edx"));
                 instructions.add(new Pop(Register.DATA, sizeHelper));
                 instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, size, sizeHelper));
