@@ -8,18 +8,13 @@ import java.util.List;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.instructions.x86.Comment;
-import cs444.codegen.instructions.x86.Extern;
-import cs444.codegen.instructions.x86.Global;
-import cs444.codegen.instructions.x86.Label;
-import cs444.codegen.instructions.x86.Mov;
-import cs444.codegen.instructions.x86.Ret;
-import cs444.codegen.instructions.x86.Section;
+import cs444.codegen.instructions.x86.*;
 import cs444.codegen.instructions.x86.Section.SectionType;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86_32.linux.Runtime;
+import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassResolver;
@@ -89,7 +84,9 @@ public class StaticFieldInit {
                 if(!fieldDcl.children.isEmpty()){
                     instructions.add(new Comment("Initializing static field " + fieldNameLbl + "."));
                     //null because we are not in a resolver so it will need to extern
-                    fieldDcl.children.get(0).accept(new CodeGenVisitor(platform));
+                    final ISymbol field = fieldDcl.children.get(0);
+                    field.accept(new CodeGenVisitor(platform));
+                    instructions.addAll(platform.getBest(field));
                     instructions.add(new Mov(toAddr, Register.ACCUMULATOR, size, platform.getSizeHelper()));
                 }
             }
