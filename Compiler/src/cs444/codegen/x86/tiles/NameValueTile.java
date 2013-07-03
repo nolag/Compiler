@@ -1,6 +1,8 @@
 package cs444.codegen.x86.tiles;
 
+import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
+import cs444.codegen.instructions.x86.Extern;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
@@ -34,6 +36,8 @@ public final class NameValueTile implements ITile<X86Instruction, SimpleNameSymb
         final DclSymbol dcl = name.dcl;
         final Size size = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
         final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
+
+        if(dcl.isStatic() && dcl.dclInResolver != CodeGenVisitor.getCurrentCodeGen().currentFile) instructions.add(new Extern(staticFieldLbl));
 
         InstructionArg base = Register.ACCUMULATOR;
         if(dcl.isLocal) base = Register.FRAME;

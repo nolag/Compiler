@@ -25,7 +25,6 @@ import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.expressions.*;
 import cs444.types.APkgClassResolver;
-import cs444.types.PkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
 public class CodeGenVisitor{
@@ -453,10 +452,8 @@ public class CodeGenVisitor{
 
     public void visit(final SimpleNameSymbol name) {
         final DclSymbol dcl = name.dcl;
-        final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
 
-        //TODO generic next two lines
-        if(dcl.isStatic() && dcl.dclInResolver != currentFile) instructions.add(new Extern(staticFieldLbl));
+        //TODO generic next line
         lastSize = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRefStackSize(sizeHelper));
 
         if(getVal){

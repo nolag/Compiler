@@ -2,10 +2,7 @@ package cs444.codegen.x86.tiles;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
-import cs444.codegen.instructions.x86.Call;
-import cs444.codegen.instructions.x86.Comment;
-import cs444.codegen.instructions.x86.Mov;
-import cs444.codegen.instructions.x86.Push;
+import cs444.codegen.instructions.x86.*;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
@@ -64,6 +61,7 @@ public class RegularCallTile implements ITile<X86Instruction, SimpleMethodInvoke
         instructions.add(new Call(Register.BASE, sizeHelper));
 
         TileHelper.callEndHelper(call, instructions, platform);
+        instructions.add(new Pop(Register.BASE, sizeHelper));
         return instructions;
     }
 }

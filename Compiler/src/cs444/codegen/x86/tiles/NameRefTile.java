@@ -1,8 +1,10 @@
 package cs444.codegen.x86.tiles;
 
+import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.instructions.x86.Add;
 import cs444.codegen.instructions.x86.Comment;
+import cs444.codegen.instructions.x86.Extern;
 import cs444.codegen.instructions.x86.Mov;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
@@ -36,7 +38,7 @@ public class NameRefTile implements ITile<X86Instruction, SimpleNameSymbol>{
         final DclSymbol dcl = name.dcl;
         final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
         final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
-
+        if(dcl.isStatic() && dcl.dclInResolver != CodeGenVisitor.getCurrentCodeGen().currentFile) instructions.add(new Extern(staticFieldLbl));
         X86Instruction instruction = new Add(Register.ACCUMULATOR, new Immediate(dcl.getOffset()), sizeHelper);
         if(dcl.isStatic()){
             instruction = new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl), sizeHelper);

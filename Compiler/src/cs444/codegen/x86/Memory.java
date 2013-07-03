@@ -40,10 +40,8 @@ public class Memory extends InstructionArg{
 
     @Override
     public String getValue(final Size size, final X86SizeHelper sizeHelper) {
-        String val;
-        if(offset == 0 && offsetArg == null) val = "[" + arg.getValue(sizeHelper) + "]";
-        else if(null != offsetArg) val = "[" + arg.getValue(sizeHelper) + " + " + offsetArg.getValue(sizeHelper) + "]";
-        else val = "[" + arg.getValue(sizeHelper) + " + " + offset + "]";
-        return X86SizeHelper.getStrVal(size) + " " + val;
+        if(offset == 0 && offsetArg == null) return "[" + arg.getValue(sizeHelper) + "]";
+        if(null != offsetArg) return "[" + arg.getValue(sizeHelper) + " + " + offsetArg.getValue(sizeHelper) + "]";
+        return "[" + arg.getValue(sizeHelper) + " + " + offset + "]";
     }
 }
