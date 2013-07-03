@@ -3,7 +3,7 @@ package cs444.parser.symbols.ast;
 import java.util.Collections;
 import java.util.List;
 
-import cs444.codegen.ICodeGenVisitor;
+import cs444.codegen.CodeGenVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
@@ -35,7 +35,7 @@ public class EmptyClassSymbol extends AInterfaceOrClassSymbol{
     }
 
     @Override
-    public void accept(ICodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor visitor) {
         visitor.visit(this);
     }
 

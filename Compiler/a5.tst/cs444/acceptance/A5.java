@@ -8,10 +8,8 @@ import java.util.List;
 import org.junit.Test;
 
 public class A5 {
-
     @Test
     public void testCompileProgramsNoStdLib() throws IOException, InterruptedException{
-        //SuperMethod is not implemented yet
         //List<String> ignoreList = new LinkedList<String>(Arrays.asList("SuperMethod"));
         final List<String> ignoreList = new LinkedList<String>();
 

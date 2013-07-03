@@ -1,20 +1,13 @@
 package cs444;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.Reader;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
 import cs444.codegen.CodeGenVisitor;
-import cs444.codegen.SelectorIndexedTable;
-import cs444.codegen.StaticFieldInit;
-import cs444.codegen.SubtypeIndexedTable;
+import cs444.codegen.Platform;
+import cs444.codegen.x86_32.linux.X86_32LinuxPlatform;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
@@ -35,6 +28,9 @@ public class Compiler {
 
     public static final int COMPILER_ERROR_CODE = 42;
 
+    //TODO make this a list of them and compile with all of them.
+    private static Platform<?> platform;
+
     /**
      * @param args
      * @throws URISyntaxException
@@ -50,6 +46,8 @@ public class Compiler {
             printUsage();
             return COMPILER_ERROR_CODE;
         }
+
+        platform = X86_32LinuxPlatform.platform;
 
         Reader reader = null;
         ANonTerminal parseTree = null;
@@ -106,11 +104,11 @@ public class Compiler {
     private static void checkFields(final List<APkgClassResolver> resolvers)
             throws CompilerException {
         //Do field init here
-        for(final APkgClassResolver resolver : resolvers) resolver.checkFields();
+        for(final APkgClassResolver resolver : resolvers) resolver.checkFields(platform);
     }
 
     private static void typeCheck(final List<APkgClassResolver> resolvers) throws CompilerException {
-        for(final APkgClassResolver resolver : resolvers) resolver.linkLocalNamesToDcl();
+        for(final APkgClassResolver resolver : resolvers) resolver.linkLocalNamesToDcl(platform);
     }
 
     private static void buildAllResolvers(final List<APkgClassResolver> resolvers) throws CompilerException {
@@ -124,13 +122,14 @@ public class Compiler {
     private static void generateCode(final List<APkgClassResolver> resolvers, final boolean outputFile) throws IOException{
         PrintStream printer;
 
-        final SelectorIndexedTable sit = SelectorIndexedTable.generateSIT(resolvers, outputFile, OUTPUT_DIRECTORY);
-        final SubtypeIndexedTable subIt = SubtypeIndexedTable.generateTable(resolvers, outputFile, OUTPUT_DIRECTORY);
+        platform.getSelectorIndex().generateSIT(resolvers, outputFile, OUTPUT_DIRECTORY);
+        platform.makeSubtypeTable(resolvers, outputFile, OUTPUT_DIRECTORY);
 
-        for (final APkgClassResolver resolver : resolvers) resolver.computeFieldOffsets();
+        for (final APkgClassResolver resolver : resolvers) resolver.computeFieldOffsets(platform);
 
-        StaticFieldInit.generateCode(resolvers, sit, subIt, outputFile, OUTPUT_DIRECTORY);
-        final CodeGenVisitor codeGen = new CodeGenVisitor(sit, subIt);
+        platform.generateStaticCode(resolvers, outputFile, OUTPUT_DIRECTORY);
+
+        final CodeGenVisitor codeGen = new CodeGenVisitor(platform);
         for(final APkgClassResolver resolver : resolvers){
             if(!resolver.shouldGenCode()) continue;
             codeGen.genLayoutForStaticFields(resolver.getUninheritedStaticFields());

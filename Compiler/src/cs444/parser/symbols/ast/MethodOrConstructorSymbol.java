@@ -4,6 +4,7 @@ import java.util.List;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
+import cs444.codegen.Platform;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -19,8 +20,8 @@ public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
 
     public final List<DclSymbol> params;
 
-    public MethodOrConstructorSymbol(String nodeName, MethodHeader header,
-            ANonTerminal from, ANonTerminal body, TypeSymbol type)
+    public MethodOrConstructorSymbol(final String nodeName, final MethodHeader header,
+            final ANonTerminal from, final ANonTerminal body, final TypeSymbol type)
             throws IllegalModifierException, UnsupportedException {
         super(nodeName, header.name.value, from, type);
 
@@ -44,16 +45,16 @@ public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
+    public void accept(final ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
 
-        for (ISymbol param : this.params) {
+        for (final ISymbol param : this.params) {
             param.accept(visitor);
         }
 
         visitor.middle(this);
 
-        for (ISymbol child : children) {
+        for (final ISymbol child : children) {
             child.accept(visitor);
         }
 
@@ -61,16 +62,16 @@ public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
     }
 
     private boolean arelocalVarsLinked = false;
-    public void resolveLocalVars(String enclosingClassName) throws CompilerException {
+    public void resolveLocalVars(final String enclosingClassName, final Platform<?> platform) throws CompilerException {
         if (arelocalVarsLinked) return;
 
-        this.accept(new LocalDclLinker(enclosingClassName));
+        this.accept(new LocalDclLinker(enclosingClassName, platform));
 
         arelocalVarsLinked = true;
     }
 
     private boolean reachabilityAnalized = false;
-    public void analyzeReachability(String enclosingClassName) throws CompilerException {
+    public void analyzeReachability(final String enclosingClassName) throws CompilerException {
         if (reachabilityAnalized) return;
 
         this.accept(new ReachabilityAnalyzer(enclosingClassName));

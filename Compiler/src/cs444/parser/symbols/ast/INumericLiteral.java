@@ -1,5 +1,7 @@
 package cs444.parser.symbols.ast;
 
-public interface INumericLiteral {
+import cs444.parser.symbols.ISymbol;
+
+public interface INumericLiteral extends ISymbol{
     public int getValue();
 }

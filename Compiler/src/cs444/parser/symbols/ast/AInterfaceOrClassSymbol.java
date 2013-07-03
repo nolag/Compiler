@@ -5,7 +5,7 @@ import java.util.List;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
-import cs444.codegen.ObjectLayout;
+import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
@@ -21,8 +21,8 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
     private ConstructorSymbol defaultConstructor;
     private long objectSize = 0;
 
-    protected AInterfaceOrClassSymbol(String ruleName, String dclName, ANonTerminal from, Iterable<String> impls, List<ISymbol> body,
-            String superName, Iterable<NameSymbol> pkgImports) throws IllegalModifierException, UnsupportedException {
+    protected AInterfaceOrClassSymbol(final String ruleName, final String dclName, final ANonTerminal from, final Iterable<String> impls, final List<ISymbol> body,
+            final String superName, final Iterable<NameSymbol> pkgImports) throws IllegalModifierException, UnsupportedException {
         super(ruleName, dclName, from, null);
         this.impls = impls;
         children.addAll(body);
@@ -38,9 +38,9 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
     public abstract boolean isClass();
 
     public Iterable<DclSymbol> getFields(){
-        List<DclSymbol> fieldSymbols = new LinkedList<DclSymbol>();
+        final List<DclSymbol> fieldSymbols = new LinkedList<DclSymbol>();
 
-        for(ISymbol child : children){
+        for(final ISymbol child : children){
             if(DclSymbol.class.isInstance(child)) fieldSymbols.add((DclSymbol)child);
         }
 
@@ -48,9 +48,9 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
     }
 
     public Iterable<AMethodSymbol> getMethods() {
-        List<AMethodSymbol> methodSymbols = new LinkedList<AMethodSymbol>();
+        final List<AMethodSymbol> methodSymbols = new LinkedList<AMethodSymbol>();
 
-        for(ISymbol child : children){
+        for(final ISymbol child : children){
             if(child instanceof AMethodSymbol) methodSymbols.add((AMethodSymbol)child);
         }
 
@@ -58,9 +58,9 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
     }
 
     public Iterable<AMethodSymbol> getUninheritedMethods() {
-        List<AMethodSymbol> methodSymbols = new LinkedList<AMethodSymbol>();
+        final List<AMethodSymbol> methodSymbols = new LinkedList<AMethodSymbol>();
 
-        for(AMethodSymbol method : this.getMethods()){
+        for(final AMethodSymbol method : this.getMethods()){
             if ((method instanceof MethodSymbol) && ((MethodSymbol) method).parent == this){
                 methodSymbols.add(method);
             }
@@ -70,9 +70,9 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
     }
 
     public Iterable<ConstructorSymbol> getConstructors(){
-        List<ConstructorSymbol> constructorSymbols = new LinkedList<ConstructorSymbol>();
+        final List<ConstructorSymbol> constructorSymbols = new LinkedList<ConstructorSymbol>();
 
-        for(ISymbol child : children){
+        for(final ISymbol child : children){
             if(child instanceof ConstructorSymbol) constructorSymbols.add((ConstructorSymbol)child);
         }
 
@@ -80,17 +80,17 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
+    public void accept(final ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
 
-        for (ISymbol child : children) {
+        for (final ISymbol child : children) {
             child.accept(visitor);
         }
 
         visitor.close(this);
     }
 
-    public void setDefaultConstructor(ConstructorSymbol constructor) {
+    public void setDefaultConstructor(final ConstructorSymbol constructor) {
         this.defaultConstructor = constructor;
     }
 
@@ -98,9 +98,9 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         return this.defaultConstructor;
     }
 
-    public void computeFieldOffsets() {
-        long nextOffset = ObjectLayout.objSize();
-        for (DclSymbol fieldDcl : this.getFields()) {
+    public void computeFieldOffsets(final Platform<?> platform) {
+        long nextOffset = platform.getObjectLayout().objSize();
+        for (final DclSymbol fieldDcl : this.getFields()) {
             if (fieldDcl.isStatic()) continue;
 
             if(fieldDcl.getOffset() != 0 && nextOffset != fieldDcl.getOffset()){
@@ -111,8 +111,9 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
             // not a field from super:
             fieldDcl.setOffset(nextOffset);
             final TypeSymbol ts = fieldDcl.type;
-            if(ts.isArray) nextOffset += SizeHelper.DEFAULT_STACK_SIZE;
-            else nextOffset += SizeHelper.getByteSizeOfType(fieldDcl.type.value);
+            final SizeHelper<?> sizeHelper = platform.getSizeHelper();
+            if(ts.isArray) nextOffset += sizeHelper.getDefaultStackSize();
+            else nextOffset += sizeHelper.getByteSizeOfType(fieldDcl.type.value);
         }
         this.objectSize = nextOffset;
     }

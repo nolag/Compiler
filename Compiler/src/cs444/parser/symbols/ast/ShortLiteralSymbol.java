@@ -2,7 +2,7 @@ package cs444.parser.symbols.ast;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
-import cs444.codegen.ICodeGenVisitor;
+import cs444.codegen.CodeGenVisitor;
 
 public class ShortLiteralSymbol extends TypeableTerminal implements INumericLiteral {
     public static final String myName = "ShortLiteral";
@@ -20,7 +20,7 @@ public class ShortLiteralSymbol extends TypeableTerminal implements INumericLite
     }
 
     @Override
-    public void accept(ICodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor visitor) {
         visitor.visit(this);
     }
 

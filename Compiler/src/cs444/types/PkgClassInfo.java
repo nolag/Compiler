@@ -27,24 +27,24 @@ public class PkgClassInfo {
         addInitialSymbols();
     }
 
-    public void addClassOrInterface(AInterfaceOrClassSymbol symbol) throws DuplicateDeclarationException, UndeclaredException, ClashException{
-        PkgClassResolver resolver = PkgClassResolver.getResolver(symbol);
+    public void addClassOrInterface(final AInterfaceOrClassSymbol symbol) throws DuplicateDeclarationException, UndeclaredException, ClashException{
+        final PkgClassResolver resolver = PkgClassResolver.getResolver(symbol);
         if(nameSpaces.containsKey(resolver.fullName)){
             throw new ClashException("package " + resolver.fullName, "class " + resolver.fullName);
         }
 
-        Map<String, PkgClassResolver> nameSpc = nameSpaces.get(resolver.pkg);
+        final Map<String, PkgClassResolver> nameSpc = nameSpaces.get(resolver.pkg);
         if(nameSpc != null && nameSpc.containsKey(resolver.name)) throw new DuplicateDeclarationException(resolver.fullName, resolver.fullName);
 
-        String pkg = resolver.pkg;
+        final String pkg = resolver.pkg;
 
         Map<String, PkgClassResolver> pkgs = null;
 
-        String [] innerPkgs = pkg.split("\\.");
-        StringBuilder sb = new StringBuilder();
+        final String [] innerPkgs = pkg.split("\\.");
+        final StringBuilder sb = new StringBuilder();
 
         for(int i = 0; i < innerPkgs.length; i++){
-            String newNameSpace = sb.toString() + innerPkgs[i];
+            final String newNameSpace = sb.toString() + innerPkgs[i];
             pkgs = nameSpaces.get(newNameSpace);
 
             if(pkgs == null){
@@ -68,19 +68,19 @@ public class PkgClassInfo {
         }
     }
 
-    private boolean pkgClashWithType(String pkgNamePrefix, String pkgNameSuffix) {
+    private boolean pkgClashWithType(final String pkgNamePrefix, final String pkgNameSuffix) {
         if (pkgNamePrefix.equals("")) return false;
 
-        String outerPkgName = pkgNamePrefix.substring(0, pkgNamePrefix.length()-1);
-        Map<String, PkgClassResolver> nameSpc = nameSpaces.get(outerPkgName);
+        final String outerPkgName = pkgNamePrefix.substring(0, pkgNamePrefix.length()-1);
+        final Map<String, PkgClassResolver> nameSpc = nameSpaces.get(outerPkgName);
         return (nameSpc != null && nameSpc.containsKey(pkgNameSuffix));
     }
 
-    public APkgClassResolver getSymbol(String name){
+    public APkgClassResolver getSymbol(final String name){
         return symbolMap.get(name);
     }
 
-    public void putSymbol(APkgClassResolver resolver){
+    public void putSymbol(final APkgClassResolver resolver){
         symbolMap.put(resolver.fullName, resolver);
         pkgs.add(resolver);
     }
@@ -89,19 +89,19 @@ public class PkgClassInfo {
         return pkgs;
     }
 
-    public Iterable<Entry<String, PkgClassResolver>> getNamespaceParts(String nameSpace){
+    public Iterable<Entry<String, PkgClassResolver>> getNamespaceParts(final String nameSpace){
         return nameSpaces.get(nameSpace).entrySet();
     }
 
     private void addInitialSymbols() {
-        for(String type : JoosNonTerminal.primativeNumbers){
-            APkgClassResolver resolver = PkgClassResolver.getPrimativeResolver(type);
+        for(final String type : JoosNonTerminal.primativeNumbers){
+            final APkgClassResolver resolver = PkgClassResolver.getPrimativeResolver(type);
             putSymbol(resolver);
             TypeSymbol.getPrimative(type).setTypeDclNode(resolver);
         }
 
-        for(String type : JoosNonTerminal.otherPrimatives){
-            APkgClassResolver resolver = PkgClassResolver.getPrimativeResolver(type);
+        for(final String type : JoosNonTerminal.otherPrimatives){
+            final APkgClassResolver resolver = PkgClassResolver.getPrimativeResolver(type);
             putSymbol(resolver);
             TypeSymbol.getPrimative(type).setTypeDclNode(resolver);
         }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Stack;
 
 import cs444.Compiler;
+import cs444.codegen.x86_32.linux.X86_32LinuxPlatform;
 import cs444.types.PkgClassInfo;
 
 public class TestHelper {
@@ -33,7 +34,9 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.equals("J1_concatInMethods")) continue;
+            //if (!fileName.equals("J1_fieldOwnInit2.java")) continue;
+            //Use this line to stop when there are infinite loops
+            //if(totalTests == 20) break;
 
             if (ignoreList.contains(fileName)){
                 System.out.print("*"); // skip file
@@ -134,6 +137,8 @@ public class TestHelper {
 
     private static int compileAndTest(final String[] files, final boolean printErrors) throws IOException, InterruptedException {
         PkgClassInfo.instance.clear();
+        //Reset the platforms
+        X86_32LinuxPlatform.reset();
         return Compiler.compile(files, printErrors, TestHelper.outputAsmFiles);
     }
 }

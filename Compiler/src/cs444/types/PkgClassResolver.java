@@ -11,7 +11,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import cs444.CompilerException;
-import cs444.codegen.ICodeGenVisitor;
+import cs444.codegen.CodeGenVisitor;
+import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.parser.IASTBuilder;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -55,18 +57,22 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     private PkgClassResolver(final String name) {
+        //final String name, final String pkg, final boolean isFinal, final SizeHelper sizeHelper
         super(name, null, true);
         this.start = null;
         isBuilt = true;
     }
 
     private PkgClassResolver(final AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException{
+
         super(start.dclName, getPkg(start), start.getImplementationLevel() == ImplementationLevel.FINAL);
         namedMap.put(start.dclName, this);
         this.start = start;
     }
 
-    public static PkgClassResolver getResolver(final AInterfaceOrClassSymbol start) throws UndeclaredException, DuplicateDeclarationException {
+    public static PkgClassResolver getResolver(final AInterfaceOrClassSymbol start)
+            throws UndeclaredException, DuplicateDeclarationException {
+
         PkgClassResolver resolver = resolverMap.get(start);
 
         if(resolver == null){
@@ -390,26 +396,26 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void linkLocalNamesToDcl() throws CompilerException {
+    public void linkLocalNamesToDcl(final Platform<?> platform) throws CompilerException {
         if(start == null) return;
-        for(final AMethodSymbol method : start.getUninheritedMethods()){
-            method.resolveLocalVars(fullName);
-        }
+        for(final AMethodSymbol method : start.getUninheritedMethods()) method.resolveLocalVars(fullName, platform);
 
-        for(final ConstructorSymbol consturctor : start.getConstructors()){
-            consturctor.resolveLocalVars(fullName);
-        }
+        for(final ConstructorSymbol consturctor : start.getConstructors()) consturctor.resolveLocalVars(fullName, platform);
+
+        long mySize = 0;
+        for(final DclSymbol dcl : fieldMap.values()) mySize += dcl.getType().getTypeDclNode().getRefStackSize(platform.getSizeHelper());
+        start.setStackSize(mySize);
     }
 
     @Override
-    public void checkFields() throws CompilerException{
+    public void checkFields(final Platform<?> platform) throws CompilerException{
         if (start == null) return;
-        LocalDclLinker linker = new LocalDclLinker(fullName, true);
+        LocalDclLinker linker = new LocalDclLinker(fullName, true, platform);
         for(final DclSymbol dcl : this.getUninheritedNonStaticFields()){
             dcl.accept(linker);
         }
 
-        linker = new LocalDclLinker(fullName, false);
+        linker = new LocalDclLinker(fullName, false, platform);
         for(final DclSymbol dcl : this.getUninheritedStaticFields()){
             dcl.accept(linker);
         }
@@ -457,7 +463,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void generateCode(final ICodeGenVisitor visitor) {
+    public void generateCode(final CodeGenVisitor visitor) {
         if(!shouldGenCode()) return;
 
         for(final AMethodSymbol methodSymbol : start.getUninheritedMethods()) methodSymbol.accept(visitor);
@@ -470,14 +476,29 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void computeFieldOffsets() {
-        if (shouldGenCode()) start.computeFieldOffsets();
+    public void computeFieldOffsets(final Platform<?> platform) {
+        if (shouldGenCode()) start.computeFieldOffsets(platform);
     }
 
     @Override
-    public long getStackSize() {
-        if (start == null) return stackSize;
-        return start.getObjectSize();
+    public long getStackSize(final SizeHelper<?> sizeHelper){
+        if(start != null) return start.getStackSize();
+        final long size = sizeHelper.getByteSizeOfType(name);
+        final int minSize = sizeHelper.getMinSize();
+        return size > minSize ? size : minSize;
+    }
+
+    @Override
+    public long getRefStackSize(final SizeHelper<?> sizeHelper) {
+        if(start != null)return sizeHelper.getDefaultStackSize();
+        final long size = sizeHelper.getByteSizeOfType(name);
+        final int minSize = sizeHelper.getMinSize();
+        return size > minSize ? size : minSize;
+    }
+
+    @Override
+    public long getRealSize(final SizeHelper<?> sizeHelper) {
+        return sizeHelper.getByteSizeOfType(name);
     }
 
     public AInterfaceOrClassSymbol getStart() {

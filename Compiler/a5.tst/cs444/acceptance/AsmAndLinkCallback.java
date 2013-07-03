@@ -14,12 +14,12 @@ import cs444.Compiler;
         private static final int EXPECTED_DEFAULT_RTN_CODE = 123;
 
         @Override
-        public boolean beforeCompile(File _) throws IOException {
-            File folder = new File(Compiler.OUTPUT_DIRECTORY);
+        public boolean beforeCompile(final File _) throws IOException {
+            final File folder = new File(Compiler.OUTPUT_DIRECTORY);
 
             if (!folder.exists()) folder.mkdir();
 
-            for (File file : folder.listFiles()) {
+            for (final File file : folder.listFiles()) {
                 if (file.getName().equals("runtime.s")) continue;
 
                 if (!file.delete()){
@@ -30,15 +30,15 @@ import cs444.Compiler;
         }
 
         @Override
-        public boolean afterCompile(File file) throws IOException, InterruptedException {
-            File folder = new File(Compiler.OUTPUT_DIRECTORY);
+        public boolean afterCompile(final File file) throws IOException, InterruptedException {
+            final File folder = new File(Compiler.OUTPUT_DIRECTORY);
             if (!assembleOutput(folder)) return false;
 
-            String folderAbsPath = folder.getAbsolutePath();
+            final String folderAbsPath = folder.getAbsolutePath();
             if(execAndWait(new String[] {"bash", "-c", "ld -melf_i386 -o main " +
                 folderAbsPath + File.separator + "*.o"}) != 0) return false;
 
-            int returnCode = execAndWait(new String[] {"./main"});
+            final int returnCode = execAndWait(new String[] {"./main"});
 
             int expectedReturnCode;
             if (!file.isDirectory()){
@@ -46,7 +46,7 @@ import cs444.Compiler;
             }else{
                 try{
                     expectedReturnCode = getExpectedReturnCode(file);
-                }catch(FileNotFoundException e){
+                }catch(final FileNotFoundException e){
                     expectedReturnCode = EXPECTED_DEFAULT_RTN_CODE;
                     //return true;
                 }
@@ -61,15 +61,15 @@ import cs444.Compiler;
             return true;
         }
 
-        private int getExpectedReturnCode(File file)
+        private int getExpectedReturnCode(final File file)
                 throws FileNotFoundException {
-            File returnCodeFile = new File(file, "return.code");
+            final File returnCodeFile = new File(file, "return.code");
 
             int expectedReturnCode;
             Scanner scan = null;
             try{
                 scan = new Scanner(returnCodeFile);
-                String line = scan.nextLine();
+                final String line = scan.nextLine();
                 expectedReturnCode = Integer.parseInt(line);
             }finally{
                 if(scan != null) scan.close();
@@ -77,26 +77,26 @@ import cs444.Compiler;
             return expectedReturnCode;
         }
 
-        private boolean assembleOutput(File folder) throws IOException, InterruptedException {
-            for (File file : folder.listFiles()) {
-                String fileName = file.getName();
+        private boolean assembleOutput(final File folder) throws IOException, InterruptedException {
+            for (final File file : folder.listFiles()) {
+                final String fileName = file.getName();
                 if (!fileName.endsWith(".s")) continue;
-                String[] command = new String[] {"nasm", "-O1", "-f", "elf", "-g", "-F",
+                final String[] command = new String[] {"nasm", "-O1", "-f", "elf", "-g", "-F",
                         "dwarf", file.getAbsolutePath()};
                 if (execAndWait(command) != 0) return false;
             }
             return true;
         }
 
-        private int execAndWait(String[] command) throws IOException, InterruptedException{
-            Process proc = Runtime.getRuntime().exec(command);
+        private int execAndWait(final String[] command) throws IOException, InterruptedException{
+            final Process proc = Runtime.getRuntime().exec(command);
 
             // any error message?
-            StreamGobbler errorGobbler = new
+            final StreamGobbler errorGobbler = new
                 StreamGobbler(proc.getErrorStream(), "ERROR");
 
             // any output?
-            StreamGobbler outputGobbler = new
+            final StreamGobbler outputGobbler = new
                 StreamGobbler(proc.getInputStream(), "OUTPUT");
 
             // consume all output from err and out
@@ -118,7 +118,7 @@ import cs444.Compiler;
                 return receivedOutput;
             }
 
-            StreamGobbler(InputStream is, String type){
+            StreamGobbler(final InputStream is, final String type){
                 this.is = is;
                 this.type = type;
             }
@@ -126,14 +126,14 @@ import cs444.Compiler;
             @Override
             public void run(){
                 try{
-                    InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader br = new BufferedReader(isr);
+                    final InputStreamReader isr = new InputStreamReader(is);
+                    final BufferedReader br = new BufferedReader(isr);
                     String line=null;
                     while ( (line = br.readLine()) != null){
                         System.out.println(type + ">" + line);
                         receivedOutput = true;
                     }
-                } catch (IOException ioe){
+                } catch (final IOException ioe){
                     ioe.printStackTrace();
                 }
             }

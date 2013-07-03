@@ -1,6 +1,6 @@
 package cs444.parser.symbols.ast;
 
-import cs444.codegen.ICodeGenVisitor;
+import cs444.codegen.CodeGenVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
@@ -42,7 +42,7 @@ public class MethodSymbol extends AMethodSymbol {
     }
 
     @Override
-    public void accept(ICodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor visitor) {
         visitor.visit(this);
     }
 }

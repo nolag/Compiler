@@ -11,7 +11,7 @@ import java.util.Set;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
-import cs444.codegen.ICodeGenVisitor;
+import cs444.codegen.CodeGenVisitor;
 import cs444.types.APkgClassResolver;
 
 public class JoosNonTerminal extends NonTerminal{
@@ -209,7 +209,7 @@ public class JoosNonTerminal extends NonTerminal{
     }
 
     @Override
-    public void accept(ICodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor visitor) {
         visitor.visit(this);
     }
 }
