@@ -51,7 +51,7 @@ public class IfTile implements ITile<X86Instruction, IfExprSymbol>{
 
         final ISymbol elseSymbol = ifExprSymbol.getElseBody();
 
-        if(elseSymbol != null) platform.getBest(elseSymbol);
+        if(elseSymbol != null) instructions.addAll(platform.getBest(elseSymbol));
 
         instructions.add(new Label(trueLbl));
         instructions.add(new Comment("if end" + myid));

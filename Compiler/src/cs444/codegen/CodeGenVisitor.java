@@ -25,7 +25,6 @@ import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.expressions.*;
 import cs444.types.APkgClassResolver;
-import cs444.types.exceptions.UndeclaredException;
 
 public class CodeGenVisitor{
     private static CodeGenVisitor currentVisitor;
@@ -197,21 +196,6 @@ public class CodeGenVisitor{
             final Typeable typeable = (Typeable) child;
             final TypeSymbol ts = typeable.getType();
             types.add(ts.getTypeDclNode().fullName);
-        }
-
-        if (!creationExpression.getType().isArray){
-            //TODO generic this
-            final APkgClassResolver resolver = creationExpression.getType().getTypeDclNode();
-            ConstructorSymbol cs = null;
-            try {
-                cs = resolver.getConstructor(types, resolver);
-            } catch (final UndeclaredException e) {
-                //Should never get here
-                e.printStackTrace();
-            }
-            final Immediate arg = new Immediate(APkgClassResolver.generateFullId(cs));
-
-            if(cs.dclInResolver != currentFile) instructions.add(new Extern(arg));
         }
 
         //TODO generic this
@@ -421,7 +405,6 @@ public class CodeGenVisitor{
         if(dclSymbol.children.isEmpty()) new IntegerLiteralSymbol(0).accept(this);
         else dclSymbol.children.get(0).accept(this);
         lastSize = X86SizeHelper.getSize(dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper));
-        instructions.add(new Push(Register.ACCUMULATOR, lastSize, sizeHelper));
         tiles.<DclSymbol>addBest(tiles.dcls, dclSymbol, platform);
     }
 
