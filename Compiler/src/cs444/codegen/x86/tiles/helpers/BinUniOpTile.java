@@ -40,7 +40,7 @@ public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Inst
         if(sar){
             instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR, sizeHelper));
             instructions.add(new Sar(Register.DATA, Immediate.PREP_EDX, sizeHelper));
-            final String safeDiv = "safeDiv" + CodeGenVisitor.getCurrentCodeGen().getNewLblNum();
+            final String safeDiv = "safeDiv" + CodeGenVisitor.getNewLblNum();
             TileHelper.setupJumpNe(Register.BASE, Immediate.ZERO, safeDiv, sizeHelper, instructions);
             Runtime.instance.throwException(instructions, "Divide by zero");
             instructions.add(new Label(safeDiv));

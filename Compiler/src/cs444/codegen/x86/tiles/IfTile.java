@@ -36,7 +36,7 @@ public class IfTile implements ITile<X86Instruction, IfExprSymbol>{
 
         final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
 
-        final long myid = CodeGenVisitor.getCurrentCodeGen().getNewLblNum();
+        final long myid = CodeGenVisitor.getNewLblNum();
         instructions.add(new Comment("if start" + myid));
         final String falseLbl = "false" + myid;
         final String trueLbl = "true" + myid;

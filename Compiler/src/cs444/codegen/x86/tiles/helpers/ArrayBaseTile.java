@@ -16,7 +16,6 @@ public abstract class ArrayBaseTile implements ITile<X86Instruction, ArrayAccess
     public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess, final Platform<X86Instruction> platform) {
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
-        final CodeGenVisitor visitor = CodeGenVisitor.getCurrentCodeGen();
 
         instructions.add(new Comment("Accessing array"));
         instructions.addAll(platform.getBest(arrayAccess.children.get(0)));
@@ -28,14 +27,14 @@ public abstract class ArrayBaseTile implements ITile<X86Instruction, ArrayAccess
         instructions.addAll(platform.getBest(arrayAccess.children.get(1)));
 
         instructions.add(new Comment("Checking element >= 0"));
-        String ok = "arrayAccessOk" + visitor.getNewLblNum();
+        String ok = "arrayAccessOk" + CodeGenVisitor.getNewLblNum();
         instructions.add(new Xor(Register.DATA, Register.DATA, sizeHelper));
         instructions.add(new Cmp(Register.ACCUMULATOR, Register.DATA, sizeHelper));
         instructions.add(new Jge(new Immediate(ok), sizeHelper));
         Runtime.instance.throwException(instructions, "Invalid array access");
         instructions.add(new Label(ok));
 
-        ok = "arrayAccessOk" + visitor.getNewLblNum();
+        ok = "arrayAccessOk" + CodeGenVisitor.getNewLblNum();
         final Memory len = new Memory(Register.BASE, new Immediate(platform.getObjectLayout().objSize()));
         instructions.add(new Cmp(len, Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Jg(new Immediate(ok), sizeHelper));

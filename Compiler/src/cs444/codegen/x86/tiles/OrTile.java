@@ -31,9 +31,8 @@ public class OrTile implements ITile<X86Instruction, OrExprSymbol>{
     public InstructionsAndTiming<X86Instruction> generate(final OrExprSymbol op, final Platform<X86Instruction> platform){
         final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final CodeGenVisitor codeGen = CodeGenVisitor.getCurrentCodeGen();
 
-        final String orEnd = "or" + codeGen.getNewLblNum();
+        final String orEnd = "or" + CodeGenVisitor.getNewLblNum();
         instructions.addAll(platform.getBest(op.children.get(0)));
         TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.FALSE, orEnd, sizeHelper, instructions);
         instructions.addAll(platform.getBest(op.children.get(1)));

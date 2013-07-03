@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.Test;
 
 public class A5 {
-    @Test
+    /*@Test
     public void testCompileProgramsNoStdLib() throws IOException, InterruptedException{
         //List<String> ignoreList = new LinkedList<String>(Arrays.asList("SuperMethod"));
         final List<String> ignoreList = new LinkedList<String>();
@@ -16,15 +16,15 @@ public class A5 {
                 true, ignoreList, new AsmAndLinkCallback());
     }
 
-    /*@Test
+    @Test
     public void testCompileProgramsWithStdLib() throws IOException, InterruptedException{
         final List<String> ignoreList = new LinkedList<String>();
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "A5/WithStdLib/", 0, true, true,
                                             true, ignoreList, new AsmAndLinkCallback());
-    }
+    }*/
 
-    @Test
+    /*@Test
     public void testMarmosetA5Programs() throws IOException, InterruptedException{
 
         final List<String> failingList = new LinkedList<String>();
@@ -39,7 +39,7 @@ public class A5 {
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a4/valid/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
-    }
+    }*/
 
     @Test
     public void testMarmosetA3ValidTestCases() throws IOException, InterruptedException {
@@ -49,7 +49,7 @@ public class A5 {
                 true, failingList, new AsmAndLinkCallback());
     }
 
-    @Test
+    /*@Test
     public void testMarmosetA2ValidTestCases() throws IOException, InterruptedException {
         final List<String> failingList = new LinkedList<String>();
 

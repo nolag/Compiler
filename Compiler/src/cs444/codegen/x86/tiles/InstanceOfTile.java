@@ -34,16 +34,15 @@ public class InstanceOfTile implements ITile<X86Instruction, InstanceOfExprSymbo
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final InstanceOfExprSymbol op, final Platform<X86Instruction> platform) {
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final CodeGenVisitor visitor = CodeGenVisitor.getCurrentCodeGen();
         final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
         instructions.addAll(platform.getBest(op.getLeftOperand()));
         // eax should have reference to object
-        final String nullObjectLbl = "nullObject" + visitor.getNewLblNum();
+        final String nullObjectLbl = "nullObject" + CodeGenVisitor.getNewLblNum();
         TileHelper.ifNullJmpCode(Register.ACCUMULATOR, nullObjectLbl, sizeHelper, instructions);
 
         instructions.addAll(platform.getObjectLayout().subtypeCheckCode((TypeSymbol) op.getRightOperand(), platform));
 
-        final String endLbl = "instanceOfEnd" + visitor.getNewLblNum();
+        final String endLbl = "instanceOfEnd" + CodeGenVisitor.getNewLblNum();
         instructions.add(new Jmp(new Immediate(endLbl), sizeHelper));
 
         instructions.add(new Label(nullObjectLbl));

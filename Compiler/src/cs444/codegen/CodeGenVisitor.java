@@ -42,7 +42,7 @@ public class CodeGenVisitor{
     public boolean lastWasFunc = false;
     //TODO generic
     public Size lastSize = Size.DWORD;
-    private long nextLblnum = 0;
+    private static long nextLblnum = 0;
     public APkgClassResolver currentFile;
     public boolean isSuper = false;
     public Size lhsSize;
@@ -55,7 +55,7 @@ public class CodeGenVisitor{
     //TODO generic
     private final TileSet<X86Instruction> tiles;
 
-    public long getNewLblNum(){
+    public static long getNewLblNum(){
         return nextLblnum++;
     }
 
@@ -106,7 +106,6 @@ public class CodeGenVisitor{
                 currentVisitor = this;
                 final ISymbol field = fieldDcl.children.get(0);
                 field.accept(visitor);
-                instructions.addAll(platform.getBest(field));
                 instructions.addAll(platform.getBest(field));
                 instructions.add(new Comment("Pop the object address to edx"));
                 instructions.add(new Pop(Register.DATA, sizeHelper));

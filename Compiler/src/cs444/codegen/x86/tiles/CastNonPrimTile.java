@@ -35,7 +35,7 @@ public class CastNonPrimTile implements ITile<X86Instruction, CastExpressionSymb
     public InstructionsAndTiming<X86Instruction> generate(final CastExpressionSymbol symbol, final Platform<X86Instruction> platform) {
         final TypeSymbol type = symbol.getType();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final String castExprEnd = "CastExprEnd" + CodeGenVisitor.getCurrentCodeGen().getNewLblNum();
+        final String castExprEnd = "CastExprEnd" + CodeGenVisitor.getNewLblNum();
         final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));

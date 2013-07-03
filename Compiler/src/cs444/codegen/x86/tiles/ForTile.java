@@ -34,7 +34,7 @@ public class ForTile implements ITile<X86Instruction, ForExprSymbol>{
     public InstructionsAndTiming<X86Instruction> generate(final ForExprSymbol forExprSymbol, final Platform<X86Instruction> platform) {
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
-        final long mynum = CodeGenVisitor.getCurrentCodeGen().getNewLblNum();
+        final long mynum = CodeGenVisitor.getNewLblNum();
         instructions.add(new Comment("for start " + mynum));
         final String loopStart = "loopStart" + mynum;
         final String loopEnd = "loopEnd" + mynum;

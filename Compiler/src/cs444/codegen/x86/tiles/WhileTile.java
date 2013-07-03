@@ -32,7 +32,7 @@ public class WhileTile implements ITile<X86Instruction, WhileExprSymbol>{
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final WhileExprSymbol whileExprSymbol, final Platform<X86Instruction> platform) {
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final long mynum = CodeGenVisitor.getCurrentCodeGen().getNewLblNum();
+        final long mynum = CodeGenVisitor.getNewLblNum();
         instructions.add(new Comment("while start " + mynum));
         final String loopStart = "loopStart" + mynum;
         final String loopEnd = "loopEnd" + mynum;

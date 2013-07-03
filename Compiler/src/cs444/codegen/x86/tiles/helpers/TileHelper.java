@@ -123,7 +123,7 @@ public class TileHelper {
 
 
 
-        final Size lastSize = X86SizeHelper.getSize(sizeHelper.getByteSizeOfType(firstType));
+        final Size lastSize = X86SizeHelper.getPushSize(X86SizeHelper.getSize(sizeHelper.getByteSizeOfType(firstType)));
         final int pop = X86SizeHelper.getIntSize(lastSize);
 
         instructions.add(new Push(Register.ACCUMULATOR, lastSize, sizeHelper));

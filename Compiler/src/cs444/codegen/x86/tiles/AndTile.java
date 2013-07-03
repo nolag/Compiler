@@ -31,9 +31,8 @@ public class AndTile implements ITile<X86Instruction, AndExprSymbol>{
     public InstructionsAndTiming<X86Instruction> generate(final AndExprSymbol op, final Platform<X86Instruction> platform){
         final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final CodeGenVisitor codeGen = CodeGenVisitor.getCurrentCodeGen();
 
-        final String andEnd = "and" + codeGen.getNewLblNum();
+        final String andEnd = "and" + CodeGenVisitor.getNewLblNum();
         instructions.addAll(platform.getBest(op.children.get(0)));
         TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, andEnd, sizeHelper, instructions);
         instructions.addAll(platform.getBest(op.children.get(1)));
