@@ -80,7 +80,9 @@ public class TileHelper {
 
         for(final ISymbol child : children){
             instructions.addAll(platform.getBest(child));
-            instructions.add(new Push(Register.ACCUMULATOR, X86SizeHelper.getPushSize(CodeGenVisitor.getCurrentCodeGen().lastSize), sizeHelper));
+            final Typeable arg = (Typeable) child;
+            final Size lastSize =  X86SizeHelper.getPushSize(sizeHelper.getSizeOfType(arg.getType().getTypeDclNode().fullName));
+            instructions.add(new Push(Register.ACCUMULATOR, X86SizeHelper.getPushSize(lastSize), sizeHelper));
             final Typeable typeable = (Typeable) child;
             final TypeSymbol ts = typeable.getType();
             types.add(ts.getTypeDclNode().fullName);
