@@ -48,9 +48,10 @@ public class SuperCallTile implements ITile<X86Instruction, SimpleMethodInvoke> 
         String name = APkgClassResolver.generateFullId(call);
         if(call.isNative()) name = NATIVE_NAME + name;
         final Immediate arg = new Immediate(name);
+        instructions.add(new Push(Register.BASE, sizeHelper));
         if(call.dclInResolver != CodeGenVisitor.getCurrentCodeGen().currentFile || call.isNative()) instructions.add(new Extern(arg));
         instructions.add(new Call(arg, sizeHelper));
-
+        instructions.add(new Pop(Register.BASE, sizeHelper));
         TileHelper.callEndHelper(call, instructions, platform);
         return instructions;
     }
