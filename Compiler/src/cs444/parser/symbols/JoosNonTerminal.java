@@ -1,13 +1,6 @@
 package cs444.parser.symbols;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
@@ -153,6 +146,7 @@ public class JoosNonTerminal extends NonTerminal{
         binExpressions.add("CONDITIONALOREXPRESSION");
         binExpressions.add("ASSIGNMENT");
         binExpressions.add("ANDEXPRESSION");
+        binExpressions.add("SHIFTEXPRESSION");
 
         fors.add("FORSTATEMENT");
         fors.add("FORSTATEMENTNOSHORTIF");
@@ -161,14 +155,14 @@ public class JoosNonTerminal extends NonTerminal{
         ifs.add("IFTHENELSESTATEMENT");
         ifs.add("IFTHENELSESTATEMENTNOSHORTIF");
 
-        Set<String> byteCharAssign = new HashSet<String>(Arrays.asList(new String [] {INTEGER, SHORT}));
-        Set<String> assignToint = new HashSet<String>(Arrays.asList(new String [] {INTEGER}));
+        final Set<String> byteCharAssign = new HashSet<String>(Arrays.asList(new String [] {INTEGER, SHORT}));
+        final Set<String> assignToint = new HashSet<String>(Arrays.asList(new String [] {INTEGER}));
         defaultAssignables.put(BYTE, byteCharAssign);
         defaultAssignables.put(CHAR, assignToint);
         defaultAssignables.put(SHORT, assignToint);
 
-        Set<String> alsoToShort = new HashSet<String>(Arrays.asList(new String [] {CHAR}));
-        Set<String> alsoToChar = new HashSet<String>(Arrays.asList(new String [] {SHORT}));
+        final Set<String> alsoToShort = new HashSet<String>(Arrays.asList(new String [] {CHAR}));
+        final Set<String> alsoToChar = new HashSet<String>(Arrays.asList(new String [] {SHORT}));
         specialAssignables.put(SHORT, alsoToShort);
         specialAssignables.put(CHAR, alsoToChar);
         specialAssignables.put(BYTE, alsoToShort);
@@ -184,7 +178,7 @@ public class JoosNonTerminal extends NonTerminal{
         unsigned.add(BOOLEAN);
     }
 
-    public JoosNonTerminal(String name, ISymbol[] children) {
+    public JoosNonTerminal(final String name, final ISymbol[] children) {
         super(name, children);
     }
 
@@ -199,17 +193,17 @@ public class JoosNonTerminal extends NonTerminal{
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
+    public void accept(final ISymbolVisitor visitor) throws CompilerException {
         visitor.visit(this);
         visitor.open(this);
-        for (ISymbol child : this.children) {
+        for (final ISymbol child : this.children) {
             child.accept(visitor);
         }
         visitor.close(this);
     }
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor visitor) {
         visitor.visit(this);
     }
 }

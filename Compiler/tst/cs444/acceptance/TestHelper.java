@@ -34,7 +34,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.equals("J1_fieldOwnInit2.java")) continue;
+            //if (!fileName.equals("SinedVsUnsigendShift")) continue;
             //Use this line to stop when there are infinite loops
             //if(totalTests == 20) break;
 

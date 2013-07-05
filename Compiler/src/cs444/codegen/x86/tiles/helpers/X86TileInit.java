@@ -25,6 +25,9 @@ public class X86TileInit {
         IfTile.init();
         InstanceOfTile.init();
         LETile.init();
+        LSTile.init();
+        RSTile.init();
+        URSTile.init();
         LTTile.init();
         MethodTile.init();
         MultTile.init();

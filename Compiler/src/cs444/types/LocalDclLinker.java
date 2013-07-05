@@ -1,11 +1,6 @@
 package cs444.types;
 
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
@@ -13,59 +8,11 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
-import cs444.parser.symbols.ast.AMethodSymbol;
-import cs444.parser.symbols.ast.BooleanLiteralSymbol;
-import cs444.parser.symbols.ast.ByteLiteralSymbol;
-import cs444.parser.symbols.ast.CharacterLiteralSymbol;
-import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.EmptyStatementSymbol;
-import cs444.parser.symbols.ast.FieldAccessSymbol;
-import cs444.parser.symbols.ast.IntegerLiteralSymbol;
-import cs444.parser.symbols.ast.MethodInvokeSymbol;
-import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
-import cs444.parser.symbols.ast.NameSymbol;
-import cs444.parser.symbols.ast.NullSymbol;
-import cs444.parser.symbols.ast.ShortLiteralSymbol;
-import cs444.parser.symbols.ast.StringLiteralSymbol;
-import cs444.parser.symbols.ast.SuperSymbol;
-import cs444.parser.symbols.ast.ThisSymbol;
-import cs444.parser.symbols.ast.TypeSymbol;
-import cs444.parser.symbols.ast.Typeable;
-import cs444.parser.symbols.ast.TypeableTerminal;
-import cs444.parser.symbols.ast.expressions.AddExprSymbol;
-import cs444.parser.symbols.ast.expressions.AndExprSymbol;
-import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
-import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
-import cs444.parser.symbols.ast.expressions.BinOpExpr;
-import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
-import cs444.parser.symbols.ast.expressions.CreationExpression;
-import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
-import cs444.parser.symbols.ast.expressions.EAndExprSymbol;
-import cs444.parser.symbols.ast.expressions.EOrExprSymbol;
-import cs444.parser.symbols.ast.expressions.EqExprSymbol;
-import cs444.parser.symbols.ast.expressions.ForExprSymbol;
-import cs444.parser.symbols.ast.expressions.IfExprSymbol;
-import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
-import cs444.parser.symbols.ast.expressions.LeExprSymbol;
-import cs444.parser.symbols.ast.expressions.LtExprSymbol;
-import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
-import cs444.parser.symbols.ast.expressions.NeExprSymbol;
-import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
-import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
-import cs444.parser.symbols.ast.expressions.OrExprSymbol;
-import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
-import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
-import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
-import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
+import cs444.parser.symbols.ast.*;
+import cs444.parser.symbols.ast.expressions.*;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.APkgClassResolver.Castable;
-import cs444.types.exceptions.BadOperandsTypeException;
-import cs444.types.exceptions.DuplicateDeclarationException;
-import cs444.types.exceptions.ExplicitThisInStaticException;
-import cs444.types.exceptions.ForwardReferenceException;
-import cs444.types.exceptions.IllegalCastAssignmentException;
-import cs444.types.exceptions.IllegalInstanceOfException;
-import cs444.types.exceptions.UndeclaredException;
+import cs444.types.exceptions.*;
 
 public class LocalDclLinker extends EmptyVisitor {
     private LocalScope currentScope;
@@ -650,6 +597,21 @@ public class LocalDclLinker extends EmptyVisitor {
 
     @Override
     public void visit(final SubtractExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
+        bothIntHelper(JoosNonTerminal.INTEGER, op);
+    }
+
+    @Override
+    public void visit(final LSExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
+        bothIntHelper(JoosNonTerminal.INTEGER, op);
+    }
+
+    @Override
+    public void visit(final RSExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
+        bothIntHelper(JoosNonTerminal.INTEGER, op);
+    }
+
+    @Override
+    public void visit(final URSExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
         bothIntHelper(JoosNonTerminal.INTEGER, op);
     }
 

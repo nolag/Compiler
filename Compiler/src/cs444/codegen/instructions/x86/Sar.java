@@ -1,17 +1,15 @@
 package cs444.codegen.instructions.x86;
 
 import cs444.codegen.instructions.x86.bases.BinInstruction;
-import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.Memory;
-import cs444.codegen.x86.Register;
-import cs444.codegen.x86.X86SizeHelper;
+import cs444.codegen.x86.*;
+import cs444.codegen.x86.InstructionArg.Size;
 
 public class Sar extends BinInstruction{
-    public Sar(final Register reg, final Immediate arg, final X86SizeHelper sizeHelper){
-        super("sar", reg, arg, sizeHelper, 3);
+    public Sar(final Register reg, final InstructionArg arg, final X86SizeHelper sizeHelper){
+        super("sar", reg, arg, sizeHelper, sizeHelper.defaultStack, Size.LOW, 3);
     }
 
-    public Sar(final Memory reg, final Immediate arg, final X86SizeHelper sizeHelper){
-        super("sar", reg, arg, sizeHelper, 4);
+    public Sar(final Memory reg, final InstructionArg arg, final X86SizeHelper sizeHelper){
+        super("sar", reg, arg, sizeHelper, sizeHelper.defaultStack, Size.LOW, 3);
     }
 }

@@ -38,6 +38,9 @@ public class TileSet <T extends Instruction>{
     public final List<ITile<T, RemainderExprSymbol>> rems = new LinkedList<ITile<T, RemainderExprSymbol>>();
     public final List<ITile<T, AddExprSymbol>> adds = new LinkedList<ITile<T, AddExprSymbol>>();
     public final List<ITile<T, SubtractExprSymbol>> subs = new LinkedList<ITile<T, SubtractExprSymbol>>();
+    public final List<ITile<T, LSExprSymbol>> lss = new LinkedList<ITile<T, LSExprSymbol>>();
+    public final List<ITile<T, RSExprSymbol>> rss = new LinkedList<ITile<T, RSExprSymbol>>();
+    public final List<ITile<T, URSExprSymbol>> urss = new LinkedList<ITile<T, URSExprSymbol>>();
     public final List<ITile<T, LtExprSymbol>> lts = new LinkedList<ITile<T, LtExprSymbol>>();
     public final List<ITile<T, LeExprSymbol>> les = new LinkedList<ITile<T, LeExprSymbol>>();
     public final List<ITile<T, EqExprSymbol>> eqs = new LinkedList<ITile<T, EqExprSymbol>>();

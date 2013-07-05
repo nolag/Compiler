@@ -6,21 +6,7 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.NameSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
-import cs444.parser.symbols.ast.expressions.AddExprSymbol;
-import cs444.parser.symbols.ast.expressions.AndExprSymbol;
-import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
-import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
-import cs444.parser.symbols.ast.expressions.EAndExprSymbol;
-import cs444.parser.symbols.ast.expressions.EOrExprSymbol;
-import cs444.parser.symbols.ast.expressions.EqExprSymbol;
-import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
-import cs444.parser.symbols.ast.expressions.LeExprSymbol;
-import cs444.parser.symbols.ast.expressions.LtExprSymbol;
-import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
-import cs444.parser.symbols.ast.expressions.NeExprSymbol;
-import cs444.parser.symbols.ast.expressions.OrExprSymbol;
-import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
-import cs444.parser.symbols.ast.expressions.SubtractExprSymbol;
+import cs444.parser.symbols.ast.expressions.*;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
@@ -29,13 +15,13 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 public class BinOpFactory extends ASTSymbolFactory{
 
     @Override
-    protected ISymbol convert(ISymbol from) throws OutOfRangeException, UnsupportedException, IllegalModifierException {
+    protected ISymbol convert(final ISymbol from) throws OutOfRangeException, UnsupportedException, IllegalModifierException {
         if(!JoosNonTerminal.binExpressions.contains(from.getName())) return from;
 
-        ANonTerminal nonTerm = (ANonTerminal) from;
-        ISymbol left = nonTerm.children.get(0);
-        ISymbol symbol = nonTerm.children.get(1);
-        ISymbol right = nonTerm.children.get(2);
+        final ANonTerminal nonTerm = (ANonTerminal) from;
+        final ISymbol left = nonTerm.children.get(0);
+        final ISymbol symbol = nonTerm.children.get(1);
+        final ISymbol right = nonTerm.children.get(2);
         final String typeName = symbol.getName().toUpperCase();
 
         if(typeName.equals(Token.Type.STAR.toString())) return new MultiplyExprSymbol(left, right);
@@ -43,6 +29,9 @@ public class BinOpFactory extends ASTSymbolFactory{
         if(typeName.equals(Token.Type.PCT.toString())) return new RemainderExprSymbol(left, right);
         if(typeName.equals(Token.Type.PLUS.toString())) return new AddExprSymbol(left, right);
         if(typeName.equals(Token.Type.MINUS.toString())) return new SubtractExprSymbol(left, right);
+        if(typeName.equals(Token.Type.LS.toString())) return new LSExprSymbol(left, right);
+        if(typeName.equals(Token.Type.RS.toString())) return new RSExprSymbol(left, right);
+        if(typeName.equals(Token.Type.URS.toString())) return new URSExprSymbol(left, right);
         if(typeName.equals(Token.Type.LT.toString())) return new LtExprSymbol(left, right);
         if(typeName.equals(Token.Type.GT.toString())) return new LtExprSymbol(right, left);
         if(typeName.equals(Token.Type.LE.toString())) return new LeExprSymbol(left, right);
@@ -52,7 +41,7 @@ public class BinOpFactory extends ASTSymbolFactory{
             if (right instanceof TypeSymbol){
                 type = (TypeSymbol) right;
             }else{
-                NameSymbol nameSymb = (NameSymbol) right;
+                final NameSymbol nameSymb = (NameSymbol) right;
                 type = new TypeSymbol(nameSymb.value, false, true);
             }
             return new InstanceOfExprSymbol(left, type);

@@ -501,17 +501,27 @@ AdditiveExpression + MultiplicativeExpression
 
 AdditiveExpression - MultiplicativeExpression
 
-RelationalExpression:
+ShiftExpression:
 
 AdditiveExpression
 
-RelationalExpression < AdditiveExpression
+ShiftExpression ls AdditiveExpression
 
-RelationalExpression > AdditiveExpression
+ShiftExpression rs AdditiveExpression
 
-RelationalExpression <= AdditiveExpression
+ShiftExpression urs AdditiveExpression
 
-RelationalExpression >= AdditiveExpression
+RelationalExpression:
+
+ShiftExpression
+
+RelationalExpression < ShiftExpression
+
+RelationalExpression > ShiftExpression
+
+RelationalExpression <= ShiftExpression
+
+RelationalExpression >= ShiftExpression
 
 RelationalExpression instanceof ReferenceType
 

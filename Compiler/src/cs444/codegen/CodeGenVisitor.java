@@ -299,6 +299,21 @@ public class CodeGenVisitor{
         tiles.<SubtractExprSymbol>addBest(tiles.subs, op, platform);
     }
 
+    public void visit(final LSExprSymbol op) {
+        binOpHelper(op);
+        tiles.<LSExprSymbol>addBest(tiles.lss, op, platform);
+    }
+
+    public void visit(final RSExprSymbol op) {
+        binOpHelper(op);
+        tiles.<RSExprSymbol>addBest(tiles.rss, op, platform);
+    }
+
+    public void visit(final URSExprSymbol op) {
+        binOpHelper(op);
+        tiles.<URSExprSymbol>addBest(tiles.urss, op, platform);
+    }
+
     public void visit(final LtExprSymbol op) {
         binOpHelper(op);
         tiles.<LtExprSymbol>addBest(tiles.lts, op, platform);

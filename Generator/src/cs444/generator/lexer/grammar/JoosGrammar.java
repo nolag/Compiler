@@ -125,6 +125,9 @@ public class JoosGrammar extends LexicalGrammar {
         addPattern("STAR", NFA.literal("*"), Type.VALID);
         addPattern("SLASH", NFA.literal("/"), Type.VALID);
         addPattern("PCT", NFA.literal("%"), Type.VALID);
+        addPattern("LS", NFA.literal("<<"), Type.VALID);
+        addPattern("RS", NFA.literal(">>"), Type.VALID);
+        addPattern("URS", NFA.literal(">>>"), Type.VALID);
 
         //comparison operators
         addPattern("LT", NFA.literal("<"), Type.VALID);

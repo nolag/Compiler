@@ -10,25 +10,32 @@ public abstract class BinInstruction extends X86Instruction{
     public final InstructionArg arg2;
     public final X86SizeHelper sizeHelper;
     public final Size size;
+    public final Size size2;
 
     protected BinInstruction(final String what, final InstructionArg arg1, final InstructionArg arg2,
-            final X86SizeHelper sizeHelper, final Size size, final long cost){
+            final X86SizeHelper sizeHelper, final Size size, final Size size2, final long cost){
         super(cost);
         this.what = what;
         this.arg1 = arg1;
         this.arg2 = arg2;
         this.sizeHelper = sizeHelper;
         this.size  = size;
+        this.size2 = size2;
+    }
+
+    protected BinInstruction(final String what, final InstructionArg arg1, final InstructionArg arg2,
+            final X86SizeHelper sizeHelper, final Size size, final long cost){
+        this(what, arg1, arg2, sizeHelper, size, size, cost);
     }
 
     protected BinInstruction(final String what, final InstructionArg arg1, final InstructionArg arg2,
             final X86SizeHelper sizeHelper, final long cost){
 
-        this(what, arg1, arg2, sizeHelper, sizeHelper.defaultStack, cost);
+        this(what, arg1, arg2, sizeHelper, sizeHelper.defaultStack, sizeHelper.defaultStack, cost);
     }
 
     @Override
     public final String generate() {
-        return what + " " + arg1.getValue(size, sizeHelper) + ", " + arg2.getValue(size, sizeHelper);
+        return what + " " + arg1.getValue(size, sizeHelper) + ", " + arg2.getValue(size2, sizeHelper);
     }
 }
