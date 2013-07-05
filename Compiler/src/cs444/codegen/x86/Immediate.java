@@ -16,7 +16,6 @@ public class Immediate extends NotMemory{
 
     public static final Immediate ONE = new Immediate("1");
     public static final Immediate ZERO = new Immediate("0");
-    public static final Immediate SOFTWARE_INTERUPT = new Immediate("80h");
     public static final Immediate PREP_EDX = new Immediate("31");
     public static final Immediate QWORD_I = new Immediate("8");
     public static final Immediate DWORD_I = new Immediate("4");
@@ -27,7 +26,6 @@ public class Immediate extends NotMemory{
 
     //Same value as ONE
     public static final Immediate TRUE = ONE;
-    public static final Immediate EXIT = ONE;
     public static final Immediate BYTE_I = ONE;
     public static final Immediate WORD_S = ONE;
 

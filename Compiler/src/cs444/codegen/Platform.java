@@ -35,5 +35,11 @@ public abstract class Platform<T extends Instruction> {
     public abstract void generateStaticCode(final List<APkgClassResolver> resolvers,
             final boolean outputFile, final String directory) throws IOException;
 
+    //Functions for file headers
+    public abstract void genStartInstructions(final String methodName, final Addable<T> instructions);
+    public abstract void genInstructorInvoke(final APkgClassResolver resolver, final Addable<T> instructions);
+    public abstract void genHeaderStart(final Addable<T> instructions);
+    public abstract void genHeaderEnd(final APkgClassResolver resolver, final Addable<T> instructions);
+
     public abstract TileSet<T> getTiles();
 }

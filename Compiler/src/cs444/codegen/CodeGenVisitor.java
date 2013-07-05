@@ -1,22 +1,21 @@
 package cs444.codegen;
 
 import java.io.PrintStream;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import cs444.codegen.instructions.x86.*;
+import cs444.codegen.instructions.x86.Comment;
+import cs444.codegen.instructions.x86.Global;
+import cs444.codegen.instructions.x86.Section;
 import cs444.codegen.instructions.x86.Section.SectionType;
 import cs444.codegen.instructions.x86.bases.ReserveInstruction;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.instructions.x86.factories.ReserveInstructionMaker;
 import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86_32.X86_32Platform;
-import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -75,45 +74,16 @@ public class CodeGenVisitor{
     public void genHeader(final APkgClassResolver resolver) {
         this.currentFile = resolver;
 
-        Runtime.instance.externAll(instructions);
-        instructions.add(new Section(SectionType.TEXT));
-
-        instructions.add(new Comment(INIT_OBJECT_FUNC + ": call super default constructor and initialize obj fields." +
-                " eax should contain address of object."));
-        instructions.add(new Label(INIT_OBJECT_FUNC));
-
-        APkgClassResolver superResolver = null;
-
-        superResolver = resolver.getSuper();
+        platform.genHeaderStart(instructions);
 
         if (!resolver.fullName.equals(JoosNonTerminal.OBJECT)){
-            //TODO generic
-            TileHelper.invokeConstructor(superResolver, Collections.<ISymbol>emptyList(), platform, instructions);
+            APkgClassResolver superResolver = null;
+            superResolver = resolver.getSuper();
+            platform.genInstructorInvoke(superResolver, instructions);
         }
 
-        instructions.add(new Comment("Store pointer to object in edx"));
-        instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR, sizeHelper));
-
-        for (final DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
-            final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
-
-            final Memory fieldAddr = new Memory(Register.DATA, fieldDcl.getOffset());
-            if(!fieldDcl.children.isEmpty()){
-                instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
-                // save pointer to object
-                instructions.add(new Push(Register.DATA, sizeHelper));
-                final CodeGenVisitor visitor = new CodeGenVisitor(currentFile, platform);
-                final ISymbol field = fieldDcl.children.get(0);
-                field.accept(visitor);
-                instructions.addAll(platform.getBest(field));
-                instructions.add(new Comment("Pop the object address to edx"));
-                instructions.add(new Pop(Register.DATA, sizeHelper));
-                instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, size, sizeHelper));
-                currentVisitor = this;
-            }
-        }
-
-        instructions.add(Ret.RET);
+        platform.genHeaderEnd(resolver, instructions);
+        currentVisitor = this;
     }
 
     public void genLayoutForStaticFields(final Iterable<DclSymbol> staticFields) {
@@ -150,20 +120,11 @@ public class CodeGenVisitor{
 
     public void visit(final MethodSymbol method){
         final String methodName = APkgClassResolver.generateFullId(method);
-        //TODO replace try with generic stuff
         try{
             if(APkgClassResolver.generateUniqueName(method, method.dclName).equals(JoosNonTerminal.ENTRY)
                     && method.isStatic() && !hasEntry){
-
                 hasEntry = true;
-                instructions.add(new Global("_start"));
-                instructions.add(new Label("_start"));
-                instructions.add(new Extern(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL)));
-                instructions.add(new Call(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL), sizeHelper));
-                instructions.add(new Call(new Immediate(methodName), sizeHelper));
-                instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));
-                instructions.add(new Mov(Register.ACCUMULATOR, Immediate.EXIT, sizeHelper));
-                instructions.add(new Int(Immediate.SOFTWARE_INTERUPT, sizeHelper));
+                platform.genStartInstructions(methodName, instructions);
             }
         }catch(final Exception e){
             //Should never get here.
