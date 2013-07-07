@@ -7,15 +7,16 @@ import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
+import cs444.codegen.x86.X86SizeHelper;
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 
-public class RetTile implements ITile<X86Instruction, ReturnExprSymbol> {
+public class RetTile implements ITile<X86Instruction, X86SizeHelper, ReturnExprSymbol> {
     public static void init(){
         new RetTile();
     }
 
     private RetTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).rets.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).rets.add(this);
     }
 
 
@@ -25,7 +26,9 @@ public class RetTile implements ITile<X86Instruction, ReturnExprSymbol> {
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final ReturnExprSymbol retSymbol, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final ReturnExprSymbol retSymbol,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         if(retSymbol.children.size() == 1) instructions.addAll(platform.getBest(retSymbol.children.get(0)));
         //value is already in eax from the rule therefore we just need to ret

@@ -14,14 +14,14 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.types.PkgClassResolver;
 
-public final class NameValueTile implements ITile<X86Instruction, SimpleNameSymbol>{
+public final class NameValueTile implements ITile<X86Instruction, X86SizeHelper, SimpleNameSymbol>{
 
     public static void init(){
         new NameValueTile();
     }
 
     private NameValueTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).nameValues.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).nameValues.add(this);
     }
 
     @Override
@@ -30,8 +30,10 @@ public final class NameValueTile implements ITile<X86Instruction, SimpleNameSymb
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final SimpleNameSymbol name, final Platform<X86Instruction> platform) {
-        final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
+    public InstructionsAndTiming<X86Instruction> generate(final SimpleNameSymbol name,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final DclSymbol dcl = name.dcl;
         final Size size = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));

@@ -10,13 +10,8 @@ import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.parser.symbols.JoosNonTerminal;
-import cs444.parser.symbols.ast.AMethodSymbol;
-import cs444.parser.symbols.ast.ConstructorSymbol;
-import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.MethodHeader;
-import cs444.parser.symbols.ast.NameSymbol;
+import cs444.parser.symbols.ast.*;
 import cs444.parser.symbols.ast.NameSymbol.Type;
-import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.exceptions.UndeclaredException;
@@ -62,7 +57,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
         superClass = PkgClassInfo.instance.getSymbol(JoosNonTerminal.OBJECT);
     }
 
-    private void addArrayConstructorFor(final String indType, final TypeSymbol ts, final NameSymbol name, final Platform<?> platform)
+    private void addArrayConstructorFor(final String indType, final TypeSymbol ts, final NameSymbol name, final Platform<?, ?> platform)
             throws IllegalModifierException, UnsupportedException, UndeclaredException {
 
         List<DclSymbol> dcls = new LinkedList<DclSymbol>();
@@ -129,7 +124,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void linkLocalNamesToDcl(final Platform<?> platform) throws CompilerException {
+    public void linkLocalNamesToDcl(final Platform<?, ?> platform) throws CompilerException {
         for(final ConstructorSymbol cs : constructors.values()){
             cs.resolveLocalVars(fullName, platform);
         }
@@ -167,7 +162,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void computeFieldOffsets(final Platform<?> platform){
+    public void computeFieldOffsets(final Platform<?, ?> platform){
         fieldMap.get(JoosNonTerminal.LENGTH).setOffset(platform.getObjectLayout().objSize());
     }
 
@@ -198,7 +193,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void checkFields(final Platform<?> platform) throws CompilerException{
+    public void checkFields(final Platform<?, ?> platform) throws CompilerException{
         final LocalDclLinker linker = new LocalDclLinker(fullName, true, platform);
         for(final DclSymbol dcl : getDcls()){
             dcl.accept(linker);

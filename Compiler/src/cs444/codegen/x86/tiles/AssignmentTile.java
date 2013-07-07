@@ -16,13 +16,13 @@ import cs444.codegen.x86.X86SizeHelper;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 
-public class AssignmentTile implements ITile<X86Instruction, AssignmentExprSymbol> {
+public class AssignmentTile implements ITile<X86Instruction, X86SizeHelper, AssignmentExprSymbol> {
     public static void init(){
         new AssignmentTile();
     }
 
     private AssignmentTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).assigns.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).assigns.add(this);
     }
 
     @Override
@@ -31,9 +31,11 @@ public class AssignmentTile implements ITile<X86Instruction, AssignmentExprSymbo
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final AssignmentExprSymbol op, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final AssignmentExprSymbol op,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
 
 
         final ISymbol leftHandSide = op.children.get(0);

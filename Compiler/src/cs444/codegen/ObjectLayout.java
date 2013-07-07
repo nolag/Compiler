@@ -10,6 +10,6 @@ import cs444.types.APkgClassResolver;
 
 public interface ObjectLayout<T extends Instruction> {
     public void initialize(final APkgClassResolver typeDclNode, final Addable<X86Instruction> instructions);
-    public List<T> subtypeCheckCode(final TypeSymbol subType, final Platform<T> platform);
+    public List<T> subtypeCheckCode(final TypeSymbol subType, final Platform<T, ?> platform);
     public long objSize();
 }

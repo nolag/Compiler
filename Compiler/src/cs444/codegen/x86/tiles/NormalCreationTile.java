@@ -18,13 +18,13 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
 import cs444.types.APkgClassResolver;
 
-public class NormalCreationTile implements ITile<X86Instruction, CreationExpression>{
+public class NormalCreationTile implements ITile<X86Instruction, X86SizeHelper, CreationExpression>{
     public static void init(){
         new NormalCreationTile();
     }
 
     private NormalCreationTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).creation.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).creation.add(this);
     }
 
     @Override
@@ -33,10 +33,12 @@ public class NormalCreationTile implements ITile<X86Instruction, CreationExpress
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final CreationExpression creation, final Platform<X86Instruction> platform){
+    public InstructionsAndTiming<X86Instruction> generate(final CreationExpression creation,
+            final Platform<X86Instruction, X86SizeHelper> platform){
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final APkgClassResolver typeDclNode = creation.getType().getTypeDclNode();
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         final long allocSize = typeDclNode.getStackSize(sizeHelper) + platform.getObjectLayout().objSize();
         final InstructionArg bytes = new Immediate(allocSize);
         instructions.add(new Comment("Allocate " + allocSize + " bytes for " + typeDclNode.fullName));

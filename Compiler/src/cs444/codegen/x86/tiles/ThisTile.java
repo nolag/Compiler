@@ -12,13 +12,13 @@ import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
 import cs444.parser.symbols.ast.Thisable;
 
-public class ThisTile implements ITile<X86Instruction, Thisable>{
+public class ThisTile implements ITile<X86Instruction, X86SizeHelper, Thisable>{
     public static void init(){
         new ThisTile();
     }
 
     private ThisTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).thisables.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).thisables.add(this);
     }
 
     @Override
@@ -27,9 +27,11 @@ public class ThisTile implements ITile<X86Instruction, Thisable>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final Thisable symbol, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final Thisable symbol,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         instructions.add(new Comment("This (or super) pointer"));
         instructions.add(new Mov(Register.ACCUMULATOR, Memory.getThisPointer(sizeHelper), sizeHelper));
         return instructions;

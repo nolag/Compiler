@@ -29,7 +29,7 @@ public class Compiler {
     public static final int COMPILER_ERROR_CODE = 42;
 
     //TODO make this a list of them and compile with all of them.
-    private static Platform<?> platform;
+    private static Platform<?, ?> platform;
 
     /**
      * @param args

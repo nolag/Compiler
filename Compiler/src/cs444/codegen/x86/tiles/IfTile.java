@@ -16,13 +16,13 @@ import cs444.codegen.x86.tiles.helpers.TileHelper;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.IfExprSymbol;
 
-public class IfTile implements ITile<X86Instruction, IfExprSymbol>{
+public class IfTile implements ITile<X86Instruction, X86SizeHelper, IfExprSymbol>{
     public static void init(){
         new IfTile();
     }
 
     private IfTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).ifs.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).ifs.add(this);
     }
 
     @Override
@@ -31,10 +31,12 @@ public class IfTile implements ITile<X86Instruction, IfExprSymbol>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final IfExprSymbol ifExprSymbol, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final IfExprSymbol ifExprSymbol,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
 
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
 
         final long myid = CodeGenVisitor.getNewLblNum();
         instructions.add(new Comment("if start" + myid));

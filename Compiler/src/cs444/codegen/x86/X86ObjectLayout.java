@@ -41,7 +41,7 @@ public class X86ObjectLayout implements ObjectLayout<X86Instruction> {
     }
 
     @Override
-    public List<X86Instruction> subtypeCheckCode(final TypeSymbol subType, final Platform<X86Instruction> platform) {
+    public List<X86Instruction> subtypeCheckCode(final TypeSymbol subType, final Platform<X86Instruction, ?> platform) {
         final List<X86Instruction> instructions = new LinkedList<X86Instruction>();
         instructions.add(new Comment("Subtype lookup"));
         instructions.add(new Mov(Register.ACCUMULATOR, new Memory(Register.ACCUMULATOR, SUBTYPE_OFFSET), sizeHelper));

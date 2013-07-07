@@ -98,7 +98,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         return this.defaultConstructor;
     }
 
-    public void computeFieldOffsets(final Platform<?> platform) {
+    public void computeFieldOffsets(final Platform<?, ?> platform) {
         long nextOffset = platform.getObjectLayout().objSize();
         for (final DclSymbol fieldDcl : this.getFields()) {
             if (fieldDcl.isStatic()) continue;

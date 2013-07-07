@@ -1,15 +1,10 @@
 package cs444.codegen.x86;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.parser.symbols.JoosNonTerminal;
 
-public class X86SizeHelper implements SizeHelper<X86Instruction>{
-    public static final Map<String, Integer> stackSizes = new HashMap<String, Integer>();
+public class X86SizeHelper extends SizeHelper<X86Instruction>{
     public static final X86SizeHelper sizeHelper32 = new X86SizeHelper(false);
     public static final X86SizeHelper sizeHelper64 = new X86SizeHelper(true);
     public static final int MIN_BYTE_SIZE = 2;
@@ -19,15 +14,6 @@ public class X86SizeHelper implements SizeHelper<X86Instruction>{
     public final int defaultStackSize;
     public final Size defaultStack;
     public final boolean use64;
-
-    //TODO move this stuff to SizeHelper and make it abstract
-    static{
-        stackSizes.put(JoosNonTerminal.BYTE, 1);
-        stackSizes.put(JoosNonTerminal.SHORT, 2);
-        stackSizes.put(JoosNonTerminal.CHAR, 2);
-        //Can't get 1 bit so just use 8.
-        stackSizes.put(JoosNonTerminal.BOOLEAN, 1);
-    }
 
     private X86SizeHelper(final boolean use64){
         this.use64 = use64;

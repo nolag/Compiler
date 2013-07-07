@@ -14,7 +14,7 @@ import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 public class RemTile extends BinUniOpTile<RemainderExprSymbol>{
     private RemTile() {
         super(IDivMaker.maker, true);
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).rems.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).rems.add(this);
     }
 
     public static void init(){
@@ -27,9 +27,11 @@ public class RemTile extends BinUniOpTile<RemainderExprSymbol>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final RemainderExprSymbol bin, final Platform<X86Instruction> platform){
+    public InstructionsAndTiming<X86Instruction> generate(final RemainderExprSymbol bin,
+            final Platform<X86Instruction, X86SizeHelper> platform){
+
         final InstructionsAndTiming<X86Instruction> instructions = super.generate(bin, platform);
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         instructions.add(new Mov(Register.ACCUMULATOR, Register.DATA, sizeHelper));
         return instructions;
     }

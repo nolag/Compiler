@@ -13,13 +13,13 @@ import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86.tiles.helpers.TileHelper;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 
-public class AndTile implements ITile<X86Instruction, AndExprSymbol>{
+public class AndTile implements ITile<X86Instruction, X86SizeHelper, AndExprSymbol>{
     public static void init(){
         new AndTile();
     }
 
     private AndTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).ands.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).ands.add(this);
     }
 
     @Override
@@ -28,8 +28,8 @@ public class AndTile implements ITile<X86Instruction, AndExprSymbol>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final AndExprSymbol op, final Platform<X86Instruction> platform){
-        final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
+    public InstructionsAndTiming<X86Instruction> generate(final AndExprSymbol op, final Platform<X86Instruction, X86SizeHelper> platform){
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
 
         final String andEnd = "and" + CodeGenVisitor.getNewLblNum();

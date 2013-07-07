@@ -13,13 +13,13 @@ import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
 import cs444.types.APkgClassResolver;
 
-public class ArrayCreationTile implements ITile<X86Instruction, CreationExpression>{
+public class ArrayCreationTile implements ITile<X86Instruction, X86SizeHelper, CreationExpression>{
     public static void init(){
         new ArrayCreationTile();
     }
 
     private ArrayCreationTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).creation.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).creation.add(this);
     }
 
     @Override
@@ -28,11 +28,13 @@ public class ArrayCreationTile implements ITile<X86Instruction, CreationExpressi
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final CreationExpression creation, final Platform<X86Instruction> platform){
+    public InstructionsAndTiming<X86Instruction> generate(final CreationExpression creation,
+            final Platform<X86Instruction, X86SizeHelper> platform){
+
         final CodeGenVisitor visitor = CodeGenVisitor.getCurrentCodeGen();
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         final APkgClassResolver typeDclNode = creation.getType().getTypeDclNode();
 
         instructions.add(new Comment("Getting size for array constuction"));

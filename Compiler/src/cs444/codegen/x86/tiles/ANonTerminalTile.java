@@ -14,13 +14,13 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 
-public class ANonTerminalTile implements ITile<X86Instruction, ANonTerminal>{
+public class ANonTerminalTile implements ITile<X86Instruction, X86SizeHelper, ANonTerminal>{
     public static void init(){
         new ANonTerminalTile();
     }
 
     private ANonTerminalTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).anonTerms.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).anonTerms.add(this);
     }
 
     @Override
@@ -29,8 +29,10 @@ public class ANonTerminalTile implements ITile<X86Instruction, ANonTerminal>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final ANonTerminal aNonTerminal, final Platform<X86Instruction> platform){
-        final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
+    public InstructionsAndTiming<X86Instruction> generate(final ANonTerminal aNonTerminal,
+            final Platform<X86Instruction, X86SizeHelper> platform){
+
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final boolean isBlock = aNonTerminal.getName().equals(JoosNonTerminal.BLOCK);
         final CodeGenVisitor codeGen = CodeGenVisitor.getCurrentCodeGen();

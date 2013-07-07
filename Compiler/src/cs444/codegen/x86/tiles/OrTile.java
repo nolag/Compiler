@@ -13,13 +13,13 @@ import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86.tiles.helpers.TileHelper;
 import cs444.parser.symbols.ast.expressions.OrExprSymbol;
 
-public class OrTile implements ITile<X86Instruction, OrExprSymbol>{
+public class OrTile implements ITile<X86Instruction, X86SizeHelper, OrExprSymbol>{
     public static void init(){
         new OrTile();
     }
 
     private OrTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).ors.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).ors.add(this);
     }
 
     @Override
@@ -28,8 +28,8 @@ public class OrTile implements ITile<X86Instruction, OrExprSymbol>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final OrExprSymbol op, final Platform<X86Instruction> platform){
-        final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
+    public InstructionsAndTiming<X86Instruction> generate(final OrExprSymbol op, final Platform<X86Instruction, X86SizeHelper> platform){
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
 
         final String orEnd = "or" + CodeGenVisitor.getNewLblNum();

@@ -13,7 +13,7 @@ import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
-public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Instruction, T>{
+public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Instruction, X86SizeHelper, T>{
     private final UniOpMaker maker;
     private final boolean sar;
 
@@ -23,8 +23,8 @@ public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Inst
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction> platform) {
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction, X86SizeHelper> platform) {
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         instructions.add(new Push(Register.BASE, sizeHelper));
 
@@ -39,7 +39,7 @@ public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Inst
         // first operand -> eax, second operand -> ebx
         if(sar){
             instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR, sizeHelper));
-            instructions.add(new Sar(Register.DATA, Immediate.PREP_EDX, sizeHelper));
+            instructions.add(new Sar(Register.DATA, new Immediate(sizeHelper.defaultStackSize * 8 -1), sizeHelper));
             final String safeDiv = "safeDiv" + CodeGenVisitor.getNewLblNum();
             TileHelper.setupJumpNe(Register.BASE, Immediate.ZERO, safeDiv, sizeHelper, instructions);
             Runtime.instance.throwException(instructions, "Divide by zero");

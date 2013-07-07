@@ -20,13 +20,13 @@ import cs444.types.ArrayPkgClassResolver;
 import cs444.types.PkgClassInfo;
 import cs444.types.exceptions.UndeclaredException;
 
-public class StringTile implements ITile<X86Instruction, StringLiteralSymbol>{
+public class StringTile implements ITile<X86Instruction, X86SizeHelper, StringLiteralSymbol>{
     public static void init(){
         new StringTile();
     }
 
     private StringTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).strs.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).strs.add(this);
     }
 
     @Override
@@ -35,9 +35,11 @@ public class StringTile implements ITile<X86Instruction, StringLiteralSymbol>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final StringLiteralSymbol stringSymbol, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final StringLiteralSymbol stringSymbol,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         instructions.add(new Comment("allocate the string at the same time (why not)"));
 
         final APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);

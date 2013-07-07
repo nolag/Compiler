@@ -62,7 +62,7 @@ public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
     }
 
     private boolean arelocalVarsLinked = false;
-    public void resolveLocalVars(final String enclosingClassName, final Platform<?> platform) throws CompilerException {
+    public void resolveLocalVars(final String enclosingClassName, final Platform<?, ?> platform) throws CompilerException {
         if (arelocalVarsLinked) return;
 
         this.accept(new LocalDclLinker(enclosingClassName, platform));

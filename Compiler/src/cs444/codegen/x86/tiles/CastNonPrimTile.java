@@ -17,13 +17,13 @@ import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 
-public class CastNonPrimTile implements ITile<X86Instruction, CastExpressionSymbol> {
+public class CastNonPrimTile implements ITile<X86Instruction, X86SizeHelper, CastExpressionSymbol> {
     public static void init(){
         new CastNonPrimTile();
     }
 
     private CastNonPrimTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).casts.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).casts.add(this);
     }
 
     @Override
@@ -32,11 +32,13 @@ public class CastNonPrimTile implements ITile<X86Instruction, CastExpressionSymb
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final CastExpressionSymbol symbol, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final CastExpressionSymbol symbol,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final TypeSymbol type = symbol.getType();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final String castExprEnd = "CastExprEnd" + CodeGenVisitor.getNewLblNum();
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));
         TileHelper.ifNullJmpCode(Register.ACCUMULATOR, castExprEnd, sizeHelper, instructions);

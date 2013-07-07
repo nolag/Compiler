@@ -15,13 +15,13 @@ import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86.tiles.helpers.TileHelper;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
-public class WhileTile implements ITile<X86Instruction, WhileExprSymbol>{
+public class WhileTile implements ITile<X86Instruction, X86SizeHelper, WhileExprSymbol>{
     public static void init(){
         new WhileTile();
     }
 
     private WhileTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).whiles.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).whiles.add(this);
     }
 
     @Override
@@ -30,7 +30,9 @@ public class WhileTile implements ITile<X86Instruction, WhileExprSymbol>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final WhileExprSymbol whileExprSymbol, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final WhileExprSymbol whileExprSymbol,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final long mynum = CodeGenVisitor.getNewLblNum();
         instructions.add(new Comment("while start " + mynum));
@@ -40,7 +42,7 @@ public class WhileTile implements ITile<X86Instruction, WhileExprSymbol>{
         instructions.add(new Label(loopStart));
         instructions.addAll(platform.getBest(whileExprSymbol.getConditionSymbol()));
 
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, loopEnd, sizeHelper, instructions);
 
         instructions.addAll(platform.getBest((whileExprSymbol.getBody())));

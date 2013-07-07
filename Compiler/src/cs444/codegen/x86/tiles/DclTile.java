@@ -12,13 +12,13 @@ import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
 import cs444.parser.symbols.ast.DclSymbol;
 
-public class DclTile implements ITile<X86Instruction, DclSymbol>{
+public class DclTile implements ITile<X86Instruction, X86SizeHelper, DclSymbol>{
     public static void init(){
         new DclTile();
     }
 
     private DclTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).dcls.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).dcls.add(this);
     }
 
     @Override
@@ -27,9 +27,11 @@ public class DclTile implements ITile<X86Instruction, DclSymbol>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final DclSymbol dclSymbol, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final DclSymbol dclSymbol,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         if(dclSymbol.children.isEmpty())instructions.add(new Xor(Register.ACCUMULATOR, Register.ACCUMULATOR, sizeHelper));
         else instructions.addAll(platform.getBest(dclSymbol.children.get(0)));
         final Size size = X86SizeHelper.getSize(dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper));

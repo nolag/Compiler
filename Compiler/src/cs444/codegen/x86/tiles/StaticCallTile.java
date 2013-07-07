@@ -18,7 +18,7 @@ import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
 import cs444.types.APkgClassResolver;
 
-public class StaticCallTile implements ITile<X86Instruction, SimpleMethodInvoke> {
+public class StaticCallTile implements ITile<X86Instruction, X86SizeHelper, SimpleMethodInvoke> {
     public static final String NATIVE_NAME = "NATIVE";
 
     public static void init(){
@@ -26,7 +26,7 @@ public class StaticCallTile implements ITile<X86Instruction, SimpleMethodInvoke>
     }
 
     private StaticCallTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).invokes.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).invokes.add(this);
     }
 
     @Override
@@ -36,10 +36,12 @@ public class StaticCallTile implements ITile<X86Instruction, SimpleMethodInvoke>
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final SimpleMethodInvoke invoke, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final SimpleMethodInvoke invoke,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final MethodOrConstructorSymbol call = invoke.call;
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
 
         if(call.isNative()) instructions.add(new Push(Register.BASE, sizeHelper));
         TileHelper.callStartHelper(invoke, instructions, platform);

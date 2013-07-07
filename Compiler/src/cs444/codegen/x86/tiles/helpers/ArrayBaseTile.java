@@ -11,11 +11,13 @@ import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
-public abstract class ArrayBaseTile implements ITile<X86Instruction, ArrayAccessExprSymbol>{
+public abstract class ArrayBaseTile implements ITile<X86Instruction, X86SizeHelper, ArrayAccessExprSymbol>{
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
 
         instructions.add(new Comment("Accessing array"));
         instructions.addAll(platform.getBest(arrayAccess.children.get(0)));

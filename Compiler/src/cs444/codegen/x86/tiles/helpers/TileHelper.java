@@ -69,10 +69,10 @@ public class TileHelper {
     }
 
     public static void invokeConstructor(final APkgClassResolver resolver, final List<ISymbol> children,
-            final Platform<X86Instruction> platform, final Addable<X86Instruction> instructions) {
+            final Platform<X86Instruction, X86SizeHelper> platform, final Addable<X86Instruction> instructions) {
 
         final List<String> types = new LinkedList<String>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
 
         instructions.add(new Comment("Back up addr of obj in Base so it is safe"));
         instructions.add(new Push(Register.BASE, sizeHelper));
@@ -115,9 +115,9 @@ public class TileHelper {
     }
 
     public static void strPartHelper(final ISymbol child, final APkgClassResolver resolver,
-            final Addable<X86Instruction> instructions, final Platform<X86Instruction> platform){
+            final Addable<X86Instruction> instructions, final Platform<X86Instruction, X86SizeHelper> platform){
 
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         final String firstType = ((Typeable)child).getType().getTypeDclNode().fullName;
         instructions.addAll(platform.getBest(child));
         AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(firstType), false);
@@ -138,10 +138,10 @@ public class TileHelper {
     }
 
     public static void callStartHelper(final SimpleMethodInvoke invoke,
-            final Addable<X86Instruction> instructions, final Platform<X86Instruction> platform){
+            final Addable<X86Instruction> instructions, final Platform<X86Instruction, X86SizeHelper> platform){
         instructions.add(new Comment("Pushing args"));
 
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
 
         for(final ISymbol isymbol : invoke.children){
             final Typeable arg = (Typeable) isymbol;
@@ -152,9 +152,9 @@ public class TileHelper {
     }
 
     public static void callEndHelper(final MethodOrConstructorSymbol call,
-            final Addable<X86Instruction> instructions, final Platform<X86Instruction> platform){
+            final Addable<X86Instruction> instructions, final Platform<X86Instruction, X86SizeHelper> platform){
 
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         // NOTE: do not use INVOKE in here, invoke gets size from method,
         // but visitor may visit InvokeSymbol before MethodSymbol
         final long mySize =  call.getStackSize();

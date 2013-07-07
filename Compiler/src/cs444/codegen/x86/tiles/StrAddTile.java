@@ -20,13 +20,13 @@ import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassInfo;
 
-public class StrAddTile implements ITile<X86Instruction, AddExprSymbol>{
+public class StrAddTile implements ITile<X86Instruction, X86SizeHelper, AddExprSymbol>{
     public static void init(){
         new StrAddTile();
     }
 
     private StrAddTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).adds.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).adds.add(this);
     }
 
     @Override
@@ -35,9 +35,11 @@ public class StrAddTile implements ITile<X86Instruction, AddExprSymbol>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final AddExprSymbol op, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final AddExprSymbol op,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         final APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);
         final ISymbol firstChild = op.children.get(0);
         final ISymbol secondChild = op.children.get(1);

@@ -12,7 +12,7 @@ import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
-public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruction, T>{
+public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruction, X86SizeHelper, T>{
     private final BinOpMaker maker;
 
     protected BinOpTile(final BinOpMaker maker){
@@ -20,9 +20,9 @@ public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruc
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction, X86SizeHelper> platform) {
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
 
         instructions.add(new Push(Register.BASE, sizeHelper));
 

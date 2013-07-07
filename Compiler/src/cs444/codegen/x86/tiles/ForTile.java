@@ -16,13 +16,13 @@ import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86.tiles.helpers.TileHelper;
 import cs444.parser.symbols.ast.expressions.ForExprSymbol;
 
-public class ForTile implements ITile<X86Instruction, ForExprSymbol>{
+public class ForTile implements ITile<X86Instruction, X86SizeHelper, ForExprSymbol>{
     public static void init(){
         new ForTile();
     }
 
     private ForTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).fors.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).fors.add(this);
     }
 
     @Override
@@ -31,9 +31,9 @@ public class ForTile implements ITile<X86Instruction, ForExprSymbol>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final ForExprSymbol forExprSymbol, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final ForExprSymbol forExprSymbol, final Platform<X86Instruction, X86SizeHelper> platform) {
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         final long mynum = CodeGenVisitor.getNewLblNum();
         instructions.add(new Comment("for start " + mynum));
         final String loopStart = "loopStart" + mynum;

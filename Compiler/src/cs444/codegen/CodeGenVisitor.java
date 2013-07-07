@@ -52,17 +52,17 @@ public class CodeGenVisitor{
     private final X86SizeHelper sizeHelper;
 
     //TODO generic
-    private final TileSet<X86Instruction> tiles;
+    private final TileSet<X86Instruction, X86SizeHelper> tiles;
 
     public static long getNewLblNum(){
         return nextLblnum++;
     }
 
-    public CodeGenVisitor(final Platform<?> platform) {
+    public CodeGenVisitor(final Platform<?, ?> platform) {
         this(null, platform);
     }
 
-    public CodeGenVisitor(final APkgClassResolver resolver, final Platform<?> platform) {
+    public CodeGenVisitor(final APkgClassResolver resolver, final Platform<?, ?> platform) {
         this.platform = (X86_32Platform)platform;
         this.currentFile = resolver;
         this.instructions = this.platform.getInstructionHolder();

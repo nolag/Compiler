@@ -12,13 +12,13 @@ import cs444.codegen.x86.tiles.helpers.TileHelper;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 
-public class CastPrimTile implements ITile<X86Instruction, CastExpressionSymbol> {
+public class CastPrimTile implements ITile<X86Instruction, X86SizeHelper, CastExpressionSymbol> {
     public static void init(){
         new CastPrimTile();
     }
 
     private CastPrimTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).casts.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).casts.add(this);
     }
 
     @Override
@@ -27,10 +27,12 @@ public class CastPrimTile implements ITile<X86Instruction, CastExpressionSymbol>
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final CastExpressionSymbol symbol, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final CastExpressionSymbol symbol,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final TypeSymbol type = symbol.getType();
-        final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         final Size curSize = X86SizeHelper.getSize(type.getTypeDclNode().getRealSize(sizeHelper));
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));

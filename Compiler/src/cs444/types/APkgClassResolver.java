@@ -1,27 +1,12 @@
 package cs444.types;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import cs444.CompilerException;
-import cs444.codegen.CodeGenVisitor;
-import cs444.codegen.Platform;
-import cs444.codegen.SelectorIndexedTable;
-import cs444.codegen.SizeHelper;
-import cs444.codegen.SubtypeIndexedTable;
+import cs444.codegen.*;
 import cs444.parser.symbols.JoosNonTerminal;
-import cs444.parser.symbols.ast.AMethodSymbol;
-import cs444.parser.symbols.ast.AModifiersOptSymbol;
+import cs444.parser.symbols.ast.*;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
-import cs444.parser.symbols.ast.ConstructorSymbol;
-import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
-import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.cleanup.factories.FieldCleaner;
 import cs444.parser.symbols.ast.cleanup.factories.FieldFlattener;
 import cs444.parser.symbols.ast.cleanup.factories.LookupLinkCleanFacory;
@@ -333,11 +318,11 @@ public abstract class APkgClassResolver {
 
     protected abstract Iterable<DclSymbol> getDcls();
 
-    public abstract void checkFields(final Platform<?> platform) throws CompilerException;
+    public abstract void checkFields(final Platform<?, ?> platform) throws CompilerException;
 
     public abstract APkgClassResolver findClass(String name) throws UndeclaredException;
 
-    public abstract void linkLocalNamesToDcl(final Platform<?> platform) throws CompilerException;
+    public abstract void linkLocalNamesToDcl(final Platform<?, ?> platform) throws CompilerException;
 
     public abstract void analyzeReachability() throws CompilerException;
 
@@ -347,7 +332,7 @@ public abstract class APkgClassResolver {
 
     public abstract void reduceToConstantExprs() throws CompilerException;
 
-    public abstract void computeFieldOffsets(Platform<?> platform);
+    public abstract void computeFieldOffsets(Platform<?, ?> platform);
     public abstract long getRefStackSize(final SizeHelper<?> sizeHelper);
     public abstract long getRealSize(final SizeHelper<?> sizeHelper);
     public abstract long getStackSize(final SizeHelper<?> sizeHelper);

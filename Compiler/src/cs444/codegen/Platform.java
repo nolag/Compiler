@@ -12,7 +12,7 @@ import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ISymbol;
 import cs444.types.APkgClassResolver;
 
-public abstract class Platform<T extends Instruction> {
+public abstract class Platform<T extends Instruction, U extends SizeHelper<T>> {
     private final Map<ISymbol, InstructionsAndTiming<T>> bests = new HashMap<ISymbol, InstructionsAndTiming<T>> ();
 
     public void addBest(final ISymbol symbol, final InstructionsAndTiming<T> tile){
@@ -23,7 +23,7 @@ public abstract class Platform<T extends Instruction> {
         return bests.get(symbol);
     }
 
-    public abstract SizeHelper<T> getSizeHelper();
+    public abstract U getSizeHelper();
     public abstract ObjectLayout<T> getObjectLayout();
     public abstract SelectorIndexedTable<T> getSelectorIndex();
     public abstract void makeSubtypeTable(final List<APkgClassResolver> resolvers,
@@ -41,5 +41,5 @@ public abstract class Platform<T extends Instruction> {
     public abstract void genHeaderStart(final Addable<T> instructions);
     public abstract void genHeaderEnd(final APkgClassResolver resolver, final Addable<T> instructions);
 
-    public abstract TileSet<T> getTiles();
+    public abstract TileSet<T, U> getTiles();
 }

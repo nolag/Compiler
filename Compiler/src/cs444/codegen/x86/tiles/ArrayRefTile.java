@@ -18,7 +18,7 @@ public class ArrayRefTile extends ArrayBaseTile{
     }
 
     private ArrayRefTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).arrayRefs.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).arrayRefs.add(this);
     }
 
     @Override
@@ -27,9 +27,11 @@ public class ArrayRefTile extends ArrayBaseTile{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = super.generate(arrayAccess, platform);
-        final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         instructions.add(new Add(Register.ACCUMULATOR, Register.BASE, sizeHelper));
         instructions.add(new Pop(Register.BASE, sizeHelper));
         return instructions;

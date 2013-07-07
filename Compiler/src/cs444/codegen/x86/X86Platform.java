@@ -12,7 +12,7 @@ import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.tiles.helpers.X86TileInit;
 import cs444.types.APkgClassResolver;
 
-public abstract class X86Platform extends Platform<X86Instruction>{
+public abstract class X86Platform extends Platform<X86Instruction, X86SizeHelper>{
     private final InstructionHolder<X86Instruction> instrucitons;
     private SubtypeIndexedTable<X86Instruction> subtype;
 
@@ -47,7 +47,7 @@ public abstract class X86Platform extends Platform<X86Instruction>{
     }
 
     @Override
-    public TileSet<X86Instruction> getTiles(){
-        return TileSet.<X86Instruction>getOrMake(X86Instruction.class);
+    public TileSet<X86Instruction, X86SizeHelper> getTiles(){
+        return TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class);
     }
 }

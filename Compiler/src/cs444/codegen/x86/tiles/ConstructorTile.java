@@ -17,13 +17,13 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.types.APkgClassResolver;
 
-public class ConstructorTile implements ITile<X86Instruction, ConstructorSymbol>{
+public class ConstructorTile implements ITile<X86Instruction, X86SizeHelper, ConstructorSymbol>{
     public static void init(){
         new ConstructorTile();
     }
 
     private ConstructorTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).constructors.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).constructors.add(this);
     }
 
     @Override
@@ -32,11 +32,13 @@ public class ConstructorTile implements ITile<X86Instruction, ConstructorSymbol>
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final ConstructorSymbol constructor, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final ConstructorSymbol constructor,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
 
         final String constrName = APkgClassResolver.generateFullId(constructor);
-        final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
 
         TileHelper.methProlog(constructor, constrName, sizeHelper, instructions);
 

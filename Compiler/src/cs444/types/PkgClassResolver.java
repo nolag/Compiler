@@ -1,14 +1,7 @@
 package cs444.types;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import cs444.CompilerException;
 import cs444.codegen.CodeGenVisitor;
@@ -17,22 +10,12 @@ import cs444.codegen.SizeHelper;
 import cs444.parser.IASTBuilder;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
-import cs444.parser.symbols.ast.AInterfaceOrClassSymbol;
-import cs444.parser.symbols.ast.AMethodSymbol;
+import cs444.parser.symbols.ast.*;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ImplementationLevel;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
-import cs444.parser.symbols.ast.ConstructorSymbol;
-import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.NameSymbol;
-import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.static_analysis.ConstantExprBuilder;
-import cs444.types.exceptions.CircularDependancyException;
-import cs444.types.exceptions.DuplicateDeclarationException;
-import cs444.types.exceptions.IllegalExtendsException;
-import cs444.types.exceptions.IllegalMethodOverloadException;
-import cs444.types.exceptions.UndeclaredException;
-import cs444.types.exceptions.UnimplementedException;
+import cs444.types.exceptions.*;
 
 public class PkgClassResolver extends APkgClassResolver {
     protected  AInterfaceOrClassSymbol start;
@@ -396,7 +379,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void linkLocalNamesToDcl(final Platform<?> platform) throws CompilerException {
+    public void linkLocalNamesToDcl(final Platform<?, ?> platform) throws CompilerException {
         if(start == null) return;
         for(final AMethodSymbol method : start.getUninheritedMethods()) method.resolveLocalVars(fullName, platform);
 
@@ -408,7 +391,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void checkFields(final Platform<?> platform) throws CompilerException{
+    public void checkFields(final Platform<?, ?> platform) throws CompilerException{
         if (start == null) return;
         LocalDclLinker linker = new LocalDclLinker(fullName, true, platform);
         for(final DclSymbol dcl : this.getUninheritedNonStaticFields()){
@@ -476,7 +459,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void computeFieldOffsets(final Platform<?> platform) {
+    public void computeFieldOffsets(final Platform<?, ?> platform) {
         if (shouldGenCode()) start.computeFieldOffsets(platform);
     }
 

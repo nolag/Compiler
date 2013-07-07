@@ -28,10 +28,10 @@ public class LocalDclLinker extends EmptyVisitor {
     boolean fromSuper = false;
     boolean superSaver = false;
 
-    private final Platform<?> platform;
+    private final Platform<?, ?> platform;
     private final SizeHelper<?> sizeHelper;
 
-    public LocalDclLinker(final String enclosingClassName, final Platform<?> platform){
+    public LocalDclLinker(final String enclosingClassName, final Platform<?, ?> platform){
         this.context = new ContextInfo(enclosingClassName);
 
         currentTypes.add(new ArrayDeque<Typeable>());
@@ -40,7 +40,7 @@ public class LocalDclLinker extends EmptyVisitor {
         sizeHelper = platform.getSizeHelper();
     }
 
-    public LocalDclLinker(final String enclosingClassName, final boolean isStatic, final Platform<?> platform){
+    public LocalDclLinker(final String enclosingClassName, final boolean isStatic, final Platform<?, ?> platform){
         this(enclosingClassName, platform);
         pushNewScope(isStatic);
     }

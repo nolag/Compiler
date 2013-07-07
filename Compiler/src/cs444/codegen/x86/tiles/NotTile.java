@@ -11,13 +11,13 @@ import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
 import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
 
-public class NotTile implements ITile<X86Instruction, NotOpExprSymbol>{
+public class NotTile implements ITile<X86Instruction, X86SizeHelper, NotOpExprSymbol>{
     public static void init(){
         new NotTile();
     }
 
     private NotTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).nots.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).nots.add(this);
     }
 
     @Override
@@ -26,9 +26,11 @@ public class NotTile implements ITile<X86Instruction, NotOpExprSymbol>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final NotOpExprSymbol notSymbol, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final NotOpExprSymbol notSymbol,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         instructions.addAll(platform.getBest(notSymbol.children.get(0)));
         instructions.add(new Xor(Register.ACCUMULATOR, Immediate.TRUE, sizeHelper));
         return instructions;

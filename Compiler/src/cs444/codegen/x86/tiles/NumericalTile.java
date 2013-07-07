@@ -11,14 +11,14 @@ import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
 import cs444.parser.symbols.ast.INumericLiteral;
 
-public class NumericalTile implements ITile<X86Instruction, INumericLiteral>{
+public class NumericalTile implements ITile<X86Instruction, X86SizeHelper, INumericLiteral>{
 
     public static void init(){
         new NumericalTile();
     }
 
     private NumericalTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).numbs.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).numbs.add(this);
     }
 
     @Override
@@ -27,9 +27,11 @@ public class NumericalTile implements ITile<X86Instruction, INumericLiteral>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final INumericLiteral num, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final INumericLiteral num,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(num.getValue()), sizeHelper));
         return instructions;
     }

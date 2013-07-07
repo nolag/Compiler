@@ -7,18 +7,19 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86Platform;
+import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86.tiles.helpers.TileHelper;
 import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 
-public class FieldAccessTile implements ITile<X86Instruction, FieldAccessSymbol>{
+public class FieldAccessTile implements ITile<X86Instruction, X86SizeHelper, FieldAccessSymbol>{
 
     public static void init(){
         new FieldAccessTile();
     }
 
     private FieldAccessTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).fieldAccess.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).fieldAccess.add(this);
     }
 
     @Override
@@ -27,7 +28,9 @@ public class FieldAccessTile implements ITile<X86Instruction, FieldAccessSymbol>
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final FieldAccessSymbol field, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final FieldAccessSymbol field,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final X86Platform x86Platform = (X86Platform)platform;
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         instructions.addAll(platform.getBest(field.children.get(0)));

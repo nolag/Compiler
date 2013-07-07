@@ -41,7 +41,7 @@ public class StaticFieldInit {
         }
     }
 
-    private StaticFieldInit(final Platform<X86Instruction> platform){
+    private StaticFieldInit(final Platform<X86Instruction, ? extends SizeHelper<X86Instruction>> platform){
         instructions = platform.getInstructionHolder();
         this.platform = (X86Platform) platform;
     }
@@ -55,7 +55,7 @@ public class StaticFieldInit {
         instructions.add(new Global(STATIC_FIELD_INIT_LBL));
         Runtime.instance.externAll(instructions);
         instructions.add(new Label(STATIC_FIELD_INIT_LBL));
-        final SizeHelper<?> sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction> sizeHelper = platform.getSizeHelper();
 
         for (final APkgClassResolver aPkgClassResolver : resolvers) {
             if (!(aPkgClassResolver instanceof PkgClassResolver)) continue;

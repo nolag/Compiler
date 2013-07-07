@@ -21,9 +21,9 @@ public abstract class CompOpTile<T extends BinOpExpr> extends BinOpTile<T>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction, X86SizeHelper> platform) {
         final InstructionsAndTiming<X86Instruction> instructions = super.generate(bin, platform);
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         instructions.add(new Comment("Xor here CAN change the setl bit?"));
         instructions.add(uni.make(Register.DATA, sizeHelper));
         instructions.add(new Comment("clear all bits in register"));

@@ -16,7 +16,7 @@ import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
 import cs444.types.PkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
-public class RegularCallTile implements ITile<X86Instruction, SimpleMethodInvoke> {
+public class RegularCallTile implements ITile<X86Instruction, X86SizeHelper, SimpleMethodInvoke> {
     public static final String NATIVE_NAME = "NATIVE";
 
     public static void init(){
@@ -24,7 +24,7 @@ public class RegularCallTile implements ITile<X86Instruction, SimpleMethodInvoke
     }
 
     private RegularCallTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).invokes.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).invokes.add(this);
     }
 
     @Override
@@ -34,10 +34,12 @@ public class RegularCallTile implements ITile<X86Instruction, SimpleMethodInvoke
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final SimpleMethodInvoke invoke, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final SimpleMethodInvoke invoke,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final MethodOrConstructorSymbol call = invoke.call;
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = (X86SizeHelper) platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
 
         instructions.add(new Comment("Backing up ebx because having this in ecx is bad"));
         instructions.add(new Push(Register.BASE, sizeHelper));

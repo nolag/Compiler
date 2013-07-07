@@ -20,7 +20,7 @@ public final class ArrayValueTile extends ArrayBaseTile{
     }
 
     private ArrayValueTile(){
-        TileSet.<X86Instruction>getOrMake(X86Instruction.class).arrayValues.add(this);
+        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).arrayValues.add(this);
     }
 
     @Override
@@ -29,9 +29,11 @@ public final class ArrayValueTile extends ArrayBaseTile{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess, final Platform<X86Instruction> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess,
+            final Platform<X86Instruction, X86SizeHelper> platform) {
+
         final InstructionsAndTiming<X86Instruction> instructions = super.generate(arrayAccess, platform);
-        final X86SizeHelper sizeHelper = (X86SizeHelper)platform.getSizeHelper();
+        final X86SizeHelper sizeHelper = platform.getSizeHelper();
         final long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
         Size elementSize;
         if(stackSize >= sizeHelper.defaultStackSize) elementSize = sizeHelper.defaultStack;
