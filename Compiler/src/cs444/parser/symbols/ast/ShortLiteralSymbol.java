@@ -9,23 +9,23 @@ public class ShortLiteralSymbol extends TypeableTerminal implements INumericLite
 
     public final short shortVal;
 
-    public ShortLiteralSymbol(short shortVal){
+    public ShortLiteralSymbol(final short shortVal){
         super(myName, Integer.toString(shortVal));
         this.shortVal = shortVal;
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
+    public void accept(final ISymbolVisitor visitor) throws CompilerException {
         visitor.visit(this);
     }
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor visitor) {
         visitor.visit(this);
     }
 
     @Override
-    public int getValue() {
+    public final long getValue() {
         return shortVal;
     }
 }

@@ -15,30 +15,30 @@ public class IntegerLiteralSymbol extends TypeableTerminal implements INumericLi
 
     public final int intVal;
 
-    public IntegerLiteralSymbol(ATerminal in, boolean isNegative) throws OutOfRangeException{
+    public IntegerLiteralSymbol(final ATerminal in, final boolean isNegative) throws OutOfRangeException{
         super(myName, isNegative ? "-" + in.value : in.value);
-        BigInteger bigInt = new BigInteger(value);
+        final BigInteger bigInt = new BigInteger(value);
         if(bigInt.compareTo(MIN) == -1 || bigInt.compareTo(MAX) == 1) throw new OutOfRangeException(bigInt);
         intVal = bigInt.intValue();
     }
 
-    public IntegerLiteralSymbol(int intVal){
+    public IntegerLiteralSymbol(final int intVal){
         super(myName, Integer.toString(intVal));
         this.intVal = intVal;
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
+    public void accept(final ISymbolVisitor visitor) throws CompilerException {
         visitor.visit(this);
     }
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor visitor) {
         visitor.visit(this);
     }
 
     @Override
-    public int getValue() {
+    public final long getValue() {
         return intVal;
     }
 }

@@ -14,9 +14,15 @@ import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
 public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruction, X86SizeHelper, T>{
     private final BinOpMaker maker;
+    private final boolean forceCl;
 
     protected BinOpTile(final BinOpMaker maker){
+        this(maker, false);
+    }
+
+    protected BinOpTile(final BinOpMaker maker, final boolean forceCl){
         this.maker = maker;
+        this.forceCl = forceCl;
     }
 
     @Override
@@ -30,7 +36,12 @@ public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruc
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
         instructions.addAll(platform.getBest(bin.children.get(1)));
         instructions.add(new Pop(Register.BASE, sizeHelper));
-        instructions.add(maker.make(Register.BASE, Register.ACCUMULATOR, sizeHelper));
+        Register reg = Register.ACCUMULATOR;
+        if(forceCl){
+            instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR, sizeHelper));
+            reg = Register.COUNTER;
+        }
+        instructions.add(maker.make(Register.BASE, reg, sizeHelper));
         instructions.add(new Mov(Register.ACCUMULATOR, Register.BASE, sizeHelper));
 
         instructions.add(new Pop(Register.BASE, sizeHelper));

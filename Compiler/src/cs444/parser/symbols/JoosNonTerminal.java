@@ -45,9 +45,10 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String IO = "java.io";
     public static final String SERIALIZABLE = IO + ".Serializable";
 
-    public static final String CHAR = "char";
+    public static final String LONG = "long";
     public static final String INTEGER = "int";
     public static final String SHORT = "short";
+    public static final String CHAR = "char";
     public static final String BYTE = "byte";
 
     public static final String STR_ADD = "concat";

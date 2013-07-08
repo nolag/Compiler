@@ -45,8 +45,9 @@ public class URSExprSymbol extends BinOpExpr {
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
-            final int val1 = ((INumericLiteral)leftOperand).getValue();
-            final int val2 = ((INumericLiteral)rightOperand).getValue();
+            //TODO long
+            final int val1 = (int)((INumericLiteral)leftOperand).getValue();
+            final int val2 = (int)((INumericLiteral)rightOperand).getValue();
             return new IntegerLiteralSymbol(val1 >>> val2);
         }else{
             return null;

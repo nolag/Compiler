@@ -14,7 +14,7 @@ public class LSTile extends BinOpTile<LSExprSymbol> {
     }
 
     private LSTile(){
-        super(LSOpMaker.maker);
+        super(LSOpMaker.maker, true);
         TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).lss.add(this);
     }
 

@@ -14,7 +14,7 @@ public class RSTile extends BinOpTile<RSExprSymbol> {
     }
 
     private RSTile(){
-        super(RSOpMaker.maker);
+        super(RSOpMaker.maker, true);
         TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).rss.add(this);
     }
 

@@ -109,6 +109,7 @@
       <junit fork="yes" printsummary="withOutAndErr">
         <formatter type="plain" usefile="false" />
         <test name="cs444.acceptance.A5"/>
+      	<test name="cs444.tiles.x86.CorrectTiles"/>
         <classpath refid="Compiler.classpath"/>
       </junit>
     </target>

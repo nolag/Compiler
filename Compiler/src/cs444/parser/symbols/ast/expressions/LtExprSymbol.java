@@ -12,7 +12,7 @@ import cs444.parser.symbols.ast.TypeableTerminal;
 public class LtExprSymbol extends BinOpExpr {
     public final static String myName = "Lt";
 
-    public LtExprSymbol(ISymbol left, ISymbol right) {
+    public LtExprSymbol(final ISymbol left, final ISymbol right) {
         super(myName, left, right);
     }
 
@@ -22,7 +22,7 @@ public class LtExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
+    public void accept(final ISymbolVisitor visitor) throws CompilerException {
         children.get(0).accept(visitor);
         children.get(1).accept(visitor);
         visitor.visit(this);
@@ -32,21 +32,21 @@ public class LtExprSymbol extends BinOpExpr {
     public boolean isCollapsable() {
         return false;
     }
-    
+
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor visitor) {
         visitor.visit(this);
     }
 
     @Override
     public TypeableTerminal reduceToLiteral() {
-        ISymbol rightOperand = getRightOperand();
-        ISymbol leftOperand = getLeftOperand();
+        final ISymbol rightOperand = getRightOperand();
+        final ISymbol leftOperand = getLeftOperand();
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
-            int val1 = ((INumericLiteral)leftOperand).getValue();
-            int val2 = ((INumericLiteral)rightOperand).getValue();
+            final long val1 = ((INumericLiteral)leftOperand).getValue();
+            final long val2 = ((INumericLiteral)rightOperand).getValue();
             return new BooleanLiteralSymbol(val1 < val2);
         }else{
             return null;

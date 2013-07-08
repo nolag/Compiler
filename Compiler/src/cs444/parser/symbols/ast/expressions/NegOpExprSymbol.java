@@ -11,28 +11,29 @@ import cs444.parser.symbols.ast.TypeableTerminal;
 public class NegOpExprSymbol extends UnaryOpExprSymbol{
     public static final String myName = "Negative";
 
-    public NegOpExprSymbol(ISymbol on) {
+    public NegOpExprSymbol(final ISymbol on) {
         super(myName, on);
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
+    public void accept(final ISymbolVisitor visitor) throws CompilerException {
         children.get(0).accept(visitor);
         visitor.visit(this);
     }
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor visitor) {
         visitor.visit(this);
     }
 
     @Override
     public TypeableTerminal reduceToLiteral() {
-        ISymbol operand = getOperand();
+        final ISymbol operand = getOperand();
 
         if (operand instanceof INumericLiteral){
-            int val = ((INumericLiteral)operand).getValue();
-            return new IntegerLiteralSymbol(-val);
+            final long val = ((INumericLiteral)operand).getValue();
+            //TODO long here
+            return new IntegerLiteralSymbol((int)-val);
         }else{
             return null;
         }

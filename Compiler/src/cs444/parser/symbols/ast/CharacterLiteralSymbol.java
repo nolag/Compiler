@@ -10,19 +10,19 @@ public class CharacterLiteralSymbol extends TypeableTerminal implements INumeric
 	private static final String SYM_NAME = "CharacterLiteral";
     public final char charVal;
 
-	public CharacterLiteralSymbol(ATerminal terminal) {
+	public CharacterLiteralSymbol(final ATerminal terminal) {
 
 	    super(SYM_NAME, terminal.value);
 
 		char cvalue = value.charAt(1);
 
-		int idx = value.indexOf('\\');
+		final int idx = value.indexOf('\\');
 		if (idx != -1) {
 
-			char escapeChar = value.charAt(idx + 1);
+			final char escapeChar = value.charAt(idx + 1);
 			if (StringEscapeUtils.isOctalDigit(escapeChar)) {
 
-				String octal = value.substring(idx + 1, value.length() - 1);
+				final String octal = value.substring(idx + 1, value.length() - 1);
 				cvalue = StringEscapeUtils.octalEscape(octal);
 			} else {
 				cvalue = StringEscapeUtils.simpleEscape(escapeChar);
@@ -32,23 +32,23 @@ public class CharacterLiteralSymbol extends TypeableTerminal implements INumeric
 		this.charVal = cvalue;
 	}
 
-	public CharacterLiteralSymbol(char value) {
+	public CharacterLiteralSymbol(final char value) {
 	    super(SYM_NAME, Character.toString(value));
 	    this.charVal = value;
     }
 
     @Override
-	public void accept(ISymbolVisitor visitor) throws CompilerException {
+	public void accept(final ISymbolVisitor visitor) throws CompilerException {
 	    visitor.visit(this);
 	}
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor visitor) {
         visitor.visit(this);
     }
 
     @Override
-    public int getValue() {
+    public final long getValue() {
         return charVal;
     }
 }

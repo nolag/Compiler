@@ -13,7 +13,7 @@ import cs444.parser.symbols.ast.TypeableTerminal;
 public class NeExprSymbol extends BinOpExpr {
     public final static String myName = "Ne";
 
-    public NeExprSymbol(ISymbol left, ISymbol right) {
+    public NeExprSymbol(final ISymbol left, final ISymbol right) {
         super(myName, left, right);
     }
 
@@ -23,7 +23,7 @@ public class NeExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
+    public void accept(final ISymbolVisitor visitor) throws CompilerException {
         children.get(0).accept(visitor);
         children.get(1).accept(visitor);
         visitor.visit(this);
@@ -33,26 +33,26 @@ public class NeExprSymbol extends BinOpExpr {
     public boolean isCollapsable() {
         return false;
     }
-    
+
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor visitor) {
         visitor.visit(this);
     }
 
     @Override
     public TypeableTerminal reduceToLiteral() {
-        ISymbol rightOperand = getRightOperand();
-        ISymbol leftOperand = getLeftOperand();
+        final ISymbol rightOperand = getRightOperand();
+        final ISymbol leftOperand = getLeftOperand();
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
-            int val1 = ((INumericLiteral)leftOperand).getValue();
-            int val2 = ((INumericLiteral)rightOperand).getValue();
+            final long val1 = ((INumericLiteral)leftOperand).getValue();
+            final long val2 = ((INumericLiteral)rightOperand).getValue();
             return new BooleanLiteralSymbol(val1 != val2);
-        } else if(rightOperand instanceof StringLiteralSymbol && 
+        } else if(rightOperand instanceof StringLiteralSymbol &&
                 leftOperand instanceof StringLiteralSymbol){
-            String val1 = ((StringLiteralSymbol) leftOperand).strValue;
-            String val2 = ((StringLiteralSymbol) rightOperand).strValue;
+            final String val1 = ((StringLiteralSymbol) leftOperand).strValue;
+            final String val2 = ((StringLiteralSymbol) rightOperand).strValue;
             return new BooleanLiteralSymbol(val1 != val2);
         }else{
             return null;

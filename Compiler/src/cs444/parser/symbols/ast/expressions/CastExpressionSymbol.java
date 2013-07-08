@@ -5,18 +5,12 @@ import cs444.ast.ISymbolVisitor;
 import cs444.codegen.CodeGenVisitor;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
-import cs444.parser.symbols.ast.ByteLiteralSymbol;
-import cs444.parser.symbols.ast.CharacterLiteralSymbol;
-import cs444.parser.symbols.ast.INumericLiteral;
-import cs444.parser.symbols.ast.IntegerLiteralSymbol;
-import cs444.parser.symbols.ast.ShortLiteralSymbol;
-import cs444.parser.symbols.ast.TypeSymbol;
-import cs444.parser.symbols.ast.TypeableTerminal;
+import cs444.parser.symbols.ast.*;
 
 public class CastExpressionSymbol extends BaseExprSymbol{
 
-    public CastExpressionSymbol(TypeSymbol castExprType,
-                                ISymbol operandExpression) {
+    public CastExpressionSymbol(final TypeSymbol castExprType,
+                                final ISymbol operandExpression) {
         super("CastExpression");
         this.setType(castExprType);
         this.children.add(operandExpression);
@@ -37,29 +31,30 @@ public class CastExpressionSymbol extends BaseExprSymbol{
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
+    public void accept(final ISymbolVisitor visitor) throws CompilerException {
         this.getType().accept(visitor);
 
-        for (ISymbol child : children) {
+        for (final ISymbol child : children) {
             child.accept(visitor);
         }
         visitor.visit(this);
     }
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor visitor) {
         visitor.visit(this);
     }
 
     @Override
     public TypeableTerminal reduceToLiteral() {
-        ISymbol operand = getOperandExpression();
+        final ISymbol operand = getOperandExpression();
 
         if (operand instanceof INumericLiteral){
-            INumericLiteral literal = (INumericLiteral) operand;
+            final INumericLiteral literal = (INumericLiteral) operand;
 
+            //TODO long here
             if (this.getType().value.equals(JoosNonTerminal.INTEGER)){
-                return new IntegerLiteralSymbol(literal.getValue());
+                return new IntegerLiteralSymbol((int)literal.getValue());
             }else if (this.getType().value.equals(JoosNonTerminal.SHORT)){
                 return new ShortLiteralSymbol((short)literal.getValue());
             }else if (this.getType().value.equals(JoosNonTerminal.BYTE)){

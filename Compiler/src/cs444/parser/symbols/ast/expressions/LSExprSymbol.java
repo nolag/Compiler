@@ -43,10 +43,10 @@ public class LSExprSymbol extends BinOpExpr {
         final ISymbol rightOperand = getRightOperand();
         final ISymbol leftOperand = getLeftOperand();
 
-        if (rightOperand instanceof INumericLiteral &&
-                leftOperand instanceof INumericLiteral){
-            final int val1 = ((INumericLiteral)leftOperand).getValue();
-            final int val2 = ((INumericLiteral)rightOperand).getValue();
+        if (rightOperand instanceof INumericLiteral && leftOperand instanceof INumericLiteral){
+            //TODO long
+            final int val1 = (int)((INumericLiteral)leftOperand).getValue();
+            final int val2 = (int)((INumericLiteral)rightOperand).getValue();
             return new IntegerLiteralSymbol(val1 << val2);
         }else{
             return null;

@@ -87,10 +87,25 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
-    public void close(final DclSymbol dclSymbol) throws DuplicateDeclarationException, UndeclaredException, IllegalCastAssignmentException {
+    public void close(final DclSymbol dclSymbol) throws CompilerException {
         final TypeSymbol initType = currentTypes.peek().removeLast().getType();
+        final TypeSymbol dclType = dclSymbol.getType();
 
-        assertIsAssignable(initType, dclSymbol.getType(), false, false);
+        try{
+            assertIsAssignable(initType, dclType, false, false);
+        }catch(final IllegalCastAssignmentException e){
+            boolean rethrow = true;
+            //long won't allow this, may as well prepare it now.
+            if(dclType.isArray || initType.isArray || initType.value.equals(JoosNonTerminal.LONG)) throw e;
+
+            if(dclSymbol.children.get(0) instanceof INumericLiteral){
+                final INumericLiteral numeric = (INumericLiteral)dclSymbol.children.get(0);
+                final long val = numeric.getValue();
+                rethrow = val > SizeHelper.maxValues.get(dclType.value) || val < 0 && JoosNonTerminal.unsigned.contains(dclType.value);
+            }
+
+            if(rethrow) throw e;
+        }
 
         if (dclSymbol.isLocal){
             // in close because we cannot used this variable inside its initializer
@@ -480,6 +495,7 @@ public class LocalDclLinker extends EmptyVisitor {
             throws UndeclaredException, IllegalCastAssignmentException {
 
         final Castable castType = toType.getTypeDclNode().getCastablility(type.getTypeDclNode());
+
         if(castType == Castable.NOT_CASTABLE  || toType.isClass != secondIsClass || (castType == Castable.DOWN_CAST && !allowDownCast)
                 || type.value.equals(JoosNonTerminal.VOID) || toType.value.equals(JoosNonTerminal.VOID)
                 || (!type.value.equals(toType.value) && type.isArray && JoosNonTerminal.primativeNumbers.contains(toType.value))){
