@@ -11,7 +11,7 @@ import cs444.codegen.peephole.InstructionHolder;
 public class X86SelectorIndexedTable extends SelectorIndexedTable<X86Instruction> {
 
     public X86SelectorIndexedTable(final X86SizeHelper sizeHelper){
-        super(new X86IndexedTableData(new SelectorCellGen(), X86SizeHelper.getIntSize(sizeHelper.defaultStack)));
+        super(new X86IndexedTableData(new SelectorCellGen(), sizeHelper.getIntSize(sizeHelper.defaultStack)));
     }
 
     public static class SelectorCellGen implements ISubtypeCellGen<X86Instruction> {

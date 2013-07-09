@@ -6,7 +6,7 @@ import java.util.Map;
 import cs444.codegen.instructions.Instruction;
 import cs444.parser.symbols.JoosNonTerminal;
 
-public abstract class SizeHelper<T extends Instruction> {
+public abstract class SizeHelper<T extends Instruction, U extends Enum<U>> {
     public static final Map<String, Integer> stackSizes = new HashMap<String, Integer>();
     public static final Map<String, Long> maxValues = new HashMap<String, Long>();
 
@@ -25,6 +25,10 @@ public abstract class SizeHelper<T extends Instruction> {
     }
 
     public abstract int getByteSizeOfType(String typeName);
+    public abstract U getSize(final long stackSize);
+    public abstract U getSizeOfType(final String typeName);
+    public abstract U getPushSize(final U size);
+    public abstract int getIntSize(final U size);
     public abstract int getDefaultStackPower();
     public abstract int getDefaultStackSize();
     public abstract int getMinSize();

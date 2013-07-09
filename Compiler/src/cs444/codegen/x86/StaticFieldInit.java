@@ -41,7 +41,7 @@ public class StaticFieldInit {
         }
     }
 
-    private StaticFieldInit(final Platform<X86Instruction, ? extends SizeHelper<X86Instruction>> platform){
+    private StaticFieldInit(final Platform<X86Instruction, ? extends SizeHelper<X86Instruction, Size>> platform){
         instructions = platform.getInstructionHolder();
         this.platform = (X86Platform) platform;
     }
@@ -55,7 +55,7 @@ public class StaticFieldInit {
         instructions.add(new Global(STATIC_FIELD_INIT_LBL));
         Runtime.instance.externAll(instructions);
         instructions.add(new Label(STATIC_FIELD_INIT_LBL));
-        final SizeHelper<X86Instruction> sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
         for (final APkgClassResolver aPkgClassResolver : resolvers) {
             if (!(aPkgClassResolver instanceof PkgClassResolver)) continue;
@@ -63,7 +63,7 @@ public class StaticFieldInit {
             if (!resolver.shouldGenCode()) continue;
             for (final DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
                 final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
-                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
+                final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
                 final Memory toAddr = new Memory(new Immediate(fieldNameLbl));
 
                 instructions.add(new Extern(fieldNameLbl));
@@ -78,7 +78,7 @@ public class StaticFieldInit {
 
             for (final DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
                 final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
-                final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
+                final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
                 final Memory toAddr = new Memory(new Immediate(fieldNameLbl));
 
                 if(!fieldDcl.children.isEmpty()){

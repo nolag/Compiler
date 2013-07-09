@@ -4,7 +4,7 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.x86.InstructionArg.Size;
 
-public class X86SizeHelper extends SizeHelper<X86Instruction>{
+public class X86SizeHelper extends SizeHelper<X86Instruction, Size>{
     public static final X86SizeHelper sizeHelper32 = new X86SizeHelper(false);
     public static final X86SizeHelper sizeHelper64 = new X86SizeHelper(true);
     public static final int MIN_BYTE_SIZE = 2;
@@ -33,7 +33,8 @@ public class X86SizeHelper extends SizeHelper<X86Instruction>{
         return X86SizeHelper.stackSizes.containsKey(typeName) ? X86SizeHelper.stackSizes.get(typeName) : defaultStackSize;
     }
 
-    public static Size getSize(final long stackSize) {
+    @Override
+    public Size getSize(final long stackSize) {
         if(stackSize == 8) return Size.QWORD;
         if(stackSize == 4) return Size.DWORD;
         if(stackSize == 2) return Size.WORD;
@@ -41,16 +42,19 @@ public class X86SizeHelper extends SizeHelper<X86Instruction>{
         throw new IllegalArgumentException("Nothing is of size " + stackSize);
     }
 
+    @Override
     public final Size getSizeOfType(final String typeName) {
         return getSize(getByteSizeOfType(typeName));
     }
 
-    public static final Size getPushSize(final Size size){
+    @Override
+    public final Size getPushSize(final Size size) {
         if(size == Size.HIGH || size == Size.LOW) return Size.WORD;
         return size;
     }
 
-    public static int getIntSize(final Size size){
+    @Override
+    public int getIntSize(final Size size) {
         switch(size){
         case QWORD: return 8;
         case DWORD: return 4;

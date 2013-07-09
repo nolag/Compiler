@@ -46,7 +46,7 @@ public class StringTile implements ITile<X86Instruction, X86SizeHelper, StringLi
 
         //2 per char + dword for int + obj size
         final long objlen = platform.getObjectLayout().objSize();
-        final long charsLen = stringSymbol.strValue.length() * 2 + X86SizeHelper.getIntSize(Size.DWORD) + objlen;
+        final long charsLen = stringSymbol.strValue.length() * 2 + sizeHelper.getIntSize(Size.DWORD) + objlen;
         final long length =  charsLen + resolver.getStackSize(sizeHelper) + objlen;
 
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(length), sizeHelper));
@@ -59,7 +59,7 @@ public class StringTile implements ITile<X86Instruction, X86SizeHelper, StringLi
 
         final char [] cs = stringSymbol.strValue.toCharArray();
         for(int i = 0; i < cs.length; i++){
-            final long place = 2 * i + platform.getObjectLayout().objSize() + X86SizeHelper.getIntSize(Size.DWORD);
+            final long place = 2 * i + platform.getObjectLayout().objSize() + sizeHelper.getIntSize(Size.DWORD);
             final Memory to = new Memory(Register.ACCUMULATOR, new Immediate(String.valueOf(place)));
             instructions.add(new Mov(to, new Immediate((cs[i])), Size.WORD, sizeHelper));
         }

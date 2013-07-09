@@ -46,10 +46,10 @@ public abstract class ArrayBaseTile implements ITile<X86Instruction, X86SizeHelp
         final long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
         Size elementSize;
         if(stackSize >= sizeHelper.defaultStackSize) elementSize = sizeHelper.defaultStack;
-        else elementSize = X86SizeHelper.getSize(stackSize);
+        else elementSize = sizeHelper.getSize(stackSize);
 
-        instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(X86SizeHelper.getPushSize(elementSize)), sizeHelper));
-        final long offset = sizeHelper.defaultStackSize * 2 + X86SizeHelper.getIntSize(Size.DWORD);
+        instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(sizeHelper.getPushSize(elementSize)), sizeHelper));
+        final long offset = sizeHelper.defaultStackSize * 2 + sizeHelper.getIntSize(Size.DWORD);
         instructions.add(new Add(Register.ACCUMULATOR, new Immediate(offset), sizeHelper));
         return instructions;
     }

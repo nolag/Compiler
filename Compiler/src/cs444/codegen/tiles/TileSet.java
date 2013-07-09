@@ -15,9 +15,9 @@ import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.expressions.*;
 
-public class TileSet <T extends Instruction, U extends SizeHelper<T>>{
-    private static final Map<Class<? extends Instruction>, TileSet<? extends Instruction, ? extends SizeHelper<?>>> classMap =
-            new HashMap<Class<? extends Instruction>, TileSet<? extends Instruction, ? extends SizeHelper<?>>>();
+public class TileSet <T extends Instruction, U extends SizeHelper<T, ?>>{
+    private static final Map<Class<? extends Instruction>, TileSet<? extends Instruction, ? extends SizeHelper<?, ?>>> classMap =
+            new HashMap<Class<? extends Instruction>, TileSet<? extends Instruction, ? extends SizeHelper<?, ?>>>();
 
     public final List<ITile<T, U, SimpleNameSymbol>> nameValues = new LinkedList<ITile<T, U, SimpleNameSymbol>>();
     public final List<ITile<T, U, SimpleNameSymbol>> nameRefs = new LinkedList<ITile<T, U, SimpleNameSymbol>>();
@@ -61,7 +61,7 @@ public class TileSet <T extends Instruction, U extends SizeHelper<T>>{
     public final List<ITile<T, U,  DclSymbol>> dcls = new LinkedList<ITile<T, U,  DclSymbol>>();
     public final List<ITile<T, U,  SimpleMethodInvoke>> invokes = new LinkedList<ITile<T, U,  SimpleMethodInvoke>>();
 
-    public static <T extends Instruction, U extends SizeHelper<T>> TileSet<T, U> getOrMake(final Class<T> klass){
+    public static <T extends Instruction, U extends SizeHelper<T, ?>> TileSet<T, U> getOrMake(final Class<T> klass){
         @SuppressWarnings("unchecked")
         TileSet<T, U> tileSet = (TileSet<T, U>)classMap.get(klass);
 

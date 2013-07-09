@@ -464,7 +464,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public long getStackSize(final SizeHelper<?> sizeHelper){
+    public long getStackSize(final SizeHelper<?, ?> sizeHelper){
         if(start != null) return start.getStackSize();
         final long size = sizeHelper.getByteSizeOfType(name);
         final int minSize = sizeHelper.getMinSize();
@@ -472,7 +472,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public long getRefStackSize(final SizeHelper<?> sizeHelper) {
+    public long getRefStackSize(final SizeHelper<?, ?> sizeHelper) {
         if(start != null)return sizeHelper.getDefaultStackSize();
         final long size = sizeHelper.getByteSizeOfType(name);
         final int minSize = sizeHelper.getMinSize();
@@ -480,7 +480,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public long getRealSize(final SizeHelper<?> sizeHelper) {
+    public long getRealSize(final SizeHelper<?, ?> sizeHelper) {
         return sizeHelper.getByteSizeOfType(name);
     }
 

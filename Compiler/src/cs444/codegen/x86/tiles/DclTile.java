@@ -34,7 +34,7 @@ public class DclTile implements ITile<X86Instruction, X86SizeHelper, DclSymbol>{
         final X86SizeHelper sizeHelper = platform.getSizeHelper();
         if(dclSymbol.children.isEmpty())instructions.add(new Xor(Register.ACCUMULATOR, Register.ACCUMULATOR, sizeHelper));
         else instructions.addAll(platform.getBest(dclSymbol.children.get(0)));
-        final Size size = X86SizeHelper.getSize(dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper));
+        final Size size = sizeHelper.getSize(dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper));
         instructions.add(new Push(Register.ACCUMULATOR, size, sizeHelper));
         return instructions;
     }

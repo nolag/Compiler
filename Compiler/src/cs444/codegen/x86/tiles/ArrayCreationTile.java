@@ -58,7 +58,7 @@ public class ArrayCreationTile implements ITile<X86Instruction, X86SizeHelper, C
 
         instructions.add(new Comment("Adding space for SIT, cast info, and length" + typeDclNode.fullName));
         //Int + object's sie
-        final long baseSize = platform.getObjectLayout().objSize() + X86SizeHelper.getIntSize(Size.DWORD);
+        final long baseSize = platform.getObjectLayout().objSize() + sizeHelper.getIntSize(Size.DWORD);
         final Immediate sizeI = new Immediate(baseSize);
         instructions.add(new Add(Register.ACCUMULATOR, sizeI, sizeHelper));
         instructions.add(new Comment("Allocate for array" + typeDclNode.fullName));

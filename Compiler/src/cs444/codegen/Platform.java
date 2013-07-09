@@ -12,7 +12,7 @@ import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ISymbol;
 import cs444.types.APkgClassResolver;
 
-public abstract class Platform<T extends Instruction, U extends SizeHelper<T>> {
+public abstract class Platform<T extends Instruction, U extends SizeHelper<T, ?>> {
     protected static final String NO_OPT = "--no-opt";
 
     private final Map<ISymbol, InstructionsAndTiming<T>> bests = new HashMap<ISymbol, InstructionsAndTiming<T>> ();

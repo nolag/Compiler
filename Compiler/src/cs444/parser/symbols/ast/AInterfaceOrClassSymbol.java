@@ -111,7 +111,7 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
             // not a field from super:
             fieldDcl.setOffset(nextOffset);
             final TypeSymbol ts = fieldDcl.type;
-            final SizeHelper<?> sizeHelper = platform.getSizeHelper();
+            final SizeHelper<?, ?> sizeHelper = platform.getSizeHelper();
             if(ts.isArray) nextOffset += sizeHelper.getDefaultStackSize();
             else nextOffset += sizeHelper.getByteSizeOfType(fieldDcl.type.value);
         }

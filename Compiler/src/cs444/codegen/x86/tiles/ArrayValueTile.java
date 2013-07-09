@@ -37,7 +37,7 @@ public final class ArrayValueTile extends ArrayBaseTile{
         final long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
         Size elementSize;
         if(stackSize >= sizeHelper.defaultStackSize) elementSize = sizeHelper.defaultStack;
-        else elementSize = X86SizeHelper.getSize(stackSize);
+        else elementSize = sizeHelper.getSize(stackSize);
         final Memory mem = new Memory(Register.ACCUMULATOR, Register.BASE);
         X86TileHelper.genMov(elementSize, mem, "array", arrayAccess, sizeHelper, instructions);
         instructions.add(new Pop(Register.BASE, sizeHelper));

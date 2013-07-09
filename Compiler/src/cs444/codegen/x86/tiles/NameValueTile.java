@@ -36,7 +36,7 @@ public final class NameValueTile implements ITile<X86Instruction, X86SizeHelper,
         final X86SizeHelper sizeHelper = platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final DclSymbol dcl = name.dcl;
-        final Size size = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
+        final Size size = sizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
         final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
 
         if(dcl.isStatic() && dcl.dclInResolver != CodeGenVisitor.getCurrentCodeGen().currentFile) instructions.add(new Extern(staticFieldLbl));

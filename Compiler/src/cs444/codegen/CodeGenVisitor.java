@@ -25,7 +25,7 @@ import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.expressions.*;
 import cs444.types.APkgClassResolver;
 
-public class CodeGenVisitor{
+public class CodeGenVisitor {
     private static CodeGenVisitor currentVisitor;
 
     public static CodeGenVisitor getCurrentCodeGen(){
@@ -93,7 +93,7 @@ public class CodeGenVisitor{
         }
 
         for (final DclSymbol fieldDcl : staticFields) {
-            final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
+            final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
             final String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
             instructions.add(new Global(fieldLbl));
@@ -367,19 +367,19 @@ public class CodeGenVisitor{
             final long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
             Size elementSize;
             if(stackSize >= sizeHelper.defaultStackSize) elementSize = sizeHelper.defaultStack;
-            else elementSize = X86SizeHelper.getSize(stackSize);
+            else elementSize = sizeHelper.getSize(stackSize);
             lastSize = elementSize;
             tiles.<ArrayAccessExprSymbol>addBest(tiles.arrayValues, arrayAccess, platform);
         }else{
             tiles.<ArrayAccessExprSymbol>addBest(tiles.arrayRefs, arrayAccess, platform);
-            lastSize = X86SizeHelper.getSize(sizeHelper.defaultStackSize);
+            lastSize = sizeHelper.getSize(sizeHelper.defaultStackSize);
         }
     }
 
     public void visit(final DclSymbol dclSymbol) {
         if(dclSymbol.children.isEmpty()) new IntegerLiteralSymbol(0).accept(this);
         else dclSymbol.children.get(0).accept(this);
-        lastSize = X86SizeHelper.getSize(dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper));
+        lastSize = sizeHelper.getSize(dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper));
         tiles.<DclSymbol>addBest(tiles.dcls, dclSymbol, platform);
     }
 
@@ -400,7 +400,7 @@ public class CodeGenVisitor{
     private void binOpHelper(final BinOpExpr bin){
         bin.children.get(0).accept(this);
         bin.children.get(1).accept(this);
-        lastSize = X86SizeHelper.getPushSize(sizeHelper.getSizeOfType(bin.getType().getTypeDclNode().fullName));
+        lastSize = sizeHelper.getPushSize(sizeHelper.getSizeOfType(bin.getType().getTypeDclNode().fullName));
     }
 
     public void visit(final SimpleMethodInvoke invoke) {
@@ -412,7 +412,7 @@ public class CodeGenVisitor{
         final DclSymbol dcl = name.dcl;
 
         //TODO generic next line
-        lastSize = X86SizeHelper.getSize(dcl.getType().getTypeDclNode().getRefStackSize(sizeHelper));
+        lastSize = sizeHelper.getSize(dcl.getType().getTypeDclNode().getRefStackSize(sizeHelper));
 
         if(getVal){
             tiles.<SimpleNameSymbol>addBest(tiles.nameValues, name, platform);

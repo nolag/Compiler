@@ -33,7 +33,7 @@ public class CastPrimTile implements ITile<X86Instruction, X86SizeHelper, CastEx
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final TypeSymbol type = symbol.getType();
         final X86SizeHelper sizeHelper = platform.getSizeHelper();
-        final Size curSize = X86SizeHelper.getSize(type.getTypeDclNode().getRealSize(sizeHelper));
+        final Size curSize = sizeHelper.getSize(type.getTypeDclNode().getRealSize(sizeHelper));
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));
         X86TileHelper.genMov(curSize, Register.ACCUMULATOR, "cast to " + type.value, type, sizeHelper, instructions);

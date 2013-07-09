@@ -29,7 +29,7 @@ public class LocalDclLinker extends EmptyVisitor {
     boolean superSaver = false;
 
     private final Platform<?, ?> platform;
-    private final SizeHelper<?> sizeHelper;
+    private final SizeHelper<?, ?> sizeHelper;
 
     public LocalDclLinker(final String enclosingClassName, final Platform<?, ?> platform){
         this.context = new ContextInfo(enclosingClassName);

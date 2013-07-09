@@ -333,9 +333,9 @@ public abstract class APkgClassResolver {
     public abstract void reduceToConstantExprs() throws CompilerException;
 
     public abstract void computeFieldOffsets(Platform<?, ?> platform);
-    public abstract long getRefStackSize(final SizeHelper<?> sizeHelper);
-    public abstract long getRealSize(final SizeHelper<?> sizeHelper);
-    public abstract long getStackSize(final SizeHelper<?> sizeHelper);
+    public abstract long getRefStackSize(final SizeHelper<?, ?> sizeHelper);
+    public abstract long getRealSize(final SizeHelper<?, ?> sizeHelper);
+    public abstract long getStackSize(final SizeHelper<?, ?> sizeHelper);
     public abstract Iterable<DclSymbol> getUninheritedStaticFields();
 
     public abstract Iterable<DclSymbol> getUninheritedNonStaticFields();

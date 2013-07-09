@@ -8,9 +8,9 @@ import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.Thisable;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
 
-public class NonNullFieldAccess<T extends Instruction, U extends SizeHelper<T>> implements ITile<T, U, FieldAccessSymbol>{
+public class NonNullFieldAccess<T extends Instruction, U extends SizeHelper<T, ?>> implements ITile<T, U, FieldAccessSymbol>{
 
-    public static <T extends Instruction, U extends SizeHelper<T>> void init(final Class<T> klass){
+    public static <T extends Instruction, U extends SizeHelper<T, ?>> void init(final Class<T> klass){
         new NonNullFieldAccess<T, U>(klass);
     }
 

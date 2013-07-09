@@ -81,8 +81,8 @@ public class X86TileHelper {
         for(final ISymbol child : children){
             instructions.addAll(platform.getBest(child));
             final Typeable arg = (Typeable) child;
-            final Size lastSize =  X86SizeHelper.getPushSize(sizeHelper.getSizeOfType(arg.getType().getTypeDclNode().fullName));
-            instructions.add(new Push(Register.ACCUMULATOR, X86SizeHelper.getPushSize(lastSize), sizeHelper));
+            final Size lastSize =  sizeHelper.getPushSize(sizeHelper.getSizeOfType(arg.getType().getTypeDclNode().fullName));
+            instructions.add(new Push(Register.ACCUMULATOR, sizeHelper.getPushSize(lastSize), sizeHelper));
             final Typeable typeable = (Typeable) child;
             final TypeSymbol ts = typeable.getType();
             types.add(ts.getTypeDclNode().fullName);
@@ -125,8 +125,8 @@ public class X86TileHelper {
 
 
 
-        final Size lastSize = X86SizeHelper.getPushSize(X86SizeHelper.getSize(sizeHelper.getByteSizeOfType(firstType)));
-        final int pop = X86SizeHelper.getIntSize(lastSize);
+        final Size lastSize = sizeHelper.getPushSize(sizeHelper.getSize(sizeHelper.getByteSizeOfType(firstType)));
+        final int pop = sizeHelper.getIntSize(lastSize);
 
         instructions.add(new Push(Register.ACCUMULATOR, lastSize, sizeHelper));
 
@@ -146,8 +146,8 @@ public class X86TileHelper {
         for(final ISymbol isymbol : invoke.children){
             final Typeable arg = (Typeable) isymbol;
             instructions.addAll(platform.getBest(arg));
-            final Size lastSize =  X86SizeHelper.getPushSize(sizeHelper.getSizeOfType(arg.getType().getTypeDclNode().fullName));
-            instructions.add(new Push(Register.ACCUMULATOR, X86SizeHelper.getPushSize(lastSize), sizeHelper));
+            final Size lastSize =  sizeHelper.getPushSize(sizeHelper.getSizeOfType(arg.getType().getTypeDclNode().fullName));
+            instructions.add(new Push(Register.ACCUMULATOR, sizeHelper.getPushSize(lastSize), sizeHelper));
         }
     }
 

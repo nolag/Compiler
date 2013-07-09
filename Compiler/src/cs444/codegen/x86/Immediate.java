@@ -12,7 +12,7 @@ import cs444.codegen.instructions.x86.bases.X86Instruction;
 public class Immediate extends NotMemory{
     private final String value;
 
-    public static Map<SizeHelper<X86Instruction>, Immediate> stackPowers = new HashMap<SizeHelper<X86Instruction>, Immediate>();
+    public static Map<SizeHelper<X86Instruction, ?>, Immediate> stackPowers = new HashMap<SizeHelper<X86Instruction, ?>, Immediate>();
 
     public static final Immediate ONE = new Immediate("1");
     public static final Immediate ZERO = new Immediate("0");
@@ -69,7 +69,7 @@ public class Immediate extends NotMemory{
         return value;
     }
 
-    public final Immediate getStackSizePower(final SizeHelper<X86Instruction> sizeHelper){
+    public final Immediate getStackSizePower(final SizeHelper<X86Instruction, ?> sizeHelper){
         Immediate immediate = stackPowers.get(sizeHelper);
         if(immediate == null){
             immediate = new Immediate(sizeHelper.getDefaultStackPower());

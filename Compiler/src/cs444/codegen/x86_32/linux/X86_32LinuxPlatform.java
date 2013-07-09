@@ -18,6 +18,7 @@ public class X86_32LinuxPlatform extends X86_32Platform{
 
     private static final Immediate EXIT = Immediate.ONE;
     private static final Immediate SOFTWARE_INTERUPT = new Immediate("80h");
+    private static final X86SizeHelper sizeHelper = X86SizeHelper.sizeHelper32;
 
     private X86_32LinuxPlatform(final Map<String, Boolean> opts){
         super(Runtime.instance, opts);
@@ -32,33 +33,33 @@ public class X86_32LinuxPlatform extends X86_32Platform{
         instructions.add(new Global("_start"));
         instructions.add(new Label("_start"));
         instructions.add(new Extern(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL)));
-        instructions.add(new Call(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL), X86SizeHelper.sizeHelper32));
-        instructions.add(new Call(new Immediate(methodName), X86SizeHelper.sizeHelper32));
-        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, X86SizeHelper.sizeHelper32));
-        instructions.add(new Mov(Register.ACCUMULATOR, EXIT, X86SizeHelper.sizeHelper32));
-        instructions.add(new Int(SOFTWARE_INTERUPT, X86SizeHelper.sizeHelper32));
+        instructions.add(new Call(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL), sizeHelper));
+        instructions.add(new Call(new Immediate(methodName), sizeHelper));
+        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));
+        instructions.add(new Mov(Register.ACCUMULATOR, EXIT, sizeHelper));
+        instructions.add(new Int(SOFTWARE_INTERUPT, sizeHelper));
     }
 
     @Override
     public void genHeaderEnd(final APkgClassResolver resolver, final Addable<X86Instruction> instructions) {
         instructions.add(new Comment("Store pointer to object in edx"));
-        instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR, X86SizeHelper.sizeHelper32));
+        instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR, sizeHelper));
 
         for (final DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
-            final Size size = X86SizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(X86SizeHelper.sizeHelper32));
+            final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
             final Memory fieldAddr = new Memory(Register.DATA, fieldDcl.getOffset());
             if(!fieldDcl.children.isEmpty()){
                 instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
                 // save pointer to object
-                instructions.add(new Push(Register.DATA, X86SizeHelper.sizeHelper32));
+                instructions.add(new Push(Register.DATA, sizeHelper));
                 final CodeGenVisitor visitor = new CodeGenVisitor(CodeGenVisitor.getCurrentCodeGen().currentFile, platform);
                 final ISymbol field = fieldDcl.children.get(0);
                 field.accept(visitor);
                 instructions.addAll(platform.getBest(field));
                 instructions.add(new Comment("Pop the object address to edx"));
-                instructions.add(new Pop(Register.DATA, X86SizeHelper.sizeHelper32));
-                instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, size, X86SizeHelper.sizeHelper32));
+                instructions.add(new Pop(Register.DATA, sizeHelper));
+                instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, size, sizeHelper));
             }
         }
 

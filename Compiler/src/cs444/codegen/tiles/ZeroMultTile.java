@@ -6,9 +6,9 @@ import cs444.codegen.instructions.Instruction;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
 
-public class ZeroMultTile<T extends Instruction, U extends SizeHelper<T>> implements ITile<T, U, MultiplyExprSymbol>{
+public class ZeroMultTile<T extends Instruction, U extends SizeHelper<T, ?>> implements ITile<T, U, MultiplyExprSymbol>{
 
-    public static <T extends Instruction, U extends SizeHelper<T>> void init(final Class<T> klass){
+    public static <T extends Instruction, U extends SizeHelper<T, ?>> void init(final Class<T> klass){
         new ZeroMultTile<T, U>(klass);
     }
 

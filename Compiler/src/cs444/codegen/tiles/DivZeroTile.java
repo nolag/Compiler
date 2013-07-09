@@ -6,9 +6,9 @@ import cs444.codegen.instructions.Instruction;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 
-public class DivZeroTile<T extends Instruction, U extends SizeHelper<T>> implements ITile<T, U, DivideExprSymbol>{
+public class DivZeroTile<T extends Instruction, U extends SizeHelper<T, ?>> implements ITile<T, U, DivideExprSymbol>{
 
-    public static <T extends Instruction, U extends SizeHelper<T>> void init(final Class<T> klass){
+    public static <T extends Instruction, U extends SizeHelper<T, ?>> void init(final Class<T> klass){
         new DivZeroTile<T, U>(klass);
     }
 
