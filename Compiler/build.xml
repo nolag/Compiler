@@ -74,6 +74,7 @@
             <test name="cs444.acceptance.Asst2" todir="${junit.output.dir}"/>
             <test name="cs444.acceptance.Asst3" todir="${junit.output.dir}"/>
             <test name="cs444.acceptance.Asst4" todir="${junit.output.dir}"/>
+        	<test name="cs444.tiles.x86.CorrectTiles"/>
             <classpath refid="Compiler.classpath"/>
         </junit>
     </target>
@@ -109,7 +110,6 @@
       <junit fork="yes" printsummary="withOutAndErr">
         <formatter type="plain" usefile="false" />
         <test name="cs444.acceptance.A5"/>
-      	<test name="cs444.tiles.x86.CorrectTiles"/>
         <classpath refid="Compiler.classpath"/>
       </junit>
     </target>

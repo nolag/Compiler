@@ -12,7 +12,7 @@ import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
@@ -28,7 +28,7 @@ public class CastNonPrimTile implements ITile<X86Instruction, X86SizeHelper, Cas
 
     @Override
     public boolean fits(final CastExpressionSymbol symbol) {
-        return TileHelper.isReferenceType(symbol);
+        return X86TileHelper.isReferenceType(symbol);
     }
 
     @Override
@@ -41,10 +41,10 @@ public class CastNonPrimTile implements ITile<X86Instruction, X86SizeHelper, Cas
         final X86SizeHelper sizeHelper = platform.getSizeHelper();
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));
-        TileHelper.ifNullJmpCode(Register.ACCUMULATOR, castExprEnd, sizeHelper, instructions);
+        X86TileHelper.ifNullJmpCode(Register.ACCUMULATOR, castExprEnd, sizeHelper, instructions);
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
         instructions.addAll(platform.getObjectLayout().subtypeCheckCode(type, platform));
-        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, Runtime.EXCEPTION_LBL, sizeHelper, instructions);
+        X86TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, Runtime.EXCEPTION_LBL, sizeHelper, instructions);
         instructions.add(new Pop(Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Label(castExprEnd));
 

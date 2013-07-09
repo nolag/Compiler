@@ -7,7 +7,7 @@ import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.X86SizeHelper;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.types.APkgClassResolver;
@@ -38,9 +38,9 @@ public class MethodTile implements ITile<X86Instruction, X86SizeHelper, MethodSy
         if(method.isNative()){
             instructions.add(new Extern(methodName));
         }else{
-            TileHelper.methProlog(method, methodName, sizeHelper, instructions);
+            X86TileHelper.methProlog(method, methodName, sizeHelper, instructions);
             for(final ISymbol child : method.children) instructions.addAll(platform.getBest(child));
-            TileHelper.methEpilogue(method, instructions);
+            X86TileHelper.methEpilogue(method, instructions);
         }
         return instructions;
     }

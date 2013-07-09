@@ -9,7 +9,7 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.types.PkgClassResolver;
@@ -46,7 +46,7 @@ public final class NameValueTile implements ITile<X86Instruction, X86SizeHelper,
         else if(dcl.isStatic()) base = new Immediate(staticFieldLbl);
 
         final InstructionArg from = new Memory(base, dcl.getOffset());
-        TileHelper.genMov(size, from, dcl.dclName, dcl, sizeHelper, instructions);
+        X86TileHelper.genMov(size, from, dcl.dclName, dcl, sizeHelper, instructions);
 
         return instructions;
     }

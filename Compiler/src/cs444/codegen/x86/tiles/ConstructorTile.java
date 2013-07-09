@@ -12,7 +12,7 @@ import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.types.APkgClassResolver;
@@ -40,7 +40,7 @@ public class ConstructorTile implements ITile<X86Instruction, X86SizeHelper, Con
         final String constrName = APkgClassResolver.generateFullId(constructor);
         final X86SizeHelper sizeHelper = platform.getSizeHelper();
 
-        TileHelper.methProlog(constructor, constrName, sizeHelper, instructions);
+        X86TileHelper.methProlog(constructor, constrName, sizeHelper, instructions);
 
         instructions.add(new Mov(Register.ACCUMULATOR, Memory.getThisPointer(sizeHelper), sizeHelper));
 
@@ -48,7 +48,7 @@ public class ConstructorTile implements ITile<X86Instruction, X86SizeHelper, Con
 
         for(final ISymbol child : constructor.children) instructions.addAll(platform.getBest(child));
 
-        TileHelper.methEpilogue(constructor, instructions);
+        X86TileHelper.methEpilogue(constructor, instructions);
         return instructions;
     }
 

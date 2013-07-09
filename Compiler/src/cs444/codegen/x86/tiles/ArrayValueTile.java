@@ -10,7 +10,7 @@ import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86.tiles.helpers.ArrayBaseTile;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
 public final class ArrayValueTile extends ArrayBaseTile{
@@ -39,7 +39,7 @@ public final class ArrayValueTile extends ArrayBaseTile{
         if(stackSize >= sizeHelper.defaultStackSize) elementSize = sizeHelper.defaultStack;
         else elementSize = X86SizeHelper.getSize(stackSize);
         final Memory mem = new Memory(Register.ACCUMULATOR, Register.BASE);
-        TileHelper.genMov(elementSize, mem, "array", arrayAccess, sizeHelper, instructions);
+        X86TileHelper.genMov(elementSize, mem, "array", arrayAccess, sizeHelper, instructions);
         instructions.add(new Pop(Register.BASE, sizeHelper));
         return instructions;
     }

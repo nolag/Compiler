@@ -11,6 +11,7 @@ import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86_32.linux.Runtime;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
 public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Instruction, X86SizeHelper, T>{
@@ -41,8 +42,8 @@ public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Inst
             instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR, sizeHelper));
             instructions.add(new Sar(Register.DATA, new Immediate(sizeHelper.defaultStackSize * 8 -1), sizeHelper));
             final String safeDiv = "safeDiv" + CodeGenVisitor.getNewLblNum();
-            TileHelper.setupJumpNe(Register.BASE, Immediate.ZERO, safeDiv, sizeHelper, instructions);
-            Runtime.instance.throwException(instructions, "Divide by zero");
+            X86TileHelper.setupJumpNe(Register.BASE, Immediate.ZERO, safeDiv, sizeHelper, instructions);
+            Runtime.instance.throwException(instructions, JoosNonTerminal.DIV_ZERO);
             instructions.add(new Label(safeDiv));
         }
 

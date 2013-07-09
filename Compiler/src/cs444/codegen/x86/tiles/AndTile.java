@@ -10,7 +10,7 @@ import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 
 public class AndTile implements ITile<X86Instruction, X86SizeHelper, AndExprSymbol>{
@@ -34,9 +34,9 @@ public class AndTile implements ITile<X86Instruction, X86SizeHelper, AndExprSymb
 
         final String andEnd = "and" + CodeGenVisitor.getNewLblNum();
         instructions.addAll(platform.getBest(op.children.get(0)));
-        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, andEnd, sizeHelper, instructions);
+        X86TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, andEnd, sizeHelper, instructions);
         instructions.addAll(platform.getBest(op.children.get(1)));
-        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, andEnd, sizeHelper, instructions);
+        X86TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, andEnd, sizeHelper, instructions);
         instructions.add(new Label(andEnd));
 
         return instructions;

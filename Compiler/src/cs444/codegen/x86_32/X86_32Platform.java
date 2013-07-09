@@ -3,17 +3,16 @@ package cs444.codegen.x86_32;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.IRuntime;
-import cs444.codegen.instructions.x86.Comment;
-import cs444.codegen.instructions.x86.Label;
-import cs444.codegen.instructions.x86.Section;
+import cs444.codegen.instructions.x86.*;
 import cs444.codegen.instructions.x86.Section.SectionType;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.x86.*;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ISymbol;
 import cs444.types.APkgClassResolver;
 
@@ -21,7 +20,8 @@ public abstract class X86_32Platform extends X86Platform{
     public final X86SelectorIndexedTable sit = new X86SelectorIndexedTable(X86SizeHelper.sizeHelper32);
     protected final IRuntime<X86Instruction> RUNTIME;
 
-    protected X86_32Platform(final IRuntime<X86Instruction> runtime){
+    protected X86_32Platform(final IRuntime<X86Instruction> runtime, final Map<String, Boolean> opts){
+        super(opts);
         RUNTIME = runtime;
     }
 
@@ -54,7 +54,7 @@ public abstract class X86_32Platform extends X86Platform{
 
     @Override
     public final void genInstructorInvoke(final APkgClassResolver resolver, final Addable<X86Instruction> instructions) {
-        TileHelper.invokeConstructor(resolver, Collections.<ISymbol>emptyList(), this, instructions);
+        X86TileHelper.invokeConstructor(resolver, Collections.<ISymbol>emptyList(), this, instructions);
     }
 
     @Override
@@ -64,5 +64,11 @@ public abstract class X86_32Platform extends X86Platform{
         instructions.add(new Comment(CodeGenVisitor.INIT_OBJECT_FUNC + ": call super default constructor and initialize obj fields." +
                 " eax should contain address of object."));
         instructions.add(new Label(CodeGenVisitor.INIT_OBJECT_FUNC));
+    }
+
+
+    @Override
+    public final void zeroDefaultLocation(final Addable<X86Instruction> instructions) {
+        instructions.add(new Xor(Register.ACCUMULATOR, Register.ACCUMULATOR, X86SizeHelper.sizeHelper32));
     }
 }

@@ -2,6 +2,7 @@ package cs444.codegen.x86;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import cs444.codegen.Platform;
 import cs444.codegen.SubtypeIndexedTable;
@@ -16,9 +17,12 @@ public abstract class X86Platform extends Platform<X86Instruction, X86SizeHelper
     private final InstructionHolder<X86Instruction> instrucitons;
     private SubtypeIndexedTable<X86Instruction> subtype;
 
-    protected X86Platform(){
+    protected X86Platform(final Map<String, Boolean> options){
         instrucitons = new InstructionPrinter<X86Instruction>();
         X86TileInit.initBase();
+        if(!options.containsKey(NO_OPT)){
+            X86TileInit.initBasicOpt();
+        }
     }
 
     @Override
@@ -47,7 +51,7 @@ public abstract class X86Platform extends Platform<X86Instruction, X86SizeHelper
     }
 
     @Override
-    public TileSet<X86Instruction, X86SizeHelper> getTiles(){
+    public final TileSet<X86Instruction, X86SizeHelper> getTiles(){
         return TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class);
     }
 }

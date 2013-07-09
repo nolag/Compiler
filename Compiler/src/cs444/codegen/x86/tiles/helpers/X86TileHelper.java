@@ -20,7 +20,7 @@ import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.types.APkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
-public class TileHelper {
+public class X86TileHelper {
     public static void genMov(final Size size, final InstructionArg from, final String value,
             final Typeable dcl, final X86SizeHelper sizeHelper, final Addable<X86Instruction> instructions){
 

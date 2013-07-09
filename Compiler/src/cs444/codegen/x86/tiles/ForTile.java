@@ -13,7 +13,7 @@ import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.expressions.ForExprSymbol;
 
 public class ForTile implements ITile<X86Instruction, X86SizeHelper, ForExprSymbol>{
@@ -45,7 +45,7 @@ public class ForTile implements ITile<X86Instruction, X86SizeHelper, ForExprSymb
         instructions.add(new Comment("Compare for " + mynum));
         instructions.addAll(platform.getBest(forExprSymbol.getConditionExpr()));
 
-        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, loopEnd, sizeHelper, instructions);
+        X86TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, loopEnd, sizeHelper, instructions);
 
         instructions.add(new Comment("for body" + mynum));
 

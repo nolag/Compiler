@@ -13,6 +13,8 @@ import cs444.parser.symbols.ISymbol;
 import cs444.types.APkgClassResolver;
 
 public abstract class Platform<T extends Instruction, U extends SizeHelper<T>> {
+    protected static final String NO_OPT = "--no-opt";
+
     private final Map<ISymbol, InstructionsAndTiming<T>> bests = new HashMap<ISymbol, InstructionsAndTiming<T>> ();
 
     public void addBest(final ISymbol symbol, final InstructionsAndTiming<T> tile){
@@ -42,4 +44,6 @@ public abstract class Platform<T extends Instruction, U extends SizeHelper<T>> {
     public abstract void genHeaderEnd(final APkgClassResolver resolver, final Addable<T> instructions);
 
     public abstract TileSet<T, U> getTiles();
+
+    public abstract void zeroDefaultLocation(final Addable<T> instructions);
 }

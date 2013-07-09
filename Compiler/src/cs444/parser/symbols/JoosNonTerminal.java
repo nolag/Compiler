@@ -55,6 +55,8 @@ public class JoosNonTerminal extends NonTerminal{
     public static final String TO_STR = "valueOf";
     public static final String LENGTH = "length";
 
+    public static final String DIV_ZERO = "java.lang.ArithmeticException: / by zero";
+
     public static final Map<String, Set<String>> defaultAssignables = new HashMap<String, Set<String>>();
     public static final Map<String, Set<String>> specialAssignables = new HashMap<String, Set<String>>();
 

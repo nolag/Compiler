@@ -13,7 +13,7 @@ import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
 
@@ -40,7 +40,7 @@ public class InstanceOfTile implements ITile<X86Instruction, X86SizeHelper, Inst
         instructions.addAll(platform.getBest(op.getLeftOperand()));
         // eax should have reference to object
         final String nullObjectLbl = "nullObject" + CodeGenVisitor.getNewLblNum();
-        TileHelper.ifNullJmpCode(Register.ACCUMULATOR, nullObjectLbl, sizeHelper, instructions);
+        X86TileHelper.ifNullJmpCode(Register.ACCUMULATOR, nullObjectLbl, sizeHelper, instructions);
 
         instructions.addAll(platform.getObjectLayout().subtypeCheckCode((TypeSymbol) op.getRightOperand(), platform));
 

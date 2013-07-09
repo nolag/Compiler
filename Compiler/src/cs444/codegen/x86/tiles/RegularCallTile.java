@@ -10,7 +10,7 @@ import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
 import cs444.types.PkgClassResolver;
@@ -45,7 +45,7 @@ public class RegularCallTile implements ITile<X86Instruction, X86SizeHelper, Sim
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Comment("Preping this"));
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));
-        TileHelper.callStartHelper(invoke, instructions, platform);
+        X86TileHelper.callStartHelper(invoke, instructions, platform);
 
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Comment("get SIT column of " + call.dclName));
@@ -62,7 +62,7 @@ public class RegularCallTile implements ITile<X86Instruction, X86SizeHelper, Sim
         instructions.add(new Mov(Register.BASE,  methodAddr, sizeHelper));
         instructions.add(new Call(Register.BASE, sizeHelper));
 
-        TileHelper.callEndHelper(call, instructions, platform);
+        X86TileHelper.callEndHelper(call, instructions, platform);
         instructions.add(new Pop(Register.BASE, sizeHelper));
         return instructions;
     }

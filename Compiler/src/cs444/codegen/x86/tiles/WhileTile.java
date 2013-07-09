@@ -12,7 +12,7 @@ import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
 public class WhileTile implements ITile<X86Instruction, X86SizeHelper, WhileExprSymbol>{
@@ -43,7 +43,7 @@ public class WhileTile implements ITile<X86Instruction, X86SizeHelper, WhileExpr
         instructions.addAll(platform.getBest(whileExprSymbol.getConditionSymbol()));
 
         final X86SizeHelper sizeHelper = platform.getSizeHelper();
-        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, loopEnd, sizeHelper, instructions);
+        X86TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, loopEnd, sizeHelper, instructions);
 
         instructions.addAll(platform.getBest((whileExprSymbol.getBody())));
 

@@ -13,7 +13,7 @@ import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
 import cs444.types.APkgClassResolver;
@@ -54,7 +54,7 @@ public class NormalCreationTile implements ITile<X86Instruction, X86SizeHelper, 
 
         instructions.add(new Comment("invoke Constructor"));
 
-        TileHelper.invokeConstructor(resolver, children, platform, instructions);
+        X86TileHelper.invokeConstructor(resolver, children, platform, instructions);
         instructions.add(new Comment("Done creating object"));
         return instructions;
     }

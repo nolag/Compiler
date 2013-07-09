@@ -13,7 +13,7 @@ import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
 import cs444.types.APkgClassResolver;
@@ -44,14 +44,14 @@ public class StaticCallTile implements ITile<X86Instruction, X86SizeHelper, Simp
         final X86SizeHelper sizeHelper = platform.getSizeHelper();
 
         if(call.isNative()) instructions.add(new Push(Register.BASE, sizeHelper));
-        TileHelper.callStartHelper(invoke, instructions, platform);
+        X86TileHelper.callStartHelper(invoke, instructions, platform);
         String name = APkgClassResolver.generateFullId(call);
         if(call.isNative()) name = NATIVE_NAME + name;
         final Immediate arg = new Immediate(name);
         if(call.dclInResolver != CodeGenVisitor.getCurrentCodeGen().currentFile || call.isNative()) instructions.add(new Extern(arg));
         instructions.add(new Call(arg, sizeHelper));
         if(call.isNative())instructions.add(new Pop(Register.BASE, sizeHelper));
-        TileHelper.callEndHelper(call, instructions, platform);
+        X86TileHelper.callEndHelper(call, instructions, platform);
 
         return instructions;
     }

@@ -1,5 +1,7 @@
 package cs444.codegen.x86_32.linux;
 
+import java.util.Map;
+
 import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.instructions.x86.*;
@@ -12,17 +14,17 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
 public class X86_32LinuxPlatform extends X86_32Platform{
-    public static X86_32LinuxPlatform platform = new X86_32LinuxPlatform();
+    public static X86_32LinuxPlatform platform;
 
     private static final Immediate EXIT = Immediate.ONE;
     private static final Immediate SOFTWARE_INTERUPT = new Immediate("80h");
 
-    private X86_32LinuxPlatform(){
-        super(Runtime.instance);
+    private X86_32LinuxPlatform(final Map<String, Boolean> opts){
+        super(Runtime.instance, opts);
     }
 
-    public static void reset(){
-        platform = new X86_32LinuxPlatform();
+    public static void reset(final Map<String, Boolean> opts){
+        platform = new X86_32LinuxPlatform(opts);
     }
 
     @Override

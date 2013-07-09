@@ -12,7 +12,7 @@ import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86SizeHelper;
-import cs444.codegen.x86.tiles.helpers.TileHelper;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.IfExprSymbol;
 
@@ -44,7 +44,7 @@ public class IfTile implements ITile<X86Instruction, X86SizeHelper, IfExprSymbol
         final String trueLbl = "true" + myid;
         instructions.addAll(platform.getBest(ifExprSymbol.getConditionSymbol()));
 
-        TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, falseLbl, sizeHelper, instructions);
+        X86TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, falseLbl, sizeHelper, instructions);
 
         instructions.addAll(platform.getBest(ifExprSymbol.getifBody()));
 
