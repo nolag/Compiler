@@ -2,6 +2,7 @@ package cs444.codegen.x86.tiles;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.Label;
 import cs444.codegen.instructions.x86.Pop;
 import cs444.codegen.instructions.x86.Push;
@@ -10,35 +11,35 @@ import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
+import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 
-public class CastNonPrimTile implements ITile<X86Instruction, X86SizeHelper, CastExpressionSymbol> {
+public class CastNonPrimTile implements ITile<X86Instruction, Size, CastExpressionSymbol> {
     public static void init(){
         new CastNonPrimTile();
     }
 
     private CastNonPrimTile(){
-        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).casts.add(this);
+        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).casts.add(this);
     }
 
     @Override
-    public boolean fits(final CastExpressionSymbol symbol) {
+    public boolean fits(final CastExpressionSymbol symbol, final Platform<X86Instruction, Size> platform) {
         return X86TileHelper.isReferenceType(symbol);
     }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final CastExpressionSymbol symbol,
-            final Platform<X86Instruction, X86SizeHelper> platform) {
+            final Platform<X86Instruction, Size> platform) {
 
         final TypeSymbol type = symbol.getType();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final String castExprEnd = "CastExprEnd" + CodeGenVisitor.getNewLblNum();
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));
         X86TileHelper.ifNullJmpCode(Register.ACCUMULATOR, castExprEnd, sizeHelper, instructions);

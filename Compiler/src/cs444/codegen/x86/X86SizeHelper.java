@@ -7,16 +7,13 @@ import cs444.codegen.x86.InstructionArg.Size;
 public class X86SizeHelper extends SizeHelper<X86Instruction, Size>{
     public static final X86SizeHelper sizeHelper32 = new X86SizeHelper(false);
     public static final X86SizeHelper sizeHelper64 = new X86SizeHelper(true);
-    public static final int MIN_BYTE_SIZE = 2;
-    public static final Size SMALL_SIZE = Size.LOW;
 
-    public final int defaultStackPower;
-    public final int defaultStackSize;
-    public final Size defaultStack;
-    public final boolean use64;
+    private static final int MIN_BYTE_SIZE = 2;
+    private final int defaultStackPower;
+    private final int defaultStackSize;
+    private final Size defaultStack;
 
     private X86SizeHelper(final boolean use64){
-        this.use64 = use64;
         if(use64){
             defaultStackPower = 3;
             defaultStackSize = 8;
@@ -101,5 +98,10 @@ public class X86SizeHelper extends SizeHelper<X86Instruction, Size>{
     @Override
     public final int getMinSize(){
         return MIN_BYTE_SIZE;
+    }
+
+    @Override
+    public Size getDefaultSize() {
+        return defaultStack;
     }
 }

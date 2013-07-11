@@ -48,7 +48,7 @@ public class ClassSymbol extends AInterfaceOrClassSymbol{
     }
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 }

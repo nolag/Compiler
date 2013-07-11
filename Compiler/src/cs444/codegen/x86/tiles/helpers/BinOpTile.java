@@ -1,6 +1,7 @@
 package cs444.codegen.x86.tiles.helpers;
 
 import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.Mov;
 import cs444.codegen.instructions.x86.Pop;
 import cs444.codegen.instructions.x86.Push;
@@ -8,11 +9,11 @@ import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.instructions.x86.factories.BinOpMaker;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
+import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.X86SizeHelper;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
-public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruction, X86SizeHelper, T>{
+public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruction, Size, T>{
     private final BinOpMaker maker;
     private final boolean forceCl;
 
@@ -26,9 +27,9 @@ public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruc
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction, X86SizeHelper> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction, Size> platform) {
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.add(new Push(Register.BASE, sizeHelper));
 

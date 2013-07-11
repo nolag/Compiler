@@ -1,7 +1,7 @@
 package cs444.codegen.x86;
 
-
-
+import cs444.codegen.SizeHelper;
+import cs444.codegen.instructions.x86.bases.X86Instruction;
 
 public class Register extends NotMemory{
     public static final Register ACCUMULATOR = new Register("a", 'x');
@@ -42,7 +42,7 @@ public class Register extends NotMemory{
     }
 
     @Override
-    public String getValue(final Size size, final X86SizeHelper sizeHelper) {
+    public String getValue(final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
         switch(size){
         case LOW: return get8Low();
         case HIGH: return get8High();

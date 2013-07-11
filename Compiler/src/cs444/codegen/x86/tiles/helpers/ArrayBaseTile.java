@@ -2,22 +2,25 @@ package cs444.codegen.x86.tiles.helpers;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.*;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.x86.*;
+import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Memory;
+import cs444.codegen.x86.Register;
 import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
-public abstract class ArrayBaseTile implements ITile<X86Instruction, X86SizeHelper, ArrayAccessExprSymbol>{
+public abstract class ArrayBaseTile implements ITile<X86Instruction, Size, ArrayAccessExprSymbol>{
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess,
-            final Platform<X86Instruction, X86SizeHelper> platform) {
+            final Platform<X86Instruction, Size> platform) {
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.add(new Comment("Accessing array"));
         instructions.addAll(platform.getBest(arrayAccess.children.get(0)));
@@ -43,13 +46,16 @@ public abstract class ArrayBaseTile implements ITile<X86Instruction, X86SizeHelp
         Runtime.instance.throwException(instructions, "Invalid array creation");
         instructions.add(new Label(ok));
 
-        final long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
         Size elementSize;
-        if(stackSize >= sizeHelper.defaultStackSize) elementSize = sizeHelper.defaultStack;
-        else elementSize = sizeHelper.getSize(stackSize);
+        if(!sizeHelper.hasSetSize(arrayAccess.getType().value)){
+            elementSize = sizeHelper.getDefaultSize();
+        }else{
+            final long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
+            elementSize = sizeHelper.getSize(stackSize);
+        }
 
         instructions.add(new Shl(Register.ACCUMULATOR, Immediate.getImediateShift(sizeHelper.getPushSize(elementSize)), sizeHelper));
-        final long offset = sizeHelper.defaultStackSize * 2 + sizeHelper.getIntSize(Size.DWORD);
+        final long offset = sizeHelper.getDefaultStackSize() * 2 + sizeHelper.getIntSize(Size.DWORD);
         instructions.add(new Add(Register.ACCUMULATOR, new Immediate(offset), sizeHelper));
         return instructions;
     }

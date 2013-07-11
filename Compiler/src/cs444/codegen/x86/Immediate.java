@@ -65,7 +65,7 @@ public class Immediate extends NotMemory{
     }
 
     @Override
-    public final String getValue(final Size size, final X86SizeHelper sizeHelper) {
+    public final String getValue(final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
         return value;
     }
 

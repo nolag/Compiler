@@ -129,7 +129,7 @@ public class Compiler {
 
         platform.generateStaticCode(resolvers, outputFile, OUTPUT_DIRECTORY);
 
-        final CodeGenVisitor codeGen = new CodeGenVisitor(platform);
+        final CodeGenVisitor<?, ?> codeGen = platform.makeNewCodeGen();
         for(final APkgClassResolver resolver : resolvers){
             if(!resolver.shouldGenCode()) continue;
             codeGen.genLayoutForStaticFields(resolver.getUninheritedStaticFields());

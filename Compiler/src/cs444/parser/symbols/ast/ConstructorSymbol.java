@@ -25,7 +25,7 @@ public class ConstructorSymbol extends MethodOrConstructorSymbol{
 
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 }

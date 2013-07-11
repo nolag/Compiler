@@ -1,21 +1,14 @@
 package cs444.codegen;
 
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-import cs444.codegen.instructions.x86.Comment;
-import cs444.codegen.instructions.x86.Global;
-import cs444.codegen.instructions.x86.Section;
-import cs444.codegen.instructions.x86.Section.SectionType;
-import cs444.codegen.instructions.x86.bases.ReserveInstruction;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
-import cs444.codegen.instructions.x86.factories.ReserveInstructionMaker;
+import cs444.codegen.instructions.Instruction;
 import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.X86SizeHelper;
-import cs444.codegen.x86_32.X86_32Platform;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -25,50 +18,53 @@ import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.expressions.*;
 import cs444.types.APkgClassResolver;
 
-public class CodeGenVisitor {
-    private static CodeGenVisitor currentVisitor;
+public class CodeGenVisitor <T extends Instruction, E extends Enum<E>> {
+    private static Map<Platform<?, ?>, CodeGenVisitor<?, ?>> codeGens = new HashMap<Platform<?, ?>, CodeGenVisitor<?, ?>>();
 
-    public static CodeGenVisitor getCurrentCodeGen(){
-        return currentVisitor;
+    //NOTE: this is for testing
+    public static void reset(){
+        codeGens = new HashMap<Platform<?, ?>, CodeGenVisitor<?, ?>>();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Instruction, E extends Enum<E>> CodeGenVisitor<T, E> getCurrentCodeGen(
+            final Platform<T, E> platform){
+
+        return (CodeGenVisitor<T, E>) codeGens.get(platform);
     }
 
     public static final String INIT_OBJECT_FUNC = "__init_object";
     public static final String NATIVE_NAME = "NATIVE";
-    //TODO generic
-    public final X86_32Platform platform;
+    public final Platform<T, E> platform;
     private boolean hasEntry = false;
     public boolean getVal = true;
     public boolean lastWasFunc = false;
-    //TODO generic
-    public Size lastSize = Size.DWORD;
     private static long nextLblnum = 0;
     public APkgClassResolver currentFile;
     public boolean isSuper = false;
-    public Size lhsSize;
+    public E lhsSize;
+    public E lastSize;
 
-    //TODO generic
-    private final InstructionHolder<X86Instruction> instructions;
-    //TODO generic
-    private final X86SizeHelper sizeHelper;
-
-    //TODO generic
-    private final TileSet<X86Instruction, X86SizeHelper> tiles;
+    private final InstructionHolder<T> instructions;
+    private final SizeHelper<T, E> sizeHelper;
+    private final TileSet<T, E> tiles;
 
     public static long getNewLblNum(){
         return nextLblnum++;
     }
 
-    public CodeGenVisitor(final Platform<?, ?> platform) {
+    public CodeGenVisitor(final Platform<T, E> platform) {
         this(null, platform);
     }
 
-    public CodeGenVisitor(final APkgClassResolver resolver, final Platform<?, ?> platform) {
-        this.platform = (X86_32Platform)platform;
+    public CodeGenVisitor(final APkgClassResolver resolver, final Platform<T, E> platform) {
+        this.platform = platform;
         this.currentFile = resolver;
         this.instructions = this.platform.getInstructionHolder();
         this.sizeHelper = this.platform.getSizeHelper();
         this.tiles = this.platform.getTiles();
-        currentVisitor = this;
+        this.lastSize = sizeHelper.getDefaultSize();
+        codeGens.put(platform, this);
     }
 
     public void genHeader(final APkgClassResolver resolver) {
@@ -83,23 +79,11 @@ public class CodeGenVisitor {
         }
 
         platform.genHeaderEnd(resolver, instructions);
-        currentVisitor = this;
+        codeGens.put(platform, this);
     }
 
     public void genLayoutForStaticFields(final Iterable<DclSymbol> staticFields) {
-        if (staticFields.iterator().hasNext()){
-            instructions.add(new Comment("Static fields:"));
-            instructions.add(new Section(SectionType.BSS));
-        }
-
-        for (final DclSymbol fieldDcl : staticFields) {
-            final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
-
-            final String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
-            instructions.add(new Global(fieldLbl));
-            final ReserveInstruction data = ReserveInstructionMaker.make(fieldLbl, size, 1);
-            instructions.add(data);
-        }
+        platform.genLayoutForStaticFields(staticFields, instructions);
     }
 
     public void visit(final FieldAccessSymbol field) {
@@ -158,8 +142,7 @@ public class CodeGenVisitor {
             types.add(ts.getTypeDclNode().fullName);
         }
 
-        //TODO generic this
-        lastSize = Size.DWORD;
+        lastSize = sizeHelper.getDefaultSize();
 
         tiles.<CreationExpression>addBest(tiles.creation, creationExpression, platform);
     }
@@ -202,8 +185,7 @@ public class CodeGenVisitor {
     public void visit(final CastExpressionSymbol symbol) {
         symbol.getOperandExpression().accept(this);
         tiles.<CastExpressionSymbol>addBest(tiles.casts, symbol, platform);
-        //TODO generic
-        lastSize = sizeHelper.defaultStack;
+        lastSize = sizeHelper.getDefaultSize();
     }
 
     public void visit(final NegOpExprSymbol op) {
@@ -324,17 +306,17 @@ public class CodeGenVisitor {
 
     public void visit(final IntegerLiteralSymbol intLiteral) {
         tiles.<INumericLiteral>addBest(tiles.numbs, intLiteral, platform);
-        lastSize = Size.DWORD;
+        lastSize = sizeHelper.getPushSize(sizeHelper.getSize(2));
     }
 
     public void visit(final NullSymbol nullSymbol) {
         tiles.<NullSymbol>addBest(tiles.nulls, nullSymbol, platform);
-        lastSize = Size.DWORD;
+        lastSize = sizeHelper.getDefaultSize();
     }
 
     public void visit(final BooleanLiteralSymbol boolSymbol) {
         tiles.<BooleanLiteralSymbol>addBest(tiles.bools, boolSymbol, platform);
-        lastSize = Size.WORD;
+        lastSize = sizeHelper.getPushSize(sizeHelper.getSize(1));
     }
 
     public void visit(final ThisSymbol thisSymbol) {
@@ -348,12 +330,12 @@ public class CodeGenVisitor {
 
     public void visit(final StringLiteralSymbol stringSymbol) {
         tiles.<StringLiteralSymbol>addBest(tiles.strs, stringSymbol, platform);
-        lastSize = Size.DWORD;
+        lastSize = sizeHelper.getDefaultSize();
     }
 
     public void visit(final CharacterLiteralSymbol characterSymbol) {
         tiles.<INumericLiteral>addBest(tiles.numbs, characterSymbol, platform);
-        lastSize = Size.WORD;
+        sizeHelper.getPushSize(sizeHelper.getSize(2));
     }
 
     public void visit(final ArrayAccessExprSymbol arrayAccess) {
@@ -364,15 +346,19 @@ public class CodeGenVisitor {
         arrayAccess.children.get(1).accept(this);
 
         if(gettingValue){
-            final long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
-            Size elementSize;
-            if(stackSize >= sizeHelper.defaultStackSize) elementSize = sizeHelper.defaultStack;
-            else elementSize = sizeHelper.getSize(stackSize);
+
+            E elementSize;
+            if(!sizeHelper.hasSetSize(arrayAccess.getType().value)){
+                elementSize = sizeHelper.getDefaultSize();
+            }else{
+                final long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
+                elementSize = sizeHelper.getSize(stackSize);
+            }
             lastSize = elementSize;
             tiles.<ArrayAccessExprSymbol>addBest(tiles.arrayValues, arrayAccess, platform);
         }else{
             tiles.<ArrayAccessExprSymbol>addBest(tiles.arrayRefs, arrayAccess, platform);
-            lastSize = sizeHelper.getSize(sizeHelper.defaultStackSize);
+            lastSize = sizeHelper.getSize(sizeHelper.getDefaultStackSize());
         }
     }
 
@@ -385,12 +371,12 @@ public class CodeGenVisitor {
 
     public void visit(final ByteLiteralSymbol byteLiteral) {
         tiles.<INumericLiteral>addBest(tiles.numbs, byteLiteral, platform);
-        lastSize = Size.WORD;
+        lastSize = sizeHelper.getSize(2);
     }
 
     public void visit(final ShortLiteralSymbol shortLiteral) {
         tiles.<INumericLiteral>addBest(tiles.numbs, shortLiteral, platform);
-        lastSize = Size.WORD;
+        lastSize = sizeHelper.getPushSize(sizeHelper.getSize(2));
     }
 
     public void printToFileAndEmpty(final PrintStream printer){
@@ -411,7 +397,6 @@ public class CodeGenVisitor {
     public void visit(final SimpleNameSymbol name) {
         final DclSymbol dcl = name.dcl;
 
-        //TODO generic next line
         lastSize = sizeHelper.getSize(dcl.getType().getTypeDclNode().getRefStackSize(sizeHelper));
 
         if(getVal){

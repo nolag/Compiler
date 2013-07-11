@@ -152,7 +152,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void generateCode(final CodeGenVisitor visitor) {
+    public void generateCode(final CodeGenVisitor<?, ?> visitor) {
         for(final ConstructorSymbol cs : constructors.values()) cs.accept(visitor);
     }
 

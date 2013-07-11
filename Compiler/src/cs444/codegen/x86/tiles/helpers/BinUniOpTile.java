@@ -2,19 +2,20 @@ package cs444.codegen.x86.tiles.helpers;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.*;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.instructions.x86.factories.UniOpMaker;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.x86.Immediate;
+import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
-public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Instruction, X86SizeHelper, T>{
+public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Instruction, Size, T>{
     private final UniOpMaker maker;
     private final boolean sar;
 
@@ -24,8 +25,8 @@ public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Inst
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction, X86SizeHelper> platform) {
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction, Size> platform) {
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         instructions.add(new Push(Register.BASE, sizeHelper));
 
@@ -40,7 +41,7 @@ public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Inst
         // first operand -> eax, second operand -> ebx
         if(sar){
             instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR, sizeHelper));
-            instructions.add(new Sar(Register.DATA, new Immediate(sizeHelper.defaultStackSize * 8 -1), sizeHelper));
+            instructions.add(new Sar(Register.DATA, new Immediate(sizeHelper.getDefaultStackSize() * 8 -1), sizeHelper));
             final String safeDiv = "safeDiv" + CodeGenVisitor.getNewLblNum();
             X86TileHelper.setupJumpNe(Register.BASE, Immediate.ZERO, safeDiv, sizeHelper, instructions);
             Runtime.instance.throwException(instructions, JoosNonTerminal.DIV_ZERO);

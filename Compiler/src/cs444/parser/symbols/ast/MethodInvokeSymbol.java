@@ -92,7 +92,7 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
     public void setType(final TypeSymbol type) { }
 
     @Override
-    public void accept(final CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 }

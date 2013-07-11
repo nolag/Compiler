@@ -20,7 +20,7 @@ public class ShortLiteralSymbol extends TypeableTerminal implements INumericLite
     }
 
     @Override
-    public void accept(final CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 

@@ -43,7 +43,7 @@ public class CharacterLiteralSymbol extends TypeableTerminal implements INumeric
 	}
 
     @Override
-    public void accept(final CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 

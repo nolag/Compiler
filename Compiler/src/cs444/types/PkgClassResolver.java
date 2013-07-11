@@ -446,7 +446,7 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void generateCode(final CodeGenVisitor visitor) {
+    public void generateCode(final CodeGenVisitor<?, ?> visitor) {
         if(!shouldGenCode()) return;
 
         for(final AMethodSymbol methodSymbol : start.getUninheritedMethods()) methodSymbol.accept(visitor);

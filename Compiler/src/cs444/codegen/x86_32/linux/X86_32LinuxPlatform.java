@@ -18,12 +18,12 @@ public class X86_32LinuxPlatform extends X86_32Platform{
 
     private static final Immediate EXIT = Immediate.ONE;
     private static final Immediate SOFTWARE_INTERUPT = new Immediate("80h");
-    private static final X86SizeHelper sizeHelper = X86SizeHelper.sizeHelper32;
 
     private X86_32LinuxPlatform(final Map<String, Boolean> opts){
         super(Runtime.instance, opts);
     }
 
+    //NOTE this is for testing
     public static void reset(final Map<String, Boolean> opts){
         platform = new X86_32LinuxPlatform(opts);
     }
@@ -53,7 +53,9 @@ public class X86_32LinuxPlatform extends X86_32Platform{
                 instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
                 // save pointer to object
                 instructions.add(new Push(Register.DATA, sizeHelper));
-                final CodeGenVisitor visitor = new CodeGenVisitor(CodeGenVisitor.getCurrentCodeGen().currentFile, platform);
+                final CodeGenVisitor<X86Instruction, Size> visitor = new CodeGenVisitor<X86Instruction, Size>(
+                        CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile, platform);
+
                 final ISymbol field = fieldDcl.children.get(0);
                 field.accept(visitor);
                 instructions.addAll(platform.getBest(field));

@@ -37,7 +37,7 @@ public class InterfaceMethodSymbol extends AMethodSymbol{
     }
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 }

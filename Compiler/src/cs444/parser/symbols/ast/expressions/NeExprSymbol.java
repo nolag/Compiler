@@ -35,7 +35,7 @@ public class NeExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(final CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 

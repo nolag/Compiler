@@ -33,7 +33,7 @@ public class EAndExprSymbol extends BinOpExpr {
     }
     
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 

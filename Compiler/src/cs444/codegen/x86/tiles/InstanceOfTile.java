@@ -2,6 +2,7 @@ package cs444.codegen.x86.tiles;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.Comment;
 import cs444.codegen.instructions.x86.Jmp;
 import cs444.codegen.instructions.x86.Label;
@@ -11,32 +12,32 @@ import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
+import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
 
-public class InstanceOfTile implements ITile<X86Instruction, X86SizeHelper, InstanceOfExprSymbol>{
+public class InstanceOfTile implements ITile<X86Instruction, Size, InstanceOfExprSymbol>{
     public static void init(){
         new InstanceOfTile();
     }
 
     private InstanceOfTile(){
-        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).insts.add(this);
+        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).insts.add(this);
     }
 
     @Override
-    public boolean fits(final InstanceOfExprSymbol symbol) {
+    public boolean fits(final InstanceOfExprSymbol symbol, final Platform<X86Instruction, Size> platform) {
         return true;
     }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final InstanceOfExprSymbol op,
-            final Platform<X86Instruction, X86SizeHelper> platform) {
+            final Platform<X86Instruction, Size> platform) {
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         instructions.addAll(platform.getBest(op.getLeftOperand()));
         // eax should have reference to object
         final String nullObjectLbl = "nullObject" + CodeGenVisitor.getNewLblNum();

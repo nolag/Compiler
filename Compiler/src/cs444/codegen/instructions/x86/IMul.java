@@ -1,16 +1,18 @@
 package cs444.codegen.instructions.x86;
 
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.x86.InstructionArg;
+import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.X86SizeHelper;
+
 
 public class IMul extends X86Instruction{
     private final InstructionArg arg1;
     private final InstructionArg arg2;
-    private final X86SizeHelper sizeHelper;
+    private final SizeHelper<X86Instruction, Size> sizeHelper;
 
-    public IMul(final InstructionArg arg1, final X86SizeHelper sizeHelper){
+    public IMul(final InstructionArg arg1, final SizeHelper<X86Instruction, Size> sizeHelper){
         //13-42 and 12-42 is close enough
         super(27);
         this.arg1 = arg1;
@@ -18,7 +20,7 @@ public class IMul extends X86Instruction{
         this.sizeHelper = sizeHelper;
     }
 
-    public IMul(final Register arg1, final InstructionArg arg2, final X86SizeHelper sizeHelper){
+    public IMul(final Register arg1, final InstructionArg arg2, final SizeHelper<X86Instruction, Size> sizeHelper){
         //13-42 rounds up to 28
         super(28);
         this.arg1 = arg1;

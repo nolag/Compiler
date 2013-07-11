@@ -1,6 +1,7 @@
 package cs444.codegen.x86.tiles.helpers;
 
 import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.Comment;
 import cs444.codegen.instructions.x86.Mov;
 import cs444.codegen.instructions.x86.Xor;
@@ -10,7 +11,6 @@ import cs444.codegen.instructions.x86.factories.UniOpMaker;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.X86SizeHelper;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
 public abstract class CompOpTile<T extends BinOpExpr> extends BinOpTile<T>{
@@ -21,9 +21,9 @@ public abstract class CompOpTile<T extends BinOpExpr> extends BinOpTile<T>{
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction, X86SizeHelper> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction, Size> platform) {
         final InstructionsAndTiming<X86Instruction> instructions = super.generate(bin, platform);
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         instructions.add(new Comment("Xor here CAN change the setl bit?"));
         instructions.add(uni.make(Register.DATA, sizeHelper));
         instructions.add(new Comment("clear all bits in register"));

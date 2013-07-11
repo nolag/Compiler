@@ -33,7 +33,7 @@ public class IntegerLiteralSymbol extends TypeableTerminal implements INumericLi
     }
 
     @Override
-    public void accept(final CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 

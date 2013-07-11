@@ -29,7 +29,7 @@ public class SimpleMethodInvoke extends ANonTerminal implements Typeable {
     }
 
     @Override
-    public void accept(final CodeGenVisitor visitor) {
+    public void accept(final CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 

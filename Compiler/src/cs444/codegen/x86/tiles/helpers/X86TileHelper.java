@@ -7,10 +7,13 @@ import java.util.List;
 import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.*;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
-import cs444.codegen.x86.*;
+import cs444.codegen.x86.Immediate;
+import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Register;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.*;
@@ -22,7 +25,7 @@ import cs444.types.exceptions.UndeclaredException;
 
 public class X86TileHelper {
     public static void genMov(final Size size, final InstructionArg from, final String value,
-            final Typeable dcl, final X86SizeHelper sizeHelper, final Addable<X86Instruction> instructions){
+            final Typeable dcl, final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
 
 
         X86Instruction instruction;
@@ -40,14 +43,15 @@ public class X86TileHelper {
     }
 
     public static void ifNullJmpCode(final Register register, final String ifNullLbl,
-            final X86SizeHelper sizeHelper, final Addable<X86Instruction> instructions) {
+            final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions) {
         instructions.add(new Comment("null check"));
         instructions.add(new Cmp(register, Immediate.NULL, sizeHelper));
         instructions.add(new Je(new Immediate(ifNullLbl), sizeHelper));
     }
 
-    public static void methProlog(final MethodOrConstructorSymbol method,
-            final String methodName, final X86SizeHelper sizeHelper, final Addable<X86Instruction> instructions){
+    public static void methProlog(final MethodOrConstructorSymbol method, final String methodName,
+            final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
+
         if(method.getProtectionLevel() != ProtectionLevel.PRIVATE) instructions.add(new Global(methodName));
         instructions.add(new Label(methodName));
         instructions.add(Push.getStackPush(sizeHelper));
@@ -63,16 +67,16 @@ public class X86TileHelper {
     }
 
     public static void setupJumpNe(final Register reg, final Immediate when,
-            final String lblTo, final X86SizeHelper sizeHelper, final Addable<X86Instruction> instructions){
+            final String lblTo, final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
         instructions.add(new Cmp(reg, when, sizeHelper));
         instructions.add(new Jne(new Immediate(lblTo), sizeHelper));
     }
 
     public static void invokeConstructor(final APkgClassResolver resolver, final List<ISymbol> children,
-            final Platform<X86Instruction, X86SizeHelper> platform, final Addable<X86Instruction> instructions) {
+            final Platform<X86Instruction, Size> platform, final Addable<X86Instruction> instructions) {
 
         final List<String> types = new LinkedList<String>();
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.add(new Comment("Back up addr of obj in Base so it is safe"));
         instructions.add(new Push(Register.BASE, sizeHelper));
@@ -99,7 +103,7 @@ public class X86TileHelper {
         }
 
         final Immediate arg = new Immediate(APkgClassResolver.generateFullId(cs));
-        if(resolver != CodeGenVisitor.getCurrentCodeGen().currentFile) instructions.add(new Extern(arg));
+        if(resolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(arg));
 
         instructions.add(new Call(arg, sizeHelper));
         //return value is the new object
@@ -115,9 +119,9 @@ public class X86TileHelper {
     }
 
     public static void strPartHelper(final ISymbol child, final APkgClassResolver resolver,
-            final Addable<X86Instruction> instructions, final Platform<X86Instruction, X86SizeHelper> platform){
+            final Addable<X86Instruction> instructions, final Platform<X86Instruction, Size> platform){
 
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         final String firstType = ((Typeable)child).getType().getTypeDclNode().fullName;
         instructions.addAll(platform.getBest(child));
         AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(firstType), false);
@@ -131,17 +135,18 @@ public class X86TileHelper {
         instructions.add(new Push(Register.ACCUMULATOR, lastSize, sizeHelper));
 
         final Immediate arg = new Immediate(APkgClassResolver.generateFullId(ms));
-        if(ms.dclInResolver != CodeGenVisitor.getCurrentCodeGen().currentFile) instructions.add(new Extern(arg));
+
+        if(ms.dclInResolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(arg));
         instructions.add(new Call(arg, sizeHelper));
 
         instructions.add(new Add(Register.STACK, new Immediate(pop), sizeHelper));
     }
 
     public static void callStartHelper(final SimpleMethodInvoke invoke,
-            final Addable<X86Instruction> instructions, final Platform<X86Instruction, X86SizeHelper> platform){
+            final Addable<X86Instruction> instructions, final Platform<X86Instruction, Size> platform){
         instructions.add(new Comment("Pushing args"));
 
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
         for(final ISymbol isymbol : invoke.children){
             final Typeable arg = (Typeable) isymbol;
@@ -152,9 +157,9 @@ public class X86TileHelper {
     }
 
     public static void callEndHelper(final MethodOrConstructorSymbol call,
-            final Addable<X86Instruction> instructions, final Platform<X86Instruction, X86SizeHelper> platform){
+            final Addable<X86Instruction> instructions, final Platform<X86Instruction, Size> platform){
 
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         // NOTE: do not use INVOKE in here, invoke gets size from method,
         // but visitor may visit InvokeSymbol before MethodSymbol
         final long mySize =  call.getStackSize();

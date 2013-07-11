@@ -1,14 +1,16 @@
 package cs444.codegen.instructions.x86.bases;
 
+import cs444.codegen.SizeHelper;
 import cs444.codegen.x86.InstructionArg;
-import cs444.codegen.x86.X86SizeHelper;
+import cs444.codegen.x86.InstructionArg.Size;
+
 
 public abstract class SetInstruciton extends X86Instruction{
     public final String what;
     public final InstructionArg arg;
-    public final X86SizeHelper sizeHelper;
+    public final SizeHelper<X86Instruction, Size> sizeHelper;
 
-    protected SetInstruciton(final String what, final InstructionArg arg, final X86SizeHelper sizeHelper, final long cost){
+    protected SetInstruciton(final String what, final InstructionArg arg, final SizeHelper<X86Instruction, Size> sizeHelper, final long cost){
         super(cost);
         this.what = what;
         this.arg = arg;
@@ -17,6 +19,6 @@ public abstract class SetInstruciton extends X86Instruction{
 
     @Override
     public final String generate() {
-        return what + " " + arg.getValue(X86SizeHelper.SMALL_SIZE, sizeHelper);
+        return what + " " + arg.getValue(sizeHelper.getSize(1), sizeHelper);
     }
 }

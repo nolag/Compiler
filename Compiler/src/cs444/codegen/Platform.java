@@ -10,9 +10,10 @@ import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
-public abstract class Platform<T extends Instruction, U extends SizeHelper<T, ?>> {
+public abstract class Platform<T extends Instruction, E extends Enum<E>> {
     protected static final String NO_OPT = "--no-opt";
 
     private final Map<ISymbol, InstructionsAndTiming<T>> bests = new HashMap<ISymbol, InstructionsAndTiming<T>> ();
@@ -25,7 +26,11 @@ public abstract class Platform<T extends Instruction, U extends SizeHelper<T, ?>
         return bests.get(symbol);
     }
 
-    public abstract U getSizeHelper();
+    public CodeGenVisitor<T, E> makeNewCodeGen(){
+        return new CodeGenVisitor<T, E>(this);
+    }
+
+    public abstract SizeHelper<T, E> getSizeHelper();
     public abstract ObjectLayout<T> getObjectLayout();
     public abstract SelectorIndexedTable<T> getSelectorIndex();
     public abstract void makeSubtypeTable(final List<APkgClassResolver> resolvers,
@@ -43,7 +48,9 @@ public abstract class Platform<T extends Instruction, U extends SizeHelper<T, ?>
     public abstract void genHeaderStart(final Addable<T> instructions);
     public abstract void genHeaderEnd(final APkgClassResolver resolver, final Addable<T> instructions);
 
-    public abstract TileSet<T, U> getTiles();
+    public abstract TileSet<T, E> getTiles();
 
     public abstract void zeroDefaultLocation(final Addable<T> instructions);
+
+    public abstract void genLayoutForStaticFields(final Iterable<DclSymbol> staticFields, final Addable<T> instructions);
 }

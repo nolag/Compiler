@@ -2,40 +2,40 @@ package cs444.codegen.x86.tiles;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.Add;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
+import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.X86SizeHelper;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 
-public class ANonTerminalTile implements ITile<X86Instruction, X86SizeHelper, ANonTerminal>{
+public class ANonTerminalTile implements ITile<X86Instruction, Size, ANonTerminal>{
     public static void init(){
         new ANonTerminalTile();
     }
 
     private ANonTerminalTile(){
-        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).anonTerms.add(this);
+        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).anonTerms.add(this);
     }
 
     @Override
-    public boolean fits(final ANonTerminal symbol) {
+    public boolean fits(final ANonTerminal symbol, final Platform<X86Instruction, Size> platform) {
         return true;
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final ANonTerminal aNonTerminal,
-            final Platform<X86Instruction, X86SizeHelper> platform){
+    public InstructionsAndTiming<X86Instruction> generate(final ANonTerminal aNonTerminal, final Platform<X86Instruction, Size> platform){
 
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final boolean isBlock = aNonTerminal.getName().equals(JoosNonTerminal.BLOCK);
-        final CodeGenVisitor codeGen = CodeGenVisitor.getCurrentCodeGen();
+        final CodeGenVisitor<X86Instruction, Size> codeGen = CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform);
 
         for(final ISymbol child : aNonTerminal.children) instructions.addAll(platform.getBest(child));
 

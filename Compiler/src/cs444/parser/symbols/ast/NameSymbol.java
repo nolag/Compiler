@@ -52,7 +52,7 @@ public class NameSymbol extends ATerminal implements Typeable{
     public void setType(TypeSymbol type) { }
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 }

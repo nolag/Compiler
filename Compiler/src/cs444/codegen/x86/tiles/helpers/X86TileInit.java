@@ -4,7 +4,7 @@ import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.DivZeroTile;
 import cs444.codegen.tiles.NonNullFieldAccess;
 import cs444.codegen.tiles.ZeroMultTile;
-import cs444.codegen.x86.X86SizeHelper;
+import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.tiles.*;
 
 public class X86TileInit {
@@ -59,8 +59,8 @@ public class X86TileInit {
 
     public static void initBasicOpt(){
         final Class<X86Instruction> klass = X86Instruction.class;
-        NonNullFieldAccess.<X86Instruction, X86SizeHelper>init(klass);
-        DivZeroTile.<X86Instruction, X86SizeHelper>init(klass);
-        ZeroMultTile.<X86Instruction, X86SizeHelper>init(klass);
+        NonNullFieldAccess.<X86Instruction, Size>init(klass);
+        DivZeroTile.<X86Instruction, Size>init(klass);
+        ZeroMultTile.<X86Instruction, Size>init(klass);
     }
 }

@@ -24,6 +24,10 @@ public abstract class SizeHelper<T extends Instruction, U extends Enum<U>> {
         maxValues.put(JoosNonTerminal.CHAR, (long)Character.MAX_VALUE);
     }
 
+    public boolean hasSetSize(final String type){
+        return stackSizes.containsKey(type);
+    }
+
     public abstract int getByteSizeOfType(String typeName);
     public abstract U getSize(final long stackSize);
     public abstract U getSizeOfType(final String typeName);
@@ -32,4 +36,5 @@ public abstract class SizeHelper<T extends Instruction, U extends Enum<U>> {
     public abstract int getDefaultStackPower();
     public abstract int getDefaultStackSize();
     public abstract int getMinSize();
+    public abstract U getDefaultSize();
 }

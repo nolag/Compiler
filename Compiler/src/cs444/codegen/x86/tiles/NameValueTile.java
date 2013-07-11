@@ -2,6 +2,7 @@ package cs444.codegen.x86.tiles;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.Extern;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
@@ -14,32 +15,32 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.types.PkgClassResolver;
 
-public final class NameValueTile implements ITile<X86Instruction, X86SizeHelper, SimpleNameSymbol>{
+public final class NameValueTile implements ITile<X86Instruction, Size, SimpleNameSymbol>{
 
     public static void init(){
         new NameValueTile();
     }
 
     private NameValueTile(){
-        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).nameValues.add(this);
+        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).nameValues.add(this);
     }
 
     @Override
-    public boolean fits(final SimpleNameSymbol name) {
+    public boolean fits(final SimpleNameSymbol name, final Platform<X86Instruction, Size> platform) {
         return true;
     }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final SimpleNameSymbol name,
-            final Platform<X86Instruction, X86SizeHelper> platform) {
+            final Platform<X86Instruction, Size> platform) {
 
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final DclSymbol dcl = name.dcl;
         final Size size = sizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
         final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
 
-        if(dcl.isStatic() && dcl.dclInResolver != CodeGenVisitor.getCurrentCodeGen().currentFile) instructions.add(new Extern(staticFieldLbl));
+        if(dcl.isStatic() && dcl.dclInResolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(staticFieldLbl));
 
         InstructionArg base = Register.ACCUMULATOR;
         if(dcl.isLocal) base = Register.FRAME;

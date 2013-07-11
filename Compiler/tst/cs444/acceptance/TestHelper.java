@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.*;
 
 import cs444.Compiler;
+import cs444.codegen.CodeGenVisitor;
+import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86_32.linux.X86_32LinuxPlatform;
 import cs444.types.PkgClassInfo;
 
@@ -134,8 +136,10 @@ public class TestHelper {
 
     private static int compileAndTest(final String[] files, final boolean printErrors) throws IOException, InterruptedException {
         PkgClassInfo.instance.clear();
-        //Reset the platforms
+        TileSet.reset();
+        CodeGenVisitor.reset();
         final Map<String, Boolean> opts = Collections.emptyMap();
+        //Reset the platforms
         X86_32LinuxPlatform.reset(opts);
         return Compiler.compile(files, printErrors, TestHelper.outputAsmFiles);
     }

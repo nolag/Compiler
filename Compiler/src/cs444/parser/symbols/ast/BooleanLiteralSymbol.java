@@ -25,7 +25,7 @@ public class BooleanLiteralSymbol extends TypeableTerminal{
     }
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 }

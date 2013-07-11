@@ -2,6 +2,7 @@ package cs444.codegen.x86.tiles;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.Comment;
 import cs444.codegen.instructions.x86.Jmp;
 import cs444.codegen.instructions.x86.Label;
@@ -10,33 +11,33 @@ import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
+import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.IfExprSymbol;
 
-public class IfTile implements ITile<X86Instruction, X86SizeHelper, IfExprSymbol>{
+public class IfTile implements ITile<X86Instruction, Size, IfExprSymbol>{
     public static void init(){
         new IfTile();
     }
 
     private IfTile(){
-        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).ifs.add(this);
+        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).ifs.add(this);
     }
 
     @Override
-    public boolean fits(final IfExprSymbol symbol) {
+    public boolean fits(final IfExprSymbol symbol, final Platform<X86Instruction, Size> platform) {
         return true;
     }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final IfExprSymbol ifExprSymbol,
-            final Platform<X86Instruction, X86SizeHelper> platform) {
+            final Platform<X86Instruction, Size> platform) {
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
 
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
         final long myid = CodeGenVisitor.getNewLblNum();
         instructions.add(new Comment("if start" + myid));

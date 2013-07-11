@@ -21,7 +21,7 @@ public class NotOpExprSymbol extends UnaryOpExprSymbol{
     }
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 

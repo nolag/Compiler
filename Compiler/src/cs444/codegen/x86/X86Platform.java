@@ -10,10 +10,11 @@ import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.peephole.InstructionPrinter;
 import cs444.codegen.tiles.TileSet;
+import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.tiles.helpers.X86TileInit;
 import cs444.types.APkgClassResolver;
 
-public abstract class X86Platform extends Platform<X86Instruction, X86SizeHelper>{
+public abstract class X86Platform extends Platform<X86Instruction, Size>{
     private final InstructionHolder<X86Instruction> instrucitons;
     private SubtypeIndexedTable<X86Instruction> subtype;
 
@@ -51,7 +52,7 @@ public abstract class X86Platform extends Platform<X86Instruction, X86SizeHelper
     }
 
     @Override
-    public final TileSet<X86Instruction, X86SizeHelper> getTiles(){
-        return TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class);
+    public final TileSet<X86Instruction, Size> getTiles(){
+        return TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class);
     }
 }

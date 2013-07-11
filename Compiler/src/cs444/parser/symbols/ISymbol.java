@@ -32,5 +32,5 @@ public interface ISymbol{
      */
     public void accept(final ISymbolVisitor visitor) throws CompilerException;
 
-    public void accept(final CodeGenVisitor visitor);
+    public void accept(final CodeGenVisitor<?, ?> visitor);
 }

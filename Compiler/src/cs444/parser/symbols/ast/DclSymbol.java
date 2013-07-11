@@ -86,7 +86,7 @@ public class DclSymbol extends AModifiersOptSymbol{
     }
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 }

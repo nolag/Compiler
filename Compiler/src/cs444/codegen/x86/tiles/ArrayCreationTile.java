@@ -2,6 +2,7 @@ package cs444.codegen.x86.tiles;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.*;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
@@ -13,28 +14,28 @@ import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
 import cs444.types.APkgClassResolver;
 
-public class ArrayCreationTile implements ITile<X86Instruction, X86SizeHelper, CreationExpression>{
+public class ArrayCreationTile implements ITile<X86Instruction, Size, CreationExpression>{
     public static void init(){
         new ArrayCreationTile();
     }
 
     private ArrayCreationTile(){
-        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).creation.add(this);
+        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).creation.add(this);
     }
 
     @Override
-    public boolean fits(final CreationExpression creation) {
+    public boolean fits(final CreationExpression creation, final Platform<X86Instruction, Size> platform) {
         return creation.getType().isArray;
     }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final CreationExpression creation,
-            final Platform<X86Instruction, X86SizeHelper> platform){
+            final Platform<X86Instruction, Size> platform){
 
-        final CodeGenVisitor visitor = CodeGenVisitor.getCurrentCodeGen();
+        final CodeGenVisitor<X86Instruction, Size> visitor = CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform);
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         final APkgClassResolver typeDclNode = creation.getType().getTypeDclNode();
 
         instructions.add(new Comment("Getting size for array constuction"));

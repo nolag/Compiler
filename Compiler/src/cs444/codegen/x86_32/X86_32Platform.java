@@ -10,15 +10,20 @@ import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.IRuntime;
 import cs444.codegen.instructions.x86.*;
 import cs444.codegen.instructions.x86.Section.SectionType;
+import cs444.codegen.instructions.x86.bases.ReserveInstruction;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
+import cs444.codegen.instructions.x86.factories.ReserveInstructionMaker;
+import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.*;
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
 public abstract class X86_32Platform extends X86Platform{
-    public final X86SelectorIndexedTable sit = new X86SelectorIndexedTable(X86SizeHelper.sizeHelper32);
+    public final X86SelectorIndexedTable sit = new X86SelectorIndexedTable(sizeHelper);
     protected final IRuntime<X86Instruction> RUNTIME;
+    protected static final X86SizeHelper sizeHelper = X86SizeHelper.sizeHelper32;
 
     protected X86_32Platform(final IRuntime<X86Instruction> runtime, final Map<String, Boolean> opts){
         super(opts);
@@ -32,7 +37,7 @@ public abstract class X86_32Platform extends X86Platform{
 
     @Override
     public final X86SizeHelper getSizeHelper() {
-        return X86SizeHelper.sizeHelper32;
+        return sizeHelper;
     }
 
     @Override
@@ -69,6 +74,24 @@ public abstract class X86_32Platform extends X86Platform{
 
     @Override
     public final void zeroDefaultLocation(final Addable<X86Instruction> instructions) {
-        instructions.add(new Xor(Register.ACCUMULATOR, Register.ACCUMULATOR, X86SizeHelper.sizeHelper32));
+        instructions.add(new Xor(Register.ACCUMULATOR, Register.ACCUMULATOR, sizeHelper));
+    }
+
+    @Override
+    public final void genLayoutForStaticFields(final Iterable<DclSymbol> staticFields, final Addable<X86Instruction> instructions){
+        if (staticFields.iterator().hasNext()){
+            instructions.add(new Comment("Static fields:"));
+            instructions.add(new Section(SectionType.BSS));
+        }
+
+        for (final DclSymbol fieldDcl : staticFields) {
+            final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
+
+            //TODO may need to make something here for longs not sure if I can just resurve 64 bits.
+            final String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
+            instructions.add(new Global(fieldLbl));
+            final ReserveInstruction data = ReserveInstructionMaker.make(fieldLbl, size, 1);
+            instructions.add(data);
+        }
     }
 }

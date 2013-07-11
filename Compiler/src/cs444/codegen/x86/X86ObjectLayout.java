@@ -23,7 +23,7 @@ public class X86ObjectLayout implements ObjectLayout<X86Instruction> {
 
     private X86ObjectLayout(final boolean use64){
         sizeHelper = use64 ? X86SizeHelper.sizeHelper64 : X86SizeHelper.sizeHelper32;
-        SUBTYPE_OFFSET = sizeHelper.defaultStackSize;
+        SUBTYPE_OFFSET = sizeHelper.getDefaultStackSize();
     }
 
     @Override

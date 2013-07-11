@@ -49,7 +49,7 @@ public class ListedSymbol extends ANonTerminal{
     }
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 }

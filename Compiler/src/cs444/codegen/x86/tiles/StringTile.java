@@ -4,13 +4,16 @@ import java.util.Arrays;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.x86.*;
 import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.*;
+import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Memory;
+import cs444.codegen.x86.Register;
 import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.ConstructorSymbol;
@@ -20,26 +23,26 @@ import cs444.types.ArrayPkgClassResolver;
 import cs444.types.PkgClassInfo;
 import cs444.types.exceptions.UndeclaredException;
 
-public class StringTile implements ITile<X86Instruction, X86SizeHelper, StringLiteralSymbol>{
+public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymbol>{
     public static void init(){
         new StringTile();
     }
 
     private StringTile(){
-        TileSet.<X86Instruction, X86SizeHelper>getOrMake(X86Instruction.class).strs.add(this);
+        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).strs.add(this);
     }
 
     @Override
-    public boolean fits(final StringLiteralSymbol op) {
+    public boolean fits(final StringLiteralSymbol op, final Platform<X86Instruction, Size> platform) {
         return true;
     }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final StringLiteralSymbol stringSymbol,
-            final Platform<X86Instruction, X86SizeHelper> platform) {
+            final Platform<X86Instruction, Size> platform) {
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final X86SizeHelper sizeHelper = platform.getSizeHelper();
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         instructions.add(new Comment("allocate the string at the same time (why not)"));
 
         final APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);
@@ -74,11 +77,11 @@ public class StringTile implements ITile<X86Instruction, X86SizeHelper, StringLi
             instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
 
             final Immediate carg = new Immediate(APkgClassResolver.generateFullId(constructor));
-            if(constructor.dclInResolver != CodeGenVisitor.getCurrentCodeGen().currentFile) instructions.add(new Extern(carg));
+            if(constructor.dclInResolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(carg));
 
             instructions.add(new Call(carg, sizeHelper));
             instructions.add(new Pop(Register.ACCUMULATOR, sizeHelper));
-            instructions.add(new Add(Register.STACK, new Immediate(sizeHelper.defaultStackSize), sizeHelper));
+            instructions.add(new Add(Register.STACK, new Immediate(sizeHelper.getDefaultStackSize()), sizeHelper));
 
         } catch (final UndeclaredException e) {
             //Should never get here

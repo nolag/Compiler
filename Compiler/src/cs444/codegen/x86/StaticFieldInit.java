@@ -24,9 +24,9 @@ public class StaticFieldInit {
     public static final String STATIC_FIELD_INIT_LBL = "__init_static_fields";
     private static final String STATIC_FIELD_INIT_FILE = "_static_init.s";
     private final InstructionHolder<X86Instruction> instructions;
-    private final X86Platform platform;
+    private final Platform<X86Instruction, Size> platform;
 
-    public static void generateCode(final List<APkgClassResolver> resolvers, final X86Platform platform,
+    public static void generateCode(final List<APkgClassResolver> resolvers, final Platform<X86Instruction, Size> platform,
             final boolean outputFile, final String directory) throws IOException{
 
         final StaticFieldInit fInit = new StaticFieldInit(platform);
@@ -41,9 +41,9 @@ public class StaticFieldInit {
         }
     }
 
-    private StaticFieldInit(final Platform<X86Instruction, ? extends SizeHelper<X86Instruction, Size>> platform){
+    private StaticFieldInit(final Platform<X86Instruction, Size> platform){
         instructions = platform.getInstructionHolder();
-        this.platform = (X86Platform) platform;
+        this.platform = platform;
     }
 
     private void print(final PrintStream printer) {
@@ -85,7 +85,7 @@ public class StaticFieldInit {
                     instructions.add(new Comment("Initializing static field " + fieldNameLbl + "."));
                     //null because we are not in a resolver so it will need to extern
                     final ISymbol field = fieldDcl.children.get(0);
-                    field.accept(new CodeGenVisitor(platform));
+                    field.accept(new CodeGenVisitor<X86Instruction, Size>(platform));
                     instructions.addAll(platform.getBest(field));
                     instructions.add(new Mov(toAddr, Register.ACCUMULATOR, size, platform.getSizeHelper()));
                 }

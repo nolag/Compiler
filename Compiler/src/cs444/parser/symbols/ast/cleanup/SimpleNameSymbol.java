@@ -27,7 +27,7 @@ public class SimpleNameSymbol extends ATerminal implements Typeable{
     }
 
     @Override
-    public void accept(CodeGenVisitor visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 

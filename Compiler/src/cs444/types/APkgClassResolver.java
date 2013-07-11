@@ -326,7 +326,7 @@ public abstract class APkgClassResolver {
 
     public abstract void analyzeReachability() throws CompilerException;
 
-    public abstract void generateCode(CodeGenVisitor visitor);
+    public abstract void generateCode(CodeGenVisitor<?, ?> visitor);
 
     public abstract boolean shouldGenCode();
 

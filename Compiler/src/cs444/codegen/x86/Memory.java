@@ -3,9 +3,13 @@ package cs444.codegen.x86;
 import java.util.HashMap;
 import java.util.Map;
 
+import cs444.codegen.SizeHelper;
+import cs444.codegen.instructions.x86.bases.X86Instruction;
+
 
 public class Memory extends InstructionArg{
-    public static final Map<X86SizeHelper, Memory> thisPointers = new HashMap<X86SizeHelper, Memory>();
+    public static final Map<SizeHelper<X86Instruction, Size>, Memory> thisPointers =
+            new HashMap<SizeHelper<X86Instruction, Size>, Memory>();
 
     public final InstructionArg arg;
     public final InstructionArg offsetArg;
@@ -29,7 +33,7 @@ public class Memory extends InstructionArg{
         this(arg, null, 0);
     }
 
-    public static Memory getThisPointer(final X86SizeHelper sizeHelper){
+    public static Memory getThisPointer(final SizeHelper<X86Instruction, Size> sizeHelper){
         Memory pr = thisPointers.get(sizeHelper);
         if(pr == null){
             pr = new Memory(Register.FRAME, sizeHelper.getDefaultStackSize() * 2);
@@ -39,7 +43,7 @@ public class Memory extends InstructionArg{
     }
 
     @Override
-    public String getValue(final Size size, final X86SizeHelper sizeHelper) {
+    public String getValue(final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
         if(offset == 0 && offsetArg == null) return "[" + arg.getValue(sizeHelper) + "]";
         if(null != offsetArg) return "[" + arg.getValue(sizeHelper) + " + " + offsetArg.getValue(sizeHelper) + "]";
         return "[" + arg.getValue(sizeHelper) + " + " + offset + "]";

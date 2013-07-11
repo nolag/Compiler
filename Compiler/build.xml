@@ -108,6 +108,8 @@
 
     <target name="a5-tests">
       <junit fork="yes" printsummary="withOutAndErr">
+      	<jvmarg value = "-XX:+HeapDumpOnOutOfMemoryError"/>
+      	<jvmarg value = "-XX:HeapDumpPath=/mnt/hgfs/School/Assignments/4B/CS444/dump.hprof"/>
         <formatter type="plain" usefile="false" />
         <test name="cs444.acceptance.A5"/>
         <classpath refid="Compiler.classpath"/>
