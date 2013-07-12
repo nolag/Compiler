@@ -4,9 +4,9 @@ import java.util.Map;
 
 import cs444.codegen.ISubtypeCellGen;
 import cs444.codegen.IndexedTableData;
-import cs444.codegen.instructions.x86.Global;
-import cs444.codegen.instructions.x86.Label;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
+import cs444.codegen.x86.instructions.Global;
+import cs444.codegen.x86.instructions.Label;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public class X86IndexedTableData extends IndexedTableData<X86Instruction> {
 

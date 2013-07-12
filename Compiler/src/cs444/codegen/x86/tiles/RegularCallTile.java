@@ -3,15 +3,14 @@ package cs444.codegen.x86.tiles;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.instructions.x86.*;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.tiles.helpers.X86TileHelper;
+import cs444.codegen.x86.instructions.*;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
 import cs444.types.PkgClassResolver;
@@ -46,7 +45,7 @@ public class RegularCallTile implements ITile<X86Instruction, Size, SimpleMethod
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Comment("Preping this"));
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));
-        X86TileHelper.callStartHelper(invoke, instructions, platform);
+        platform.getTileHelper().callStartHelper(invoke, instructions, platform);
 
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Comment("get SIT column of " + call.dclName));
@@ -63,7 +62,7 @@ public class RegularCallTile implements ITile<X86Instruction, Size, SimpleMethod
         instructions.add(new Mov(Register.BASE,  methodAddr, sizeHelper));
         instructions.add(new Call(Register.BASE, sizeHelper));
 
-        X86TileHelper.callEndHelper(call, instructions, platform);
+        platform.getTileHelper().callEndHelper(call, instructions, platform);
         instructions.add(new Pop(Register.BASE, sizeHelper));
         return instructions;
     }

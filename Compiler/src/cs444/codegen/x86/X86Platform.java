@@ -6,11 +6,13 @@ import java.util.Map;
 
 import cs444.codegen.Platform;
 import cs444.codegen.SubtypeIndexedTable;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.peephole.InstructionPrinter;
 import cs444.codegen.tiles.TileSet;
+import cs444.codegen.tiles.generic.helpers.TileHelper;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.codegen.x86.tiles.helpers.X86TileInit;
 import cs444.types.APkgClassResolver;
 
@@ -54,5 +56,10 @@ public abstract class X86Platform extends Platform<X86Instruction, Size>{
     @Override
     public final TileSet<X86Instruction, Size> getTiles(){
         return TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class);
+    }
+
+    @Override
+    public final TileHelper<X86Instruction, Size> getTileHelper(){
+        return X86TileHelper.instance;
     }
 }

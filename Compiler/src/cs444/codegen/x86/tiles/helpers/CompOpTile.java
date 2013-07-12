@@ -2,14 +2,14 @@ package cs444.codegen.x86.tiles.helpers;
 
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.instructions.x86.Comment;
-import cs444.codegen.instructions.x86.Mov;
-import cs444.codegen.instructions.x86.Xor;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
-import cs444.codegen.instructions.x86.factories.CmpMaker;
-import cs444.codegen.instructions.x86.factories.UniOpMaker;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.instructions.Comment;
+import cs444.codegen.x86.instructions.Mov;
+import cs444.codegen.x86.instructions.Xor;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.instructions.factories.CmpMaker;
+import cs444.codegen.x86.instructions.factories.UniOpMaker;
 import cs444.codegen.x86.Register;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 

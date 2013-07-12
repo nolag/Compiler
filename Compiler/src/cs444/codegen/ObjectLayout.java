@@ -3,7 +3,7 @@ package cs444.codegen;
 import java.util.List;
 
 import cs444.codegen.instructions.Instruction;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.types.APkgClassResolver;
 

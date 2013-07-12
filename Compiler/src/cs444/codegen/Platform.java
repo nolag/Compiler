@@ -9,6 +9,7 @@ import cs444.codegen.instructions.Instruction;
 import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
+import cs444.codegen.tiles.generic.helpers.TileHelper;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
@@ -53,4 +54,6 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
     public abstract void zeroDefaultLocation(final Addable<T> instructions);
 
     public abstract void genLayoutForStaticFields(final Iterable<DclSymbol> staticFields, final Addable<T> instructions);
+
+    public abstract TileHelper<T, E> getTileHelper();
 }

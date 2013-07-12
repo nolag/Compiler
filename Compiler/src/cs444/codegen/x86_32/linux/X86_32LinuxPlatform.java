@@ -4,10 +4,10 @@ import java.util.Map;
 
 import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
-import cs444.codegen.instructions.x86.*;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.instructions.*;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86_32.X86_32Platform;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.DclSymbol;

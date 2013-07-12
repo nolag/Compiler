@@ -8,22 +8,27 @@ import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.instructions.x86.*;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
+import cs444.codegen.tiles.generic.helpers.TileHelper;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
+import cs444.codegen.x86.instructions.*;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.*;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
-import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.types.APkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
-public class X86TileHelper {
+public class X86TileHelper extends TileHelper<X86Instruction, Size> {
+
+    public static final X86TileHelper instance = new X86TileHelper();
+
+    private X86TileHelper(){ }
+
     public static void genMov(final Size size, final InstructionArg from, final String value,
             final Typeable dcl, final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
 
@@ -42,6 +47,13 @@ public class X86TileHelper {
         instructions.add(instruction);
     }
 
+    @Override
+    public final void ifNullJmpCode(final String ifNullLbl,  final SizeHelper<X86Instruction, Size> sizeHelper,
+            final Addable<X86Instruction> instructions) {
+
+        ifNullJmpCode(Register.ACCUMULATOR, ifNullLbl, sizeHelper, instructions);
+    }
+
     public static void ifNullJmpCode(final Register register, final String ifNullLbl,
             final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions) {
         instructions.add(new Comment("null check"));
@@ -49,7 +61,8 @@ public class X86TileHelper {
         instructions.add(new Je(new Immediate(ifNullLbl), sizeHelper));
     }
 
-    public static void methProlog(final MethodOrConstructorSymbol method, final String methodName,
+    @Override
+    public void methProlog(final MethodOrConstructorSymbol method, final String methodName,
             final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
 
         if(method.getProtectionLevel() != ProtectionLevel.PRIVATE) instructions.add(new Global(methodName));
@@ -58,12 +71,27 @@ public class X86TileHelper {
         instructions.add(new Mov(Register.FRAME, Register.STACK, sizeHelper));
     }
 
-    public static void methEpilogue(final MethodOrConstructorSymbol method, final Addable<X86Instruction> instructions) {
+    @Override
+    public void methEpilogue(final MethodOrConstructorSymbol method, final Addable<X86Instruction> instructions) {
         //Don't fall though void funcs
         instructions.add(Leave.LEAVE);
         instructions.add(Ret.RET);
 
         instructions.add(new Comment("End of method " + method.dclName));
+    }
+
+    @Override
+    public final void setupJumpNe(final String lblTo,
+            final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
+
+        setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, lblTo, sizeHelper, instructions);
+    }
+
+    @Override
+    public final void setupJumpNeFalse(final String lblTo,
+            final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
+
+        setupJumpNe(Register.ACCUMULATOR, Immediate.FALSE, lblTo, sizeHelper, instructions);
     }
 
     public static void setupJumpNe(final Register reg, final Immediate when,
@@ -72,7 +100,8 @@ public class X86TileHelper {
         instructions.add(new Jne(new Immediate(lblTo), sizeHelper));
     }
 
-    public static void invokeConstructor(final APkgClassResolver resolver, final List<ISymbol> children,
+    @Override
+    public void invokeConstructor(final APkgClassResolver resolver, final List<ISymbol> children,
             final Platform<X86Instruction, Size> platform, final Addable<X86Instruction> instructions) {
 
         final List<String> types = new LinkedList<String>();
@@ -118,7 +147,8 @@ public class X86TileHelper {
         instructions.add(new Pop(Register.BASE, sizeHelper));
     }
 
-    public static void strPartHelper(final ISymbol child, final APkgClassResolver resolver,
+    @Override
+    public void strPartHelper(final ISymbol child, final APkgClassResolver resolver,
             final Addable<X86Instruction> instructions, final Platform<X86Instruction, Size> platform){
 
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
@@ -142,7 +172,8 @@ public class X86TileHelper {
         instructions.add(new Add(Register.STACK, new Immediate(pop), sizeHelper));
     }
 
-    public static void callStartHelper(final SimpleMethodInvoke invoke,
+    @Override
+    public void callStartHelper(final SimpleMethodInvoke invoke,
             final Addable<X86Instruction> instructions, final Platform<X86Instruction, Size> platform){
         instructions.add(new Comment("Pushing args"));
 
@@ -156,7 +187,8 @@ public class X86TileHelper {
         }
     }
 
-    public static void callEndHelper(final MethodOrConstructorSymbol call,
+    @Override
+    public void callEndHelper(final MethodOrConstructorSymbol call,
             final Addable<X86Instruction> instructions, final Platform<X86Instruction, Size> platform){
 
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
@@ -170,9 +202,23 @@ public class X86TileHelper {
         instructions.add(new Comment("end invoke"));
     }
 
-    public static boolean isReferenceType(final CastExpressionSymbol cast) {
-        final TypeSymbol type = cast.getType();
-        final String typeName = type.getTypeDclNode().fullName;
-        return !JoosNonTerminal.primativeNumbers.contains(typeName) && !JoosNonTerminal.otherPrimatives.contains(typeName);
+    @Override
+    public void setupJump(final String lblTo, final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions) {
+        instructions.add(new Jmp(new Immediate(lblTo), sizeHelper));
+    }
+
+    @Override
+    public void setupComment(final String comment, final Addable<X86Instruction> instructions) {
+        instructions.add(new Comment(comment));
+    }
+
+    @Override
+    public void setupLbl(final String lbl, final Addable<X86Instruction> instructions) {
+        instructions.add(new Label(lbl));
+    }
+
+    @Override
+    public void setupExtern(final String extern, final Addable<X86Instruction> instructions) {
+        instructions.add(new Extern(extern));
     }
 }

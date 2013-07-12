@@ -1,8 +1,8 @@
 package cs444.codegen.x86;
 
 import cs444.codegen.SizeHelper;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public class X86SizeHelper extends SizeHelper<X86Instruction, Size>{
     public static final X86SizeHelper sizeHelper32 = new X86SizeHelper(false);

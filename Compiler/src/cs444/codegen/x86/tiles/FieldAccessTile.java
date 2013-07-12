@@ -1,14 +1,12 @@
 package cs444.codegen.x86.tiles;
 
 import cs444.codegen.Platform;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86Platform;
-import cs444.codegen.x86.tiles.helpers.X86TileHelper;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 
@@ -34,7 +32,7 @@ public class FieldAccessTile implements ITile<X86Instruction, Size, FieldAccessS
         final X86Platform x86Platform = (X86Platform)platform;
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         instructions.addAll(platform.getBest(field.children.get(0)));
-        X86TileHelper.ifNullJmpCode(Register.ACCUMULATOR, Runtime.EXCEPTION_LBL, x86Platform.getSizeHelper(), instructions);
+        platform.getTileHelper().ifNullJmpCode(Runtime.EXCEPTION_LBL, x86Platform.getSizeHelper(), instructions);
         instructions.addAll(platform.getBest(field.children.get(1)));
         return instructions;
     }

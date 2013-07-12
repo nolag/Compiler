@@ -3,9 +3,6 @@ package cs444.codegen.x86.tiles;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.instructions.x86.Call;
-import cs444.codegen.instructions.x86.Mov;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
@@ -13,7 +10,9 @@ import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.tiles.helpers.X86TileHelper;
+import cs444.codegen.x86.instructions.Call;
+import cs444.codegen.x86.instructions.Mov;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.types.APkgClassResolver;
@@ -41,7 +40,7 @@ public class ConstructorTile implements ITile<X86Instruction, Size, ConstructorS
         final String constrName = APkgClassResolver.generateFullId(constructor);
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
-        X86TileHelper.methProlog(constructor, constrName, sizeHelper, instructions);
+        platform.getTileHelper().methProlog(constructor, constrName, sizeHelper, instructions);
 
         instructions.add(new Mov(Register.ACCUMULATOR, Memory.getThisPointer(sizeHelper), sizeHelper));
 
@@ -49,7 +48,7 @@ public class ConstructorTile implements ITile<X86Instruction, Size, ConstructorS
 
         for(final ISymbol child : constructor.children) instructions.addAll(platform.getBest(child));
 
-        X86TileHelper.methEpilogue(constructor, instructions);
+        platform.getTileHelper().methEpilogue(constructor, instructions);
         return instructions;
     }
 

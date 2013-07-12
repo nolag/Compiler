@@ -1,13 +1,13 @@
 package cs444.codegen.x86.tiles.helpers;
 
-import cs444.codegen.instructions.x86.bases.X86Instruction;
-import cs444.codegen.tiles.DivZeroTile;
-import cs444.codegen.tiles.NonNullFieldAccess;
-import cs444.codegen.tiles.ZeroMultTile;
+import cs444.codegen.tiles.generic.*;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.*;
 
 public class X86TileInit {
+    private static final Class<X86Instruction> klass = X86Instruction.class;
+
     public static void initBase(){
         AddTile.init();
         AndTile.init();
@@ -27,14 +27,14 @@ public class X86TileInit {
         EQTile.init();
         FieldAccessTile.init();
         ForTile.init();
-        IfTile.init();
+        IfTile.<X86Instruction, Size>init(klass);
         InstanceOfTile.init();
         LETile.init();
         LSTile.init();
         RSTile.init();
         URSTile.init();
         LTTile.init();
-        MethodTile.init();
+        MethodTile.<X86Instruction, Size>init(klass);
         MultTile.init();
         NameRefTile.init();
         NameValueTile.init();
@@ -44,7 +44,7 @@ public class X86TileInit {
         NotTile.init();
         NullTile.init();
         NumericalTile.init();
-        OrTile.init();
+        OrTile.<X86Instruction, Size>init(klass);
         RegularCallTile.init();
         RemTile.init();
         RetTile.init();
@@ -54,13 +54,12 @@ public class X86TileInit {
         SubTile.init();
         SuperCallTile.init();
         ThisTile.init();
-        WhileTile.init();
+        WhileTile.<X86Instruction, Size>init(klass);
     }
 
     public static void initBasicOpt(){
-        final Class<X86Instruction> klass = X86Instruction.class;
-        NonNullFieldAccess.<X86Instruction, Size>init(klass);
         DivZeroTile.<X86Instruction, Size>init(klass);
+        NonNullFieldAccess.<X86Instruction, Size>init(klass);
         ZeroMultTile.<X86Instruction, Size>init(klass);
     }
 }

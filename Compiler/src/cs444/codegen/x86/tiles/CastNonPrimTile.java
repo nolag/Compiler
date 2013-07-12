@@ -3,16 +3,15 @@ package cs444.codegen.x86.tiles;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.instructions.x86.Label;
-import cs444.codegen.instructions.x86.Pop;
-import cs444.codegen.instructions.x86.Push;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
+import cs444.codegen.x86.instructions.Label;
+import cs444.codegen.x86.instructions.Pop;
+import cs444.codegen.x86.instructions.Push;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.TypeSymbol;
@@ -42,10 +41,10 @@ public class CastNonPrimTile implements ITile<X86Instruction, Size, CastExpressi
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));
-        X86TileHelper.ifNullJmpCode(Register.ACCUMULATOR, castExprEnd, sizeHelper, instructions);
+        platform.getTileHelper().ifNullJmpCode(castExprEnd, sizeHelper, instructions);
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
         instructions.addAll(platform.getObjectLayout().subtypeCheckCode(type, platform));
-        X86TileHelper.setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, Runtime.EXCEPTION_LBL, sizeHelper, instructions);
+        platform.getTileHelper().setupJumpNe(Runtime.EXCEPTION_LBL, sizeHelper, instructions);
         instructions.add(new Pop(Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Label(castExprEnd));
 

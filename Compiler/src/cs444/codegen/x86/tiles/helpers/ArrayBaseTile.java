@@ -3,14 +3,14 @@ package cs444.codegen.x86.tiles.helpers;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.instructions.x86.*;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
+import cs444.codegen.x86.instructions.*;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
@@ -25,7 +25,7 @@ public abstract class ArrayBaseTile implements ITile<X86Instruction, Size, Array
         instructions.add(new Comment("Accessing array"));
         instructions.addAll(platform.getBest(arrayAccess.children.get(0)));
 
-        X86TileHelper.ifNullJmpCode(Register.ACCUMULATOR, Runtime.EXCEPTION_LBL, sizeHelper, instructions);
+        platform.getTileHelper().ifNullJmpCode(Runtime.EXCEPTION_LBL, sizeHelper, instructions);
 
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));

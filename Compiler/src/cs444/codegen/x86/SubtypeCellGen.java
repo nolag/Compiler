@@ -1,11 +1,11 @@
 package cs444.codegen.x86;
 
 import cs444.codegen.ISubtypeCellGen;
-import cs444.codegen.instructions.x86.Comment;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
-import cs444.codegen.instructions.x86.factories.DataInstructionMaker;
 import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.instructions.Comment;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.instructions.factories.DataInstructionMaker;
 
     public class SubtypeCellGen implements ISubtypeCellGen<X86Instruction> {
         public static final Size dataSize = Size.WORD;

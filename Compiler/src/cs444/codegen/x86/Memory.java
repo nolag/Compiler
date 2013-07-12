@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cs444.codegen.SizeHelper;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 
 public class Memory extends InstructionArg{

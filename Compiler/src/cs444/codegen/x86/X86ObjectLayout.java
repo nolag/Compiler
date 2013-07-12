@@ -6,11 +6,11 @@ import java.util.List;
 import cs444.codegen.Addable;
 import cs444.codegen.ObjectLayout;
 import cs444.codegen.Platform;
-import cs444.codegen.instructions.x86.Comment;
-import cs444.codegen.instructions.x86.Extern;
-import cs444.codegen.instructions.x86.Mov;
-import cs444.codegen.instructions.x86.Movzx;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
+import cs444.codegen.x86.instructions.Comment;
+import cs444.codegen.x86.instructions.Extern;
+import cs444.codegen.x86.instructions.Mov;
+import cs444.codegen.x86.instructions.Movzx;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.types.APkgClassResolver;
 

@@ -2,12 +2,12 @@ package cs444.codegen.x86_32.linux;
 
 import cs444.codegen.Addable;
 import cs444.codegen.IRuntime;
-import cs444.codegen.instructions.x86.Call;
-import cs444.codegen.instructions.x86.Comment;
-import cs444.codegen.instructions.x86.Extern;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.X86SizeHelper;
+import cs444.codegen.x86.instructions.Call;
+import cs444.codegen.x86.instructions.Comment;
+import cs444.codegen.x86.instructions.Extern;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public class Runtime implements IRuntime<X86Instruction>{
     public static final String EXCEPTION_LBL = "__exception";

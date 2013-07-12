@@ -8,13 +8,13 @@ import java.util.Map;
 import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.IRuntime;
-import cs444.codegen.instructions.x86.*;
-import cs444.codegen.instructions.x86.Section.SectionType;
-import cs444.codegen.instructions.x86.bases.ReserveInstruction;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
-import cs444.codegen.instructions.x86.factories.ReserveInstructionMaker;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.*;
+import cs444.codegen.x86.instructions.*;
+import cs444.codegen.x86.instructions.Section.SectionType;
+import cs444.codegen.x86.instructions.bases.ReserveInstruction;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.instructions.factories.ReserveInstructionMaker;
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.DclSymbol;
@@ -59,7 +59,7 @@ public abstract class X86_32Platform extends X86Platform{
 
     @Override
     public final void genInstructorInvoke(final APkgClassResolver resolver, final Addable<X86Instruction> instructions) {
-        X86TileHelper.invokeConstructor(resolver, Collections.<ISymbol>emptyList(), this, instructions);
+        X86TileHelper.instance.invokeConstructor(resolver, Collections.<ISymbol>emptyList(), this, instructions);
     }
 
     @Override

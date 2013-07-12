@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import cs444.codegen.SubtypeIndexedTable;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.types.APkgClassResolver;
 
 public class X86SubtypeIndexedTable extends SubtypeIndexedTable<X86Instruction> {

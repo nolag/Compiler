@@ -5,15 +5,14 @@ import java.util.Arrays;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.instructions.x86.*;
-import cs444.codegen.instructions.x86.bases.X86Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.tiles.helpers.X86TileHelper;
+import cs444.codegen.x86.instructions.*;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.AMethodSymbol;
@@ -46,13 +45,13 @@ public class StrAddTile implements ITile<X86Instruction, Size, AddExprSymbol>{
         final ISymbol secondChild = op.children.get(1);
 
         instructions.add(new Comment("String add first arg"));
-        X86TileHelper.strPartHelper(firstChild, resolver, instructions, platform);
+        platform.getTileHelper().strPartHelper(firstChild, resolver, instructions, platform);
         instructions.add(new Comment("Backup first string"));
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));
 
         instructions.add(new Comment("String add second arg"));
-        X86TileHelper.strPartHelper(secondChild, resolver, instructions, platform);
+        platform.getTileHelper().strPartHelper(secondChild, resolver, instructions, platform);
 
         instructions.add(new Comment("Pushing second string as arument then first as this"));
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
