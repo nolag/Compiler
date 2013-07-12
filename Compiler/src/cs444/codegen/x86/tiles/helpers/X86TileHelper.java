@@ -221,4 +221,11 @@ public class X86TileHelper extends TileHelper<X86Instruction, Size> {
     public void setupExtern(final String extern, final Addable<X86Instruction> instructions) {
         instructions.add(new Extern(extern));
     }
+
+    @Override
+    public final void loadBool(final boolean bool, final Addable<X86Instruction> instructions,
+            final SizeHelper<X86Instruction, Size> sizeHelper){
+
+        instructions.add(new Mov(Register.ACCUMULATOR, bool ? Immediate.TRUE : Immediate.FALSE, sizeHelper));
+    }
 }

@@ -58,4 +58,6 @@ public abstract class TileHelper<T extends Instruction, E extends Enum<E>> {
     public abstract void setupLbl(final String lbl, final Addable<T> instructions);
 
     public abstract void setupExtern(final String extern, final Addable<T> instructions);
+
+    public abstract void loadBool(final boolean bool, final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
 }

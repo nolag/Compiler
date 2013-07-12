@@ -10,13 +10,13 @@ public class X86TileInit {
 
     public static void initBase(){
         AddTile.init();
-        AndTile.init();
+        AndTile.<X86Instruction, Size>init(klass);
         ANonTerminalTile.init();
         ArrayCreationTile.init();
         ArrayRefTile.init();
         ArrayValueTile.init();
         AssignmentTile.init();
-        BoolTile.init();
+        BoolTile.<X86Instruction, Size>init(klass);
         CastNonPrimTile.init();
         CastPrimTile.init();
         ConstructorTile.init();
@@ -25,10 +25,10 @@ public class X86TileInit {
         EAndTile.init();
         EOrTile.init();
         EQTile.init();
-        FieldAccessTile.init();
+        FieldAccessTile.<X86Instruction, Size>init(klass);
         ForTile.init();
         IfTile.<X86Instruction, Size>init(klass);
-        InstanceOfTile.init();
+        InstanceOfTile.<X86Instruction, Size>init(klass);
         LETile.init();
         LSTile.init();
         RSTile.init();
