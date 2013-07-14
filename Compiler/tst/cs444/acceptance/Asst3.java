@@ -8,8 +8,6 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import cs444.types.PkgClassInfo;
-
 public class Asst3 {
 
     @Ignore("will run with all tests and check return")
@@ -20,7 +18,7 @@ public class Asst3 {
 
     @Test
     public void testMarmosetInvalidTestCases() throws IOException, InterruptedException{
-        List<String> ignoreList = new LinkedList<String>(Arrays.asList(
+        final List<String> ignoreList = new LinkedList<String>(Arrays.asList(
                 "Je_5_ForwardReference_ArrayLength.java",
                 "Je_5_ForwardReference_FieldDeclaredLater.java",
                 "Je_5_ForwardReference_FieldDeclaredLater_ComplexExp.java",
@@ -32,12 +30,6 @@ public class Asst3 {
                 ));
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a3/invalid/", 42,  false, ignoreList);
-    }
-
-    @Test
-    public void testAaa(){
-        PkgClassInfo.instance.clear();
-        System.out.println(cs444.Compiler.compile(new String []{"Object.java"}, true, false));
     }
 
     @Test

@@ -11,7 +11,7 @@ import cs444.parser.symbols.ast.cleanup.factories.FieldCleaner;
 import cs444.parser.symbols.ast.cleanup.factories.FieldFlattener;
 import cs444.parser.symbols.ast.cleanup.factories.LookupLinkCleanFacory;
 import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
-import cs444.types.exceptions.ImplicitStaticConversionException;
+import cs444.types.exceptions.StaticToNonStaticConversion;
 import cs444.types.exceptions.UndeclaredException;
 
 public abstract class APkgClassResolver {
@@ -123,16 +123,16 @@ public abstract class APkgClassResolver {
         build(new HashSet<PkgClassResolver>(), false, false);
     }
 
-    private DclSymbol getDcl(final String name, final boolean isStatic, final APkgClassResolver pkgClass, final boolean allowClass, final boolean fromSuper)
-            throws UndeclaredException, ImplicitStaticConversionException {
+    private DclSymbol getDcl(final String name, final boolean isStatic, final APkgClassResolver pkgClass,
+            final boolean allowClass, final boolean fromSuper) throws UndeclaredException, StaticToNonStaticConversion {
 
         Map<String, DclSymbol> getFrom = isStatic ? sfieldMap : fieldMap;
         Map<String, DclSymbol> notFrom = isStatic ? fieldMap : sfieldMap;
 
         DclSymbol retVal = getFrom.get(name);
+        if(null == retVal && !isStatic) retVal = notFrom.get(name);
 
         if(retVal == null){
-            //TODO if adding implicit static conversion, add it here
             final APkgClassResolver klass = allowClass ? getClass(name, false) : null;
             return (klass == null)? null : DclSymbol.getClassSymbol(name, klass);
         }
@@ -142,11 +142,8 @@ public abstract class APkgClassResolver {
             getFrom = isStatic ? hsfieldMap : hfieldMap;
             notFrom = isStatic ? hfieldMap : hsfieldMap;
             retVal = getFrom.get(name);
-            //TODO if adding implicit static conversion, add it here
-            if(retVal == null) return null;
+            if(null == retVal && !isStatic) retVal = notFrom.get(name);
         }
-
-        if(notFrom.containsKey(name)) throw new ImplicitStaticConversionException(name);
 
         verifyCanRead(retVal, pkgClass);
 
@@ -154,7 +151,7 @@ public abstract class APkgClassResolver {
     }
 
     public List<DclSymbol> findDcl(final String name, final boolean isStatic, final APkgClassResolver pkgClass,
-            final boolean allowClass, final boolean fromSuper) throws UndeclaredException, ImplicitStaticConversionException {
+            final boolean allowClass, final boolean fromSuper) throws UndeclaredException, StaticToNonStaticConversion {
 
         final String [] nameParts = name.split("\\.");
 
@@ -206,7 +203,7 @@ public abstract class APkgClassResolver {
         return dclList;
     }
 
-    public List<DclSymbol> findDcl(final String name, final boolean isStatic, final boolean allowClass, final boolean fromSuper) throws UndeclaredException, ImplicitStaticConversionException {
+    public List<DclSymbol> findDcl(final String name, final boolean isStatic, final boolean allowClass, final boolean fromSuper) throws UndeclaredException, StaticToNonStaticConversion {
         return findDcl(name, isStatic, this, allowClass, fromSuper);
     }
 
@@ -224,8 +221,7 @@ public abstract class APkgClassResolver {
             final Map<String, AMethodSymbol> notFrom, final List<String> paramTypes){
 
         AMethodSymbol retVal = from.get(uniqueName);
-        //TODO this line will allow instances to call static funcs.
-        //if(null == retVal && notFrom != null) retVal = notFrom.get(uniqueName);
+        if(null == retVal && notFrom != null) retVal = notFrom.get(uniqueName);
         //NOTE if I change the native name to include the params then I don't need this
         if(retVal == null){
             retVal = from.get(name);
@@ -297,9 +293,11 @@ public abstract class APkgClassResolver {
         if(other == TypeSymbol.getPrimative(JoosNonTerminal.NULL).getTypeDclNode() && !isPrimative())
             return Castable.UP_CAST;
 
-        final Set<String> special = JoosNonTerminal.specialAssignables.get(fullName);
-        if(special != null && special.contains(other.fullName))
-            return Castable.DOWN_CAST;
+        Set<String> special = JoosNonTerminal.specialAssignables.get(fullName);
+        if(special != null && special.contains(other.fullName)) return Castable.DOWN_CAST;
+
+        special = JoosNonTerminal.specialAssignables.get(other.fullName);
+        if(special != null && special.contains(fullName)) return Castable.UP_CAST;
 
         if(assignableTo.contains(other.fullName)) return Castable.DOWN_CAST;
         if(other.assignableTo.contains(fullName)) return Castable.UP_CAST;

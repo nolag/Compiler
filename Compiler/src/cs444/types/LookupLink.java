@@ -12,7 +12,7 @@ import cs444.parser.symbols.ast.ThisSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
-import cs444.types.exceptions.ImplicitStaticConversionException;
+import cs444.types.exceptions.StaticToNonStaticConversion;
 
 public class LookupLink{
     public final Iterable<Typeable> dcls;
@@ -53,7 +53,7 @@ public class LookupLink{
         return is;
     }
 
-    public ISymbol convert() throws ImplicitStaticConversionException {
+    public ISymbol convert() throws StaticToNonStaticConversion {
         ISymbol on = getAsSymbol(list.get(list.size() - 1));
         for(int i = list.size() - 2; i >= 0; i--){
             final ISymbol from = getAsSymbol(list.get(i));
@@ -63,7 +63,7 @@ public class LookupLink{
 
         if(list.get(0) instanceof Typeable){
             Typeable typeable = list.get(0);
-            if(list.size() == 1 && typeable.getType().isClass) throw new ImplicitStaticConversionException("Class Only");
+            if(list.size() == 1 && typeable.getType().isClass) throw new StaticToNonStaticConversion("Class Only");
             if(typeable.getType().isClass) typeable = list.get(1);
             if(typeable instanceof DclSymbol){
                 final DclSymbol dcl =  (DclSymbol) typeable;

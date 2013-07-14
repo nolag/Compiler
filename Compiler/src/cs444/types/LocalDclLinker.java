@@ -6,6 +6,7 @@ import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
+import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.NonTerminal;
 import cs444.parser.symbols.ast.*;
@@ -91,21 +92,8 @@ public class LocalDclLinker extends EmptyVisitor {
         final TypeSymbol initType = currentTypes.peek().removeLast().getType();
         final TypeSymbol dclType = dclSymbol.getType();
 
-        try{
-            assertIsAssignable(initType, dclType, false, false);
-        }catch(final IllegalCastAssignmentException e){
-            boolean rethrow = true;
-            //long won't allow this, may as well prepare it now.
-            if(dclType.isArray || initType.isArray || initType.value.equals(JoosNonTerminal.LONG)) throw e;
 
-            if(dclSymbol.children.get(0) instanceof INumericLiteral){
-                final INumericLiteral numeric = (INumericLiteral)dclSymbol.children.get(0);
-                final long val = numeric.getValue();
-                rethrow = val > SizeHelper.maxValues.get(dclType.value) || val < 0 && JoosNonTerminal.unsigned.contains(dclType.value);
-            }
-
-            if(rethrow) throw e;
-        }
+        if(dclSymbol.children.size() > 0) assertIsAssignable(initType, dclType, false, false, dclSymbol.children.get(0));
 
         if (dclSymbol.isLocal){
             // in close because we cannot used this variable inside its initializer
@@ -488,20 +476,35 @@ public class LocalDclLinker extends EmptyVisitor {
         final TypeSymbol isType = currentTypes.peek().removeLast().getType();
         final TypeSymbol toType = currentTypes.peek().getLast().getType();
 
-        assertIsAssignable(isType, toType, secondIsClass, allowDownCast);
+        assertIsAssignable(isType, toType, secondIsClass, allowDownCast, null);
     }
 
-    private void assertIsAssignable(final TypeSymbol type, final TypeSymbol toType, final boolean secondIsClass, final boolean allowDownCast)
-            throws UndeclaredException, IllegalCastAssignmentException {
+    private void assertIsAssignable(final TypeSymbol type, final TypeSymbol toType, final boolean secondIsClass,
+            final boolean allowDownCast, final ISymbol assigned) throws UndeclaredException, IllegalCastAssignmentException {
+
+        final String where = context.getMemberName();
+        final String name1 = type.getTypeDclNode().fullName;
+        final String name2 = toType.getTypeDclNode().fullName;
+
+
+        if(assigned instanceof INumericLiteral && SizeHelper.maxValues.containsKey(toType.value)){
+            final INumericLiteral numeric = (INumericLiteral)assigned;
+            final long val = numeric.getValue();
+            if(toType.isArray || type.value.equals(JoosNonTerminal.LONG) ||
+                    val > SizeHelper.maxValues.get(toType.value) ||
+                    val < 0 && JoosNonTerminal.unsigned.contains(toType.value)){
+
+                throw new IllegalCastAssignmentException(context.enclosingClassName, where, name1, name2);
+            }
+            return;
+        }
 
         final Castable castType = toType.getTypeDclNode().getCastablility(type.getTypeDclNode());
 
-        if(castType == Castable.NOT_CASTABLE  || toType.isClass != secondIsClass || (castType == Castable.DOWN_CAST && !allowDownCast)
+        if(castType == Castable.NOT_CASTABLE || toType.isClass != secondIsClass
+                || (castType == Castable.DOWN_CAST && !allowDownCast)
                 || type.value.equals(JoosNonTerminal.VOID) || toType.value.equals(JoosNonTerminal.VOID)
                 || (!type.value.equals(toType.value) && type.isArray && JoosNonTerminal.primativeNumbers.contains(toType.value))){
-            final String where = context.getMemberName();
-            final String name1 = type.getTypeDclNode().fullName;
-            final String name2 = toType.getTypeDclNode().fullName;
             throw new IllegalCastAssignmentException(context.enclosingClassName, where, name1, name2);
         }
     }
@@ -543,7 +546,7 @@ public class LocalDclLinker extends EmptyVisitor {
         if(leftHS.getType().isFinal) throw new UnsupportedException("left hand side of assignment cannot be final.");
 
         final TypeSymbol rightHSType = currentTypes.peek().removeLast().getType();
-        assertIsAssignable(rightHSType, leftHS.getType(), false, false);
+        assertIsAssignable(rightHSType, leftHS.getType(), false, false, leftHS);
 
         op.setType(leftHS.getType());
         currentTypes.peek().add(leftHS);
@@ -554,6 +557,7 @@ public class LocalDclLinker extends EmptyVisitor {
         final TypeSymbol toType = currentTypes.peek().getLast().getType();
 
         final Castable castType = toType.getTypeDclNode().getCastablility(isType.getTypeDclNode());
+
         if(castType == Castable.NOT_CASTABLE  || toType.isClass
                 || isType.value.equals(JoosNonTerminal.VOID) || toType.value.equals(JoosNonTerminal.VOID)
                 || (!isType.value.equals(toType.value) && isType.isArray && JoosNonTerminal.primativeNumbers.contains(toType.value))
