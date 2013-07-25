@@ -36,6 +36,7 @@ public class UpCastTile<T extends Instruction, E extends Enum<E>> implements ITi
         final Typeable from = (Typeable)cast.getOperandExpression();
         final String fromType = from.getType().value;
         platform.getTileHelper().setupComment("Up cast to " + toType + " from " + fromType, instructions);
+        instructions.addAll(platform.getBest(from));
         return instructions;
     }
 }

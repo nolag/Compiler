@@ -21,6 +21,7 @@ public class TestHelper {
 
     public static void assertReturnCodeForFiles(final String path, final int expectedReturnCode, final boolean printErrors, final boolean includeStdLib,
             final boolean outputAsmFiles, final List<String> ignoreList, final ITestCallbacks testCallbacks) throws IOException, InterruptedException {
+        
         TestHelper.callbacks = testCallbacks;
         TestHelper.outputAsmFiles = outputAsmFiles;
 
@@ -33,7 +34,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.equals("StringAddTest")) continue;
+            //if (!fileName.equals("SmallStringTest")) continue;
             //Use this line to stop when there are infinite loops
             //if(totalTests == 20) break;
 
@@ -45,7 +46,8 @@ public class TestHelper {
 
             if (file.isFile() && fileName.toLowerCase().endsWith(".java") ||
                     (file.isDirectory() && !fileName.toLowerCase().endsWith(".skip"))){
-                runTestCase(path, expectedReturnCode, printErrors, includeStdLib, failFiles, file, fileName);
+                runTestCase(path, expectedReturnCode, false, includeStdLib, failFiles, file, fileName);
+                //runTestCase(path, expectedReturnCode, printErrors, includeStdLib, failFiles, file, fileName);
                 totalTests++;
             } else {
                 System.out.print("*"); // skip file

@@ -27,7 +27,7 @@ public class CastPrimTile extends NumericHelperTile<CastExpressionSymbol> {
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         final Typeable typeable = (Typeable) symbol.getOperandExpression();
         final boolean b = sizeHelper.getDefaultStackSize()  >= sizeHelper.getByteSizeOfType(typeable.getType().getTypeDclNode().fullName);
-        return super.fits(symbol, platform) && !X86TileHelper.isReferenceType(symbol) && !b;
+        return super.fits(symbol, platform) && !X86TileHelper.isReferenceType(symbol) && b;
     }
 
     @Override

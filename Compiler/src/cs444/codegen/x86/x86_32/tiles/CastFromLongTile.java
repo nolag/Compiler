@@ -26,7 +26,7 @@ public class CastFromLongTile implements ITile<X86Instruction, Size,CastExpressi
     public boolean fits(final CastExpressionSymbol symbol, final Platform<X86Instruction, Size> platform) {
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         final Typeable typeable = (Typeable) symbol.getOperandExpression();
-        return sizeHelper.getDefaultStackSize()  >= sizeHelper.getByteSizeOfType(typeable.getType().getTypeDclNode().fullName);
+        return sizeHelper.getDefaultStackSize()  > sizeHelper.getByteSizeOfType(typeable.getType().getTypeDclNode().fullName);
     }
 
     @Override
