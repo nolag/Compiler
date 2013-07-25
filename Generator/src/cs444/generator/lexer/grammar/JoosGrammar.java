@@ -92,6 +92,11 @@ public class JoosGrammar extends LexicalGrammar {
                                                         NFA.concatenate(NFA.nonZeroDigit(),
                                                                         NFA.zeroOrMore(NFA.digit()))), Type.VALID);
 
+        final NFA l = NFA.union(NFA.literal("L"), NFA.literal("L"));
+        addPattern("LONG_INTEGER_LITERAL", NFA.union(NFA.concatenate(NFA.literal("0"), l),
+                NFA.concatenate(NFA.nonZeroDigit(),
+                                NFA.zeroOrMore(NFA.digit()), l)), Type.VALID);
+
         addPattern("TRUE", NFA.literal("true"), Type.VALID);
         addPattern("FALSE", NFA.literal("false"), Type.VALID);
 

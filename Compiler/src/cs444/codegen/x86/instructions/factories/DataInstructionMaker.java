@@ -12,6 +12,7 @@ public class DataInstructionMaker {
     private DataInstructionMaker() { }
 
     public static UniInstruction make(final Immediate data, final Size size) {
+        //TODO long may need to change Dq for x86, may need to have the size helper to make two dd
         switch (size){
         case LOW:
         case HIGH:

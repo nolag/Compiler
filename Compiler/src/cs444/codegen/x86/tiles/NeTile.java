@@ -1,6 +1,5 @@
 package cs444.codegen.x86.tiles;
 
-import cs444.codegen.Platform;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
@@ -16,10 +15,5 @@ public class NeTile extends CompOpTile<NeExprSymbol>{
     private NeTile() {
         super(SetneMaker.maker);
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).nes.add(this);
-    }
-
-    @Override
-    public boolean fits(final NeExprSymbol symbol, final Platform<X86Instruction, Size> platform) {
-        return true;
     }
 }

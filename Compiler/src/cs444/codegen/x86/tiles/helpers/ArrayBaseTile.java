@@ -11,7 +11,7 @@ import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86_32.linux.Runtime;
+import cs444.codegen.x86.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
 public abstract class ArrayBaseTile implements ITile<X86Instruction, Size, ArrayAccessExprSymbol>{

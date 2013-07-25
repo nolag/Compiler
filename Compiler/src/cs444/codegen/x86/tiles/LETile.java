@@ -1,6 +1,5 @@
 package cs444.codegen.x86.tiles;
 
-import cs444.codegen.Platform;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
@@ -16,10 +15,5 @@ public class LETile extends CompOpTile<LeExprSymbol>{
     private LETile() {
         super(SetleMaker.maker);
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).les.add(this);
-    }
-
-    @Override
-    public boolean fits(final LeExprSymbol symbol, final Platform<X86Instruction, Size> platform) {
-        return true;
     }
 }

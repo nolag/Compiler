@@ -1,6 +1,5 @@
 package cs444.codegen.x86.tiles;
 
-import cs444.codegen.Platform;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
@@ -16,10 +15,5 @@ public class MultTile extends BinUniOpTile<MultiplyExprSymbol>{
 
     public static void init(){
         new MultTile();
-    }
-
-    @Override
-    public boolean fits(final MultiplyExprSymbol symbol, final Platform<X86Instruction, Size> platform) {
-        return true;
     }
 }

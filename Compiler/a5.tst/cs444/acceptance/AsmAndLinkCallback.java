@@ -83,6 +83,16 @@ import cs444.Compiler;
             return true;
         }
 
+        private static boolean isAlive( final Process p ) {
+            try
+            {
+                p.exitValue();
+                return false;
+            } catch (final IllegalThreadStateException e) {
+                return true;
+            }
+        }
+
         private int execAndWait(final String[] command) throws IOException, InterruptedException{
             final Process proc = Runtime.getRuntime().exec(command);
 
@@ -98,10 +108,26 @@ import cs444.Compiler;
             errorGobbler.start();
             outputGobbler.start();
 
+            final long now = System.currentTimeMillis();
+            final long timeoutInMillis = 60000L;
+            final long finish = now + timeoutInMillis;
+            while ( isAlive( proc ) && ( System.currentTimeMillis() < finish ) )
+            {
+                Thread.sleep( 10 );
+            }
+
+            if ( isAlive( proc ) )
+            {
+                proc.destroy();
+                errorGobbler.join();
+                outputGobbler.join();
+                return -1;
+            }
+
             errorGobbler.join();
             outputGobbler.join();
 
-            return proc.waitFor();
+            return proc.exitValue();
         }
 
         class StreamGobbler extends Thread{

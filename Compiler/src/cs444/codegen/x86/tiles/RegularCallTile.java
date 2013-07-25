@@ -17,8 +17,6 @@ import cs444.types.PkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
 public class RegularCallTile implements ITile<X86Instruction, Size, SimpleMethodInvoke> {
-    public static final String NATIVE_NAME = "NATIVE";
-
     public static void init(){
         new RegularCallTile();
     }

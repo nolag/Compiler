@@ -23,11 +23,6 @@ public class RemTile extends BinUniOpTile<RemainderExprSymbol>{
     }
 
     @Override
-    public boolean fits(final RemainderExprSymbol symbol, final Platform<X86Instruction, Size> platform) {
-        return true;
-    }
-
-    @Override
     public InstructionsAndTiming<X86Instruction> generate(final RemainderExprSymbol bin,
             final Platform<X86Instruction, Size> platform){
 

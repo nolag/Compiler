@@ -9,7 +9,7 @@ import java.util.*;
 import cs444.Compiler;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86_32.linux.X86_32LinuxPlatform;
+import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
 import cs444.types.PkgClassInfo;
 
 public class TestHelper {

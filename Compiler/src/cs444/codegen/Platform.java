@@ -5,18 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
-import cs444.codegen.tiles.generic.helpers.TileHelper;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
 public abstract class Platform<T extends Instruction, E extends Enum<E>> {
-    protected static final String NO_OPT = "--no-opt";
-
     private final Map<ISymbol, InstructionsAndTiming<T>> bests = new HashMap<ISymbol, InstructionsAndTiming<T>> ();
 
     public void addBest(final ISymbol symbol, final InstructionsAndTiming<T> tile){

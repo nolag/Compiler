@@ -14,7 +14,7 @@ import org.junit.Test;
 import cs444.Compiler;
 import cs444.CompilerException;
 import cs444.acceptance.TestHelper;
-import cs444.codegen.x86_32.linux.X86_32LinuxPlatform;
+import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
 import cs444.types.PkgClassInfo;
 
 public class CorrectTiles {
@@ -78,5 +78,12 @@ public class CorrectTiles {
     public void superNew2() throws CompilerException, IOException{
         final String path =  TILE_TESTS + "NonStaticCall2/Object.java";
         assertFalse(contains("je ", path));
+    }
+
+    @Test
+    public void upCast() throws CompilerException, IOException{
+        final String superBase = TILE_TESTS + "UpCast/";
+        final String [] superPaths = {superBase +  "Base.java", superBase + "Object.java", superBase + "Super.java"};
+        assertTrue(contains("Up cast to", superPaths));
     }
 }

@@ -3,19 +3,19 @@ package cs444.codegen.x86.tiles;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.Extern;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.tiles.helpers.NumericHelperTile;
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.types.PkgClassResolver;
 
-public final class NameValueTile implements ITile<X86Instruction, Size, SimpleNameSymbol>{
+public final class NameValueTile extends NumericHelperTile<SimpleNameSymbol>{
 
     public static void init(){
         new NameValueTile();
@@ -23,11 +23,6 @@ public final class NameValueTile implements ITile<X86Instruction, Size, SimpleNa
 
     private NameValueTile(){
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).nameValues.add(this);
-    }
-
-    @Override
-    public boolean fits(final SimpleNameSymbol name, final Platform<X86Instruction, Size> platform) {
-        return true;
     }
 
     @Override

@@ -11,8 +11,10 @@ import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.instructions.factories.UniOpMaker;
-import cs444.codegen.x86_32.linux.Runtime;
+import cs444.codegen.x86.x86_32.linux.Runtime;
 import cs444.parser.symbols.JoosNonTerminal;
+import cs444.parser.symbols.ast.TypeSymbol;
+import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
 public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Instruction, Size, T>{
@@ -28,11 +30,26 @@ public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Inst
     public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction, Size> platform) {
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+
+        final Typeable t1 = (Typeable)bin.children.get(0);
+        final Typeable t2 = (Typeable)bin.children.get(0);
+
+        final TypeSymbol ts1 = t1.getType();
+        final TypeSymbol ts2 = t2.getType();
+
+        final boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG) ||
+                ts2.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
+
         instructions.add(new Push(Register.BASE, sizeHelper));
 
         instructions.addAll(platform.getBest(bin.children.get(0)));
+
+        if(hasLong) platform.getTileHelper().makeLong(t1, instructions, sizeHelper);
+
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
         instructions.addAll(platform.getBest(bin.children.get(1)));
+
+        if(hasLong) platform.getTileHelper().makeLong(t2, instructions, sizeHelper);
 
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));
         // pop first operand
@@ -53,4 +70,10 @@ public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Inst
         return instructions;
     }
 
+
+    @Override
+    public final boolean fits(final T op, final Platform<X86Instruction, Size> platform) {
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        return sizeHelper.getDefaultStackSize()  >= sizeHelper.getByteSizeOfType(op.getType().getTypeDclNode().fullName);
+    }
 }
