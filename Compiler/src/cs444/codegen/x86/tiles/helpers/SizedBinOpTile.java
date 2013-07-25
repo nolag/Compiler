@@ -14,7 +14,7 @@ public abstract class SizedBinOpTile<T extends BinOpExpr> extends BinOpTile<T>{
     }
 
     @Override
-    public final boolean fits(final T op, final Platform<X86Instruction, Size> platform) {
+    public boolean fits(final T op, final Platform<X86Instruction, Size> platform) {
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         return sizeHelper.getDefaultStackSize()  >= sizeHelper.getByteSizeOfType(op.getType().getTypeDclNode().fullName);
     }
