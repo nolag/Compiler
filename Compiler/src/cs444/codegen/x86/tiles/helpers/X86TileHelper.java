@@ -173,9 +173,20 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
     @Override
     public void callStartHelper(final SimpleMethodInvoke invoke,
             final Addable<X86Instruction> instructions, final Platform<X86Instruction, Size> platform){
-        instructions.add(new Comment("Pushing args"));
 
+        final MethodOrConstructorSymbol call = invoke.call;
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+
+        if(call.isNative()){
+            instructions.add(new Comment("Backing up registers that are to be saved"));
+            instructions.add(new Push(Register.BASE, sizeHelper));
+            instructions.add(new Push(Register.DESTINATION, sizeHelper));
+            instructions.add(new Push(Register.FRAME, sizeHelper));
+            instructions.add(new Push(Register.SOURCE, sizeHelper));
+            instructions.add(new Push(Register.STACK, sizeHelper));
+        }
+
+        instructions.add(new Comment("Pushing args"));
 
         for(final ISymbol isymbol : invoke.children){
             final Typeable arg = (Typeable) isymbol;
@@ -199,6 +210,16 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
             final Immediate by = new Immediate(mySize);
             instructions.add(new Add(Register.STACK, by, sizeHelper));
         }
+
+        if(call.isNative()){
+            instructions.add(new Comment("Restoring up registers that are to be saved"));
+            instructions.add(new Pop(Register.STACK, sizeHelper));
+            instructions.add(new Pop(Register.SOURCE, sizeHelper));
+            instructions.add(new Pop(Register.FRAME, sizeHelper));
+            instructions.add(new Pop(Register.DESTINATION, sizeHelper));
+            instructions.add(new Pop(Register.BASE, sizeHelper));
+        }
+
         instructions.add(new Comment("end invoke"));
     }
 
