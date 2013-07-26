@@ -11,6 +11,7 @@ import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.Pop;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.helpers.ArrayBaseTile;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
 public final class LongArrayValueTile extends ArrayBaseTile{
@@ -25,8 +26,7 @@ public final class LongArrayValueTile extends ArrayBaseTile{
 
     @Override
     public final boolean fits(final ArrayAccessExprSymbol typeable, final Platform<X86Instruction, Size> platform) {
-        final String type = typeable.getType().value;
-        return platform.getSizeHelper().getByteSizeOfType(type) == 8;
+        return typeable.getType().value.equals(JoosNonTerminal.LONG);
     }
 
     @Override

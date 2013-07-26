@@ -41,8 +41,8 @@ public class LongAssignmentTile extends LongOnlyTile<AssignmentExprSymbol> {
         instructions.addAll(platform.getBest(rightHandSide));
 
         instructions.add(new Pop(Register.COUNTER, sizeHelper));
-        final Memory toh = new Memory(Register.COUNTER);
-        final Memory tol = new Memory(Register.COUNTER, 4);
+        final Memory toh = new Memory(Register.COUNTER, 4);
+        final Memory tol = new Memory(Register.COUNTER);
         instructions.add(new Mov(tol, Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Mov(toh, Register.DATA, sizeHelper));
         instructions.add(new Comment("End Long Assignment"));

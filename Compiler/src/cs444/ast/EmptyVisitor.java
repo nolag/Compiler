@@ -129,6 +129,9 @@ public abstract class EmptyVisitor implements ISymbolVisitor {
     public void visit(final IntegerLiteralSymbol intLiteral) throws CompilerException { }
 
     @Override
+    public void visit(final LongLiteralSymbol longLiteral) throws CompilerException { }
+
+    @Override
     public void open(final FieldAccessSymbol field) throws CompilerException { }
 
     @Override

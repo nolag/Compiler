@@ -2,15 +2,16 @@ package cs444.codegen.x86.x86_32.tiles;
 
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
+import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
+import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Push;
-import cs444.codegen.x86.instructions.Xor;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.x86_32.tiles.helpers.LongOnlyTile;
 import cs444.parser.symbols.ast.DclSymbol;
+import cs444.parser.symbols.ast.Typeable;
 
 public class LongDclTile extends LongOnlyTile<DclSymbol>{
     public static void init(){
@@ -27,15 +28,18 @@ public class LongDclTile extends LongOnlyTile<DclSymbol>{
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        final TileHelper<X86Instruction, Size> tileHelper = platform.getTileHelper();
 
         if(dclSymbol.children.isEmpty()){
-            instructions.add(new Xor(Register.ACCUMULATOR, Register.ACCUMULATOR, sizeHelper));
-            instructions.add(new Xor(Register.DATA, Register.DATA, sizeHelper));
+            final X86Instruction push0 = new Push(Immediate.ZERO, sizeHelper);
+            instructions.add(push0);
+            instructions.add(push0);
         }else {
-            instructions.addAll(platform.getBest(dclSymbol.children.get(0)));
+            final Typeable init = (Typeable)dclSymbol.children.get(0);
+            instructions.addAll(platform.getBest(init));
+            tileHelper.pushLong(init, instructions, sizeHelper);
         }
-        instructions.add(new Push(Register.DATA, sizeHelper));
-        instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
+
         return instructions;
     }
 }

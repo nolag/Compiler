@@ -11,6 +11,7 @@ import cs444.codegen.x86.instructions.Xor;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.instructions.factories.CmpMaker;
 import cs444.codegen.x86.instructions.factories.UniOpMaker;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
@@ -35,12 +36,10 @@ public abstract class CompOpTile<T extends BinOpExpr> extends BinOpTile<T>{
 
     @Override
     public final boolean fits(final T op, final Platform<X86Instruction, Size> platform) {
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        boolean isOk;
         final Typeable ts1 = (Typeable) op.children.get(0);
         final Typeable ts2 = (Typeable) op.children.get(1);
-        isOk = sizeHelper.getDefaultStackSize()  >= sizeHelper.getByteSizeOfType(ts1.getType().getTypeDclNode().fullName);
-        isOk |= sizeHelper.getDefaultStackSize()  >= sizeHelper.getByteSizeOfType(ts2.getType().getTypeDclNode().fullName);
-        return isOk;
+        final boolean hasLong = ts1.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
+                || ts2.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
+        return !hasLong;
     }
 }

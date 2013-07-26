@@ -38,6 +38,7 @@ public abstract class X86TileInit extends TileInit{
         IfTile.<X86Instruction, Size>init(klass);
         InstanceOfTile.<X86Instruction, Size>init(klass);
         LETile.init();
+        LongCastTile.init();
         LSTile.init();
         RSTile.init();
         URSTile.init();

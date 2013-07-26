@@ -9,7 +9,7 @@ import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 
 public class LongLiteralSymbol extends TypeableTerminal implements INumericLiteral {
-    public static final String myName = "IntegerLiteral";
+    public static final String myName = "LongLiteral";
     private static final BigInteger MAX = BigInteger.valueOf(Long.MAX_VALUE);
     private static final BigInteger MIN = BigInteger.valueOf(Long.MIN_VALUE);
 

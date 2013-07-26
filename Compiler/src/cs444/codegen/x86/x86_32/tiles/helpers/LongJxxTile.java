@@ -4,6 +4,7 @@ import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
+import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
@@ -11,10 +12,11 @@ import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.instructions.factories.JxxMaker;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
-public abstract class LongJxxTile<T extends BinOpExpr> extends LongOnlyTile<T>{
+public abstract class LongJxxTile<T extends BinOpExpr> implements ITile<X86Instruction, Size, T>{
 
     private final JxxMaker finishEarlyT;
     private final JxxMaker finishEarlyF;
@@ -37,7 +39,7 @@ public abstract class LongJxxTile<T extends BinOpExpr> extends LongOnlyTile<T>{
         final Immediate end = new Immediate(endStr);
         final Immediate endFalse = new Immediate(endFalseStr);
 
-        instructions.add(new Comment("Start comparison"));
+        instructions.add(new Comment("Start comparison "));
 
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Mov(Register.BASE, Immediate.TRUE, sizeHelper));
@@ -74,12 +76,12 @@ public abstract class LongJxxTile<T extends BinOpExpr> extends LongOnlyTile<T>{
 
     @Override
     public final boolean fits(final T op, final Platform<X86Instruction, Size> platform) {
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         boolean isOk;
         final Typeable ts1 = (Typeable) op.children.get(0);
         final Typeable ts2 = (Typeable) op.children.get(1);
-        isOk = sizeHelper.getDefaultStackSize()  >= sizeHelper.getByteSizeOfType(ts1.getType().getTypeDclNode().fullName);
-        isOk |= sizeHelper.getDefaultStackSize()  >= sizeHelper.getByteSizeOfType(ts2.getType().getTypeDclNode().fullName);
+        isOk = ts1.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG) ||
+                ts2.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
+
         return isOk;
     }
 }

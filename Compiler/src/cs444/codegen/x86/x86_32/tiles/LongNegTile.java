@@ -15,12 +15,12 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.x86_32.tiles.helpers.LongOnlyTile;
 import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
 
-public class LogNegTile extends LongOnlyTile<NegOpExprSymbol>{
+public class LongNegTile extends LongOnlyTile<NegOpExprSymbol>{
     public static void init(){
-        new LogNegTile();
+        new LongNegTile();
     }
 
-    private LogNegTile(){
+    private LongNegTile(){
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).negs.add(this);
     }
 

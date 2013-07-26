@@ -306,6 +306,12 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
+    public void visit(final LongLiteralSymbol longSymbol) throws UndeclaredException {
+        simpleVistorHelper(longSymbol, JoosNonTerminal.LONG);
+
+    }
+
+    @Override
     public void visit(final ShortLiteralSymbol shortLiteral) throws CompilerException {
         simpleVistorHelper(shortLiteral, JoosNonTerminal.SHORT);
 
@@ -610,9 +616,13 @@ public class LocalDclLinker extends EmptyVisitor {
             isNumeric(first, true);
             isNumeric(second, true);
 
-            final TypeSymbol intType = TypeSymbol.getPrimative(JoosNonTerminal.INTEGER);
-            op.setType(intType);
-            currentTypes.peek().add(intType);
+            TypeSymbol type = TypeSymbol.getPrimative(JoosNonTerminal.INTEGER);
+            if(first.value.equals(JoosNonTerminal.LONG) || second.value.equals(JoosNonTerminal.LONG)){
+                type = TypeSymbol.getPrimative(JoosNonTerminal.LONG);
+            }
+
+            op.setType(type);
+            currentTypes.peek().add(type);
         }
     }
 

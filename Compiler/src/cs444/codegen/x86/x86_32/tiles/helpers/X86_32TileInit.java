@@ -1,6 +1,5 @@
 package cs444.codegen.x86.x86_32.tiles.helpers;
 
-import cs444.codegen.x86.tiles.LongCastTile;
 import cs444.codegen.x86.tiles.helpers.X86TileInit;
 import cs444.codegen.x86.x86_32.tiles.*;
 
@@ -16,9 +15,14 @@ public class X86_32TileInit extends X86TileInit{
         LongAddTile.init();
         LongArrayValueTile.init();
         LongAssignmentTile.init();
-        LongCastTile.init();
         LongDclTile.init();
+        LongEqTile.init();
+        LongLeTile.init();
+        LongLtTile.init();
+        LongMultTile.init();
         LongNameValueTile.init();
+        LongNegTile.init();
+        LongNeTile.init();
         LongNumberTile.init();
         LongSubTile.init();
     }

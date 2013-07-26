@@ -34,7 +34,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            if (!fileName.contains("LongAddEqNeq")) continue;
+            //if (!fileName.contains("Long")) continue;
             //Use this line to stop when there are infinite loops
             //if(totalTests == 20) break;
 
@@ -46,8 +46,7 @@ public class TestHelper {
 
             if (file.isFile() && fileName.toLowerCase().endsWith(".java") ||
                     (file.isDirectory() && !fileName.toLowerCase().endsWith(".skip"))){
-                runTestCase(path, expectedReturnCode, false, includeStdLib, failFiles, file, fileName);
-                //runTestCase(path, expectedReturnCode, printErrors, includeStdLib, failFiles, file, fileName);
+                runTestCase(path, expectedReturnCode, printErrors, includeStdLib, failFiles, file, fileName);
                 totalTests++;
             } else {
                 System.out.print("*"); // skip file

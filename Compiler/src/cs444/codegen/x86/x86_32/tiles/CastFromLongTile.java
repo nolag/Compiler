@@ -9,6 +9,7 @@ import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
@@ -24,9 +25,8 @@ public class CastFromLongTile implements ITile<X86Instruction, Size,CastExpressi
 
     @Override
     public boolean fits(final CastExpressionSymbol symbol, final Platform<X86Instruction, Size> platform) {
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         final Typeable typeable = (Typeable) symbol.getOperandExpression();
-        return sizeHelper.getDefaultStackSize()  > sizeHelper.getByteSizeOfType(typeable.getType().getTypeDclNode().fullName);
+        return typeable.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
     }
 
     @Override

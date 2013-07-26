@@ -309,6 +309,11 @@ public class CodeGenVisitor <T extends Instruction, E extends Enum<E>> {
         lastSize = sizeHelper.getPushSize(sizeHelper.getSize(2));
     }
 
+    public void visit(final LongLiteralSymbol longLiteral) {
+        tiles.<INumericLiteral>addBest(tiles.numbs, longLiteral, platform);
+        lastSize = sizeHelper.getPushSize(sizeHelper.getSize(2));
+    }
+
     public void visit(final NullSymbol nullSymbol) {
         tiles.<NullSymbol>addBest(tiles.nulls, nullSymbol, platform);
         lastSize = sizeHelper.getDefaultSize();

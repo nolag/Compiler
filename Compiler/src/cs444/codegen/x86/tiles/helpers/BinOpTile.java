@@ -29,7 +29,7 @@ public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruc
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
         final Typeable t1 = (Typeable)bin.children.get(0);
-        final Typeable t2 = (Typeable)bin.children.get(0);
+        final Typeable t2 = (Typeable)bin.children.get(1);
 
         final TypeSymbol ts1 = t1.getType();
         final TypeSymbol ts2 = t2.getType();
@@ -38,10 +38,11 @@ public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruc
                 ts2.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
 
 
-        instructions.addAll(platform.getBest(bin.children.get(0)));
+        instructions.addAll(platform.getBest(t1));
         if(hasLong) platform.getTileHelper().makeLong(t1, instructions, sizeHelper);
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
-        instructions.addAll(platform.getBest(bin.children.get(1)));
+        
+        instructions.addAll(platform.getBest(t2));
         if(hasLong) platform.getTileHelper().makeLong(t2, instructions, sizeHelper);
         instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Pop(Register.ACCUMULATOR, sizeHelper));
