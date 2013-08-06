@@ -14,6 +14,7 @@ import cs444.codegen.x86.instructions.Push;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.x86_32.tiles.helpers.LongOnlyTile;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 
 public class LongAssignmentTile extends LongOnlyTile<AssignmentExprSymbol> {
@@ -33,12 +34,13 @@ public class LongAssignmentTile extends LongOnlyTile<AssignmentExprSymbol> {
 
 
         final ISymbol leftHandSide = op.children.get(0);
-        final ISymbol rightHandSide = op.children.get(1);
+        final Typeable rightHandSide = (Typeable)op.children.get(1);
 
         instructions.add(new Comment("Start Long Assignment " + leftHandSide.getName() + "=" + rightHandSide.getName()));
         instructions.addAll(platform.getBest(leftHandSide));
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
         instructions.addAll(platform.getBest(rightHandSide));
+        platform.getTileHelper().makeLong(rightHandSide, instructions, sizeHelper);
 
         instructions.add(new Pop(Register.COUNTER, sizeHelper));
         final Memory toh = new Memory(Register.COUNTER, 4);
