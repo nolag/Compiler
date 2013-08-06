@@ -1,11 +1,11 @@
 package cs444.codegen.generic.tiles.opt;
 
 import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
-import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
@@ -22,11 +22,14 @@ public class UpCastTile<T extends Instruction, E extends Enum<E>> implements ITi
 
     @Override
     public boolean fits(final CastExpressionSymbol cast, final Platform<T, E> platform) {
+        final SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
         final TypeSymbol toType = cast.getType();
         final Typeable from = (Typeable)cast.getOperandExpression();
         final TypeSymbol fromType = from.getType();
         final Castable castType = toType.getTypeDclNode().getCastablility(fromType.getTypeDclNode());
-        return castType == Castable.UP_CAST && !fromType.value.equals(JoosNonTerminal.LONG);
+        final boolean normalFrom = sizeHelper.getByteSizeOfType(fromType.value) <= sizeHelper.getDefaultStackSize();
+        final boolean normalTo = sizeHelper.getByteSizeOfType(toType.value) <= sizeHelper.getDefaultStackSize();
+        return castType == Castable.UP_CAST & normalFrom & normalTo;
     }
 
     @Override

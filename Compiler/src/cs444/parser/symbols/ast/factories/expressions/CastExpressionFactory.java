@@ -25,16 +25,17 @@ public class CastExpressionFactory extends ASTSymbolFactory{
         validCastTypes.add("BYTE");
         validCastTypes.add("SHORT");
         validCastTypes.add("INT");
+        validCastTypes.add("LONG");
         validCastTypes.add("BOOLEAN");
         validCastTypes.add("Name");
     }
 
     @Override
-    protected ISymbol convert(ISymbol from) throws UnsupportedException, IllegalModifierException {
+    protected ISymbol convert(final ISymbol from) throws UnsupportedException, IllegalModifierException {
         if(!from.getName().equals(CAST_EXPRESSION)){
             return from;
         }
-        ANonTerminal castExpr = (ANonTerminal) from;
+        final ANonTerminal castExpr = (ANonTerminal) from;
 
         boolean isArray = false;
         if (castExpr.children.size() == 3 && castExpr.children.get(1).getName().equalsIgnoreCase(JoosNonTerminal.DIMS)){
@@ -44,8 +45,8 @@ public class CastExpressionFactory extends ASTSymbolFactory{
         if (castExpr.children.size() != 2 && !isArray)
             throw new UnsupportedException("Cast expression doesn't have two operands");
 
-        ISymbol castType = castExpr.children.get(0);
-        String firstChild = castType.getName();
+        final ISymbol castType = castExpr.children.get(0);
+        final String firstChild = castType.getName();
         if (!validCastTypes.contains(firstChild)){
             throw new UnsupportedException("Something other than Name or primitive type in Cast Expression.");
         }
@@ -60,7 +61,7 @@ public class CastExpressionFactory extends ASTSymbolFactory{
         }
 
 
-        ISymbol operandExpression = castExpr.children.get(castExpr.children.size() - 1);
+        final ISymbol operandExpression = castExpr.children.get(castExpr.children.size() - 1);
 
         return new CastExpressionSymbol(type, operandExpression);
     }
