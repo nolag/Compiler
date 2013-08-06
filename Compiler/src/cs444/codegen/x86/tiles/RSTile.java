@@ -13,7 +13,7 @@ public class RSTile extends SizedBinOpTile<RSExprSymbol> {
     }
 
     private RSTile(){
-        super(RSOpMaker.maker);
+        super(RSOpMaker.maker, true);
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).rss.add(this);
     }
 }

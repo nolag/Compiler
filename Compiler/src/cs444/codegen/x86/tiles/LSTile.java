@@ -13,7 +13,7 @@ public class LSTile extends SizedBinOpTile<LSExprSymbol> {
     }
 
     private LSTile(){
-        super(LSOpMaker.maker);
+        super(LSOpMaker.maker, true);
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).lss.add(this);
     }
 }

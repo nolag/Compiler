@@ -13,7 +13,7 @@ public class NeTile extends CompOpTile<NeExprSymbol>{
     }
 
     private NeTile() {
-        super(SetneMaker.maker);
+        super(SetneMaker.maker, false);
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).nes.add(this);
     }
 }

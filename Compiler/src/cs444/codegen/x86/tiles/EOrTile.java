@@ -15,7 +15,7 @@ public class EOrTile extends BinOpTile<EOrExprSymbol> {
     }
 
     private EOrTile(){
-        super(OrOpMaker.maker);
+        super(OrOpMaker.maker, false);
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).eors.add(this);
     }
 

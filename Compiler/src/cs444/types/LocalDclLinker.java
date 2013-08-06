@@ -499,7 +499,7 @@ public class LocalDclLinker extends EmptyVisitor {
             final INumericLiteral numeric = (INumericLiteral)assigned;
             final long val = numeric.getValue();
             final long max = SizeHelper.maxValues.get(toType.value);
-            if(toType.isArray || type.value.equals(JoosNonTerminal.LONG) ||
+            if(toType.isArray || (type.value.equals(JoosNonTerminal.LONG) && !toType.value.equals(JoosNonTerminal.LONG)) ||
                     val >  max || val < 0 && JoosNonTerminal.unsigned.contains(toType.value) || val < -max - 1){
                 throw new IllegalCastAssignmentException(context.enclosingClassName, where, name1, name2);
             }

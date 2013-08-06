@@ -47,6 +47,6 @@ public class Memory extends InstructionArg{
         if(offset == 0 && offsetArg == null) return "[" + arg.getValue(sizeHelper) + "]";
         if(offset == 0 && null != offsetArg) return "[" + arg.getValue(sizeHelper) + " + " + offsetArg.getValue(sizeHelper) + "]";
         if(offset != 0 && null == offsetArg) return "[" + arg.getValue(sizeHelper) + " + " + offset + "]";
-        return "[" + arg.getValue(sizeHelper) + " + " + offset + " " + arg.getValue(sizeHelper) + "]";
+        return "[" + arg.getValue(sizeHelper) + " + " + offset + " + " + arg.getValue(sizeHelper) + "]";
     }
 }

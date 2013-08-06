@@ -13,7 +13,7 @@ public class URSTile extends SizedBinOpTile<URSExprSymbol> {
     }
 
     private URSTile(){
-        super(URSOpMaker.maker);
+        super(URSOpMaker.maker, true);
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).urss.add(this);
     }
 }

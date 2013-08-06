@@ -13,7 +13,7 @@ public class EQTile extends CompOpTile<EqExprSymbol>{
     }
 
     private EQTile() {
-        super(SeteMaker.maker);
+        super(SeteMaker.maker, false);
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).eqs.add(this);
     }
 }

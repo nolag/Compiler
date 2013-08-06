@@ -15,7 +15,7 @@ public class EAndTile extends BinOpTile<EAndExprSymbol> {
     }
 
     private EAndTile(){
-        super(AndOpMaker.maker);
+        super(AndOpMaker.maker, false);
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).eands.add(this);
     }
 

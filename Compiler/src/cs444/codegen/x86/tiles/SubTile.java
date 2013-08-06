@@ -13,7 +13,7 @@ public class SubTile extends SizedBinOpTile<SubtractExprSymbol> {
     }
 
     private SubTile(){
-        super(SubOpMaker.maker);
+        super(SubOpMaker.maker, true);
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).subs.add(this);
     }
 }

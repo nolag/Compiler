@@ -14,7 +14,7 @@ public class LongAddTile extends LongBinTile<AddExprSymbol> {
     }
 
     private LongAddTile(){
-        super(AddOpMaker.maker, AdcOpMaker.maker);
+        super(AddOpMaker.maker, AdcOpMaker.maker, false);
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).adds.add(this);
     }
 }

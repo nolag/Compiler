@@ -14,7 +14,7 @@ public class LongSubTile extends LongBinTile<SubtractExprSymbol> {
     }
 
     private LongSubTile(){
-        super(SubOpMaker.maker, SbbOpMaker.maker);
+        super(SubOpMaker.maker, SbbOpMaker.maker, true);
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).subs.add(this);
     }
 }

@@ -21,7 +21,7 @@ public class AddTile extends SizedBinOpTile<AddExprSymbol> {
     }
 
     private AddTile(){
-        super(AddOpMaker.maker);
+        super(AddOpMaker.maker, false);
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).adds.add(this);
     }
 }
