@@ -31,8 +31,10 @@ public class LongMultTile extends LongOnlyTile<MultiplyExprSymbol>{
 
         instructions.add(new Comment("Start long mult"));
 
+        instructions.add(new Comment("store if it is negative in dest, -ve mult did not work with 2s compliment"));
+        instructions.add(new Xor(Register.DESTINATION, Register.DESTINATION, sizeHelper));
+
         instructions.add(new Push(Register.BASE, sizeHelper));
-        instructions.add(new Push(Register.SOURCE, sizeHelper));
 
         final Typeable lhs = (Typeable) mult.children.get(0);
         final Typeable rhs = (Typeable) mult.children.get(1);
@@ -46,21 +48,20 @@ public class LongMultTile extends LongOnlyTile<MultiplyExprSymbol>{
         instructions.addAll(platform.getBest(rhs));
         tileHelper.makeLong(rhs, instructions, sizeHelper);
 
-        instructions.add(new Mov(Register.ACCUMULATOR, Register.BASE, sizeHelper));
-        instructions.add(new Mov(Register.DATA, Register.COUNTER, sizeHelper));
+        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));
+        instructions.add(new Mov(Register.COUNTER, Register.DATA, sizeHelper));
         instructions.add(new Pop(Register.DATA, sizeHelper));
         instructions.add(new IMul(Register.DATA, sizeHelper));
-        instructions.add(new Mov(Register.ACCUMULATOR, Register.SOURCE, sizeHelper));
-        instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR, sizeHelper));
+        instructions.add(new Mov(Register.SOURCE, Register.ACCUMULATOR, sizeHelper));
+        instructions.add(new Mov(Register.ACCUMULATOR, Register.COUNTER, sizeHelper));
         instructions.add(new Pop(Register.COUNTER, sizeHelper));
         instructions.add(new IMul(Register.COUNTER, sizeHelper));
         instructions.add(new Xchg(Register.ACCUMULATOR, Register.BASE, sizeHelper));
-        instructions.add(new IMul(Register.COUNTER, sizeHelper));
+        instructions.add(new Mul(Register.COUNTER, sizeHelper));
         instructions.add(new Add(Register.DATA, Register.BASE, sizeHelper));
         instructions.add(new Add(Register.DATA, Register.SOURCE, sizeHelper));
 
 
-        instructions.add(new Pop(Register.SOURCE, sizeHelper));
         instructions.add(new Pop(Register.BASE, sizeHelper));
         instructions.add(new Comment("End long mult"));
 

@@ -180,9 +180,7 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
         if(call.isNative()){
             instructions.add(new Comment("Backing up registers that are to be saved"));
             instructions.add(new Push(Register.BASE, sizeHelper));
-            instructions.add(new Push(Register.DESTINATION, sizeHelper));
             instructions.add(new Push(Register.FRAME, sizeHelper));
-            instructions.add(new Push(Register.SOURCE, sizeHelper));
             instructions.add(new Push(Register.STACK, sizeHelper));
         }
 
@@ -214,9 +212,7 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
         if(call.isNative()){
             instructions.add(new Comment("Restoring up registers that are to be saved"));
             instructions.add(new Pop(Register.STACK, sizeHelper));
-            instructions.add(new Pop(Register.SOURCE, sizeHelper));
             instructions.add(new Pop(Register.FRAME, sizeHelper));
-            instructions.add(new Pop(Register.DESTINATION, sizeHelper));
             instructions.add(new Pop(Register.BASE, sizeHelper));
         }
 

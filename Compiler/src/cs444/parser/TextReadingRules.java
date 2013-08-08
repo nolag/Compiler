@@ -5,10 +5,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import cs444.Compiler;
 import cs444.parser.symbols.SymbolState;
 import cs444.parser.symbols.factories.JoosNonTerminalFactory;
 import cs444.parser.symbols.factories.NonTerminalFactory;
@@ -21,29 +21,27 @@ public class TextReadingRules implements IParserRule{
     }
 
     private static File getJoosRuleFile() throws URISyntaxException {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL url = classLoader.getResource("JoosRules.txt");
-        File file = new File(url.toURI());
-        return file;
+        return new File(Compiler.BASE_DIRECTORY + "JoosRules.txt");
     }
 
-    private Map<String, SymbolState> getRule(Map<Integer, Map<String, SymbolState>> rules, int number){
+    private Map<String, SymbolState> getRule(final Map<Integer, Map<String, SymbolState>> rules, final int number){
         if(rules.containsKey(number)) return rules.get(number);
-        Map<String, SymbolState> newState = new HashMap<String, SymbolState>();
+        final Map<String, SymbolState> newState = new HashMap<String, SymbolState>();
         rules.put(number, newState);
         return newState;
     }
 
+    @Override
     public Map<Integer, Map<String, SymbolState>> getRules() throws IOException {
-        Map<Integer, Map<String, SymbolState>> rules = new HashMap<Integer, Map<String, SymbolState>>();
+        final Map<Integer, Map<String, SymbolState>> rules = new HashMap<Integer, Map<String, SymbolState>>();
 
-        BufferedReader reader = new BufferedReader(new FileReader(readFrom));
+        final BufferedReader reader = new BufferedReader(new FileReader(readFrom));
 
-        Map<String, NonTerminalFactory> factories = new HashMap<String, NonTerminalFactory>();
+        final Map<String, NonTerminalFactory> factories = new HashMap<String, NonTerminalFactory>();
 
         String line;
         while((line = reader.readLine()) != null){
-            String[] split = line.split(" ");
+            final String[] split = line.split(" ");
             SymbolState symbolState;
             switch(split.length){
             case 1:
