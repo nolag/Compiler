@@ -11,16 +11,16 @@ import cs444.codegen.instructions.Instruction;
 import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.peephole.InstructionPrinter;
 
-public abstract class IndexedTableData<T extends Instruction> {
+public abstract class IndexedTableData<T extends Instruction, E extends Enum<E>> {
 
     public Map<String, Map<String, String>> indexedTable = new HashMap<String, Map<String,String>>();
     public Map<String, Long> offset = new LinkedHashMap<String, Long>();
     public long offsetCounter = 0;
     protected final InstructionHolder<T> instructions;
-    protected final ISubtypeCellGen<T> cellGen;
+    protected final ISubtypeCellGen<T, E> cellGen;
     protected final long cellDataSize;
 
-    public IndexedTableData(final ISubtypeCellGen<T> cellGen, final long cellDataSize) {
+    public IndexedTableData(final ISubtypeCellGen<T, E> cellGen, final long cellDataSize) {
         this.cellGen = cellGen;
         this.cellDataSize = cellDataSize;
         instructions = new InstructionPrinter<T>();
@@ -56,7 +56,7 @@ public abstract class IndexedTableData<T extends Instruction> {
         return offset.get(rowName);
     }
 
-    public abstract void genCode();
+    public abstract void genCode(SizeHelper<T, E> sizeHelper);
 
     public final void printCodeToFile(final String filePath) throws IOException {
         final File file = new File(filePath);

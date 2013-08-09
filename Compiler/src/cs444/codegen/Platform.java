@@ -31,11 +31,11 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
 
     public abstract SizeHelper<T, E> getSizeHelper();
     public abstract ObjectLayout<T> getObjectLayout();
-    public abstract SelectorIndexedTable<T> getSelectorIndex();
+    public abstract SelectorIndexedTable<T, E> getSelectorIndex();
     public abstract void makeSubtypeTable(final List<APkgClassResolver> resolvers,
             final boolean outputFile, final String directory) throws IOException;
 
-    public abstract SubtypeIndexedTable<T> getSubtypeTable();
+    public abstract SubtypeIndexedTable<T, E> getSubtypeTable();
     public abstract IRuntime<T> getRunime();
     public abstract InstructionHolder<T> getInstructionHolder();
     public abstract void generateStaticCode(final List<APkgClassResolver> resolvers,
@@ -54,4 +54,8 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
     public abstract void genLayoutForStaticFields(final Iterable<DclSymbol> staticFields, final Addable<T> instructions);
 
     public abstract TileHelper<T, E> getTileHelper();
+
+    public abstract void moveStaticLong(final String staticLbl, final Addable<T> instructions);
+
+    public abstract void zeroStaticLong(final String staticLbl, final Addable<T> instructions);
 }

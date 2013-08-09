@@ -10,17 +10,17 @@ import cs444.codegen.x86.instructions.bases.ReserveInstruction;
 public class ReserveInstructionMaker {
     private ReserveInstructionMaker() { }
 
-    public static ReserveInstruction make(final String name, final Size size, final long quantity) {
+    public static ReserveInstruction make(final String name, final Size size) {
         switch (size){
         case LOW:
         case HIGH:
-            return new Resb(name, quantity);
+            return new Resb(name, 1);
         case WORD:
-            return new Resw(name, quantity);
+            return new Resw(name, 1);
         case DWORD:
-            return new Resd(name, quantity);
+            return new Resd(name, 1);
         case QWORD:
-            return new Resq(name, quantity);
+            return new Resq(name, 1);
         }
         // shouldn't get here
         return null;

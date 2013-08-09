@@ -338,7 +338,7 @@ public abstract class APkgClassResolver {
 
     public abstract Iterable<DclSymbol> getUninheritedNonStaticFields();
 
-    public void addToSelectorIndexedTable(final SelectorIndexedTable<?> sit) {
+    public void addToSelectorIndexedTable(final SelectorIndexedTable<?, ?> sit) {
         final String classSITLbl = this.generateSIT();
 
         if(!this.isAbstract()){
@@ -361,7 +361,7 @@ public abstract class APkgClassResolver {
         }
     }
 
-    public void addToSubtypeIndexedTable(final SubtypeIndexedTable<?> subtit) {
+    public void addToSubtypeIndexedTable(final SubtypeIndexedTable<?, ?> subtit) {
         final String subtypeITLbl = generateSubtypeIT();
 
         if (!this.isAbstract()){

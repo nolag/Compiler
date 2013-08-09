@@ -40,10 +40,11 @@ public final class LongNameValueTile extends LongOnlyTile<SimpleNameSymbol>{
         if(dcl.isLocal) base = Register.FRAME;
         else if(dcl.isStatic()) base = new Immediate(staticFieldLbl);
 
-        final InstructionArg froml = new Memory(base, dcl.getOffset());
         final InstructionArg fromh = new Memory(base, dcl.getOffset() + 4);
-        instructions.add(new Mov(Register.ACCUMULATOR, froml, sizeHelper));
+        final InstructionArg froml = new Memory(base, dcl.getOffset());
         instructions.add(new Mov(Register.DATA, fromh, sizeHelper));
+        instructions.add(new Mov(Register.ACCUMULATOR, froml, sizeHelper));
+
         return instructions;
     }
 }

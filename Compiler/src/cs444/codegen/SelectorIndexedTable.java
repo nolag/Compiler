@@ -7,11 +7,14 @@ import java.util.Map;
 import cs444.codegen.instructions.Instruction;
 import cs444.types.APkgClassResolver;
 
-public abstract class SelectorIndexedTable<T extends Instruction> {
-    private final IndexedTableData<T> table;
+public abstract class SelectorIndexedTable<T extends Instruction, E extends Enum<E>> {
+    private final IndexedTableData<T, E> table;
 
-    protected SelectorIndexedTable(final IndexedTableData<T> table){
+    private final SizeHelper<T, E> sizeHelper;
+
+    protected SelectorIndexedTable(final IndexedTableData<T, E> table, final SizeHelper<T, E> sizeHelper){
         this.table = table;
+        this.sizeHelper = sizeHelper;
     }
 
     public final void addIndex(final String className, final String selector, final String methodImplLabel){
@@ -30,14 +33,14 @@ public abstract class SelectorIndexedTable<T extends Instruction> {
         return table.getOffset(selector);
     }
 
-    public final void generateSIT(final List<APkgClassResolver> resolvers,
-            final boolean outputFile, final String directory) throws IOException{
+    public final void generateSIT(final List<APkgClassResolver> resolvers, final boolean outputFile,
+            final String directory) throws IOException{
 
         for(final APkgClassResolver resolver : resolvers){
             if(resolver.shouldGenCode()) resolver.addToSelectorIndexedTable(this);
         }
 
-        table.genCode();
+        table.genCode(sizeHelper);
         if(outputFile) table.printCodeToFile(directory + "_joos.sit.s");
     }
 }

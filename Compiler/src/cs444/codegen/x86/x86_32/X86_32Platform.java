@@ -8,37 +8,23 @@ import java.util.Map;
 import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.IRuntime;
-import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.*;
+import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.*;
-import cs444.codegen.x86.instructions.Section.SectionType;
-import cs444.codegen.x86.instructions.bases.ReserveInstruction;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.instructions.factories.ReserveInstructionMaker;
 import cs444.codegen.x86.x86_32.tiles.helpers.X86_32TileHelper;
 import cs444.codegen.x86.x86_32.tiles.helpers.X86_32TileInit;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
 public abstract class X86_32Platform extends X86Platform{
-    public final X86SelectorIndexedTable sit = new X86SelectorIndexedTable(sizeHelper);
-    protected final IRuntime<X86Instruction> RUNTIME;
-    protected static final X86SizeHelper sizeHelper = X86SizeHelper.sizeHelper32;
+    public final X86SelectorIndexedTable sit;
 
     protected X86_32Platform(final IRuntime<X86Instruction> runtime, final Map<String, Boolean> opts){
-        super(opts, X86_32TileInit.instance);
-        RUNTIME = runtime;
-    }
-
-    @Override
-    public final IRuntime<X86Instruction> getRunime() {
-        return RUNTIME;
-    }
-
-    @Override
-    public final X86SizeHelper getSizeHelper() {
-        return sizeHelper;
+        super(opts, X86_32TileInit.instance, runtime, X86SizeHelper.sizeHelper32);
+        sit = new X86SelectorIndexedTable(sizeHelper);
     }
 
     @Override
@@ -64,35 +50,54 @@ public abstract class X86_32Platform extends X86Platform{
     }
 
     @Override
-    public final void genHeaderStart(final Addable<X86Instruction> instructions) {
-        RUNTIME.externAll(instructions);
-        instructions.add(new Section(SectionType.TEXT));
-        instructions.add(new Comment(CodeGenVisitor.INIT_OBJECT_FUNC + ": call super default constructor and initialize obj fields." +
-                " eax should contain address of object."));
-        instructions.add(new Label(CodeGenVisitor.INIT_OBJECT_FUNC));
-    }
-
-
-    @Override
-    public final void zeroDefaultLocation(final Addable<X86Instruction> instructions) {
-        instructions.add(new Xor(Register.ACCUMULATOR, Register.ACCUMULATOR, sizeHelper));
+    public final void moveStaticLong(final String staticLbl, final Addable<X86Instruction> instructions){
+        final Immediate lbl = new Immediate(staticLbl);
+        final Memory toAddrL = new Memory(lbl);
+        final Memory toAddrH = new Memory(lbl, 4);
+        instructions.add(new Mov(toAddrL, Register.ACCUMULATOR, sizeHelper));
+        instructions.add(new Mov(toAddrH, Register.DATA, sizeHelper));
     }
 
     @Override
-    public final void genLayoutForStaticFields(final Iterable<DclSymbol> staticFields, final Addable<X86Instruction> instructions){
-        if (staticFields.iterator().hasNext()){
-            instructions.add(new Comment("Static fields:"));
-            instructions.add(new Section(SectionType.BSS));
-        }
+    public final void zeroStaticLong(final String staticLbl, final Addable<X86Instruction> instructions){
+        final Immediate lbl = new Immediate(staticLbl);
+        final Memory toAddrL = new Memory(lbl);
+        final Memory toAddrH = new Memory(lbl, 4);
+        instructions.add(new Mov(toAddrL, Immediate.ZERO, sizeHelper));
+        instructions.add(new Mov(toAddrH, Immediate.ZERO, sizeHelper));
+    }
 
-        for (final DclSymbol fieldDcl : staticFields) {
+    @Override
+    public void genHeaderEnd(final APkgClassResolver resolver, final Addable<X86Instruction> instructions) {
+        instructions.add(new Push(Register.BASE, sizeHelper));
+        instructions.add(new Comment("Store pointer to object in ebx"));
+        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));
+
+        for (final DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
             final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
-            //TODO may need to make something here for longs not sure if I can just resurve 64 bits.
-            final String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
-            instructions.add(new Global(fieldLbl));
-            final ReserveInstruction data = ReserveInstructionMaker.make(fieldLbl, size, 1);
-            instructions.add(data);
+            final Memory fieldAddr = new Memory(Register.BASE, fieldDcl.getOffset());
+
+            if(!fieldDcl.children.isEmpty()){
+                instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
+
+                final CodeGenVisitor<X86Instruction, Size> visitor = new CodeGenVisitor<X86Instruction, Size>(
+                        CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(this).currentFile, this);
+
+                final ISymbol field = fieldDcl.children.get(0);
+                field.accept(visitor);
+                instructions.addAll(getBest(field));
+
+                if(fieldDcl.getType().value.equals(JoosNonTerminal.LONG)){
+                    final Memory fieldAddrH = new Memory(Register.BASE, fieldDcl.getOffset() + 4);
+                    instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, Size.DWORD, sizeHelper));
+                    instructions.add(new Mov(fieldAddrH, Register.DATA, Size.DWORD, sizeHelper));
+                }else{
+                    instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, size, sizeHelper));
+                }
+            }
         }
+        instructions.add(new Pop(Register.BASE, sizeHelper));
+        instructions.add(Ret.RET);
     }
 }

@@ -15,6 +15,7 @@ import cs444.codegen.x86.instructions.Section.SectionType;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.x86_32.linux.Runtime;
 import cs444.parser.symbols.ISymbol;
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassResolver;
@@ -61,13 +62,21 @@ public class StaticFieldInit {
             if (!(aPkgClassResolver instanceof PkgClassResolver)) continue;
             final PkgClassResolver resolver = (PkgClassResolver) aPkgClassResolver;
             if (!resolver.shouldGenCode()) continue;
+
             for (final DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
                 final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
-                final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
-                final Memory toAddr = new Memory(new Immediate(fieldNameLbl));
-
                 instructions.add(new Extern(fieldNameLbl));
-                instructions.add(new Mov(toAddr, Immediate.NULL, size, platform.getSizeHelper()));
+
+                if(fieldDcl.children.isEmpty()){
+                    final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
+                    final Memory toAddr = new Memory(new Immediate(fieldNameLbl));
+                    if(fieldDcl.getType().value.equals(JoosNonTerminal.LONG)){
+                        platform.zeroStaticLong(fieldNameLbl, instructions);
+                    }else{
+                        //NOTE that this assumes that 0 is null otherwise numbers need to be done differently
+                        instructions.add(new Mov(toAddr, Immediate.NULL, size, platform.getSizeHelper()));
+                    }
+                }
             }
         }
 
@@ -77,17 +86,19 @@ public class StaticFieldInit {
             if (!resolver.shouldGenCode()) continue;
 
             for (final DclSymbol fieldDcl : resolver.getUninheritedStaticFields()){
-                final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
-                final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
-                final Memory toAddr = new Memory(new Immediate(fieldNameLbl));
-
                 if(!fieldDcl.children.isEmpty()){
-                    instructions.add(new Comment("Initializing static field " + fieldNameLbl + "."));
-                    //null because we are not in a resolver so it will need to extern
+                    final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
+                    final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
+                    final Memory toAddr = new Memory(new Immediate(fieldNameLbl));
+                    instructions.add(new Comment("Initializing static field " + fieldNameLbl + " to 0, if forward referenced it must be 0."));
                     final ISymbol field = fieldDcl.children.get(0);
                     field.accept(new CodeGenVisitor<X86Instruction, Size>(platform));
                     instructions.addAll(platform.getBest(field));
-                    instructions.add(new Mov(toAddr, Register.ACCUMULATOR, size, platform.getSizeHelper()));
+                    if(fieldDcl.getType().value.equals(JoosNonTerminal.LONG)){
+                        platform.moveStaticLong(fieldNameLbl, instructions);
+                    }else{
+                        instructions.add(new Mov(toAddr, Register.ACCUMULATOR, size, platform.getSizeHelper()));
+                    }
                 }
             }
         }

@@ -1,5 +1,6 @@
 package cs444.codegen.tiles;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,5 +39,10 @@ public class InstructionsAndTiming<T extends Instruction> implements Addable<T>{
 
     public boolean isBetterThan(final InstructionsAndTiming<T> other){
         return other == null || totalCost < other.totalCost;
+    }
+
+    @Override
+    public void addAll(final T[] instructions) {
+        addAll(Arrays.asList(instructions));
     }
 }

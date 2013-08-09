@@ -11,7 +11,7 @@ public class Object{
     public static int test(){
         Object o = new Object();
         int i = 0;
-        if(Object.l != 429496729400L) i = 1;
+        if(Object.sl != 429496729400L) i = 1;
         if(o.l != 429496729400L) i = i + 2;
         o.l = 1;
         if(o.l != 1) i = i + 4;

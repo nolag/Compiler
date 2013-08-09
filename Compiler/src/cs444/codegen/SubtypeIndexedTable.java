@@ -7,13 +7,13 @@ import java.util.Map;
 import cs444.codegen.instructions.Instruction;
 import cs444.types.APkgClassResolver;
 
-public abstract class SubtypeIndexedTable <T extends Instruction> {
-    private final IndexedTableData<T> table;
+public abstract class SubtypeIndexedTable <T extends Instruction, E extends Enum<E>> {
+    private final IndexedTableData<T, E> table;
 
-    protected SubtypeIndexedTable(final IndexedTableData<T> table, final List<APkgClassResolver> resolvers,
-            final boolean outputFile, final String directory) throws IOException{
+    protected SubtypeIndexedTable(final IndexedTableData<T, E> table, final List<APkgClassResolver> resolvers,
+            final boolean outputFile, final String directory, final SizeHelper<T, E> sizeHelper) throws IOException{
         this.table = table;
-        generateTable(resolvers, outputFile, directory);
+        generateTable(resolvers, outputFile, directory, sizeHelper);
     }
 
     public Map<String, String> addSubtype(final String fullName) {
@@ -33,14 +33,14 @@ public abstract class SubtypeIndexedTable <T extends Instruction> {
     }
 
     public void generateTable(final List<APkgClassResolver> resolvers, final boolean outputFile,
-            final String directory) throws IOException {
+            final String directory, final SizeHelper<T, E> sizeHelper) throws IOException {
 
 
         for(final APkgClassResolver resolver : resolvers){
             if(resolver.shouldGenCode()) resolver.addToSubtypeIndexedTable(this);
         }
 
-        table.genCode();
+        table.genCode(sizeHelper);
         if(outputFile) table.printCodeToFile(directory + "_joos.subtypeIT.s");
     }
 }
