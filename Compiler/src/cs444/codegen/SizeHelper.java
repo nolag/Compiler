@@ -30,7 +30,7 @@ public abstract class SizeHelper<T extends Instruction, U extends Enum<U>> {
         return stackSizes.containsKey(type);
     }
 
-    public abstract int getByteSizeOfType(String typeName);
+    public abstract int getByteSizeOfType(final String typeName);
     public abstract U getSize(final long stackSize);
     public abstract U getSizeOfType(final String typeName);
     public abstract U getPushSize(final U size);
