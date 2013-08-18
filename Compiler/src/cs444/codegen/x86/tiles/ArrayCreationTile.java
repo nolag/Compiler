@@ -50,10 +50,13 @@ public class ArrayCreationTile implements ITile<X86Instruction, Size, CreationEx
         Runtime.instance.throwException(instructions, "Invalid array creation");
         instructions.add(new Label(ok));
 
-        final Size elementSize = sizeHelper.getPushSize(sizeHelper.getSizeOfType(creation.getType().value));
+        Size elementSize = sizeHelper.getPushSize(sizeHelper.getSizeOfType(creation.getType().value));
 
-        if(elementSize != Size.LOW && elementSize != Size.HIGH)
+        if(elementSize != Size.LOW && elementSize != Size.HIGH){
+            //something seems to go wrong if it's shifted by 1 for some values (*2 so should not be stack alignment?)
+            if(elementSize == Size.WORD) elementSize = Size.DWORD;
             instructions.add(new Shl(Register.ACCUMULATOR, X86SizeHelper.getPowerSizeImd(elementSize), sizeHelper));
+        }
 
         instructions.add(new Comment("Adding space for SIT, cast info, and length" + typeDclNode.fullName));
         //Int + object's size
