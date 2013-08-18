@@ -114,7 +114,7 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
             final Typeable arg = (Typeable) child;
             final TypeSymbol ts = arg.getType();
             final Size lastSize =  sizeHelper.getPushSize(sizeHelper.getSizeOfType(ts.getTypeDclNode().fullName));
-            if(ts.value.equals(JoosNonTerminal.LONG)) platform.getTileHelper().makeLong(arg, instructions, sizeHelper);
+            if(ts.value.equals(JoosNonTerminal.LONG)) pushLong(arg, instructions, sizeHelper);
             else instructions.add(new Push(Register.ACCUMULATOR, sizeHelper.getPushSize(lastSize), sizeHelper));
             types.add(ts.getTypeDclNode().fullName);
         }
@@ -191,7 +191,7 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
             final TypeSymbol ts = arg.getType();
             instructions.addAll(platform.getBest(arg));
             final Size lastSize =  sizeHelper.getPushSize(sizeHelper.getSizeOfType(ts.getTypeDclNode().fullName));
-            if(ts.value.equals(JoosNonTerminal.LONG)) platform.getTileHelper().makeLong(arg, instructions, sizeHelper);
+            if(ts.value.equals(JoosNonTerminal.LONG)) pushLong(arg, instructions, sizeHelper);
             else instructions.add(new Push(Register.ACCUMULATOR, sizeHelper.getPushSize(lastSize), sizeHelper));
         }
     }
