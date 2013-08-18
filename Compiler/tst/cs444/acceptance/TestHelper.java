@@ -34,7 +34,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.contains("J1w_StaticField.java")) continue;
+            //if (!fileName.contains("J1_sim_xor")) continue;
             //Use this line to stop when there are infinite loops
             //if(totalTests == 20) break;
 

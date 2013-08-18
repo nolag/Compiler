@@ -10,11 +10,11 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Memory;
+import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.x86_32.linux.Runtime;
-import cs444.codegen.x86.Memory;
-import cs444.codegen.x86.Register;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
@@ -49,8 +49,8 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
 
         //2 per char + dword for int + obj size
         final long objlen = platform.getObjectLayout().objSize();
-        final long charsLen = stringSymbol.strValue.length() * 2 + sizeHelper.getIntSize(Size.DWORD) + objlen;
-        final long length =  charsLen + resolver.getStackSize(sizeHelper) + objlen;
+        final long charsLen = stringSymbol.strValue.length() * 2 + 4 + objlen;
+        final long length =  charsLen + 4 + objlen;
 
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(length), sizeHelper));
         //no need to zero out, it will be set for sure so the second last arg does not matter
@@ -62,8 +62,8 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
 
         final char [] cs = stringSymbol.strValue.toCharArray();
         for(int i = 0; i < cs.length; i++){
-            final long place = 2 * i + platform.getObjectLayout().objSize() + sizeHelper.getIntSize(Size.DWORD);
-            final Memory to = new Memory(Register.ACCUMULATOR, new Immediate(String.valueOf(place)));
+            final long place = 2 * i + platform.getObjectLayout().objSize() + 4;
+            final Memory to = new Memory(Register.ACCUMULATOR, new Immediate(place));
             instructions.add(new Mov(to, new Immediate((cs[i])), Size.WORD, sizeHelper));
         }
         try {
@@ -91,5 +91,4 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
         instructions.add(new Comment("End of New String!"));
         return instructions;
     }
-
 }

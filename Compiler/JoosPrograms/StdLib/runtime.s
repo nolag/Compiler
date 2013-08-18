@@ -1,10 +1,10 @@
 section .text
 
 ; Allocates eax bytes of memory. Pointer to allocated memory returned in eax.
-global __malloc
-global __malloc_clear
-__malloc:
-__malloc_clear:
+global malloc
+global malloc_clear
+malloc:
+malloc_clear:
 	push ebx
     push eax
     mov eax, 45  ; sys_brk system call
