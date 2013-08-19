@@ -11,6 +11,7 @@ import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
 import cs444.types.PkgClassInfo;
+import cs444.types.PkgClassResolver;
 
 public class TestHelper {
 
@@ -34,7 +35,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.contains("LongFunc")) continue;
+            //if (!fileName.contains("J1_5_AmbiguousName_FieldVsType.java")) continue;
             //Use this line to stop when there are infinite loops
             //if(totalTests == 20) break;
 
@@ -137,6 +138,7 @@ public class TestHelper {
 
     private static int compileAndTest(final String[] files, final boolean printErrors) throws IOException, InterruptedException {
         PkgClassInfo.instance.clear();
+        PkgClassResolver.reset();
         TileSet.reset();
         CodeGenVisitor.reset();
         final Map<String, Boolean> opts = Collections.emptyMap();

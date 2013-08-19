@@ -513,4 +513,9 @@ public class PkgClassResolver extends APkgClassResolver {
 
         return fieldsDcls;
     }
+
+    //For testing only
+    public static void reset(){
+        resolverMap.clear();
+    }
 }

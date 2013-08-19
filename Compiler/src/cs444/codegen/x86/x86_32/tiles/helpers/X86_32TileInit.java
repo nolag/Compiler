@@ -17,6 +17,7 @@ public class X86_32TileInit extends X86TileInit{
         LongAssignmentTile.init();
         LongDclTile.init();
         LongEqTile.init();
+        LongLeftShift.init();
         LongLeTile.init();
         LongLtTile.init();
         LongMultTile.init();
@@ -24,6 +25,8 @@ public class X86_32TileInit extends X86TileInit{
         LongNegTile.init();
         LongNeTile.init();
         LongNumberTile.init();
+        LongRigthShift.init();
         LongSubTile.init();
+        LongUnsignedRightShift.init();
     }
 }
