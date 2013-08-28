@@ -102,7 +102,7 @@ public class LongDivTile extends LongOnlyTile<DivideExprSymbol> {
         instructions.add(new Cmp(Register.DATA, Immediate.BIT_32, sizeHelper));
         instructions.add(new Jne(new Immediate(notSmallest2), sizeHelper));
         instructions.add(new Cmp(Register.ACCUMULATOR, Immediate.ZERO, sizeHelper));
-        instructions.add(new Je(allDoneImm, sizeHelper));
+        instructions.add(new Je(mainDoneImm, sizeHelper));
         instructions.add(new Label(notSmallest2));
 
         instructions.add(new Cmp(Register.DATA, Immediate.ZERO, sizeHelper));
