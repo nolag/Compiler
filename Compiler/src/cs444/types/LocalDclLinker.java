@@ -306,6 +306,12 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     @Override
+    public void visit(final LongLiteralSymbol longSymbol) throws UndeclaredException {
+        simpleVistorHelper(longSymbol, JoosNonTerminal.LONG);
+
+    }
+
+    @Override
     public void visit(final ShortLiteralSymbol shortLiteral) throws CompilerException {
         simpleVistorHelper(shortLiteral, JoosNonTerminal.SHORT);
 
@@ -448,7 +454,9 @@ public class LocalDclLinker extends EmptyVisitor {
             final String name2 = context.getCurrentMember().type.isArray ? ArrayPkgClassResolver.getArrayName(context.getCurrentMember().type.value) : context.getCurrentMember().type.value;
             throw new IllegalCastAssignmentException(context.enclosingClassName, where, name1, name2);
         }
-        op.setType(TypeSymbol.getPrimative(JoosNonTerminal.INTEGER));
+
+        if(was.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)) op.setType(TypeSymbol.getPrimative(JoosNonTerminal.LONG));
+        else op.setType(TypeSymbol.getPrimative(JoosNonTerminal.INTEGER));
     }
 
     @Override
@@ -490,10 +498,9 @@ public class LocalDclLinker extends EmptyVisitor {
         if(assigned instanceof INumericLiteral && SizeHelper.maxValues.containsKey(toType.value)){
             final INumericLiteral numeric = (INumericLiteral)assigned;
             final long val = numeric.getValue();
-            if(toType.isArray || type.value.equals(JoosNonTerminal.LONG) ||
-                    val > SizeHelper.maxValues.get(toType.value) ||
-                    val < 0 && JoosNonTerminal.unsigned.contains(toType.value)){
-
+            final long max = SizeHelper.maxValues.get(toType.value);
+            if(toType.isArray || (type.value.equals(JoosNonTerminal.LONG) && !toType.value.equals(JoosNonTerminal.LONG)) ||
+                    val >  max || val < 0 && JoosNonTerminal.unsigned.contains(toType.value) || val < -max - 1){
                 throw new IllegalCastAssignmentException(context.enclosingClassName, where, name1, name2);
             }
             return;
@@ -609,9 +616,13 @@ public class LocalDclLinker extends EmptyVisitor {
             isNumeric(first, true);
             isNumeric(second, true);
 
-            final TypeSymbol intType = TypeSymbol.getPrimative(JoosNonTerminal.INTEGER);
-            op.setType(intType);
-            currentTypes.peek().add(intType);
+            TypeSymbol type = TypeSymbol.getPrimative(JoosNonTerminal.INTEGER);
+            if(first.value.equals(JoosNonTerminal.LONG) || second.value.equals(JoosNonTerminal.LONG)){
+                type = TypeSymbol.getPrimative(JoosNonTerminal.LONG);
+            }
+
+            op.setType(type);
+            currentTypes.peek().add(type);
         }
     }
 
@@ -620,19 +631,31 @@ public class LocalDclLinker extends EmptyVisitor {
         bothIntHelper(JoosNonTerminal.INTEGER, op);
     }
 
+    public void shiftHelper(final BinOpExpr op) throws UndeclaredException, BadOperandsTypeException  {
+        bothIntHelper(JoosNonTerminal.INTEGER, op);
+        final Typeable typeable = (Typeable) op.children.get(1);
+        final TypeSymbol rhs = typeable.getType();
+        final TypeSymbol ltype = TypeSymbol.getPrimative(JoosNonTerminal.LONG);
+
+        if(rhs == ltype){
+            final String where = context.getMemberName();
+            throw new BadOperandsTypeException(context.enclosingClassName, where, JoosNonTerminal.LONG , JoosNonTerminal.INTEGER);
+        }
+    }
+
     @Override
     public void visit(final LSExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-        bothIntHelper(JoosNonTerminal.INTEGER, op);
+        shiftHelper(op);
     }
 
     @Override
     public void visit(final RSExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-        bothIntHelper(JoosNonTerminal.INTEGER, op);
+        shiftHelper(op);
     }
 
     @Override
     public void visit(final URSExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
-        bothIntHelper(JoosNonTerminal.INTEGER, op);
+        shiftHelper(op);
     }
 
     @Override
@@ -715,7 +738,13 @@ public class LocalDclLinker extends EmptyVisitor {
         isNumeric(first, true);
         isNumeric(second, true);
 
-        final TypeSymbol type = TypeSymbol.getPrimative(returnType);
+        TypeSymbol type = TypeSymbol.getPrimative(returnType);
+        if(returnType.equals(JoosNonTerminal.INTEGER) &&
+                (first.value.equals(JoosNonTerminal.LONG) || second.value.equals(JoosNonTerminal.LONG))){
+
+            type = TypeSymbol.getPrimative(JoosNonTerminal.LONG);
+        }
+
         op.setType(type);
         currentTypes.peek().add(type);
     }

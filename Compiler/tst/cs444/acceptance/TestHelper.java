@@ -9,8 +9,9 @@ import java.util.*;
 import cs444.Compiler;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86_32.linux.X86_32LinuxPlatform;
+import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
 import cs444.types.PkgClassInfo;
+import cs444.types.PkgClassResolver;
 
 public class TestHelper {
 
@@ -21,6 +22,7 @@ public class TestHelper {
 
     public static void assertReturnCodeForFiles(final String path, final int expectedReturnCode, final boolean printErrors, final boolean includeStdLib,
             final boolean outputAsmFiles, final List<String> ignoreList, final ITestCallbacks testCallbacks) throws IOException, InterruptedException {
+
         TestHelper.callbacks = testCallbacks;
         TestHelper.outputAsmFiles = outputAsmFiles;
 
@@ -33,7 +35,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.equals("Je_6_NonStaticAccessToStatic_Field.java")) continue;
+            //if (!fileName.contains("LongMultNeg")) continue;
             //Use this line to stop when there are infinite loops
             //if(totalTests == 20) break;
 
@@ -136,6 +138,7 @@ public class TestHelper {
 
     private static int compileAndTest(final String[] files, final boolean printErrors) throws IOException, InterruptedException {
         PkgClassInfo.instance.clear();
+        PkgClassResolver.reset();
         TileSet.reset();
         CodeGenVisitor.reset();
         final Map<String, Boolean> opts = Collections.emptyMap();

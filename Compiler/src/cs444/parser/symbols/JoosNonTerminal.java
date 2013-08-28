@@ -120,10 +120,11 @@ public class JoosNonTerminal extends NonTerminal{
         specialNoDie.add(DIMS);
 
 
-        primativeNumbers.add("byte");
+        primativeNumbers.add(BYTE);
         primativeNumbers.add(CHAR);
-        primativeNumbers.add("short");
+        primativeNumbers.add(SHORT);
         primativeNumbers.add(INTEGER);
+        primativeNumbers.add(LONG);
         notAllowedForInstanceOfLHS.addAll(primativeNumbers);
 
         otherPrimatives.add(VOID);
@@ -158,17 +159,18 @@ public class JoosNonTerminal extends NonTerminal{
         ifs.add("IFTHENELSESTATEMENT");
         ifs.add("IFTHENELSESTATEMENTNOSHORTIF");
 
-        final Set<String> byteCharAssign = new HashSet<String>(Arrays.asList(new String [] {INTEGER, SHORT}));
-        final Set<String> assignToint = new HashSet<String>(Arrays.asList(new String [] {INTEGER}));
+        final Set<String> byteCharAssign = new HashSet<String>(Arrays.asList(new String [] {LONG, INTEGER, SHORT, CHAR}));
+        final Set<String> assignToint = new HashSet<String>(Arrays.asList(new String [] {LONG, INTEGER}));
+        final Set<String> intToLong = new HashSet<String>(Arrays.asList(new String [] {LONG}));
         defaultAssignables.put(BYTE, byteCharAssign);
         defaultAssignables.put(CHAR, assignToint);
         defaultAssignables.put(SHORT, assignToint);
+        defaultAssignables.put(INTEGER, intToLong);
 
         final Set<String> alsoToShort = new HashSet<String>(Arrays.asList(new String [] {CHAR}));
         final Set<String> alsoToChar = new HashSet<String>(Arrays.asList(new String [] {SHORT}));
         specialAssignables.put(SHORT, alsoToShort);
         specialAssignables.put(CHAR, alsoToChar);
-        specialAssignables.put(BYTE, alsoToShort);
 
         whiles.add("WHILESTATEMENT");
         whiles.add("WHILESTATEMENTNOSHORTIF");

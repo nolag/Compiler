@@ -15,7 +15,7 @@ public class Memory extends InstructionArg{
     public final InstructionArg offsetArg;
     public final long offset;
 
-    private Memory(final InstructionArg arg, final InstructionArg offsetArg, final long offset){
+    public Memory(final InstructionArg arg, final InstructionArg offsetArg, final long offset){
         this.arg = arg;
         this.offsetArg = offsetArg;
         this.offset = offset;
@@ -45,7 +45,8 @@ public class Memory extends InstructionArg{
     @Override
     public String getValue(final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
         if(offset == 0 && offsetArg == null) return "[" + arg.getValue(sizeHelper) + "]";
-        if(null != offsetArg) return "[" + arg.getValue(sizeHelper) + " + " + offsetArg.getValue(sizeHelper) + "]";
-        return "[" + arg.getValue(sizeHelper) + " + " + offset + "]";
+        if(offset == 0 && null != offsetArg) return "[" + arg.getValue(sizeHelper) + " + " + offsetArg.getValue(sizeHelper) + "]";
+        if(offset != 0 && null == offsetArg) return "[" + arg.getValue(sizeHelper) + " + " + offset + "]";
+        return "[" + arg.getValue(sizeHelper) + " + " + offset + " + " + offsetArg.getValue(sizeHelper) + "]";
     }
 }

@@ -9,11 +9,11 @@ import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Pop;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.tiles.helpers.ArrayBaseTile;
+import cs444.codegen.x86.tiles.helpers.NumericArrayTile;
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
-public final class ArrayValueTile extends ArrayBaseTile{
+public final class ArrayValueTile extends NumericArrayTile{
 
     public static void init(){
         new ArrayValueTile();
@@ -24,16 +24,12 @@ public final class ArrayValueTile extends ArrayBaseTile{
     }
 
     @Override
-    public boolean fits(final ArrayAccessExprSymbol name, final Platform<X86Instruction, Size> platform) {
-        return true;
-    }
-
-    @Override
     public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess,
             final Platform<X86Instruction, Size> platform) {
 
         final InstructionsAndTiming<X86Instruction> instructions = super.generate(arrayAccess, platform);
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+
         final long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
         Size elementSize;
         if(stackSize >= sizeHelper.getDefaultStackSize()) elementSize = sizeHelper.getDefaultSize();

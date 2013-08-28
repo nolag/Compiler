@@ -8,12 +8,12 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Add;
 import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.instructions.Extern;
 import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.Register;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.types.PkgClassResolver;
@@ -26,11 +26,6 @@ public class NameRefTile implements ITile<X86Instruction, Size, SimpleNameSymbol
 
     private NameRefTile(){
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).nameRefs.add(this);
-    }
-
-    @Override
-    public boolean fits(final SimpleNameSymbol symbol, final Platform<X86Instruction, Size> platform) {
-        return true;
     }
 
     @Override
@@ -53,5 +48,10 @@ public class NameRefTile implements ITile<X86Instruction, Size, SimpleNameSymbol
         instructions.add(new Comment("Move reference of " + dcl.dclName + " in to Accumulator"));
         instructions.add(instruction);
         return instructions;
+    }
+
+    @Override
+    public boolean fits(final SimpleNameSymbol symbol, final Platform<X86Instruction, Size> platform) {
+        return true;
     }
 }

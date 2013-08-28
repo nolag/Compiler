@@ -142,9 +142,9 @@ public class CodeGenVisitor <T extends Instruction, E extends Enum<E>> {
             types.add(ts.getTypeDclNode().fullName);
         }
 
-        lastSize = sizeHelper.getDefaultSize();
-
         tiles.<CreationExpression>addBest(tiles.creation, creationExpression, platform);
+
+        lastSize = sizeHelper.getDefaultSize();
     }
 
     public void visit(final ANonTerminal aNonTerminal) {
@@ -306,6 +306,11 @@ public class CodeGenVisitor <T extends Instruction, E extends Enum<E>> {
 
     public void visit(final IntegerLiteralSymbol intLiteral) {
         tiles.<INumericLiteral>addBest(tiles.numbs, intLiteral, platform);
+        lastSize = sizeHelper.getPushSize(sizeHelper.getSize(2));
+    }
+
+    public void visit(final LongLiteralSymbol longLiteral) {
+        tiles.<INumericLiteral>addBest(tiles.numbs, longLiteral, platform);
         lastSize = sizeHelper.getPushSize(sizeHelper.getSize(2));
     }
 

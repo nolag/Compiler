@@ -4,6 +4,8 @@ Literal:
 
 decimal_integer_literal
 
+long_integer_literal
+
 (true | false)
 
 char_literal
@@ -30,7 +32,7 @@ IntegralType
 
 IntegralType:
 
-(byte | short | int | char)
+(byte | short | int | char | long)
 
 ReferenceType:
 

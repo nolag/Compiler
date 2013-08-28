@@ -2,27 +2,22 @@ package cs444.codegen.x86.tiles;
 
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Neg;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.Register;
+import cs444.codegen.x86.tiles.helpers.NumericHelperTile;
 import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
 
-public class NegTile implements ITile<X86Instruction, Size, NegOpExprSymbol>{
+public class NegTile extends NumericHelperTile<NegOpExprSymbol>{
     public static void init(){
         new NegTile();
     }
 
     private NegTile(){
         TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).negs.add(this);
-    }
-
-    @Override
-    public boolean fits(final NegOpExprSymbol op, final Platform<X86Instruction, Size> platform) {
-        return true;
     }
 
     @Override

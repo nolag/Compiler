@@ -8,7 +8,7 @@ import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.tiles.generic.helpers.TileHelper;
+import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
@@ -23,11 +23,9 @@ import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
 import cs444.types.APkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
-public class X86TileHelper extends TileHelper<X86Instruction, Size> {
+public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
 
-    public static final X86TileHelper instance = new X86TileHelper();
-
-    private X86TileHelper(){ }
+    protected X86TileHelper(){ }
 
     public static void genMov(final Size size, final InstructionArg from, final String value,
             final Typeable dcl, final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
@@ -114,10 +112,10 @@ public class X86TileHelper extends TileHelper<X86Instruction, Size> {
         for(final ISymbol child : children){
             instructions.addAll(platform.getBest(child));
             final Typeable arg = (Typeable) child;
-            final Size lastSize =  sizeHelper.getPushSize(sizeHelper.getSizeOfType(arg.getType().getTypeDclNode().fullName));
-            instructions.add(new Push(Register.ACCUMULATOR, sizeHelper.getPushSize(lastSize), sizeHelper));
-            final Typeable typeable = (Typeable) child;
-            final TypeSymbol ts = typeable.getType();
+            final TypeSymbol ts = arg.getType();
+            final Size lastSize =  sizeHelper.getPushSize(sizeHelper.getSizeOfType(ts.getTypeDclNode().fullName));
+            if(ts.value.equals(JoosNonTerminal.LONG)) pushLong(arg, instructions, sizeHelper);
+            else instructions.add(new Push(Register.ACCUMULATOR, sizeHelper.getPushSize(lastSize), sizeHelper));
             types.add(ts.getTypeDclNode().fullName);
         }
 
@@ -175,15 +173,26 @@ public class X86TileHelper extends TileHelper<X86Instruction, Size> {
     @Override
     public void callStartHelper(final SimpleMethodInvoke invoke,
             final Addable<X86Instruction> instructions, final Platform<X86Instruction, Size> platform){
-        instructions.add(new Comment("Pushing args"));
 
+        final MethodOrConstructorSymbol call = invoke.call;
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+
+        if(call.isNative()){
+            instructions.add(new Comment("Backing up registers that are to be saved"));
+            instructions.add(new Push(Register.BASE, sizeHelper));
+            instructions.add(new Push(Register.FRAME, sizeHelper));
+            instructions.add(new Push(Register.STACK, sizeHelper));
+        }
+
+        instructions.add(new Comment("Pushing args"));
 
         for(final ISymbol isymbol : invoke.children){
             final Typeable arg = (Typeable) isymbol;
+            final TypeSymbol ts = arg.getType();
             instructions.addAll(platform.getBest(arg));
-            final Size lastSize =  sizeHelper.getPushSize(sizeHelper.getSizeOfType(arg.getType().getTypeDclNode().fullName));
-            instructions.add(new Push(Register.ACCUMULATOR, sizeHelper.getPushSize(lastSize), sizeHelper));
+            final Size lastSize =  sizeHelper.getPushSize(sizeHelper.getSizeOfType(ts.getTypeDclNode().fullName));
+            if(ts.value.equals(JoosNonTerminal.LONG)) pushLong(arg, instructions, sizeHelper);
+            else instructions.add(new Push(Register.ACCUMULATOR, sizeHelper.getPushSize(lastSize), sizeHelper));
         }
     }
 
@@ -199,6 +208,14 @@ public class X86TileHelper extends TileHelper<X86Instruction, Size> {
             final Immediate by = new Immediate(mySize);
             instructions.add(new Add(Register.STACK, by, sizeHelper));
         }
+
+        if(call.isNative()){
+            instructions.add(new Comment("Restoring up registers that are to be saved"));
+            instructions.add(new Pop(Register.STACK, sizeHelper));
+            instructions.add(new Pop(Register.FRAME, sizeHelper));
+            instructions.add(new Pop(Register.BASE, sizeHelper));
+        }
+
         instructions.add(new Comment("end invoke"));
     }
 

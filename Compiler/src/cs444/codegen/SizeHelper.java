@@ -14,6 +14,7 @@ public abstract class SizeHelper<T extends Instruction, U extends Enum<U>> {
         stackSizes.put(JoosNonTerminal.BYTE, 1);
         stackSizes.put(JoosNonTerminal.SHORT, 2);
         stackSizes.put(JoosNonTerminal.INTEGER, 4);
+        stackSizes.put(JoosNonTerminal.LONG, 8);
         stackSizes.put(JoosNonTerminal.CHAR, 2);
         //Can't get 1 bit so just use 8.
         stackSizes.put(JoosNonTerminal.BOOLEAN, 1);
@@ -21,6 +22,7 @@ public abstract class SizeHelper<T extends Instruction, U extends Enum<U>> {
         maxValues.put(JoosNonTerminal.BYTE, (long)Byte.MAX_VALUE);
         maxValues.put(JoosNonTerminal.SHORT, (long)Short.MAX_VALUE);
         maxValues.put(JoosNonTerminal.INTEGER, (long)Integer.MAX_VALUE);
+        maxValues.put(JoosNonTerminal.LONG, Long.MAX_VALUE);
         maxValues.put(JoosNonTerminal.CHAR, (long)Character.MAX_VALUE);
     }
 
@@ -28,7 +30,7 @@ public abstract class SizeHelper<T extends Instruction, U extends Enum<U>> {
         return stackSizes.containsKey(type);
     }
 
-    public abstract int getByteSizeOfType(String typeName);
+    public abstract int getByteSizeOfType(final String typeName);
     public abstract U getSize(final long stackSize);
     public abstract U getSizeOfType(final String typeName);
     public abstract U getPushSize(final U size);

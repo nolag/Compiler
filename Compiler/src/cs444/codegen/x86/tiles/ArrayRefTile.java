@@ -23,11 +23,6 @@ public class ArrayRefTile extends ArrayBaseTile{
     }
 
     @Override
-    public boolean fits(final ArrayAccessExprSymbol symbol, final Platform<X86Instruction, Size> platform) {
-        return true;
-    }
-
-    @Override
     public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess,
             final Platform<X86Instruction, Size> platform) {
 
@@ -36,5 +31,10 @@ public class ArrayRefTile extends ArrayBaseTile{
         instructions.add(new Add(Register.ACCUMULATOR, Register.BASE, sizeHelper));
         instructions.add(new Pop(Register.BASE, sizeHelper));
         return instructions;
+    }
+
+    @Override
+    public boolean fits(final ArrayAccessExprSymbol symbol, final Platform<X86Instruction, Size> platform) {
+        return true;
     }
 }

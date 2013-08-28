@@ -7,7 +7,7 @@ import java.util.List;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
-import cs444.codegen.x86_32.linux.X86_32LinuxPlatform;
+import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;

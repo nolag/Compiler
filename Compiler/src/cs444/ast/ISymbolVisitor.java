@@ -70,6 +70,7 @@ public interface ISymbolVisitor {
     void visit(final LeExprSymbol op) throws CompilerException;
     void visit(final InstanceOfExprSymbol op) throws CompilerException;
     void visit(final IntegerLiteralSymbol intLiteral) throws CompilerException;
+    void visit(final LongLiteralSymbol longLiteral) throws CompilerException;
     void visit(final NullSymbol nullSymbol) throws CompilerException;
     void visit(final BooleanLiteralSymbol boolSymbol) throws CompilerException;
     void visit(final ThisSymbol thisSymbol) throws CompilerException;
