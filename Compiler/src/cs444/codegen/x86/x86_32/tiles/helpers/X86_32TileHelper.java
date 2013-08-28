@@ -37,8 +37,8 @@ public class X86_32TileHelper extends X86TileHelper {
     public static void negLong(final Register high, final Register low, final Addable<X86Instruction> instructions,
             final SizeHelper<X86Instruction, Size> sizeHelper){
 
-        instructions.add(new Neg(high, sizeHelper));
-        instructions.add(new Neg(low, sizeHelper));
+        instructions.add(new Not(high, sizeHelper));
+        instructions.add(new Not(low, sizeHelper));
         instructions.add(new Add(low, Immediate.ONE, sizeHelper));
         instructions.add(new Adc(high, Immediate.ZERO, sizeHelper));
     }
