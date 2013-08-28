@@ -16,6 +16,7 @@ public class X86_32TileInit extends X86TileInit{
         LongArrayValueTile.init();
         LongAssignmentTile.init();
         LongDclTile.init();
+        LongDivTile.init();
         LongEqTile.init();
         LongLeftShift.init();
         LongLeTile.init();

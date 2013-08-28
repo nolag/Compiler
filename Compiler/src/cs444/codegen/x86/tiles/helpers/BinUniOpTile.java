@@ -1,6 +1,7 @@
 package cs444.codegen.x86.tiles.helpers;
 
 import cs444.codegen.CodeGenVisitor;
+import cs444.codegen.IRuntime;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
@@ -11,7 +12,6 @@ import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.instructions.factories.UniOpMaker;
-import cs444.codegen.x86.x86_32.linux.Runtime;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
@@ -30,6 +30,7 @@ public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Inst
     public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction, Size> platform) {
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        final IRuntime<X86Instruction> runtime = platform.getRunime();
 
         final Typeable t1 = (Typeable)bin.children.get(0);
         final Typeable t2 = (Typeable)bin.children.get(0);
@@ -61,7 +62,7 @@ public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Inst
             instructions.add(new Sar(Register.DATA, new Immediate(sizeHelper.getDefaultStackSize() * 8 -1), sizeHelper));
             final String safeDiv = "safeDiv" + CodeGenVisitor.getNewLblNum();
             X86TileHelper.setupJumpNe(Register.BASE, Immediate.ZERO, safeDiv, sizeHelper, instructions);
-            Runtime.instance.throwException(instructions, JoosNonTerminal.DIV_ZERO);
+            runtime.throwException(instructions, JoosNonTerminal.DIV_ZERO);
             instructions.add(new Label(safeDiv));
         }
 
