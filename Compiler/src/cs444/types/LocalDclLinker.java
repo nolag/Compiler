@@ -92,7 +92,6 @@ public class LocalDclLinker extends EmptyVisitor {
         final TypeSymbol initType = currentTypes.peek().removeLast().getType();
         final TypeSymbol dclType = dclSymbol.getType();
 
-
         if(dclSymbol.children.size() > 0) assertIsAssignable(initType, dclType, false, false, dclSymbol.children.get(0));
 
         if (dclSymbol.isLocal){
@@ -553,7 +552,7 @@ public class LocalDclLinker extends EmptyVisitor {
         if(leftHS.getType().isFinal) throw new UnsupportedException("left hand side of assignment cannot be final.");
 
         final TypeSymbol rightHSType = currentTypes.peek().removeLast().getType();
-        assertIsAssignable(rightHSType, leftHS.getType(), false, false, leftHS);
+        assertIsAssignable(rightHSType, leftHS.getType(), false, false, op.children.get(1));
 
         op.setType(leftHS.getType());
         currentTypes.peek().add(leftHS);
