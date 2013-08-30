@@ -20,7 +20,7 @@ public class ConstantExprReducer extends ASTSymbolFactory {
             return ((JoosNonTerminal)from).children.get(0);
         }
 
-        ISymbol reduced = ((BaseExprSymbol) from).reduceToLiteral();
+        ISymbol reduced = ((BaseExprSymbol) from).reduce();
         if (reduced == null){
             return from;
         }else{

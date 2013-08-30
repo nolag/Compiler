@@ -12,7 +12,7 @@ import cs444.parser.symbols.ast.TypeableTerminal;
 
 public class WhileExprSymbol extends BaseExprSymbol {
 
-    public WhileExprSymbol(List<ISymbol> children) {
+    public WhileExprSymbol(final List<ISymbol> children) {
         super("While");
         this.children.addAll(children);
     }
@@ -30,23 +30,21 @@ public class WhileExprSymbol extends BaseExprSymbol {
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
+    public void accept(final ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
         visitor.prepareCondition(getCondition());
-        // TODO: Dont think we need this:
-        // visitor.visit(this);
         this.getConditionSymbol().accept(visitor);
         getBody().accept(visitor);
         visitor.close(this);
     }
 
     @Override
-    public void accept(CodeGenVisitor<?, ?> visitor) {
+    public void accept(final CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
-    
+
     @Override
-    public TypeableTerminal reduceToLiteral() {
+    public TypeableTerminal reduce() {
          return null;
     }
 }

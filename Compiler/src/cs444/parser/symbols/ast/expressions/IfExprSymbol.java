@@ -58,7 +58,7 @@ public class IfExprSymbol extends BaseExprSymbol {
     }
 
     @Override
-    public TypeableTerminal reduceToLiteral() {
+    public TypeableTerminal reduce() {
          return null;
     }
 }

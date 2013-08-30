@@ -2,10 +2,7 @@ package cs444.codegen.x86.tiles.helpers;
 
 import cs444.codegen.TileInit;
 import cs444.codegen.generic.tiles.*;
-import cs444.codegen.generic.tiles.opt.DivZeroTile;
-import cs444.codegen.generic.tiles.opt.NonNullFieldAccess;
-import cs444.codegen.generic.tiles.opt.UpCastTile;
-import cs444.codegen.generic.tiles.opt.ZeroMultTile;
+import cs444.codegen.generic.tiles.opt.*;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.*;
@@ -70,6 +67,7 @@ public abstract class X86TileInit extends TileInit{
     public void initBasicOpt(){
         DivZeroTile.<X86Instruction, Size>init(klass);
         NonNullFieldAccess.<X86Instruction, Size>init(klass);
+        RemZeroTile.<X86Instruction, Size>init(klass);
         UpCastTile.<X86Instruction, Size>init(klass);
         ZeroMultTile.<X86Instruction, Size>init(klass);
     }

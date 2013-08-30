@@ -22,9 +22,9 @@ public class LongLiteralSymbol extends TypeableTerminal implements INumericLiter
         longVal = bigInt.longValue();
     }
 
-    public LongLiteralSymbol(final int longVal){
-        super(myName, Integer.toString(longVal));
-        this.longVal = longVal;
+    public LongLiteralSymbol(final long l){
+        super(myName, Long.toString(l));
+        this.longVal = l;
     }
 
     @Override

@@ -37,15 +37,17 @@ public class AddExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public TypeableTerminal reduceToLiteral() {
-        final ISymbol rightOperand = getRightOperand();
-        final ISymbol leftOperand = getLeftOperand();
+    public TypeableTerminal reduce() {
+        final Typeable rightOperand = (Typeable)getRightOperand();
+        final Typeable leftOperand = (Typeable)getLeftOperand();
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
-            //TODO long on one side here
             final long val1 = ((INumericLiteral)leftOperand).getValue();
             final long val2 = ((INumericLiteral)rightOperand).getValue();
+            if(rightOperand instanceof LongLiteralSymbol || leftOperand instanceof LongLiteralSymbol){
+                return new LongLiteralSymbol(val1 + val2);
+            }
             return new IntegerLiteralSymbol((int)(val1 + val2));
         } else if (rightOperand instanceof StringLiteralSymbol &&
                 leftOperand instanceof INumericLiteral){

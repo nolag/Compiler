@@ -45,7 +45,7 @@ public class CreationExpression extends BaseExprSymbol{
 
 
     @Override
-    public TypeableTerminal reduceToLiteral() {
+    public TypeableTerminal reduce() {
         return null;
     }
 }

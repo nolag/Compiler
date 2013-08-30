@@ -6,6 +6,7 @@ import cs444.codegen.CodeGenVisitor;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.INumericLiteral;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
+import cs444.parser.symbols.ast.LongLiteralSymbol;
 import cs444.parser.symbols.ast.TypeableTerminal;
 
 public class DivideExprSymbol extends BinOpExpr {
@@ -38,16 +39,19 @@ public class DivideExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public TypeableTerminal reduceToLiteral() {
+    public TypeableTerminal reduce() {
         final ISymbol rightOperand = getRightOperand();
         final ISymbol leftOperand = getLeftOperand();
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
-            //TODO long here
             final long val1 = ((INumericLiteral)leftOperand).getValue();
             final long val2 = ((INumericLiteral)rightOperand).getValue();
-            return (val2 == 0)? null : new IntegerLiteralSymbol((int)(val1 / val2));
+            if(val2 == 0) return null;
+            if (rightOperand instanceof LongLiteralSymbol || leftOperand instanceof LongLiteralSymbol) {
+                return new LongLiteralSymbol(val1/val2);
+            }
+            return new IntegerLiteralSymbol((int)(val1 / val2));
         }else{
             return null;
         }

@@ -46,15 +46,16 @@ public class CastExpressionSymbol extends BaseExprSymbol{
     }
 
     @Override
-    public TypeableTerminal reduceToLiteral() {
+    public TypeableTerminal reduce() {
         final Typeable operand = (Typeable) getOperandExpression();
         final String toType = getType().value;
 
         if (operand instanceof INumericLiteral){
             final INumericLiteral literal = (INumericLiteral) operand;
 
-            //TODO long here
-            if (toType.equals(JoosNonTerminal.INTEGER)){
+            if(toType.equals(JoosNonTerminal.LONG)){
+                return new LongLiteralSymbol(literal.getValue());
+            }else if (toType.equals(JoosNonTerminal.INTEGER)){
                 return new IntegerLiteralSymbol((int)literal.getValue());
             }else if (toType.equals(JoosNonTerminal.SHORT)){
                 return new ShortLiteralSymbol((short)literal.getValue());

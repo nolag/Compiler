@@ -26,7 +26,7 @@ public class NotOpExprSymbol extends UnaryOpExprSymbol{
     }
 
     @Override
-    public TypeableTerminal reduceToLiteral() {
+    public TypeableTerminal reduce() {
         ISymbol operand = getOperand();
 
         if (operand instanceof BooleanLiteralSymbol){

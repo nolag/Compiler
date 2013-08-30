@@ -39,7 +39,7 @@ public class LtExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public TypeableTerminal reduceToLiteral() {
+    public TypeableTerminal reduce() {
         final ISymbol rightOperand = getRightOperand();
         final ISymbol leftOperand = getLeftOperand();
 

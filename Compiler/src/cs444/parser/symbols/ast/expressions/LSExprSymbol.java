@@ -7,6 +7,7 @@ import cs444.codegen.CodeGenVisitor;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.INumericLiteral;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
+import cs444.parser.symbols.ast.LongLiteralSymbol;
 import cs444.parser.symbols.ast.TypeableTerminal;
 
 public class LSExprSymbol extends BinOpExpr {
@@ -39,15 +40,18 @@ public class LSExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public TypeableTerminal reduceToLiteral() {
+    public TypeableTerminal reduce() {
         final ISymbol rightOperand = getRightOperand();
         final ISymbol leftOperand = getLeftOperand();
 
         if (rightOperand instanceof INumericLiteral && leftOperand instanceof INumericLiteral){
-            //TODO long
-            final int val1 = (int)((INumericLiteral)leftOperand).getValue();
+            final long val1 = ((INumericLiteral)leftOperand).getValue();
             final int val2 = (int)((INumericLiteral)rightOperand).getValue();
-            return new IntegerLiteralSymbol(val1 << val2);
+            if(leftOperand instanceof LongLiteralSymbol){
+                return new LongLiteralSymbol(val1 << val2);
+            }
+
+            return new IntegerLiteralSymbol((int)val1 << val2);
         }else{
             return null;
         }

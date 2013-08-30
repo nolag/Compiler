@@ -37,7 +37,7 @@ public class AssignmentExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public TypeableTerminal reduceToLiteral() {
+    public TypeableTerminal reduce() {
          return null;
     }
 

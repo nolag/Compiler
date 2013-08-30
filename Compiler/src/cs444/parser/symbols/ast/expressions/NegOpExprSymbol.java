@@ -6,6 +6,7 @@ import cs444.codegen.CodeGenVisitor;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.INumericLiteral;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
+import cs444.parser.symbols.ast.LongLiteralSymbol;
 import cs444.parser.symbols.ast.TypeableTerminal;
 
 public class NegOpExprSymbol extends UnaryOpExprSymbol{
@@ -27,13 +28,12 @@ public class NegOpExprSymbol extends UnaryOpExprSymbol{
     }
 
     @Override
-    public TypeableTerminal reduceToLiteral() {
+    public TypeableTerminal reduce() {
         final ISymbol operand = getOperand();
 
         if (operand instanceof INumericLiteral){
             final long val = ((INumericLiteral)operand).getValue();
-            //TODO long here
-            return new IntegerLiteralSymbol((int)-val);
+            return operand instanceof LongLiteralSymbol ? new LongLiteralSymbol(-val) : new IntegerLiteralSymbol((int)-val);
         }else{
             return null;
         }

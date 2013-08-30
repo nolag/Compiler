@@ -38,7 +38,7 @@ public class InstanceOfExprSymbol extends BinOpExpr {
 
 
     @Override
-    public TypeableTerminal reduceToLiteral() {
+    public TypeableTerminal reduce() {
          return null;
     }
 }
