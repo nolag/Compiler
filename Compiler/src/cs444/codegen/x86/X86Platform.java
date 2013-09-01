@@ -2,7 +2,7 @@ package cs444.codegen.x86;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import cs444.codegen.*;
 import cs444.codegen.peephole.InstructionHolder;
@@ -20,12 +20,17 @@ import cs444.types.APkgClassResolver;
 
 public abstract class X86Platform extends Platform<X86Instruction, Size>{
 
+    public interface X86PlatformFactory<P extends X86Platform> extends PlatformFactory<X86Instruction, Size, P>{
+        @Override
+        P getPlatform(Set<String> opts);
+    }
+
     private final InstructionHolder<X86Instruction> instrucitons;
     protected final IRuntime<X86Instruction> runtime;
     protected final X86SizeHelper sizeHelper;
     private SubtypeIndexedTable<X86Instruction, Size> subtype;
 
-    protected X86Platform(final Map<String, Boolean> options, final TileInit tiles,
+    protected X86Platform(final Set<String> options, final TileInit tiles,
             final IRuntime<X86Instruction> runtime, final X86SizeHelper sizeHelper){
 
         instrucitons = new InstructionPrinter<X86Instruction>();

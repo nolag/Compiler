@@ -1,63 +1,67 @@
 package cs444.acceptance;
 
 import java.io.*;
+import java.util.Collection;
 import java.util.Scanner;
 
 import cs444.Compiler;
+import cs444.codegen.Platform;
 
     public class AsmAndLinkCallback implements ITestCallbacks{
         private static final int EXPECTED_DEFAULT_RTN_CODE = 123;
 
+        //TODO this class's stuff can be in parallel.
+
         @Override
         public boolean beforeCompile(final File _) throws IOException {
-            final File folder = new File(Compiler.OUTPUT_DIRECTORY);
-
-            if (!folder.exists()) folder.mkdir();
-
-            for (final File file : folder.listFiles()) {
-                if (file.getName().equals("runtime.s")) continue;
-
-                if (!file.delete()){
-                    System.err.println("Couldn't delete file: " + file.getAbsolutePath());
+            final File outputDir = new File(Compiler.OUTPUT_DIRECTORY);
+            final File [] outputFolders = outputDir.listFiles();
+            for(final File platformFolder : outputFolders){
+                for (final File file : platformFolder.listFiles()) {
+                    if (file.getName().equals("runtime.s") || file.getName().equals("runtime.asm")) continue;
+                    if (!file.delete()){
+                        System.err.println("Couldn't delete file: " + file.getAbsolutePath());
+                    }
                 }
             }
             return true;
         }
 
         @Override
-        public boolean afterCompile(final File file) throws IOException, InterruptedException {
-            final File folder = new File(Compiler.OUTPUT_DIRECTORY);
-            if (!assembleOutput(folder)) return false;
+        public boolean afterCompile(final File file, final Collection<Platform<?, ?>> platforms) throws IOException, InterruptedException {
+            for(final Platform<?, ?> platform : platforms){
+                final File folder = new File(platform.getOutputDir());
+                if (!assembleOutput(folder, platform)) return false;
 
-            final String folderAbsPath = folder.getAbsolutePath();
-            if(execAndWait(new String[] {"bash", "-c", "ld -melf_i386 -o main " +
-                folderAbsPath + File.separator + "*.o"}) != 0) return false;
+                final String folderAbsPath = folder.getAbsolutePath();
 
-            final int returnCode = execAndWait(new String[] {"./main"});
+                if(execAndWait(platform.getLinkCmd(folderAbsPath)) != 0) return false;
 
-            int expectedReturnCode;
-            if (!file.isDirectory()){
-                expectedReturnCode = EXPECTED_DEFAULT_RTN_CODE;
-            }else{
-                try{
-                    expectedReturnCode = getExpectedReturnCode(file);
-                }catch(final FileNotFoundException e){
+                final int returnCode = execAndWait(platform.getExecuteCmd());
+
+                int expectedReturnCode;
+                if (!file.isDirectory()){
                     expectedReturnCode = EXPECTED_DEFAULT_RTN_CODE;
-                    //return true;
+                }else{
+                    //TODO get rid of the try catch here, only call if there is a file or return the expected return code
+                    try{
+                        expectedReturnCode = getExpectedReturnCode(file);
+                    }catch(final FileNotFoundException e){
+                        expectedReturnCode = EXPECTED_DEFAULT_RTN_CODE;
+                    }
                 }
-            }
 
-            if (expectedReturnCode != returnCode){
-                System.out.println("\nWrong return code " + returnCode +
-                        " expected: " + expectedReturnCode);
-                System.out.println("In: " + file);
-                return false;
+                if (expectedReturnCode != returnCode){
+                    System.out.println("\nWrong return code " + returnCode +
+                            " expected: " + expectedReturnCode + " on platform " + platform.getClass().toString());
+                    System.out.println("In: " + file);
+                    return false;
+                }
             }
             return true;
         }
 
-        private int getExpectedReturnCode(final File file)
-                throws FileNotFoundException {
+        private int getExpectedReturnCode(final File file) throws FileNotFoundException {
             final File returnCodeFile = new File(file, "return.code");
 
             int expectedReturnCode;
@@ -72,12 +76,11 @@ import cs444.Compiler;
             return expectedReturnCode;
         }
 
-        private boolean assembleOutput(final File folder) throws IOException, InterruptedException {
+        private boolean assembleOutput(final File folder, final Platform<?, ?> platform) throws IOException, InterruptedException {
             for (final File file : folder.listFiles()) {
-                final String fileName = file.getName();
+                final String fileName = file.getAbsolutePath();
                 if (!fileName.endsWith(".s")) continue;
-                final String[] command = new String[] {"nasm", "-O1", "-f", "elf", "-g", "-F",
-                        "dwarf", file.getAbsolutePath()};
+                final String[] command = platform.getAssembleCmd(fileName);
                 if (execAndWait(command) != 0) return false;
             }
             return true;
@@ -93,7 +96,7 @@ import cs444.Compiler;
             }
         }
 
-        private int execAndWait(final String[] command) throws IOException, InterruptedException{
+        private int execAndWait(final String [] command) throws IOException, InterruptedException{
             final Process proc = Runtime.getRuntime().exec(command);
 
             // any error message?

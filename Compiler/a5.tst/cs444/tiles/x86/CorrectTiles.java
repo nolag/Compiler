@@ -6,14 +6,17 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 
 import cs444.Compiler;
 import cs444.CompilerException;
 import cs444.acceptance.TestHelper;
+import cs444.codegen.Platform;
 import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
 import cs444.types.PkgClassInfo;
 
@@ -21,8 +24,6 @@ public class CorrectTiles {
     public static final String TILE_TESTS = TestHelper.TEST_LOCATION + "TileTests/";
 
     public void setup(){
-        final Map<String, Boolean> opts = Collections.emptyMap();
-        X86_32LinuxPlatform.reset(opts);
         PkgClassInfo.instance.clear();
         final File folder = new File(Compiler.OUTPUT_DIRECTORY);
         for(final File file : folder.listFiles()){
@@ -33,7 +34,11 @@ public class CorrectTiles {
 
     public boolean contains(final String str, final String ... files) throws IOException{
         setup();
-        Compiler.compile(files, true, true);
+        final Set<String> opts = Collections.emptySet();
+        final Set<Platform<?, ?>> platforms = new HashSet<Platform<?, ?>>();
+        platforms.add(new X86_32LinuxPlatform(opts));
+
+        Compiler.compile(Arrays.asList(files), true, true, platforms);
         final File folder = new File(Compiler.OUTPUT_DIRECTORY);
         for(final File file : folder.listFiles()){
             if(file.getName().endsWith("runtime.s") || file.getName().startsWith("_")) continue;

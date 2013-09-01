@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
@@ -15,6 +16,11 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
 public abstract class Platform<T extends Instruction, E extends Enum<E>> {
+
+    public interface PlatformFactory<T extends Instruction, E extends Enum<E>, P extends Platform<T, E>>{
+        P getPlatform(Set<String> opts);
+    }
+
     private final Map<ISymbol, InstructionsAndTiming<T>> bests = new HashMap<ISymbol, InstructionsAndTiming<T>> ();
 
     public void addBest(final ISymbol symbol, final InstructionsAndTiming<T> tile){
@@ -58,4 +64,14 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
     public abstract void moveStaticLong(final String staticLbl, final Addable<T> instructions);
 
     public abstract void zeroStaticLong(final String staticLbl, final Addable<T> instructions);
+
+    public abstract String getOutputDir();
+
+    //These functions are used for testing and can be changed to assemble or execute differently if cross compiling
+
+    public abstract String [] getLinkCmd(String fileName);
+
+    public abstract String [] getAssembleCmd(String fileName);
+
+    public abstract String [] getExecuteCmd();
 }

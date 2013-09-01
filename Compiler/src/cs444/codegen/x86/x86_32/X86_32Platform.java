@@ -3,7 +3,7 @@ package cs444.codegen.x86.x86_32;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
@@ -22,7 +22,7 @@ import cs444.types.APkgClassResolver;
 public abstract class X86_32Platform extends X86Platform{
     public final X86SelectorIndexedTable sit;
 
-    protected X86_32Platform(final IRuntime<X86Instruction> runtime, final Map<String, Boolean> opts){
+    protected X86_32Platform(final IRuntime<X86Instruction> runtime, final Set<String> opts){
         super(opts, X86_32TileInit.instance, runtime, X86SizeHelper.sizeHelper32);
         sit = new X86SelectorIndexedTable(sizeHelper);
     }

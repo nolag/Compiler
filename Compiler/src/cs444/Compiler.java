@@ -4,10 +4,10 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
-import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
@@ -21,15 +21,14 @@ import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassInfo;
 
 public class Compiler {
-    //public static final String BASE_DIRECTORY = "/mnt/hgfs/RAM/";
+    public static final String BASE_DIRECTORY = "/mnt/hgfs/RAM/";
     //public static final String BASE_DIRECTORY = "E:/RAM/";
-    public static final String BASE_DIRECTORY = "";
+    //public static final String BASE_DIRECTORY = "";
     public static final String OUTPUT_DIRECTORY = BASE_DIRECTORY + "output/";
 
     public static final int COMPILER_ERROR_CODE = 42;
 
-    //TODO make this a list of them and compile with all of them.
-    private static Platform<?, ?> platform;
+    public static final String [] defaultPlatforms = { "-x86l" };
 
     /**
      * @param args
@@ -37,17 +36,18 @@ public class Compiler {
      * @throws Exception
      */
     public static void main(final String[] args){
-        System.exit(compile(args, true, true));
+        final CompilerSettings cs = new CompilerSettings(args);
+        System.exit(compile(cs.files, true, true, cs.platforms));
     }
 
-    public static int compile(final String[] files, final boolean printErrors, final boolean outputFiles) {
-        if (files.length == 0){
+    public static int compile(final List<String> files, final boolean printErrors,
+            final boolean outputFiles, final Set<Platform<?, ?>> platforms) {
+
+        if (files.size() == 0){
             System.err.println("ERROR: At least a file should be passed.");
             printUsage();
             return COMPILER_ERROR_CODE;
         }
-
-        platform = X86_32LinuxPlatform.platform;
 
         Reader reader = null;
         ANonTerminal parseTree = null;
@@ -71,10 +71,14 @@ public class Compiler {
             resolvers = new LinkedList<APkgClassResolver>(PkgClassInfo.instance.getSymbols());
 
             analyzeReachability(resolvers);
-            typeCheck(resolvers);
-            checkFields(resolvers);
-            cleanup(resolvers);
-            generateCode(resolvers, outputFiles);
+
+            //TODO some of this seems inefficient like cleanup twice and type check needing to be done again?
+            for(final Platform<?, ?> platform : platforms){
+                typeCheck(resolvers, platform);
+                checkFields(resolvers, platform);
+                cleanup(resolvers);
+                generateCode(resolvers, outputFiles, platform);
+            }
 
         }catch(final Exception e){
             if (printErrors) e.printStackTrace();
@@ -101,13 +105,12 @@ public class Compiler {
         }
     }
 
-    private static void checkFields(final List<APkgClassResolver> resolvers)
-            throws CompilerException {
+    private static void checkFields(final List<APkgClassResolver> resolvers, final Platform<?, ?> platform) throws CompilerException {
         //Do field init here
         for(final APkgClassResolver resolver : resolvers) resolver.checkFields(platform);
     }
 
-    private static void typeCheck(final List<APkgClassResolver> resolvers) throws CompilerException {
+    private static void typeCheck(final List<APkgClassResolver> resolvers, final Platform<?, ?> platform) throws CompilerException {
         for(final APkgClassResolver resolver : resolvers) resolver.linkLocalNamesToDcl(platform);
     }
 
@@ -119,15 +122,18 @@ public class Compiler {
         for(final APkgClassResolver resolver : resolvers) resolver.clean();
     }
 
-    private static void generateCode(final List<APkgClassResolver> resolvers, final boolean outputFile) throws IOException{
-        PrintStream printer;
+    private static void generateCode(final List<APkgClassResolver> resolvers,
+            final boolean outputFile, final Platform<?, ?> platform) throws IOException{
 
-        platform.getSelectorIndex().generateSIT(resolvers, outputFile, OUTPUT_DIRECTORY);
-        platform.makeSubtypeTable(resolvers, outputFile, OUTPUT_DIRECTORY);
+        PrintStream printer;
+        final String outputDir = platform.getOutputDir();
+
+        platform.getSelectorIndex().generateSIT(resolvers, outputFile, outputDir);
+        platform.makeSubtypeTable(resolvers, outputFile, outputDir);
 
         for (final APkgClassResolver resolver : resolvers) resolver.computeFieldOffsets(platform);
 
-        platform.generateStaticCode(resolvers, outputFile, OUTPUT_DIRECTORY);
+        platform.generateStaticCode(resolvers, outputFile, outputDir);
 
         final CodeGenVisitor<?, ?> codeGen = platform.makeNewCodeGen();
         for(final APkgClassResolver resolver : resolvers){
@@ -137,8 +143,8 @@ public class Compiler {
             resolver.generateCode(codeGen);
             if (outputFile){
                 File file;
-                if(resolver.pkg == APkgClassResolver.DEFAULT_PKG) file = new File(OUTPUT_DIRECTORY + resolver.name + ".s");
-                else file = new File(OUTPUT_DIRECTORY + resolver.fullName + ".s");
+                if(resolver.pkg == APkgClassResolver.DEFAULT_PKG) file = new File(outputDir + resolver.name + ".s");
+                else file = new File(outputDir + resolver.fullName + ".s");
                 file.createNewFile();
                 printer = new PrintStream(file);
             }else{

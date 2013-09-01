@@ -1,7 +1,9 @@
 package cs444.codegen.x86.x86_32.linux;
 
-import java.util.Map;
+import java.io.File;
+import java.util.Set;
 
+import cs444.Compiler;
 import cs444.codegen.Addable;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.x86.Immediate;
@@ -14,18 +16,22 @@ import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.codegen.x86.x86_32.tiles.helpers.X86_32TileHelper;
 
 public class X86_32LinuxPlatform extends X86_32Platform{
-    public static X86_32LinuxPlatform platform;
+    public static class X86_32LinuxPlatformFactory implements X86PlatformFactory<X86_32LinuxPlatform>{
+        public static X86_32LinuxPlatformFactory factory = new X86_32LinuxPlatformFactory();
+
+        private X86_32LinuxPlatformFactory(){ }
+
+        @Override
+        public X86_32LinuxPlatform getPlatform(final Set<String> opts){
+            return new X86_32LinuxPlatform(opts);
+        }
+    }
 
     private static final Immediate EXIT = Immediate.ONE;
     private static final Immediate SOFTWARE_INTERUPT = new Immediate("80h");
 
-    private X86_32LinuxPlatform(final Map<String, Boolean> opts){
+    public X86_32LinuxPlatform(final Set<String> opts){
         super(Runtime.instance, opts);
-    }
-
-    //NOTE this is for testing
-    public static void reset(final Map<String, Boolean> opts){
-        platform = new X86_32LinuxPlatform(opts);
     }
 
     @Override
@@ -43,5 +49,31 @@ public class X86_32LinuxPlatform extends X86_32Platform{
     @Override
     public TileHelper<X86Instruction, Size> getTileHelper() {
         return X86_32TileHelper.instance;
+    }
+
+    @Override
+    public String getOutputDir() {
+        return Compiler.OUTPUT_DIRECTORY + "x86l/";
+    }
+
+    //Test methods
+
+    private static final String [] execute = new String[] {"./main"};
+
+    @Override
+    public String[] getLinkCmd(final String fileName) {
+        return new String[] {"bash", "-c", "ld -melf_i386 -o main " + fileName + File.separator + "*.o"};
+    }
+
+    @Override
+    public String [] getExecuteCmd() {
+        return execute;
+    }
+
+    @Override
+    public String[] getAssembleCmd(final String fileName) {
+        return new String[] {"nasm", "-O1", "-f", "elf", fileName};
+        /*This will add debugging to the compiled objects.  Use it for debugging failed tests
+        new String[] {"nasm", "-O1", "-f", "elf", "-g", "-F", "dwarf", fileName};*/
     }
 }

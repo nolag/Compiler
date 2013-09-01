@@ -7,9 +7,10 @@ import java.io.IOException;
 import java.util.*;
 
 import cs444.Compiler;
+import cs444.CompilerSettings;
 import cs444.codegen.CodeGenVisitor;
+import cs444.codegen.Platform;
 import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
 import cs444.types.PkgClassInfo;
 import cs444.types.PkgClassResolver;
 
@@ -17,6 +18,8 @@ public class TestHelper {
 
     private static ITestCallbacks callbacks;
     private static boolean outputAsmFiles;
+
+    private static Set<Platform<?, ?>> platforms;
 
     public static final String TEST_LOCATION = Compiler.BASE_DIRECTORY + "JoosPrograms/";
 
@@ -70,7 +73,7 @@ public class TestHelper {
 
         if (callbacks.beforeCompile(file)
                 && compileAndTest(array, printErrors) == expectedReturnCode
-                && callbacks.afterCompile(file)) {
+                && callbacks.afterCompile(file, platforms)) {
             System.out.print(".");
         }else{
             System.out.print("F");
@@ -141,9 +144,12 @@ public class TestHelper {
         PkgClassResolver.reset();
         TileSet.reset();
         CodeGenVisitor.reset();
-        final Map<String, Boolean> opts = Collections.emptyMap();
-        //Reset the platforms
-        X86_32LinuxPlatform.reset(opts);
-        return Compiler.compile(files, printErrors, TestHelper.outputAsmFiles);
+        final Set<String> opts = Collections.emptySet();
+        platforms = new HashSet<Platform<?, ?>>();
+
+        for(final String platformStr : Compiler.defaultPlatforms){
+            platforms.add(CompilerSettings.platformMap.get(platformStr).getPlatform(opts));
+        }
+        return Compiler.compile(Arrays.asList(files), printErrors, TestHelper.outputAsmFiles, platforms);
     }
 }
