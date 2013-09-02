@@ -38,7 +38,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.contains("CorrectReductions")) continue;
+            //if (!fileName.contains("CallInsideArgument")) continue;
             //Use this line to stop when there are infinite loops
             //if(totalTests == 20) break;
 
@@ -71,12 +71,10 @@ public class TestHelper {
         final String[] array = new String[sourceFiles.size()];
         sourceFiles.toArray(array);
 
-        if (callbacks.beforeCompile(file)
+        if (!(callbacks.beforeCompile(file)
                 && compileAndTest(array, printErrors) == expectedReturnCode
-                && callbacks.afterCompile(file, platforms)) {
-            System.out.print(".");
-        }else{
-            System.out.print("F");
+                && callbacks.afterCompile(file, platforms))) {
+
             failFiles.add(path + fileName);
         }
     }

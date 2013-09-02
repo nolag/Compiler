@@ -1,6 +1,9 @@
 package cs444.acceptance;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Scanner;
 
@@ -29,51 +32,61 @@ import cs444.codegen.Platform;
 
         @Override
         public boolean afterCompile(final File file, final Collection<Platform<?, ?>> platforms) throws IOException, InterruptedException {
+            final String stdOut = getExpectedOutput(file, true);
+            final String stdErr = getExpectedOutput(file, false);
+
+            final int expectedReturnCode = getExpectedReturnCode(file);
+
+            boolean pass = true;
+
             for(final Platform<?, ?> platform : platforms){
                 final File folder = new File(platform.getOutputDir());
                 if (!assembleOutput(folder, platform)) return false;
 
                 final String folderAbsPath = folder.getAbsolutePath();
 
-                if(execAndWait(platform.getLinkCmd(folderAbsPath)) != 0) return false;
+                if(execAndWait(platform.getLinkCmd(folderAbsPath), null, null) != 0) return false;
 
-                final int returnCode = execAndWait(platform.getExecuteCmd());
+                final String [] command = platform.getExecuteCmd();
 
-                int expectedReturnCode;
-                if (!file.isDirectory()){
-                    expectedReturnCode = EXPECTED_DEFAULT_RTN_CODE;
-                }else{
-                    //TODO get rid of the try catch here, only call if there is a file or return the expected return code
-                    try{
-                        expectedReturnCode = getExpectedReturnCode(file);
-                    }catch(final FileNotFoundException e){
-                        expectedReturnCode = EXPECTED_DEFAULT_RTN_CODE;
-                    }
-                }
+                final int returnCode = execAndWait(command, stdOut, stdErr);
 
                 if (expectedReturnCode != returnCode){
                     System.out.println("\nWrong return code " + returnCode +
                             " expected: " + expectedReturnCode + " on platform " + platform.getClass().toString());
                     System.out.println("In: " + file);
-                    return false;
+                    pass = false;
                 }
             }
-            return true;
+            return pass;
         }
 
-        private int getExpectedReturnCode(final File file) throws FileNotFoundException {
+        private int getExpectedReturnCode(final File file) {
             final File returnCodeFile = new File(file, "return.code");
+            int expectedReturnCode = EXPECTED_DEFAULT_RTN_CODE;
 
-            int expectedReturnCode;
-            Scanner scan = null;
-            try{
-                scan = new Scanner(returnCodeFile);
+            if(!returnCodeFile.exists()) return EXPECTED_DEFAULT_RTN_CODE;
+
+            try (Scanner scan = new Scanner(returnCodeFile)) {
                 final String line = scan.nextLine();
                 expectedReturnCode = Integer.parseInt(line);
-            }finally{
-                if(scan != null) scan.close();
-            }
+            } catch (final FileNotFoundException e) { /*should never get here */ }
+
             return expectedReturnCode;
+        }
+
+
+        private String getExpectedOutput(final File file, final boolean output) {
+            final File outputFile = new File(file, output ? "out.txt" : "err.txt");
+            if(!outputFile.exists()) return "";
+            try(final Scanner scanner = new Scanner(outputFile)){
+                //Don't care about \r for testing because new lines may not match up the same for all systems.  Assume that the runtime is correct.
+                return scanner.useDelimiter("\\A").next().replace("\r", "");
+            } catch (final FileNotFoundException e) {
+                //Should not get here
+                e.printStackTrace();
+                return "";
+            }
         }
 
         private boolean assembleOutput(final File folder, final Platform<?, ?> platform) throws IOException, InterruptedException {
@@ -81,7 +94,7 @@ import cs444.codegen.Platform;
                 final String fileName = file.getAbsolutePath();
                 if (!fileName.endsWith(".s")) continue;
                 final String[] command = platform.getAssembleCmd(fileName);
-                if (execAndWait(command) != 0) return false;
+                if (execAndWait(command, null, null) != 0) return false;
             }
             return true;
         }
@@ -96,16 +109,14 @@ import cs444.codegen.Platform;
             }
         }
 
-        private int execAndWait(final String [] command) throws IOException, InterruptedException{
+        private int execAndWait(final String [] command, final String out, final String err) throws InterruptedException, IOException {
             final Process proc = Runtime.getRuntime().exec(command);
 
             // any error message?
-            final StreamGobbler errorGobbler = new
-                StreamGobbler(proc.getErrorStream(), "ERROR");
+            final StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream());
 
             // any output?
-            final StreamGobbler outputGobbler = new
-                StreamGobbler(proc.getInputStream(), "OUTPUT");
+            final StreamGobbler outputGobbler = new StreamGobbler(proc.getInputStream());
 
             // consume all output from err and out
             errorGobbler.start();
@@ -130,36 +141,35 @@ import cs444.codegen.Platform;
             errorGobbler.join();
             outputGobbler.join();
 
+            if(null != out && !out.equals(outputGobbler.getMessage().replace("\r", ""))){
+                System.out.println("Expected:\n" + out + "\n Got:\n" + outputGobbler.getMessage());
+                return -2;
+            }
+            if(null != err && !err.equals(errorGobbler.getMessage().replace("\r", ""))){
+                System.out.println("Expected:\n" + err + "\n Got:\n" + errorGobbler.getMessage());
+                return -3;
+            }
+
             return proc.exitValue();
         }
 
         class StreamGobbler extends Thread{
-            InputStream is;
-            String type;
-            boolean receivedOutput = false;
+            private final InputStream is;
+            private String message;
 
-            public boolean receivedOutput() {
-                return receivedOutput;
+            public String getMessage(){
+                return message;
             }
 
-            StreamGobbler(final InputStream is, final String type){
+            StreamGobbler(final InputStream is){
                 this.is = is;
-                this.type = type;
             }
 
             @Override
             public void run(){
-                try{
-                    final InputStreamReader isr = new InputStreamReader(is);
-                    final BufferedReader br = new BufferedReader(isr);
-                    String line=null;
-                    while ( (line = br.readLine()) != null){
-                        System.out.println(type + ">" + line);
-                        receivedOutput = true;
-                    }
-                } catch (final IOException ioe){
-                    ioe.printStackTrace();
-                }
+                final Scanner s = new Scanner(is);
+                message = s.hasNext() ?  s.useDelimiter("\\A").next().replace("\r", "") : "";
+                s.close();
             }
         }
     }
