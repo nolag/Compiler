@@ -26,6 +26,9 @@ public class PkgClassResolver extends APkgClassResolver {
     public static final PkgClassResolver badResolve = new PkgClassResolver("!invalid");
     private static final Map<AInterfaceOrClassSymbol, PkgClassResolver> resolverMap = new HashMap<AInterfaceOrClassSymbol, PkgClassResolver>();
 
+    //Used for testing so that when tests with nostd lib are run the resolver won't be different for primaitves
+    private static final Map<String, PkgClassResolver> primResolvers = new HashMap<>();
+
     private static String getPkg(final AInterfaceOrClassSymbol start){
         String mypkg = DEFAULT_PKG;
         final Iterator<NameSymbol> pkg = start.pkgImports.iterator();
@@ -67,7 +70,11 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     public static PkgClassResolver getPrimativeResolver(final String name) {
-        return new PkgClassResolver(name);
+        PkgClassResolver resolver = primResolvers.get(name);
+        if(resolver != null) return resolver;
+        resolver = new PkgClassResolver(name);
+        primResolvers.put(name, resolver);
+        return resolver;
     }
 
     private void addAll(final String firstPart, final Map<String, PkgClassResolver> entryMap) throws DuplicateDeclarationException {

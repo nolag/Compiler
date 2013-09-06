@@ -1,10 +1,6 @@
 package cs444.types;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import cs444.parser.symbols.JoosNonTerminal;
@@ -15,11 +11,11 @@ import cs444.types.exceptions.DuplicateDeclarationException;
 import cs444.types.exceptions.UndeclaredException;
 
 public class PkgClassInfo {
-    private final Map<String, Map<String, PkgClassResolver>> nameSpaces = new HashMap<String, Map<String, PkgClassResolver>>();
-    public final Map<String, APkgClassResolver> symbolMap = new HashMap<String, APkgClassResolver>();
+    public final Map<String, Map<String, PkgClassResolver>> nameSpaces = new HashMap<>();
+    public final Map<String, APkgClassResolver> symbolMap = new HashMap<>();
 
     //Used because symbolMap may not be in order after hashing
-    public final List<APkgClassResolver> pkgs = new LinkedList<APkgClassResolver>();
+    public final List<APkgClassResolver> pkgs = new LinkedList<>();
 
     public static final PkgClassInfo instance = new PkgClassInfo();
 
@@ -108,10 +104,26 @@ public class PkgClassInfo {
     }
 
     // NOTE: this method is for tests only
+    public void clear(final Map<String, Map<String, PkgClassResolver>> nameSpaces,
+            final Map<String, APkgClassResolver> symbolMap, final List<APkgClassResolver> pkgs){
+
+        this.nameSpaces.clear();
+        //because each entry is a map, we need to clone the maps or they will have entries put into them.
+        for(final Entry<String, Map<String, PkgClassResolver>> entry : nameSpaces.entrySet()){
+            final Map<String, PkgClassResolver> resolverClone = new HashMap<>(entry.getValue());
+            this.nameSpaces.put(entry.getKey(), resolverClone);
+        }
+
+        this.symbolMap.clear();
+        this.symbolMap.putAll(symbolMap);
+        this.pkgs.clear();
+        this.pkgs.addAll(pkgs);
+    }
+
     public void clear(){
-        nameSpaces.clear();
-        symbolMap.clear();
-        pkgs.clear();
+        this.nameSpaces.clear();
+        this.symbolMap.clear();
+        this.pkgs.clear();
         addInitialSymbols();
     }
 }

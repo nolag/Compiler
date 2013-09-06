@@ -5,12 +5,14 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.Map.Entry;
 
 import cs444.Compiler;
 import cs444.CompilerSettings;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.tiles.TileSet;
+import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassInfo;
 import cs444.types.PkgClassResolver;
 
@@ -22,6 +24,13 @@ public class TestHelper {
     private static Set<Platform<?, ?>> platforms;
 
     public static final String TEST_LOCATION = Compiler.BASE_DIRECTORY + "JoosPrograms/";
+
+
+    //Holds stdlib so that it can be reused
+    private static boolean hasStdlib = false;
+    private static Map<String, Map<String, PkgClassResolver>> nameSpaces;
+    private static Map<String, APkgClassResolver> symbolMap;
+    private static List<APkgClassResolver> pkgs;
 
     public static void assertReturnCodeForFiles(final String path, final int expectedReturnCode, final boolean printErrors, final boolean includeStdLib,
             final boolean outputAsmFiles, final List<String> ignoreList, final ITestCallbacks testCallbacks) throws IOException, InterruptedException {
@@ -66,13 +75,13 @@ public class TestHelper {
     private static void runTestCase(final String path, final int expectedReturnCode,
             final boolean printErrors, final boolean includeStdLib, final List<String> failFiles,
             final File file, final String fileName) throws IOException, InterruptedException {
-        final List<String> sourceFiles = getAllFiles(file, includeStdLib);
+        final List<String> sourceFiles = getAllFiles(file);
 
         final String[] array = new String[sourceFiles.size()];
         sourceFiles.toArray(array);
 
         if (!(callbacks.beforeCompile(file)
-                && compileAndTest(array, printErrors) == expectedReturnCode
+                && compileAndTest(array, printErrors, includeStdLib) == expectedReturnCode
                 && callbacks.afterCompile(file, platforms))) {
 
             failFiles.add(path + fileName);
@@ -98,15 +107,10 @@ public class TestHelper {
         assertReturnCodeForFiles(path, expectedReturnCode, printErrors, true, ignoreList);
     }
 
-    private static ArrayList<String> getAllFiles(final File root, final boolean includeStdLib) {
+    private static List<String> getAllFiles(final File root) {
 
         final ArrayList<String> result = new ArrayList<String>();
         final Stack<File> toVisit = new Stack<File>();
-
-        if(includeStdLib){
-            final File stdLib = new File(TEST_LOCATION + "StdLib");
-            toVisit.push(stdLib);
-        }
 
         toVisit.push(root);
 
@@ -137,17 +141,53 @@ public class TestHelper {
         }
     }
 
-    private static int compileAndTest(final String[] files, final boolean printErrors) throws IOException, InterruptedException {
-        PkgClassInfo.instance.clear();
+    public static void setupMaps(){
+        if(!hasStdlib){
+            PkgClassInfo.instance.clear();
+            PkgClassResolver.reset();
+            TileSet.reset();
+            CodeGenVisitor.reset();
+            final List<String> files = getAllFiles(new File(TEST_LOCATION + "StdLib"));
+            platforms = new HashSet<>();
+            final Set<String> opts = Collections.emptySet();
+            for(final String platformStr : Compiler.defaultPlatforms){
+                platforms.add(CompilerSettings.platformMap.get(platformStr).getPlatform(opts));
+            }
+            Compiler.compile(files, true, false, platforms);
+            final PkgClassInfo info = PkgClassInfo.instance;
+            nameSpaces = new HashMap<>();
+            //because each entry is a map, we need to clone the maps or they will have entries put into them.
+            for(final Entry<String, Map<String, PkgClassResolver>> entry : info.nameSpaces.entrySet()){
+                final Map<String, PkgClassResolver> resolverClone = new HashMap<>(entry.getValue());
+                nameSpaces.put(entry.getKey(), resolverClone);
+            }
+
+            symbolMap = new HashMap<>(info.symbolMap);
+            pkgs = new ArrayList<>(info.pkgs);
+            hasStdlib = true;
+        }
+    }
+
+    private static int compileAndTest(final String[] files, final boolean printErrors, final boolean includeStdlib)
+            throws IOException, InterruptedException {
+
+        if(includeStdlib){
+            setupMaps();
+            PkgClassInfo.instance.clear(nameSpaces, symbolMap, pkgs);
+        }else{
+            PkgClassInfo.instance.clear();
+        }
+
         PkgClassResolver.reset();
         TileSet.reset();
         CodeGenVisitor.reset();
-        final Set<String> opts = Collections.emptySet();
-        platforms = new HashSet<Platform<?, ?>>();
 
+        final Set<String> opts = Collections.emptySet();
+        platforms = new HashSet<>();
         for(final String platformStr : Compiler.defaultPlatforms){
             platforms.add(CompilerSettings.platformMap.get(platformStr).getPlatform(opts));
         }
+
         return Compiler.compile(Arrays.asList(files), printErrors, TestHelper.outputAsmFiles, platforms);
     }
 }
