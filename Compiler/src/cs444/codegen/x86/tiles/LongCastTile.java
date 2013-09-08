@@ -12,13 +12,14 @@ import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 
 public class LongCastTile extends LongOnlyTile<CastExpressionSymbol> {
-    public static void init(){
-        new LongCastTile();
+    private static LongCastTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new LongCastTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).casts.add(tile);
     }
 
-    private LongCastTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).casts.add(this);
-    }
+    private LongCastTile() { }
 
     @Override
     public boolean fits(final CastExpressionSymbol symbol, final Platform<X86Instruction, Size> platform) {

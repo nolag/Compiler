@@ -1,4 +1,4 @@
-package cs444.codegen.x86.x86_32;
+package cs444.codegen.x86.x86_64;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -20,17 +20,18 @@ import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
-public abstract class X86_32Platform extends X86Platform{
+public abstract class X86_64Platform extends X86Platform{
     public final X86SelectorIndexedTable sit;
 
-    protected X86_32Platform(final IRuntime<X86Instruction> runtime, final Set<String> opts){
-        super(opts, X86_32TileInit.instance, runtime, X86SizeHelper.sizeHelper32);
+    protected X86_64Platform(final IRuntime<X86Instruction> runtime, final Set<String> opts){
+        //TODO X86_64TileInit
+        super(opts, X86_32TileInit.instance, runtime, X86SizeHelper.sizeHelper64);
         sit = new X86SelectorIndexedTable(sizeHelper);
     }
 
     @Override
     public final X86ObjectLayout getObjectLayout() {
-        return X86ObjectLayout.object32;
+        return X86ObjectLayout.object64;
     }
 
     @Override
@@ -47,11 +48,13 @@ public abstract class X86_32Platform extends X86Platform{
 
     @Override
     public final void genInstructorInvoke(final APkgClassResolver resolver, final Addable<X86Instruction> instructions) {
+        //TODO X86_64TileInit
         X86_32TileHelper.instance.invokeConstructor(resolver, Collections.<ISymbol>emptyList(), this, instructions);
     }
 
     @Override
     public final void moveStaticLong(final String staticLbl, final Addable<X86Instruction> instructions){
+        //TODO
         final Immediate lbl = new Immediate(staticLbl);
         final Memory toAddrL = new Memory(lbl);
         final Memory toAddrH = new Memory(lbl, 4);
@@ -62,14 +65,13 @@ public abstract class X86_32Platform extends X86Platform{
     @Override
     public final void zeroStaticLong(final String staticLbl, final Addable<X86Instruction> instructions){
         final Immediate lbl = new Immediate(staticLbl);
-        final Memory toAddrL = new Memory(lbl);
-        final Memory toAddrH = new Memory(lbl, 4);
-        instructions.add(new Mov(toAddrL, Immediate.ZERO, sizeHelper));
-        instructions.add(new Mov(toAddrH, Immediate.ZERO, sizeHelper));
+        final Memory toAddr = new Memory(lbl);
+        instructions.add(new Mov(toAddr, Immediate.ZERO, sizeHelper));
     }
 
     @Override
     public void genHeaderEnd(final APkgClassResolver resolver, final Addable<X86Instruction> instructions) {
+        //TODO
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Comment("Store pointer to object in ebx"));
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));
@@ -104,6 +106,6 @@ public abstract class X86_32Platform extends X86Platform{
 
     @Override
     public final TileSet<X86Instruction, Size> getTiles(){
-        return TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class);
+        return TileSet.<X86Instruction, Size>getOrMake(X86_64Platform.class);
     }
 }

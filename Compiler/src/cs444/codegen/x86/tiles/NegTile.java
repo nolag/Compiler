@@ -12,13 +12,14 @@ import cs444.codegen.x86.tiles.helpers.NumericHelperTile;
 import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
 
 public class NegTile extends NumericHelperTile<NegOpExprSymbol>{
-    public static void init(){
-        new NegTile();
+    private static NegTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new NegTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).negs.add(tile);
     }
 
-    private NegTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).negs.add(this);
-    }
+    private NegTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final NegOpExprSymbol negSymbol,

@@ -8,10 +8,8 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.Immediate;
+import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.Memory;
-import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.x86_32.linux.Runtime;
@@ -24,13 +22,14 @@ import cs444.types.PkgClassInfo;
 import cs444.types.exceptions.UndeclaredException;
 
 public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymbol>{
-    public static void init(){
-        new StringTile();
+    private static StringTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new StringTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).strs.add(tile);
     }
 
-    private StringTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).strs.add(this);
-    }
+    private StringTile() { }
 
     @Override
     public boolean fits(final StringLiteralSymbol op, final Platform<X86Instruction, Size> platform) {

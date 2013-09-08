@@ -14,14 +14,15 @@ import cs444.codegen.x86.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
 import cs444.types.APkgClassResolver;
 
-public class ArrayCreationTile implements ITile<X86Instruction, Size, CreationExpression>{
-    public static void init(){
-        new ArrayCreationTile();
+public class ArrayCreationTile implements ITile<X86Instruction, Size, CreationExpression> {
+    private static ArrayCreationTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new ArrayCreationTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).creation.add(tile);
     }
 
-    private ArrayCreationTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).creation.add(this);
-    }
+    private ArrayCreationTile() { }
 
     @Override
     public boolean fits(final CreationExpression creation, final Platform<X86Instruction, Size> platform) {

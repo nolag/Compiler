@@ -7,19 +7,20 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Xor;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.Register;
 import cs444.parser.symbols.ast.expressions.NotOpExprSymbol;
 
 public class NotTile implements ITile<X86Instruction, Size, NotOpExprSymbol>{
-    public static void init(){
-        new NotTile();
+    private static NotTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new NotTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).nots.add(tile);
     }
 
-    private NotTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).nots.add(this);
-    }
+    private NotTile() { }
 
     @Override
     public boolean fits(final NotOpExprSymbol op, final Platform<X86Instruction, Size> platform) {

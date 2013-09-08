@@ -21,13 +21,14 @@ import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassInfo;
 
 public class StrAddTile implements ITile<X86Instruction, Size, AddExprSymbol>{
-    public static void init(){
-        new StrAddTile();
+    private static StrAddTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new StrAddTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).adds.add(tile);
     }
 
-    private StrAddTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).adds.add(this);
-    }
+    private StrAddTile() { }
 
     @Override
     public boolean fits(final AddExprSymbol op, final Platform<X86Instruction, Size> platform) {

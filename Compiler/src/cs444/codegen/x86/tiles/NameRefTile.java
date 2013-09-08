@@ -18,15 +18,15 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.types.PkgClassResolver;
 
-public class NameRefTile implements ITile<X86Instruction, Size, SimpleNameSymbol>{
+public class NameRefTile implements ITile<X86Instruction, Size, SimpleNameSymbol> {
+    private static NameRefTile tile;
 
-    public static void init(){
-        new NameRefTile();
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new NameRefTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).nameRefs.add(tile);
     }
 
-    private NameRefTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).nameRefs.add(this);
-    }
+    private NameRefTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final SimpleNameSymbol name,

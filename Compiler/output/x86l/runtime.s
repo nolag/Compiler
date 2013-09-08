@@ -26,9 +26,8 @@ ok:
     pop ebx
     ret
 
-; Debugging exit: ends the process, returning the value of
-; eax as the exit code.
-    global __debexit
+; Debugging exit: ends the process, returning the value of eax as the exit code.
+global __debexit
 __debexit:
     mov ebx, eax
     mov eax, 1   ; sys_exit system call
@@ -44,7 +43,7 @@ __exception:
 
 ; Implementation of java.io.OutputStream.nativeWrite method.
 ; Outputs the low-order byte of eax to standard output.
-    global NATIVEjava.io.OutputStream.nativeWrite
+global NATIVEjava.io.OutputStream.nativeWrite
 NATIVEjava.io.OutputStream.nativeWrite:
     mov [char], al ; save the low order byte in memory
     mov eax, 4     ; sys_write system call

@@ -18,13 +18,14 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 
 public class AssignmentTile extends NumericHelperTile<AssignmentExprSymbol> {
-    public static void init(){
-        new AssignmentTile();
+    private static AssignmentTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new AssignmentTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).assigns.add(tile);
     }
 
-    private AssignmentTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).assigns.add(this);
-    }
+    private AssignmentTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final AssignmentExprSymbol op, final Platform<X86Instruction, Size> platform) {

@@ -11,18 +11,19 @@ import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.Pop;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.helpers.ArrayBaseTile;
+import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
-public final class LongArrayValueTile extends ArrayBaseTile{
+public final class LongArrayValueTile extends ArrayBaseTile {
+    private static LongArrayValueTile tile;
 
-    public static void init(){
-        new LongArrayValueTile();
+    public static void init() {
+        if(tile == null) tile = new LongArrayValueTile();
+        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).arrayValues.add(tile);
     }
 
-    private LongArrayValueTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).arrayValues.add(this);
-    }
+    private LongArrayValueTile() { }
 
     @Override
     public final boolean fits(final ArrayAccessExprSymbol typeable, final Platform<X86Instruction, Size> platform) {

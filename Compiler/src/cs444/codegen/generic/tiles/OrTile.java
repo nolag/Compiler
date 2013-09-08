@@ -12,11 +12,11 @@ import cs444.parser.symbols.ast.expressions.OrExprSymbol;
 
 public class OrTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, OrExprSymbol>{
 
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<T> klass){
+    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new OrTile<T, E>(klass);
     }
 
-    private OrTile(final Class<T> klass){
+    private OrTile(final Class<? extends Platform<T, E>> klass){
         TileSet.<T, E>getOrMake(klass).ors.add(this);
     }
 

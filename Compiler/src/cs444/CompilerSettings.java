@@ -12,6 +12,13 @@ public class CompilerSettings {
     static{
         platformMap.put("-x86linux", X86_32LinuxPlatform.X86_32LinuxPlatformFactory.factory);
         platformMap.put("-x86l", X86_32LinuxPlatform.X86_32LinuxPlatformFactory.factory);
+        platformMap.put("-x86_32linux", X86_32LinuxPlatform.X86_32LinuxPlatformFactory.factory);
+        platformMap.put("-x86_32l", X86_32LinuxPlatform.X86_32LinuxPlatformFactory.factory);
+
+        platformMap.put("-x64linux", X86_32LinuxPlatform.X86_32LinuxPlatformFactory.factory);
+        platformMap.put("-x64l", X86_32LinuxPlatform.X86_32LinuxPlatformFactory.factory);
+        platformMap.put("-x86_64linux", X86_32LinuxPlatform.X86_32LinuxPlatformFactory.factory);
+        platformMap.put("-x86_64l", X86_32LinuxPlatform.X86_32LinuxPlatformFactory.factory);
     }
 
     public final List<String> files = new ArrayList<String>();

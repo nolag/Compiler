@@ -18,13 +18,14 @@ import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 
 public class CastNonPrimTile implements ITile<X86Instruction, Size, CastExpressionSymbol> {
-    public static void init(){
-        new CastNonPrimTile();
+    private static CastNonPrimTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new CastNonPrimTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).casts.add(tile);
     }
 
-    private CastNonPrimTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).casts.add(this);
-    }
+    private CastNonPrimTile() { }
 
     @Override
     public boolean fits(final CastExpressionSymbol symbol, final Platform<X86Instruction, Size> platform) {

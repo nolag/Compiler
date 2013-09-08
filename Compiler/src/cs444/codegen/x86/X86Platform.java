@@ -7,7 +7,6 @@ import java.util.Set;
 import cs444.codegen.*;
 import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.peephole.InstructionPrinter;
-import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.Section.SectionType;
@@ -106,10 +105,5 @@ public abstract class X86Platform extends Platform<X86Instruction, Size>{
                 instructions.add(data);
             }
         }
-    }
-
-    @Override
-    public final TileSet<X86Instruction, Size> getTiles(){
-        return TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class);
     }
 }

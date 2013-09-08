@@ -10,11 +10,11 @@ import cs444.parser.symbols.ast.FieldAccessSymbol;
 
 public class FieldAccessTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, FieldAccessSymbol>{
 
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<T> klass){
+    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new FieldAccessTile<T, E>(klass);
     }
 
-    private FieldAccessTile(final Class<T> klass){
+    private FieldAccessTile(final Class<? extends Platform<T, E>> klass){
         TileSet.<T, E>getOrMake(klass).fieldAccess.add(this);
     }
 

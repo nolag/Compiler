@@ -11,11 +11,11 @@ import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
 
 public class ZeroMultTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, MultiplyExprSymbol>{
 
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<T> klass){
+    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new ZeroMultTile<T, E>(klass);
     }
 
-    private ZeroMultTile(final Class<T> klass){
+    private ZeroMultTile(final Class<? extends Platform<T, E>> klass){
         TileSet.<T, E>getOrMake(klass).mults.add(this);
     }
 

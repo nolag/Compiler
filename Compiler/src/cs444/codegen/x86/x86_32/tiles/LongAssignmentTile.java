@@ -12,19 +12,21 @@ import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.Pop;
 import cs444.codegen.x86.instructions.Push;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.codegen.x86.x86_32.tiles.helpers.LongOnlyTile;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 
 public class LongAssignmentTile extends LongOnlyTile<AssignmentExprSymbol> {
-    public static void init(){
-        new LongAssignmentTile();
+    private static LongAssignmentTile tile;
+
+    public static void init() {
+        if(tile == null) tile = new LongAssignmentTile();
+        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).assigns.add(tile);
     }
 
-    private LongAssignmentTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).assigns.add(this);
-    }
+    private LongAssignmentTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final AssignmentExprSymbol op, final Platform<X86Instruction, Size> platform) {

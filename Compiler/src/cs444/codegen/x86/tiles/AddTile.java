@@ -10,18 +10,19 @@ import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 
 public class AddTile extends SizedBinOpTile<AddExprSymbol> {
-    public static void init(){
-        new AddTile();
-    }
+    private static AddTile tile;
 
-    @Override
-    public boolean fits(final AddExprSymbol op, final Platform<X86Instruction, Size> platform) {
-
-        return super.fits(op, platform) && !op.getType().value.equals(JoosNonTerminal.STRING);
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass){
+        if(tile == null) tile = new AddTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).adds.add(tile);
     }
 
     private AddTile(){
         super(AddOpMaker.maker, false);
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).adds.add(this);
+    }
+
+    @Override
+    public boolean fits(final AddExprSymbol op, final Platform<X86Instruction, Size> platform) {
+        return super.fits(op, platform) && !op.getType().value.equals(JoosNonTerminal.STRING);
     }
 }

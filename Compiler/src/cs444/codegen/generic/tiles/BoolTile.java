@@ -11,11 +11,11 @@ import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 
 
 public class BoolTile  <T extends Instruction, E extends Enum<E>> implements ITile<T, E, BooleanLiteralSymbol>{
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<T> klass){
+    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new BoolTile<T, E>(klass);
     }
 
-    private BoolTile(final Class<T> klass){
+    private BoolTile(final Class<? extends Platform<T, E>> klass){
         TileSet.<T, E>getOrMake(klass).bools.add(this);
     }
 

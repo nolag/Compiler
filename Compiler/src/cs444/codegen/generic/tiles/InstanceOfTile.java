@@ -12,11 +12,11 @@ import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
 
 public class InstanceOfTile <T extends Instruction, E extends Enum<E>> implements ITile<T, E, InstanceOfExprSymbol>{
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<T> klass){
+    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new InstanceOfTile<T, E>(klass);
     }
 
-    private InstanceOfTile(final Class<T> klass){
+    private InstanceOfTile(final Class<? extends Platform<T, E>> klass){
         TileSet.<T, E>getOrMake(klass).insts.add(this);
     }
 

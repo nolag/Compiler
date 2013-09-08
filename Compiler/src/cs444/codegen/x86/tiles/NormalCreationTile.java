@@ -18,14 +18,15 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
 import cs444.types.APkgClassResolver;
 
-public class NormalCreationTile implements ITile<X86Instruction, Size, CreationExpression>{
-    public static void init(){
-        new NormalCreationTile();
+public class NormalCreationTile implements ITile<X86Instruction, Size, CreationExpression> {
+    private static NormalCreationTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new NormalCreationTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).creation.add(tile);
     }
 
-    private NormalCreationTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).creation.add(this);
-    }
+    private NormalCreationTile() { }
 
     @Override
     public boolean fits(final CreationExpression creation, final Platform<X86Instruction, Size> platform) {

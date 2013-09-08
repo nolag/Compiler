@@ -16,14 +16,15 @@ import cs444.codegen.x86.instructions.Label;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ast.expressions.ForExprSymbol;
 
-public class ForTile implements ITile<X86Instruction, Size, ForExprSymbol>{
-    public static void init(){
-        new ForTile();
+public class ForTile implements ITile<X86Instruction, Size, ForExprSymbol> {
+    private static ForTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new ForTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).fors.add(tile);
     }
 
-    private ForTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).fors.add(this);
-    }
+    private ForTile() { }
 
     @Override
     public boolean fits(final ForExprSymbol symbol, final Platform<X86Instruction, Size> platform) {

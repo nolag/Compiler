@@ -17,13 +17,14 @@ import cs444.types.PkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
 public class RegularCallTile implements ITile<X86Instruction, Size, SimpleMethodInvoke> {
-    public static void init(){
-        new RegularCallTile();
+    private static RegularCallTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new RegularCallTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).invokes.add(tile);
     }
 
-    private RegularCallTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).invokes.add(this);
-    }
+    private RegularCallTile() { }
 
     @Override
     public boolean fits(final SimpleMethodInvoke invoke, final Platform<X86Instruction, Size> platform) {

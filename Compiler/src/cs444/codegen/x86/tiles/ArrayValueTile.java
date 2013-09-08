@@ -14,14 +14,14 @@ import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
 public final class ArrayValueTile extends NumericArrayTile{
+    private static ArrayValueTile tile;
 
-    public static void init(){
-        new ArrayValueTile();
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new ArrayValueTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).arrayValues.add(tile);
     }
 
-    private ArrayValueTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).arrayValues.add(this);
-    }
+    private ArrayValueTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess,

@@ -8,21 +8,22 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Add;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.Register;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 
-public class ANonTerminalTile implements ITile<X86Instruction, Size, ANonTerminal>{
-    public static void init(){
-        new ANonTerminalTile();
+public class ANonTerminalTile implements ITile<X86Instruction, Size, ANonTerminal> {
+    private static ANonTerminalTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new ANonTerminalTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).anonTerms.add(tile);
     }
 
-    private ANonTerminalTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).anonTerms.add(this);
-    }
+    private ANonTerminalTile() { }
 
     @Override
     public boolean fits(final ANonTerminal symbol, final Platform<X86Instruction, Size> platform) {

@@ -17,14 +17,14 @@ import cs444.types.APkgClassResolver;
 
 public class StaticCallTile implements ITile<X86Instruction, Size, SimpleMethodInvoke> {
     public static final String NATIVE_NAME = "NATIVE";
+    private static StaticCallTile tile;
 
-    public static void init(){
-        new StaticCallTile();
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if (tile == null) tile = new StaticCallTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).invokes.add(tile);
     }
 
-    private StaticCallTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).invokes.add(this);
-    }
+    private StaticCallTile() { }
 
     @Override
     public boolean fits(final SimpleMethodInvoke invoke, final Platform<X86Instruction, Size> platform) {

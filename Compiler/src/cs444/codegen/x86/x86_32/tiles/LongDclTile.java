@@ -9,18 +9,20 @@ import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.Push;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.codegen.x86.x86_32.tiles.helpers.LongOnlyTile;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.Typeable;
 
-public class LongDclTile extends LongOnlyTile<DclSymbol>{
-    public static void init(){
-        new LongDclTile();
+public class LongDclTile extends LongOnlyTile<DclSymbol> {
+    private static LongDclTile tile;
+
+    public static void init() {
+        if(tile == null) tile = new LongDclTile();
+        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).dcls.add(tile);
     }
 
-    private LongDclTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).dcls.add(this);
-    }
+    private LongDclTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final DclSymbol dclSymbol,

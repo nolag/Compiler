@@ -9,19 +9,20 @@ import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.codegen.x86.x86_32.tiles.helpers.LongOnlyTile;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
 
-public class LongMultTile extends LongOnlyTile<MultiplyExprSymbol>{
+public class LongMultTile extends LongOnlyTile<MultiplyExprSymbol> {
+    private static LongMultTile tile;
 
-    public static void init(){
-        new LongMultTile();
+    public static void init() {
+        if(tile == null) tile = new LongMultTile();
+        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).mults.add(tile);
     }
 
-    private LongMultTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).mults.add(this);
-    }
+    private LongMultTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final MultiplyExprSymbol mult, final Platform<X86Instruction, Size> platform) {

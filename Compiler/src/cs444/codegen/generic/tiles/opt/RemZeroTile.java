@@ -11,11 +11,11 @@ import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 
 public class RemZeroTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, RemainderExprSymbol>{
 
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<T> klass){
+    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
         new RemZeroTile<T, E>(klass);
     }
 
-    private RemZeroTile(final Class<T> klass){
+    private RemZeroTile(final Class<? extends Platform<T, E>> klass) {
         TileSet.<T, E>getOrMake(klass).rems.add(this);
     }
 

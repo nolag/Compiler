@@ -14,14 +14,15 @@ import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.Typeable;
 
-public class DclTile extends NumericHelperTile<DclSymbol>{
-    public static void init(){
-        new DclTile();
+public class DclTile extends NumericHelperTile<DclSymbol> {
+    private static DclTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new DclTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).dcls.add(tile);
     }
 
-    private DclTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).dcls.add(this);
-    }
+    private DclTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final DclSymbol dclSymbol,

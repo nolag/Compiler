@@ -14,13 +14,14 @@ import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 
 public class CastPrimTile extends NumericHelperTile<CastExpressionSymbol> {
-    public static void init(){
-        new CastPrimTile();
+    private static CastPrimTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new CastPrimTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).casts.add(tile);
     }
 
-    private CastPrimTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).casts.add(this);
-    }
+    private CastPrimTile() { }
 
     @Override
     public boolean fits(final CastExpressionSymbol symbol, final Platform<X86Instruction, Size> platform) {

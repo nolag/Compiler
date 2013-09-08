@@ -10,18 +10,19 @@ import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.codegen.x86.x86_32.tiles.helpers.LongOnlyTile;
 import cs444.parser.symbols.ast.INumericLiteral;
 
-public class LongNumberTile extends LongOnlyTile<INumericLiteral>{
+public class LongNumberTile extends LongOnlyTile<INumericLiteral> {
+    private static LongNumberTile tile;
 
-    public static void init(){
-        new LongNumberTile();
+    public static void init() {
+        if(tile == null) tile = new LongNumberTile();
+        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).numbs.add(tile);
     }
 
-    private LongNumberTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).numbs.add(this);
-    }
+    private LongNumberTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final INumericLiteral num, final Platform<X86Instruction, Size> platform) {
