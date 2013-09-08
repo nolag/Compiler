@@ -31,6 +31,13 @@ public class X86SizeHelper extends SizeHelper<X86Instruction, Size>{
     }
 
     @Override
+    public int getBytePushSizeOfType(final String typeName) {
+        int size = getByteSizeOfType(typeName);
+        if(defaultStackSize == 8 && size == 4) size = 8;
+        return size > MIN_BYTE_SIZE ? size : MIN_BYTE_SIZE;
+    }
+
+    @Override
     public Size getSize(final long stackSize) {
         if(stackSize == 8) return Size.QWORD;
         if(stackSize == 4) return Size.DWORD;
@@ -47,6 +54,7 @@ public class X86SizeHelper extends SizeHelper<X86Instruction, Size>{
     @Override
     public final Size getPushSize(final Size size) {
         if(size == Size.HIGH || size == Size.LOW) return Size.WORD;
+        if(defaultStackSize == 8 && size == Size.DWORD) return Size.QWORD;
         return size;
     }
 

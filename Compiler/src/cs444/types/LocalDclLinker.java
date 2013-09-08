@@ -65,7 +65,7 @@ public class LocalDclLinker extends EmptyVisitor {
         for(final DclSymbol param : methodOrConstructorSymbol.params){
             final long stack = param.getType().getTypeDclNode().getRefStackSize(sizeHelper);
             argOffset -= stack;
-            param.setOffset(argOffset);
+            param.setOffset(argOffset, platform);
         }
     }
 
@@ -103,7 +103,7 @@ public class LocalDclLinker extends EmptyVisitor {
                 argOffset += dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper);
             }else{
                 offset -= dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper);
-                dclSymbol.setOffset(offset);
+                dclSymbol.setOffset(offset, platform);
             }
         }else{ // field?
             popCurrentScope();

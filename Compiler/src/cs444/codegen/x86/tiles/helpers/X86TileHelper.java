@@ -30,10 +30,9 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
     public static void genMov(final Size size, final InstructionArg from, final String value,
             final Typeable dcl, final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
 
-
         X86Instruction instruction;
 
-        if(size == Size.DWORD){
+        if(size == sizeHelper.getDefaultSize()){
             instruction = new Mov(Register.ACCUMULATOR, from, sizeHelper);
         }else if(JoosNonTerminal.unsigned.contains(dcl.getType().getTypeDclNode().fullName)){
             instruction = new Movzx(Register.ACCUMULATOR, from, size, sizeHelper);

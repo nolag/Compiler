@@ -31,6 +31,7 @@ public abstract class SizeHelper<T extends Instruction, U extends Enum<U>> {
     }
 
     public abstract int getByteSizeOfType(final String typeName);
+    public abstract int getBytePushSizeOfType(final String typeName);
     public abstract U getSize(final long stackSize);
     public abstract U getSizeOfType(final String typeName);
     public abstract U getPushSize(final U size);

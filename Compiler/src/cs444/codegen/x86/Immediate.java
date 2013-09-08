@@ -24,6 +24,7 @@ public class Immediate extends NotMemory{
     public static final Immediate THIRTY_TWO = new Immediate("32");
     public static final Immediate SIXTY_THREE = new Immediate("63");
     public static final Immediate BIT_32 = new Immediate("0x80000000");
+    public static final Immediate SIXTY = new Immediate("60");
 
     public static final Immediate NOTHING = new Immediate(";this should never actually be used, palce holder arg");
 

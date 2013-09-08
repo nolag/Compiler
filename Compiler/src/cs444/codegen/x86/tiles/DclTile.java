@@ -39,7 +39,7 @@ public class DclTile extends NumericHelperTile<DclSymbol> {
             instructions.addAll(platform.getBest(child));
             if(dclSymbol.getType().equals(JoosNonTerminal.LONG)) platform.getTileHelper().makeLong(child, instructions, sizeHelper);
         }
-        final Size size = sizeHelper.getSize(dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper));
+        final Size size = sizeHelper.getPushSize(sizeHelper.getSize(dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper)));
         instructions.add(new Push(Register.ACCUMULATOR, size, sizeHelper));
         return instructions;
     }

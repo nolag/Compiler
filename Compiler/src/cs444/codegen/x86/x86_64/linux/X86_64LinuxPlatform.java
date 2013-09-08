@@ -1,4 +1,4 @@
-package cs444.codegen.x86.x86_32.linux;
+package cs444.codegen.x86.x86_64.linux;
 
 import java.io.File;
 import java.util.Set;
@@ -12,25 +12,25 @@ import cs444.codegen.x86.Register;
 import cs444.codegen.x86.StaticFieldInit;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.codegen.x86.x86_32.tiles.helpers.X86_32TileHelper;
+import cs444.codegen.x86.x86_64.X86_64Platform;
+import cs444.codegen.x86.x86_64.instructions.Syscall;
 
-public class X86_32LinuxPlatform extends X86_32Platform{
-    public static class Factory implements X86PlatformFactory<X86_32LinuxPlatform>{
+public class X86_64LinuxPlatform extends X86_64Platform{
+    public static class Factory implements X86PlatformFactory<X86_64LinuxPlatform>{
         public static Factory factory = new Factory();
 
         private Factory(){ }
 
         @Override
-        public X86_32LinuxPlatform getPlatform(final Set<String> opts){
-            return new X86_32LinuxPlatform(opts);
+        public X86_64LinuxPlatform getPlatform(final Set<String> opts){
+            return new X86_64LinuxPlatform(opts);
         }
     }
 
-    private static final Immediate EXIT = Immediate.ONE;
-    private static final Immediate SOFTWARE_INTERUPT = new Immediate("80h");
+    private static final Immediate EXIT = Immediate.SIXTY;
 
-    public X86_32LinuxPlatform(final Set<String> opts){
+    public X86_64LinuxPlatform(final Set<String> opts){
         super(Runtime.instance, opts);
     }
 
@@ -41,9 +41,9 @@ public class X86_32LinuxPlatform extends X86_32Platform{
         instructions.add(new Extern(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL)));
         instructions.add(new Call(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL), sizeHelper));
         instructions.add(new Call(new Immediate(methodName), sizeHelper));
-        instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));
+        instructions.add(new Mov(Register.DESTINATION, Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Mov(Register.ACCUMULATOR, EXIT, sizeHelper));
-        instructions.add(new Int(SOFTWARE_INTERUPT, sizeHelper));
+        instructions.add(new Syscall());
     }
 
     @Override
@@ -53,7 +53,7 @@ public class X86_32LinuxPlatform extends X86_32Platform{
 
     @Override
     public String getOutputDir() {
-        return Compiler.OUTPUT_DIRECTORY + "x86l/";
+        return Compiler.OUTPUT_DIRECTORY + "x64l/";
     }
 
     //Test methods
@@ -62,7 +62,7 @@ public class X86_32LinuxPlatform extends X86_32Platform{
 
     @Override
     public String[] getLinkCmd(final String fileName) {
-        return new String[] {"bash", "-c", "ld -melf_i386 -o main " + fileName + File.separator + "*.o"};
+        return new String[] {"bash", "-c", "ld -melf_x86_64 -o main " + fileName + File.separator + "*.o"};
     }
 
     @Override
@@ -72,8 +72,8 @@ public class X86_32LinuxPlatform extends X86_32Platform{
 
     @Override
     public String[] getAssembleCmd(final String fileName) {
-        return new String[] {"nasm", "-O1", "-f", "elf", fileName};
-        /*This will add debugging to the compiled objects.  Use it for debugging failed tests
-        new String[] {"nasm", "-O1", "-f", "elf", "-g", "-F", "dwarf", fileName};*/
+        //return new String[] {"nasm", "-O1", "-f", "elf64", fileName};
+        //This will add debugging to the compiled objects.  Use it for debugging failed tests
+        return new String[] {"nasm", "-O1", "-f", "elf64", "-g", "-F", "dwarf", fileName};
     }
 }

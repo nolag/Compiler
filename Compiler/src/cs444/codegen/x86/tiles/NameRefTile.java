@@ -36,8 +36,11 @@ public class NameRefTile implements ITile<X86Instruction, Size, SimpleNameSymbol
         final DclSymbol dcl = name.dcl;
         final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        if(dcl.isStatic() && dcl.dclInResolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(staticFieldLbl));
-        X86Instruction instruction = new Add(Register.ACCUMULATOR, new Immediate(dcl.getOffset()), sizeHelper);
+
+        if(dcl.isStatic() && dcl.dclInResolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile)
+            instructions.add(new Extern(staticFieldLbl));
+
+        X86Instruction instruction = new Add(Register.ACCUMULATOR, new Immediate(dcl.getOffset(platform)), sizeHelper);
         if(dcl.isStatic()){
             instruction = new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl), sizeHelper);
         }else if(dcl.isLocal){

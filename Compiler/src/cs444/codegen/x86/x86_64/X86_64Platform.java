@@ -13,10 +13,9 @@ import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.x86_32.tiles.helpers.X86_32TileHelper;
-import cs444.codegen.x86.x86_32.tiles.helpers.X86_32TileInit;
+import cs444.codegen.x86.x86_64.tiles.helpers.X86_64TileHelper;
+import cs444.codegen.x86.x86_64.tiles.helpers.X86_64TileInit;
 import cs444.parser.symbols.ISymbol;
-import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
@@ -24,8 +23,7 @@ public abstract class X86_64Platform extends X86Platform{
     public final X86SelectorIndexedTable sit;
 
     protected X86_64Platform(final IRuntime<X86Instruction> runtime, final Set<String> opts){
-        //TODO X86_64TileInit
-        super(opts, X86_32TileInit.instance, runtime, X86SizeHelper.sizeHelper64);
+        super(opts, X86_64TileInit.instance, runtime, X86SizeHelper.sizeHelper64);
         sit = new X86SelectorIndexedTable(sizeHelper);
     }
 
@@ -48,18 +46,14 @@ public abstract class X86_64Platform extends X86Platform{
 
     @Override
     public final void genInstructorInvoke(final APkgClassResolver resolver, final Addable<X86Instruction> instructions) {
-        //TODO X86_64TileInit
-        X86_32TileHelper.instance.invokeConstructor(resolver, Collections.<ISymbol>emptyList(), this, instructions);
+        X86_64TileHelper.instance.invokeConstructor(resolver, Collections.<ISymbol>emptyList(), this, instructions);
     }
 
     @Override
     public final void moveStaticLong(final String staticLbl, final Addable<X86Instruction> instructions){
-        //TODO
         final Immediate lbl = new Immediate(staticLbl);
-        final Memory toAddrL = new Memory(lbl);
-        final Memory toAddrH = new Memory(lbl, 4);
-        instructions.add(new Mov(toAddrL, Register.ACCUMULATOR, sizeHelper));
-        instructions.add(new Mov(toAddrH, Register.DATA, sizeHelper));
+        final Memory toAddr = new Memory(lbl);
+        instructions.add(new Mov(toAddr, Register.ACCUMULATOR, sizeHelper));
     }
 
     @Override
@@ -71,7 +65,6 @@ public abstract class X86_64Platform extends X86Platform{
 
     @Override
     public void genHeaderEnd(final APkgClassResolver resolver, final Addable<X86Instruction> instructions) {
-        //TODO
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Comment("Store pointer to object in ebx"));
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));
@@ -79,7 +72,7 @@ public abstract class X86_64Platform extends X86Platform{
         for (final DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
             final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
-            final Memory fieldAddr = new Memory(Register.BASE, fieldDcl.getOffset());
+            final Memory fieldAddr = new Memory(Register.BASE, fieldDcl.getOffset(this));
 
             if(!fieldDcl.children.isEmpty()){
                 instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
@@ -91,13 +84,7 @@ public abstract class X86_64Platform extends X86Platform{
                 field.accept(visitor);
                 instructions.addAll(getBest(field));
 
-                if(fieldDcl.getType().value.equals(JoosNonTerminal.LONG)){
-                    final Memory fieldAddrH = new Memory(Register.BASE, fieldDcl.getOffset() + 4);
-                    instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, Size.DWORD, sizeHelper));
-                    instructions.add(new Mov(fieldAddrH, Register.DATA, Size.DWORD, sizeHelper));
-                }else{
-                    instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, size, sizeHelper));
-                }
+                instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, size, sizeHelper));
             }
         }
         instructions.add(new Pop(Register.BASE, sizeHelper));

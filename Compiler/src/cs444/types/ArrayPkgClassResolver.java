@@ -163,7 +163,7 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
 
     @Override
     public void computeFieldOffsets(final Platform<?, ?> platform){
-        fieldMap.get(JoosNonTerminal.LENGTH).setOffset(platform.getObjectLayout().objSize());
+        fieldMap.get(JoosNonTerminal.LENGTH).setOffset(platform.getObjectLayout().objSize(), platform);
     }
 
     @Override
