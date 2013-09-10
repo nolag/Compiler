@@ -40,7 +40,7 @@ __debexit:
     global __exception
 __exception:
     mov rax, 60   ; sys_exit system call
-    mov ebx, 13
+    mov rdi, 13
     syscall
 
 ; Implementation of java.io.OutputStream.nativeWrite method.
