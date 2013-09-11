@@ -40,4 +40,5 @@ public abstract class SizeHelper<T extends Instruction, U extends Enum<U>> {
     public abstract int getDefaultStackSize();
     public abstract int getMinSize();
     public abstract U getDefaultSize();
+    public abstract T allocDefaultSpace(String s);
 }

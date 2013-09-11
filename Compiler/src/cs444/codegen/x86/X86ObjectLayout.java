@@ -16,7 +16,7 @@ import cs444.types.APkgClassResolver;
 
 public class X86ObjectLayout implements ObjectLayout<X86Instruction> {
     public static final X86ObjectLayout object32 = new X86ObjectLayout(false);
-    public static final X86ObjectLayout object64 = new X86ObjectLayout(false);
+    public static final X86ObjectLayout object64 = new X86ObjectLayout(true);
 
     public final int SUBTYPE_OFFSET;
     public final X86SizeHelper sizeHelper;

@@ -83,7 +83,8 @@ public class Immediate extends NotMemory{
         return immediate;
     }
 
-    public final String getValue(){
+    @Override
+    public final String toString(){
         return value;
     }
 }

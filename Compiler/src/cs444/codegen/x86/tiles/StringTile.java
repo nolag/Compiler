@@ -8,8 +8,10 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.*;
+import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Memory;
+import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.x86_32.linux.Runtime;
@@ -47,9 +49,10 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
         final APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);
 
         //2 per char + dword for int + obj size
+        final long defaultStack = sizeHelper.getDefaultStackSize();
         final long objlen = platform.getObjectLayout().objSize();
-        final long charsLen = stringSymbol.strValue.length() * 2 + 4 + objlen;
-        final long length =  charsLen + 4 + objlen;
+        final long charsLen = stringSymbol.strValue.length() * 2 + defaultStack + objlen;
+        final long length =  charsLen + defaultStack + objlen;
 
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(length), sizeHelper));
         //no need to zero out, it will be set for sure so the second last arg does not matter
@@ -57,11 +60,12 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
         final String charArray = ArrayPkgClassResolver.getArrayName(JoosNonTerminal.CHAR);
         platform.getObjectLayout().initialize(PkgClassInfo.instance.getSymbol(charArray), instructions);
 
-        instructions.add(new Mov(new Memory(Register.ACCUMULATOR, 8), new Immediate(stringSymbol.strValue.length()), sizeHelper));
+        final Memory where = new Memory(Register.ACCUMULATOR, 2 * defaultStack);
+        instructions.add(new Mov(where, new Immediate(stringSymbol.strValue.length()), sizeHelper));
 
         final char [] cs = stringSymbol.strValue.toCharArray();
         for(int i = 0; i < cs.length; i++){
-            final long place = 2 * i + platform.getObjectLayout().objSize() + 4;
+            final long place = 2 * i + platform.getObjectLayout().objSize() + defaultStack;
             final Memory to = new Memory(Register.ACCUMULATOR, new Immediate(place));
             instructions.add(new Mov(to, new Immediate((cs[i])), Size.WORD, sizeHelper));
         }
@@ -80,7 +84,7 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
 
             instructions.add(new Call(carg, sizeHelper));
             instructions.add(new Pop(Register.ACCUMULATOR, sizeHelper));
-            instructions.add(new Add(Register.STACK, new Immediate(sizeHelper.getDefaultStackSize()), sizeHelper));
+            instructions.add(new Add(Register.STACK, new Immediate(defaultStack), sizeHelper));
 
         } catch (final UndeclaredException e) {
             //Should never get here

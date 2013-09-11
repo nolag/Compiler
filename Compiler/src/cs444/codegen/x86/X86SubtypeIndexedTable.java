@@ -11,7 +11,7 @@ import cs444.types.APkgClassResolver;
 
 public class X86SubtypeIndexedTable extends SubtypeIndexedTable<X86Instruction, Size> {
     private static X86IndexedTableData makeData(){
-        //NOTE int size won't change so x64 can use this to
+        //NOTE word size won't change so x64 can use this to
         return new X86IndexedTableData(new SubtypeCellGen(), X86SizeHelper.sizeHelper32.getIntSize(SubtypeCellGen.dataSize));
     }
 
