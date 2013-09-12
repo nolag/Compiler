@@ -41,7 +41,7 @@ public class ANonTerminalTile implements ITile<X86Instruction, Size, ANonTermina
         for(final ISymbol child : aNonTerminal.children) instructions.addAll(platform.getBest(child));
 
         if(isBlock && !codeGen.lastWasFunc){
-            final long size = aNonTerminal.getStackSize();
+            final long size = aNonTerminal.getStackSize(platform);
             if(0 != size){
                 final Immediate by = new Immediate(String.valueOf(size));
                 instructions.add(new Add(Register.STACK, by, sizeHelper));

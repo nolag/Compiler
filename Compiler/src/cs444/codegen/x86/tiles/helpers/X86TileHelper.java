@@ -135,7 +135,7 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
         //return value is the new object
         instructions.add(new Pop(Register.ACCUMULATOR, sizeHelper));
 
-        final long mySize = cs.getStackSize() - sizeHelper.getDefaultStackSize();
+        final long mySize = cs.getStackSize(platform) - sizeHelper.getDefaultStackSize();
         if(mySize != 0){
             final Immediate by = new Immediate(String.valueOf(mySize));
             instructions.add(new Add(Register.STACK, by, sizeHelper));
@@ -202,7 +202,7 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         // NOTE: do not use INVOKE in here, invoke gets size from method,
         // but visitor may visit InvokeSymbol before MethodSymbol
-        final long mySize =  call.getStackSize();
+        final long mySize =  call.getStackSize(platform);
         if(mySize != 0){
             final Immediate by = new Immediate(mySize);
             instructions.add(new Add(Register.STACK, by, sizeHelper));

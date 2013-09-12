@@ -40,7 +40,7 @@ public class NormalCreationTile implements ITile<X86Instruction, Size, CreationE
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final APkgClassResolver typeDclNode = creation.getType().getTypeDclNode();
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final long allocSize = typeDclNode.getStackSize(sizeHelper) + platform.getObjectLayout().objSize();
+        final long allocSize = typeDclNode.getStackSize(platform) + platform.getObjectLayout().objSize();
         final InstructionArg bytes = new Immediate(allocSize);
         instructions.add(new Comment("Allocate " + allocSize + " bytes for " + typeDclNode.fullName));
         instructions.add(new Mov(Register.ACCUMULATOR, bytes, sizeHelper));

@@ -60,7 +60,7 @@ public class ForTile implements ITile<X86Instruction, Size, ForExprSymbol> {
         instructions.add(new Label(loopEnd));
 
         //This takes care of the init if they dcl something there
-        final long size = forExprSymbol.getStackSize();
+        final long size = forExprSymbol.getStackSize(platform);
         if(0 != size){
             final Immediate by = new Immediate(String.valueOf(size));
             instructions.add(new Comment("for stack " + mynum));
