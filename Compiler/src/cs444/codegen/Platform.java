@@ -1,10 +1,7 @@
 package cs444.codegen;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
@@ -21,6 +18,12 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
         P getPlatform(Set<String> opts);
     }
 
+    private final Set<String> options;
+
+    protected Platform(final Set<String> options){
+        this.options = new HashSet<>(options);
+    }
+
     private final Map<ISymbol, InstructionsAndTiming<T>> bests = new HashMap<ISymbol, InstructionsAndTiming<T>> ();
 
     public void addBest(final ISymbol symbol, final InstructionsAndTiming<T> tile){
@@ -33,6 +36,20 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
 
     public CodeGenVisitor<T, E> makeNewCodeGen(){
         return new CodeGenVisitor<T, E>(this);
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if(other == null) return false;
+        if(getClass() != other.getClass()) return false;
+        @SuppressWarnings("unchecked")
+        final Platform<T, E> platform = (Platform<T, E>) other;
+        return options.equals(platform.options);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode() ^ options.hashCode();
     }
 
     public abstract SizeHelper<T, E> getSizeHelper();

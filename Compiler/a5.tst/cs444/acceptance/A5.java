@@ -7,14 +7,13 @@ import java.util.List;
 import org.junit.Test;
 
 public class A5 {
-    /*@Test
     public void testCompileProgramsNoStdLib() throws IOException, InterruptedException{
         //List<String> ignoreList = new LinkedList<String>(Arrays.asList("SuperMethod"));
         final List<String> ignoreList = new LinkedList<String>();
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "A5/NoStdLibPrograms/", 0, true, false,
                 true, ignoreList, new AsmAndLinkCallback());
-    }//*/
+    }
 
     @Test
     public void testCompileProgramsWithStdLib() throws IOException, InterruptedException{

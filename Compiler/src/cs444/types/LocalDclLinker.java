@@ -21,8 +21,6 @@ public class LocalDclLinker extends EmptyVisitor {
     private final Stack<Deque<Typeable>> currentTypes = new Stack<Deque<Typeable>>();
     private final Stack<Boolean> useCurrentScopeForLookup = new Stack<Boolean>();
 
-
-
     private boolean methodArgs = false;
     private Map<Platform<?, ?>, Long> offsets;
     private final Map<Platform<?, ?>, Long> argOffsets;
@@ -108,14 +106,16 @@ public class LocalDclLinker extends EmptyVisitor {
 
         if(dclSymbol.children.size() > 0) assertIsAssignable(initType, dclType, false, false, dclSymbol.children.get(0));
 
-        for(final Platform<?, ?> platform : platforms){
-            final SizeHelper<?, ?> sizeHelper = platform.getSizeHelper();
+        if (dclSymbol.isLocal){
+            // in close because we cannot used this variable inside its initializer
+            final String varName = dclSymbol.dclName;
+            if (currentScope.isDeclared(varName)) throw new DuplicateDeclarationException(varName, context.enclosingClassName);
+            currentScope.add(varName, dclSymbol);
+        }
 
-            if (dclSymbol.isLocal){
-                // in close because we cannot used this variable inside its initializer
-                final String varName = dclSymbol.dclName;
-                if (currentScope.isDeclared(varName)) throw new DuplicateDeclarationException(varName, context.enclosingClassName);
-                currentScope.add(varName, dclSymbol);
+        if(dclSymbol.isLocal){
+            for(final Platform<?, ?> platform : platforms){
+                final SizeHelper<?, ?> sizeHelper = platform.getSizeHelper();
                 if(methodArgs){
                     long argOffset = argOffsets.get(platform);
                     argOffset += dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper);
@@ -126,10 +126,10 @@ public class LocalDclLinker extends EmptyVisitor {
                     offsets.put(platform, offset);
                     dclSymbol.setOffset(offset, platform);
                 }
-            }else{ // field?
-                popCurrentScope();
-                context.setCurrentMember(null);
             }
+        }else{
+            popCurrentScope();
+            context.setCurrentMember(null);
         }
     }
 

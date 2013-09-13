@@ -31,7 +31,7 @@ public abstract class X86Platform extends Platform<X86Instruction, Size>{
 
     protected X86Platform(final Set<String> options, final TileInit tiles,
             final IRuntime<X86Instruction> runtime, final X86SizeHelper sizeHelper){
-
+        super(options);
         instrucitons = new InstructionPrinter<X86Instruction>();
         tiles.init(options);
         this.runtime = runtime;
