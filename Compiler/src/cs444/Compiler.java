@@ -28,7 +28,7 @@ public class Compiler {
 
     public static final int COMPILER_ERROR_CODE = 42;
 
-    public static final String [] defaultPlatforms = {"-x86l",/**//* "-x64l"/**/};
+    public static final String [] defaultPlatforms = {/*"-x86l",*/ "-x64l"};
 
     /**
      * @param args

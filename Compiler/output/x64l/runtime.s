@@ -56,5 +56,7 @@ NATIVEjava.io.OutputStream.nativeWrite:
     mov rax, 0     ; return 0
     ret
     
+section .data
+    
 char:
-    dd 0
+    dq 0
