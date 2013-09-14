@@ -17,6 +17,6 @@ public class URSTile extends SizedBinOpTile<URSExprSymbol> {
     }
 
     private URSTile() {
-        super(URSOpMaker.maker, true);
+        super(URSOpMaker.maker, true, true);
     }
 }

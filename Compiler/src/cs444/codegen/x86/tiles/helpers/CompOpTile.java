@@ -14,10 +14,11 @@ import cs444.codegen.x86.instructions.factories.UniOpMaker;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
-public abstract class CompOpTile<T extends BinOpExpr> extends BinOpTile<T>{
+public abstract class CompOpTile<T extends BinOpExpr> extends BinOpTile<T> {
     private final UniOpMaker uni;
+
     protected CompOpTile(final UniOpMaker uni, final boolean ordered) {
-        super(CmpMaker.maker, ordered);
+        super(CmpMaker.maker, ordered, true);
         this.uni = uni;
     }
 

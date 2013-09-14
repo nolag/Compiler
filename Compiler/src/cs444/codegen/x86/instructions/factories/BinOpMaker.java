@@ -8,4 +8,5 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public interface BinOpMaker {
     public X86Instruction make(Register one, Register two, SizeHelper<X86Instruction, Size> sizeHelper);
+    public X86Instruction make(Register one, Register two, Size size, SizeHelper<X86Instruction, Size> sizeHelper);
 }

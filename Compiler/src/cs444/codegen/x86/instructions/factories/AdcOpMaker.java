@@ -16,4 +16,9 @@ public class AdcOpMaker implements BinOpMaker {
     public Adc make(final Register one, final Register two, final SizeHelper<X86Instruction, Size> sizeHelper){
         return new Adc(one, two, sizeHelper);
     }
+
+    @Override
+    public X86Instruction make(Register one, Register two, Size size, SizeHelper<X86Instruction, Size> sizeHelper) {
+        return new Adc(one, two, sizeHelper);
+    }
 }

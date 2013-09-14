@@ -9,6 +9,10 @@ import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
 public abstract class SizedBinOpTile<T extends BinOpExpr> extends BinOpTile<T>{
 
+    protected SizedBinOpTile(final BinOpMaker maker, final boolean ordered, final boolean caresSize) {
+        super(maker, ordered, caresSize);
+    }
+
     protected SizedBinOpTile(final BinOpMaker maker, final boolean ordered) {
         super(maker, ordered);
     }

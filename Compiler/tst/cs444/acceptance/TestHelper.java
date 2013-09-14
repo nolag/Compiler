@@ -47,7 +47,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.equals("J1_Hello")) continue;
+            //if (!fileName.equals("LongShiftingAsInt")) continue;
             //Use this line to stop when there are infinite loops
             //if(totalTests == 20) break;
 

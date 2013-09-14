@@ -19,10 +19,16 @@ import cs444.parser.symbols.ast.expressions.BinOpExpr;
 public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruction, Size, T>{
     private final BinOpMaker maker;
     private final boolean ordered;
+    private final boolean caresSize;
 
-    protected BinOpTile(final BinOpMaker maker, final boolean ordered){
+    protected BinOpTile(final BinOpMaker maker, final boolean ordered, final boolean caresSize) {
         this.maker = maker;
         this.ordered = ordered;
+        this.caresSize = caresSize;
+    }
+
+    protected BinOpTile(final BinOpMaker maker, final boolean ordered) {
+        this(maker, ordered, false);
     }
 
     @Override
@@ -41,11 +47,20 @@ public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruc
 
 
         instructions.addAll(platform.getBest(t1));
-        if(hasLong) platform.getTileHelper().makeLong(t1, instructions, sizeHelper);
+        final Size size;
+
+        if(hasLong) {
+            size = Size.QWORD;
+            platform.getTileHelper().makeLong(t1, instructions, sizeHelper);
+        }else{
+            size = Size.DWORD;
+        }
+
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
 
         instructions.addAll(platform.getBest(t2));
         if(hasLong) platform.getTileHelper().makeLong(t2, instructions, sizeHelper);
+
 
         if(ordered){
             instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR, sizeHelper));
@@ -54,7 +69,8 @@ public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruc
             instructions.add(new Pop(Register.COUNTER, sizeHelper));
         }
 
-        instructions.add(maker.make(Register.ACCUMULATOR, Register.COUNTER, sizeHelper));
+        if(caresSize) instructions.add(maker.make(Register.ACCUMULATOR, Register.COUNTER, size, sizeHelper));
+        else instructions.add(maker.make(Register.ACCUMULATOR, Register.COUNTER, sizeHelper));
 
         return instructions;
     }
