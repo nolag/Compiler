@@ -19,6 +19,6 @@ public class RSOpMaker implements BinOpMaker {
 
     @Override
     public X86Instruction make(final Register one, final Register two, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
-        return new Sar(one, two, sizeHelper);
+        return new Sar(one, two, size, sizeHelper);
     }
 }

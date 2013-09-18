@@ -13,7 +13,7 @@ public class URSOpMaker implements BinOpMaker {
     private URSOpMaker () { }
 
     @Override
-    public Shr make(final Register one, final Register two, final SizeHelper<X86Instruction, Size> sizeHelper){
+    public Shr make(final Register one, final Register two, final SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Shr(one, two, sizeHelper);
     }
 

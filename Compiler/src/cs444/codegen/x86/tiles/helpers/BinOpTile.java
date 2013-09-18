@@ -19,16 +19,10 @@ import cs444.parser.symbols.ast.expressions.BinOpExpr;
 public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruction, Size, T>{
     private final BinOpMaker maker;
     private final boolean ordered;
-    private final boolean caresSize;
-
-    protected BinOpTile(final BinOpMaker maker, final boolean ordered, final boolean caresSize) {
-        this.maker = maker;
-        this.ordered = ordered;
-        this.caresSize = caresSize;
-    }
 
     protected BinOpTile(final BinOpMaker maker, final boolean ordered) {
-        this(maker, ordered, false);
+        this.maker = maker;
+        this.ordered = ordered;
     }
 
     @Override
@@ -69,8 +63,7 @@ public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruc
             instructions.add(new Pop(Register.COUNTER, sizeHelper));
         }
 
-        if(caresSize) instructions.add(maker.make(Register.ACCUMULATOR, Register.COUNTER, size, sizeHelper));
-        else instructions.add(maker.make(Register.ACCUMULATOR, Register.COUNTER, sizeHelper));
+        instructions.add(maker.make(Register.ACCUMULATOR, Register.COUNTER, size, sizeHelper));
 
         return instructions;
     }

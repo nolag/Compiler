@@ -14,11 +14,23 @@ public class Sbb extends BinInstruction {
         super("sbb", minuend, subtrahend, sizeHelper, 1);
     }
 
+    public Sbb(final Register minuend, final NotMemory subtrahend, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper){
+        super("sbb", minuend, subtrahend, sizeHelper, size, 1);
+    }
+
     public Sbb(final Register minuend, final Memory subtrahend, final SizeHelper<X86Instruction, Size> sizeHelper){
         super("sbb", minuend, subtrahend, sizeHelper, 2);
     }
 
+    public Sbb(final Register minuend, final Memory subtrahend, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper){
+        super("sbb", minuend, subtrahend, sizeHelper, size, 2);
+    }
+
     public Sbb(final Memory minuend, final NotMemory subtrahend, final SizeHelper<X86Instruction, Size> sizeHelper){
         super("sbb", minuend, subtrahend, sizeHelper, 3);
+    }
+
+    public Sbb(final Memory minuend, final NotMemory subtrahend, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper){
+        super("sbb", minuend, subtrahend, sizeHelper, size, 3);
     }
 }

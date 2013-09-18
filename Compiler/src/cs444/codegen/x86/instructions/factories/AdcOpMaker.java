@@ -13,12 +13,12 @@ public class AdcOpMaker implements BinOpMaker {
     private AdcOpMaker() { }
 
     @Override
-    public Adc make(final Register one, final Register two, final SizeHelper<X86Instruction, Size> sizeHelper){
+    public Adc make(final Register one, final Register two, final SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Adc(one, two, sizeHelper);
     }
 
     @Override
-    public X86Instruction make(Register one, Register two, Size size, SizeHelper<X86Instruction, Size> sizeHelper) {
-        return new Adc(one, two, sizeHelper);
+    public X86Instruction make(final Register one, final Register two, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
+        return new Adc(one, two, size, sizeHelper);
     }
 }

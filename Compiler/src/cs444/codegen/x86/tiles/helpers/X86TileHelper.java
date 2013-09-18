@@ -81,19 +81,19 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
     public final void setupJumpNe(final String lblTo,
             final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
 
-        setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, lblTo, sizeHelper, instructions);
+        setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, lblTo, sizeHelper, instructions, sizeHelper.getDefaultSize());
     }
 
     @Override
     public final void setupJumpNeFalse(final String lblTo,
             final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
 
-        setupJumpNe(Register.ACCUMULATOR, Immediate.FALSE, lblTo, sizeHelper, instructions);
+        setupJumpNe(Register.ACCUMULATOR, Immediate.FALSE, lblTo, sizeHelper, instructions, sizeHelper.getDefaultSize());
     }
 
-    public static void setupJumpNe(final Register reg, final Immediate when,
-            final String lblTo, final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
-        instructions.add(new Cmp(reg, when, sizeHelper));
+    public static void setupJumpNe(final Register reg, final Immediate when, final String lblTo,
+            final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions, final Size size) {
+        instructions.add(new Cmp(reg, when, sizeHelper, size));
         instructions.add(new Jne(new Immediate(lblTo), sizeHelper));
     }
 

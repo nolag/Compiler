@@ -14,11 +14,11 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.APkgClassResolver;
 
 
-public class DclSymbol extends AModifiersOptSymbol{
+public class DclSymbol extends AModifiersOptSymbol {
     public final boolean isLocal;
     private final Map<Platform<?, ?>, Long> offsetsMap = new HashMap<>();
 
-    public static DclSymbol getClassSymbol(final String fullName, final APkgClassResolver resolver){
+    public static DclSymbol getClassSymbol(final String fullName, final APkgClassResolver resolver) {
         DclSymbol retVal = null;
         try{
             retVal = new DclSymbol(fullName, null, new TypeSymbol(fullName, false, true), null, false);

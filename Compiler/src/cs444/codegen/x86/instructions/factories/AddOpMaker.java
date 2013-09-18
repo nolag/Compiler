@@ -13,12 +13,12 @@ public class AddOpMaker implements BinOpMaker {
     private AddOpMaker() { }
 
     @Override
-    public Add make(final Register one, final Register two, final SizeHelper<X86Instruction, Size> sizeHelper){
+    public X86Instruction make(final Register one, final Register two, final SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Add(one, two, sizeHelper);
     }
 
     @Override
     public X86Instruction make(final Register one, final Register two, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
-        return new Add(one, two, sizeHelper);
+        return new Add(one, two, size, sizeHelper);
     }
 }

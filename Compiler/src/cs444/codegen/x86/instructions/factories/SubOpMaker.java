@@ -19,6 +19,6 @@ public class SubOpMaker implements BinOpMaker {
 
     @Override
     public X86Instruction make(final Register one, final Register two, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
-        return new Sub(one, two, sizeHelper);
+        return new Sub(one, two, size, sizeHelper);
     }
 }

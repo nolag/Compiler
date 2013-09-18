@@ -13,7 +13,7 @@ public class LSOpMaker implements BinOpMaker {
     private LSOpMaker () { }
 
     @Override
-    public Shl make(final Register one, final Register two, final SizeHelper<X86Instruction, Size> sizeHelper){
+    public Shl make(final Register one, final Register two, final SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Shl(one, two, sizeHelper);
     }
 

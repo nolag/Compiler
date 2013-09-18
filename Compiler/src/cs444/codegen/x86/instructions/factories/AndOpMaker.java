@@ -17,6 +17,7 @@ public class AndOpMaker implements BinOpMaker {
         return new And(one, two, sizeHelper);
     }
 
+    //Size won't matter, each bit is only with the bit of the same size anyways.
     @Override
     public X86Instruction make(final Register one, final Register two, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
         return new And(one, two, sizeHelper);
