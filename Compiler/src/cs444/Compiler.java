@@ -2,9 +2,9 @@ package cs444;
 
 import java.io.*;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
@@ -28,7 +28,7 @@ public class Compiler {
 
     public static final int COMPILER_ERROR_CODE = 42;
 
-    public static final String [] defaultPlatforms = { "-x86l" };
+    public static final String [] defaultPlatforms = {"-x86l", "-x64l"};
 
     /**
      * @param args
@@ -41,7 +41,7 @@ public class Compiler {
     }
 
     public static int compile(final List<String> files, final boolean printErrors,
-            final boolean outputFiles, final Set<Platform<?, ?>> platforms) {
+            final boolean outputFiles, final Collection<Platform<?, ?>> platforms) {
 
         if (files.size() == 0){
             System.err.println("ERROR: At least a file should be passed.");
@@ -71,12 +71,11 @@ public class Compiler {
             resolvers = new LinkedList<APkgClassResolver>(PkgClassInfo.instance.getSymbols());
 
             analyzeReachability(resolvers);
+            for(final APkgClassResolver resolver : resolvers) resolver.linkLocalNamesToDcl(platforms);
+            for(final APkgClassResolver resolver : resolvers) resolver.checkFields(platforms);
+            for(final APkgClassResolver resolver : resolvers) resolver.clean();
 
-            //TODO some of this seems inefficient like cleanup twice and type check needing to be done again?
             for(final Platform<?, ?> platform : platforms){
-                typeCheck(resolvers, platform);
-                checkFields(resolvers, platform);
-                cleanup(resolvers);
                 generateCode(resolvers, outputFiles, platform);
             }
 
@@ -105,21 +104,8 @@ public class Compiler {
         }
     }
 
-    private static void checkFields(final List<APkgClassResolver> resolvers, final Platform<?, ?> platform) throws CompilerException {
-        //Do field init here
-        for(final APkgClassResolver resolver : resolvers) resolver.checkFields(platform);
-    }
-
-    private static void typeCheck(final List<APkgClassResolver> resolvers, final Platform<?, ?> platform) throws CompilerException {
-        for(final APkgClassResolver resolver : resolvers) resolver.linkLocalNamesToDcl(platform);
-    }
-
     private static void buildAllResolvers(final List<APkgClassResolver> resolvers) throws CompilerException {
         for(final APkgClassResolver resolver : resolvers) resolver.build();
-    }
-
-    private static void cleanup(final List<APkgClassResolver> resolvers) throws CompilerException{
-        for(final APkgClassResolver resolver : resolvers) resolver.clean();
     }
 
     private static void generateCode(final List<APkgClassResolver> resolvers,

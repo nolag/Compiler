@@ -2,9 +2,9 @@ package cs444.codegen.x86.instructions.factories;
 
 import cs444.codegen.SizeHelper;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.IDiv;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.Register;
 
 
 public class IDivMaker implements UniOpMaker{
@@ -13,7 +13,7 @@ public class IDivMaker implements UniOpMaker{
     private IDivMaker() { }
 
     @Override
-    public IDiv make(final Register arg, final SizeHelper<X86Instruction, Size> sizeHelper) {
-        return new IDiv(arg, sizeHelper);
+    public X86Instruction make(final Register arg, final SizeHelper<X86Instruction, Size> sizeHelper, final Size size) {
+        return new IDiv(arg, size, sizeHelper);
     }
 }

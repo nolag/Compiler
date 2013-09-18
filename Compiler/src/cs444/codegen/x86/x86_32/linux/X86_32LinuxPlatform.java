@@ -16,10 +16,10 @@ import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.codegen.x86.x86_32.tiles.helpers.X86_32TileHelper;
 
 public class X86_32LinuxPlatform extends X86_32Platform{
-    public static class X86_32LinuxPlatformFactory implements X86PlatformFactory<X86_32LinuxPlatform>{
-        public static X86_32LinuxPlatformFactory factory = new X86_32LinuxPlatformFactory();
+    public static class Factory implements X86PlatformFactory<X86_32LinuxPlatform>{
+        public static Factory factory = new Factory();
 
-        private X86_32LinuxPlatformFactory(){ }
+        private Factory(){ }
 
         @Override
         public X86_32LinuxPlatform getPlatform(final Set<String> opts){

@@ -17,7 +17,7 @@ import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
-public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Instruction, Size, T>{
+public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Instruction, Size, T> {
     private final UniOpMaker maker;
     private final boolean sar;
 
@@ -45,6 +45,15 @@ public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Inst
 
         instructions.addAll(platform.getBest(bin.children.get(0)));
 
+        final Size size;
+
+        if(hasLong) {
+            size = Size.QWORD;
+            platform.getTileHelper().makeLong(t1, instructions, sizeHelper);
+        }else{
+            size = Size.DWORD;
+        }
+
         if(hasLong) platform.getTileHelper().makeLong(t1, instructions, sizeHelper);
 
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
@@ -58,15 +67,16 @@ public abstract class BinUniOpTile<T extends BinOpExpr> implements ITile<X86Inst
 
         // first operand -> eax, second operand -> ebx
         if(sar){
-            instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR, sizeHelper));
-            instructions.add(new Sar(Register.DATA, new Immediate(sizeHelper.getDefaultStackSize() * 8 -1), sizeHelper));
+            final Immediate shift = hasLong ? Immediate.SIXTY_THREE : Immediate.THIRTY_ONE;
+            instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR, size, sizeHelper));
+            instructions.add(new Sar(Register.DATA, shift, size, sizeHelper));
             final String safeDiv = "safeDiv" + CodeGenVisitor.getNewLblNum();
-            X86TileHelper.setupJumpNe(Register.BASE, Immediate.ZERO, safeDiv, sizeHelper, instructions);
+            X86TileHelper.setupJumpNe(Register.BASE, Immediate.ZERO, safeDiv, sizeHelper, instructions, size);
             runtime.throwException(instructions, JoosNonTerminal.DIV_ZERO);
             instructions.add(new Label(safeDiv));
         }
 
-        instructions.add(maker.make(Register.BASE, sizeHelper));
+        instructions.add(maker.make(Register.BASE, sizeHelper, size));
         instructions.add(new Pop(Register.BASE, sizeHelper));
         return instructions;
     }

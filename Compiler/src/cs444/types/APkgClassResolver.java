@@ -316,11 +316,11 @@ public abstract class APkgClassResolver {
 
     protected abstract Iterable<DclSymbol> getDcls();
 
-    public abstract void checkFields(final Platform<?, ?> platform) throws CompilerException;
+    public abstract void checkFields(final Collection<Platform<?, ?>> platform) throws CompilerException;
 
     public abstract APkgClassResolver findClass(String name) throws UndeclaredException;
 
-    public abstract void linkLocalNamesToDcl(final Platform<?, ?> platform) throws CompilerException;
+    public abstract void linkLocalNamesToDcl(final Collection<Platform<?, ?>> platforms) throws CompilerException;
 
     public abstract void analyzeReachability() throws CompilerException;
 
@@ -333,7 +333,7 @@ public abstract class APkgClassResolver {
     public abstract void computeFieldOffsets(Platform<?, ?> platform);
     public abstract long getRefStackSize(final SizeHelper<?, ?> sizeHelper);
     public abstract long getRealSize(final SizeHelper<?, ?> sizeHelper);
-    public abstract long getStackSize(final SizeHelper<?, ?> sizeHelper);
+    public abstract long getStackSize(final Platform<?, ?> platform);
     public abstract Iterable<DclSymbol> getUninheritedStaticFields();
 
     public abstract Iterable<DclSymbol> getUninheritedNonStaticFields();
@@ -389,7 +389,10 @@ public abstract class APkgClassResolver {
         }
     }
 
+    boolean isClean = false;
     public void clean() throws CompilerException{
+        if(isClean) return;
+        isClean = true;
         cleanHelper(methodMap);
         cleanHelper(smethodMap);
         cleanHelper(constructors);

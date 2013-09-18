@@ -15,8 +15,7 @@ import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.expressions.*;
 
 public class TileSet <T extends Instruction, E extends Enum<E>>{
-    private static Map<Class<? extends Instruction>, TileSet<?, ?>> classMap =
-            new HashMap<Class<? extends Instruction>, TileSet<?, ?>>();
+    private static Map<Class<? extends Platform<?, ?>>, TileSet<?, ?>> classMap =new HashMap<>();
 
     public final List<ITile<T, E, SimpleNameSymbol>> nameValues = new LinkedList<ITile<T, E, SimpleNameSymbol>>();
     public final List<ITile<T, E, SimpleNameSymbol>> nameRefs = new LinkedList<ITile<T, E, SimpleNameSymbol>>();
@@ -62,10 +61,10 @@ public class TileSet <T extends Instruction, E extends Enum<E>>{
 
     //NOTE this function is for testing
     public static void reset(){
-        classMap = new HashMap<Class<? extends Instruction>, TileSet<?, ?>>();
+        classMap = new HashMap<>();
     }
 
-    public static <T extends Instruction, E extends Enum<E>> TileSet<T, E> getOrMake(final Class<T> klass){
+    public static <T extends Instruction, E extends Enum<E>> TileSet<T, E> getOrMake(final Class<? extends Platform<T, E>> klass) {
         @SuppressWarnings("unchecked")
         TileSet<T, E> tileSet = (TileSet<T, E>)classMap.get(klass);
 

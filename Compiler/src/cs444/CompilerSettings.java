@@ -5,13 +5,21 @@ import java.util.*;
 import cs444.codegen.Platform;
 import cs444.codegen.Platform.PlatformFactory;
 import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
+import cs444.codegen.x86.x86_64.linux.X86_64LinuxPlatform;
 
 public class CompilerSettings {
     public static final Map<String, PlatformFactory<?, ?, ?>> platformMap = new HashMap<String, PlatformFactory<?, ?, ?>>();
 
     static{
-        platformMap.put("-x86linux", X86_32LinuxPlatform.X86_32LinuxPlatformFactory.factory);
-        platformMap.put("-x86l", X86_32LinuxPlatform.X86_32LinuxPlatformFactory.factory);
+        platformMap.put("-x86linux", X86_32LinuxPlatform.Factory.factory);
+        platformMap.put("-x86l", X86_32LinuxPlatform.Factory.factory);
+        platformMap.put("-x86_32linux", X86_32LinuxPlatform.Factory.factory);
+        platformMap.put("-x86_32l", X86_32LinuxPlatform.Factory.factory);
+
+        platformMap.put("-x64linux", X86_64LinuxPlatform.Factory.factory);
+        platformMap.put("-x64l", X86_64LinuxPlatform.Factory.factory);
+        platformMap.put("-x86_64linux", X86_64LinuxPlatform.Factory.factory);
+        platformMap.put("-x86_64l", X86_64LinuxPlatform.Factory.factory);
     }
 
     public final List<String> files = new ArrayList<String>();

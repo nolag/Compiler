@@ -9,19 +9,21 @@ import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
+import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 
 public class CastFromLongTile implements ITile<X86Instruction, Size,CastExpressionSymbol> {
-    public static void init(){
-        new CastFromLongTile();
+    private static CastFromLongTile tile;
+
+    public static void init() {
+        if(tile == null) tile = new CastFromLongTile();
+        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).casts.add(tile);
     }
 
-    private CastFromLongTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).casts.add(this);
-    }
+    private CastFromLongTile() { }
 
     @Override
     public boolean fits(final CastExpressionSymbol symbol, final Platform<X86Instruction, Size> platform) {

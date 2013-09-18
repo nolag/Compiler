@@ -17,14 +17,15 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.types.APkgClassResolver;
 
-public class ConstructorTile implements ITile<X86Instruction, Size, ConstructorSymbol>{
-    public static void init(){
-        new ConstructorTile();
+public class ConstructorTile implements ITile<X86Instruction, Size, ConstructorSymbol> {
+    private static ConstructorTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new ConstructorTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).constructors.add(tile);
     }
 
-    private ConstructorTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).constructors.add(this);
-    }
+    private ConstructorTile() { }
 
     @Override
     public boolean fits(final ConstructorSymbol symbol, final Platform<X86Instruction, Size> platform) {

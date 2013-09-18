@@ -2,6 +2,8 @@ package cs444.codegen.x86;
 
 import cs444.codegen.SizeHelper;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.instructions.Dd;
+import cs444.codegen.x86.instructions.Dq;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public class X86SizeHelper extends SizeHelper<X86Instruction, Size>{
@@ -12,13 +14,16 @@ public class X86SizeHelper extends SizeHelper<X86Instruction, Size>{
     private final int defaultStackPower;
     private final int defaultStackSize;
     private final Size defaultStack;
+    private final boolean use64;
 
     private X86SizeHelper(final boolean use64){
         if(use64){
+            this.use64 = true;
             defaultStackPower = 3;
             defaultStackSize = 8;
             defaultStack = Size.QWORD;
         }else{
+            this.use64 = false;
             defaultStackPower = 2;
             defaultStackSize = 4;
             defaultStack = Size.DWORD;
@@ -28,6 +33,13 @@ public class X86SizeHelper extends SizeHelper<X86Instruction, Size>{
     @Override
     public int getByteSizeOfType(final String typeName) {
         return X86SizeHelper.stackSizes.containsKey(typeName) ? X86SizeHelper.stackSizes.get(typeName) : defaultStackSize;
+    }
+
+    @Override
+    public int getBytePushSizeOfType(final String typeName) {
+        int size = getByteSizeOfType(typeName);
+        if(use64 && size == 4) size = 8;
+        return size > MIN_BYTE_SIZE ? size : MIN_BYTE_SIZE;
     }
 
     @Override
@@ -47,6 +59,7 @@ public class X86SizeHelper extends SizeHelper<X86Instruction, Size>{
     @Override
     public final Size getPushSize(final Size size) {
         if(size == Size.HIGH || size == Size.LOW) return Size.WORD;
+        if(use64 && size == Size.DWORD) return Size.QWORD;
         return size;
     }
 
@@ -103,5 +116,11 @@ public class X86SizeHelper extends SizeHelper<X86Instruction, Size>{
     @Override
     public Size getDefaultSize() {
         return defaultStack;
+    }
+
+    @Override
+    public X86Instruction allocDefaultSpace(final String s) {
+        final Immediate i = new Immediate(s);
+        return use64 ? new Dq(i) : new Dd(i);
     }
 }

@@ -12,7 +12,7 @@ public class Extern extends X86Instruction {
     }
 
     public Extern(final Immediate what){
-        this(what.getValue());
+        this(what.toString());
     }
 
     @Override

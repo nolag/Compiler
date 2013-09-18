@@ -12,11 +12,11 @@ import cs444.parser.symbols.ast.expressions.CreationExpression;
 
 public class NonNullFieldAccess<T extends Instruction, E extends Enum<E>> implements ITile<T, E, FieldAccessSymbol>{
 
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<T> klass){
+    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new NonNullFieldAccess<T, E>(klass);
     }
 
-    private NonNullFieldAccess(final Class<T> klass){
+    private NonNullFieldAccess(final Class<? extends Platform<T, E>> klass){
         TileSet.<T, E>getOrMake(klass).fieldAccess.add(this);
     }
 

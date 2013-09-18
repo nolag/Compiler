@@ -8,19 +8,21 @@ import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.codegen.x86.x86_32.tiles.helpers.LongOnlyTile;
 import cs444.codegen.x86.x86_32.tiles.helpers.X86_32TileHelper;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
 
-public class LongNegTile extends LongOnlyTile<NegOpExprSymbol>{
-    public static void init(){
-        new LongNegTile();
+public class LongNegTile extends LongOnlyTile<NegOpExprSymbol> {
+    private static LongNegTile tile;
+
+    public static void init() {
+        if(tile == null) tile = new LongNegTile();
+        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).negs.add(tile);
     }
 
-    private LongNegTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).negs.add(this);
-    }
+    private LongNegTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final NegOpExprSymbol negSymbol,

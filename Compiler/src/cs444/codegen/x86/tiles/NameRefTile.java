@@ -18,15 +18,15 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.types.PkgClassResolver;
 
-public class NameRefTile implements ITile<X86Instruction, Size, SimpleNameSymbol>{
+public class NameRefTile implements ITile<X86Instruction, Size, SimpleNameSymbol> {
+    private static NameRefTile tile;
 
-    public static void init(){
-        new NameRefTile();
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new NameRefTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).nameRefs.add(tile);
     }
 
-    private NameRefTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).nameRefs.add(this);
-    }
+    private NameRefTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final SimpleNameSymbol name,
@@ -36,8 +36,11 @@ public class NameRefTile implements ITile<X86Instruction, Size, SimpleNameSymbol
         final DclSymbol dcl = name.dcl;
         final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        if(dcl.isStatic() && dcl.dclInResolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(staticFieldLbl));
-        X86Instruction instruction = new Add(Register.ACCUMULATOR, new Immediate(dcl.getOffset()), sizeHelper);
+
+        if(dcl.isStatic() && dcl.dclInResolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile)
+            instructions.add(new Extern(staticFieldLbl));
+
+        X86Instruction instruction = new Add(Register.ACCUMULATOR, new Immediate(dcl.getOffset(platform)), sizeHelper);
         if(dcl.isStatic()){
             instruction = new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl), sizeHelper);
         }else if(dcl.isLocal){

@@ -13,8 +13,12 @@ public class SbbOpMaker implements BinOpMaker {
     private SbbOpMaker() { }
 
     @Override
-    public Sbb make(final Register one, final Register two, final SizeHelper<X86Instruction, Size> sizeHelper){
+    public Sbb make(final Register one, final Register two, final SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Sbb(one, two, sizeHelper);
     }
 
+    @Override
+    public Sbb make(final Register one, final Register two, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
+        return new Sbb(one, two, size, sizeHelper);
+    }
 }

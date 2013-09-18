@@ -8,6 +8,7 @@ import java.util.Set;
 import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.IRuntime;
+import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.*;
@@ -76,7 +77,8 @@ public abstract class X86_32Platform extends X86Platform{
         for (final DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
             final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
-            final Memory fieldAddr = new Memory(Register.BASE, fieldDcl.getOffset());
+            final long offset = fieldDcl.getOffset(this);
+            final Memory fieldAddr = new Memory(Register.BASE, offset);
 
             if(!fieldDcl.children.isEmpty()){
                 instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
@@ -89,7 +91,7 @@ public abstract class X86_32Platform extends X86Platform{
                 instructions.addAll(getBest(field));
 
                 if(fieldDcl.getType().value.equals(JoosNonTerminal.LONG)){
-                    final Memory fieldAddrH = new Memory(Register.BASE, fieldDcl.getOffset() + 4);
+                    final Memory fieldAddrH = new Memory(Register.BASE, offset + 4);
                     instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, Size.DWORD, sizeHelper));
                     instructions.add(new Mov(fieldAddrH, Register.DATA, Size.DWORD, sizeHelper));
                 }else{
@@ -99,5 +101,10 @@ public abstract class X86_32Platform extends X86Platform{
         }
         instructions.add(new Pop(Register.BASE, sizeHelper));
         instructions.add(Ret.RET);
+    }
+
+    @Override
+    public final TileSet<X86Instruction, Size> getTiles(){
+        return TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class);
     }
 }

@@ -11,13 +11,13 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 
 public class RetTile implements ITile<X86Instruction, Size, ReturnExprSymbol> {
-    public static void init(){
-        new RetTile();
+    private static RetTile tile;
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new RetTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).rets.add(tile);
     }
 
-    private RetTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).rets.add(this);
-    }
+    private RetTile() { }
 
 
     @Override

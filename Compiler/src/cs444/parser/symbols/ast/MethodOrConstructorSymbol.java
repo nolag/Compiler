@@ -1,5 +1,6 @@
 package cs444.parser.symbols.ast;
 
+import java.util.Collection;
 import java.util.List;
 
 import cs444.CompilerException;
@@ -61,13 +62,11 @@ public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
         visitor.close(this);
     }
 
-    private boolean arelocalVarsLinked = false;
-    public void resolveLocalVars(final String enclosingClassName, final Platform<?, ?> platform) throws CompilerException {
-        if (arelocalVarsLinked) return;
-
-        this.accept(new LocalDclLinker(enclosingClassName, platform));
-
-        arelocalVarsLinked = true;
+    boolean alreadyLinked = false;
+    public void resolveLocalVars(final String enclosingClassName, final Collection<Platform<?, ?>> platforms) throws CompilerException {
+        if (alreadyLinked) return;
+        this.accept(new LocalDclLinker(enclosingClassName, platforms));
+        alreadyLinked = true;
     }
 
     private boolean reachabilityAnalized = false;

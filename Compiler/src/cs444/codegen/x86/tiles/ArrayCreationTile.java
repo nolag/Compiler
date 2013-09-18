@@ -14,14 +14,15 @@ import cs444.codegen.x86.x86_32.linux.Runtime;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
 import cs444.types.APkgClassResolver;
 
-public class ArrayCreationTile implements ITile<X86Instruction, Size, CreationExpression>{
-    public static void init(){
-        new ArrayCreationTile();
+public class ArrayCreationTile implements ITile<X86Instruction, Size, CreationExpression> {
+    private static ArrayCreationTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new ArrayCreationTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).creation.add(tile);
     }
 
-    private ArrayCreationTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).creation.add(this);
-    }
+    private ArrayCreationTile() { }
 
     @Override
     public boolean fits(final CreationExpression creation, final Platform<X86Instruction, Size> platform) {
@@ -53,14 +54,14 @@ public class ArrayCreationTile implements ITile<X86Instruction, Size, CreationEx
         Size elementSize = sizeHelper.getPushSize(sizeHelper.getSizeOfType(creation.getType().value));
 
         if(elementSize != Size.LOW && elementSize != Size.HIGH){
-            //something seems to go wrong if it's shifted by 1 for some values (*2 so should not be stack alignment?)
-            if(elementSize == Size.WORD) elementSize = Size.DWORD;
+            //TODO something seems to go wrong if it's shifted by 1 for some values (*2 so should not be stack alignment?)
+            if(elementSize == Size.WORD) elementSize = sizeHelper.getDefaultSize();
             instructions.add(new Shl(Register.ACCUMULATOR, X86SizeHelper.getPowerSizeImd(elementSize), sizeHelper));
         }
 
-        instructions.add(new Comment("Adding space for SIT, cast info, and length" + typeDclNode.fullName));
+        instructions.add(new Comment("Adding space for SIT, cast info, and length " + typeDclNode.fullName));
         //Int + object's size
-        final long baseSize = platform.getObjectLayout().objSize() + 4;
+        final long baseSize = platform.getObjectLayout().objSize() + sizeHelper.getIntSize(sizeHelper.getPushSize(Size.DWORD));
         final Immediate sizeI = new Immediate(baseSize);
         instructions.add(new Add(Register.ACCUMULATOR, sizeI, sizeHelper));
         instructions.add(new Comment("Allocate for array" + typeDclNode.fullName));

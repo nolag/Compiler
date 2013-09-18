@@ -12,11 +12,11 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.IfExprSymbol;
 
 public class IfTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, IfExprSymbol>{
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<T> klass){
+    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new IfTile<T, E>(klass);
     }
 
-    private IfTile(final Class<T> klass){
+    private IfTile(final Class<? extends Platform<T, E>> klass){
         TileSet.<T, E>getOrMake(klass).ifs.add(this);
     }
 

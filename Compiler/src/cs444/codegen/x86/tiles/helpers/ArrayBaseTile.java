@@ -51,7 +51,8 @@ public abstract class ArrayBaseTile implements ITile<X86Instruction, Size, Array
         if(elementSize != Size.LOW && elementSize != Size.HIGH)
             instructions.add(new Shl(Register.ACCUMULATOR, X86SizeHelper.getPowerSizeImd(elementSize), sizeHelper));
 
-        instructions.add(new Add(Register.ACCUMULATOR, new Immediate(objectLayout.objSize() + 4), sizeHelper));
+        final Immediate offset = new Immediate(objectLayout.objSize() + sizeHelper.getDefaultStackSize());
+        instructions.add(new Add(Register.ACCUMULATOR, offset, sizeHelper));
 
         return instructions;
     }

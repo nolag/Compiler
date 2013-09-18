@@ -6,7 +6,6 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.peephole.InstructionHolder;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.Comment;
-import cs444.codegen.x86.instructions.Dd;
 import cs444.codegen.x86.instructions.Extern;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
@@ -24,7 +23,7 @@ public class X86SelectorIndexedTable extends SelectorIndexedTable<X86Instruction
 
             instructions.add(new Comment(colHeaderLabel + " does not have access to " + rowName + ":"));
             //Immediate won't need a sizeHelper so null is ok.
-            instructions.add(new Dd(Immediate.NULL));
+            instructions.add(sizeHelper.allocDefaultSpace(Immediate.NULL.toString()));
         }
 
         @Override
@@ -33,7 +32,7 @@ public class X86SelectorIndexedTable extends SelectorIndexedTable<X86Instruction
 
             instructions.add(new Extern(data));
             //Immediate won't need a sizeHelper so null is ok.
-            instructions.add(new Dd(new Immediate(data)));
+            instructions.add(sizeHelper.allocDefaultSpace(data));
         }
     }
 }

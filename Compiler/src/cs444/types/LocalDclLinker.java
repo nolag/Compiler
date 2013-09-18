@@ -21,28 +21,32 @@ public class LocalDclLinker extends EmptyVisitor {
     private final Stack<Deque<Typeable>> currentTypes = new Stack<Deque<Typeable>>();
     private final Stack<Boolean> useCurrentScopeForLookup = new Stack<Boolean>();
 
-    private long offset = 0;
-
     private boolean methodArgs = false;
-    private long argOffset = 0;
+    private Map<Platform<?, ?>, Long> offsets;
+    private final Map<Platform<?, ?>, Long> argOffsets;
 
     boolean fromSuper = false;
     boolean superSaver = false;
 
-    private final Platform<?, ?> platform;
-    private final SizeHelper<?, ?> sizeHelper;
+    private final Collection<Platform<?, ?>> platforms;
 
-    public LocalDclLinker(final String enclosingClassName, final Platform<?, ?> platform){
+    public LocalDclLinker(final String enclosingClassName, final Collection<Platform<?, ?>> platforms) {
         this.context = new ContextInfo(enclosingClassName);
 
         currentTypes.add(new ArrayDeque<Typeable>());
         useCurrentScopeForLookup.add(false);
-        this.platform = platform;
-        sizeHelper = platform.getSizeHelper();
+        this.platforms = platforms;
+        argOffsets = new HashMap<>(platforms.size());
+        offsets = new HashMap<>(platforms.size());
+
+        for(final Platform<?, ?> platform : platforms){
+            argOffsets.put(platform, 0L);
+            offsets.put(platform, 0L);
+        }
     }
 
-    public LocalDclLinker(final String enclosingClassName, final boolean isStatic, final Platform<?, ?> platform){
-        this(enclosingClassName, platform);
+    public LocalDclLinker(final String enclosingClassName, final boolean isStatic, final Collection<Platform<?, ?>> platforms) {
+        this(enclosingClassName, platforms);
         pushNewScope(isStatic);
     }
 
@@ -51,8 +55,12 @@ public class LocalDclLinker extends EmptyVisitor {
     public void open(final MethodOrConstructorSymbol methodSymbol){
         methodArgs = true;
         //Two from return value location and stack a third for this if it is not static
-        final int where = methodSymbol.isStatic() ? 2 : 3;
-        argOffset = platform.getSizeHelper().getDefaultStackSize() * where;
+        final long where = methodSymbol.isStatic() ? 2 : 3;
+
+        for(final Platform<?, ?> platform : platforms){
+            argOffsets.put(platform, platform.getSizeHelper().getDefaultStackSize() * where);
+        }
+
         pushNewScope(methodSymbol.isStatic());
         context.setCurrentMember(methodSymbol);
     }
@@ -60,12 +68,16 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void middle(final MethodOrConstructorSymbol methodOrConstructorSymbol) throws CompilerException {
         methodArgs = false;
-        //Two from return value location and stack
-        methodOrConstructorSymbol.setStackSize(argOffset - platform.getSizeHelper().getDefaultStackSize() * 2);
-        for(final DclSymbol param : methodOrConstructorSymbol.params){
-            final long stack = param.getType().getTypeDclNode().getRefStackSize(sizeHelper);
-            argOffset -= stack;
-            param.setOffset(argOffset);
+        for(final Platform<?, ?> platform : platforms){
+            long argOffset = argOffsets.get(platform);
+            //Two from return value location and stack
+            methodOrConstructorSymbol.setStackSize(platform, argOffset - platform.getSizeHelper().getDefaultStackSize() * 2);
+            for(final DclSymbol param : methodOrConstructorSymbol.params){
+                final long stack = param.getType().getTypeDclNode().getRefStackSize(platform.getSizeHelper());
+                argOffset -= stack;
+                argOffsets.put(platform, argOffset);
+                param.setOffset(argOffset, platform);
+            }
         }
     }
 
@@ -99,13 +111,23 @@ public class LocalDclLinker extends EmptyVisitor {
             final String varName = dclSymbol.dclName;
             if (currentScope.isDeclared(varName)) throw new DuplicateDeclarationException(varName, context.enclosingClassName);
             currentScope.add(varName, dclSymbol);
-            if(methodArgs){
-                argOffset += dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper);
-            }else{
-                offset -= dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper);
-                dclSymbol.setOffset(offset);
+        }
+
+        if(dclSymbol.isLocal){
+            for(final Platform<?, ?> platform : platforms){
+                final SizeHelper<?, ?> sizeHelper = platform.getSizeHelper();
+                if(methodArgs){
+                    long argOffset = argOffsets.get(platform);
+                    argOffset += dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper);
+                    argOffsets.put(platform, argOffset);
+                }else{
+                    long offset = offsets.get(platform);
+                    offset -=  dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper);
+                    offsets.put(platform, offset);
+                    dclSymbol.setOffset(offset, platform);
+                }
             }
-        }else{ // field?
+        }else{
             popCurrentScope();
             context.setCurrentMember(null);
         }
@@ -122,7 +144,11 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void close(final NonTerminal aNonTerminal){
         if (aNonTerminal.getName().equals(JoosNonTerminal.BLOCK)){
-            aNonTerminal.setStackSize(currentScope.offset - offset);
+
+            for(final Platform<?, ?> platform : platforms) {
+                aNonTerminal.setStackSize(platform, currentScope.offsets.get(platform) - offsets.get(platform));
+            }
+
             popCurrentScope();
             currentTypes.pop();
         }
@@ -209,11 +235,11 @@ public class LocalDclLinker extends EmptyVisitor {
     }
 
     private void pushNewScope(final boolean isStatic) {
-        currentScope = new LocalScope(currentScope, isStatic, offset);
+        currentScope = new LocalScope(currentScope, isStatic, offsets);
     }
 
     private void popCurrentScope() {
-        offset = currentScope.offset;
+        offsets = currentScope.offsets;
         currentScope = currentScope.parent;
     }
 
@@ -439,7 +465,11 @@ public class LocalDclLinker extends EmptyVisitor {
     @Override
     public void close(final ForExprSymbol expr) throws UndeclaredException, IllegalCastAssignmentException{
         currentTypes.pop();
-        expr.setStackSize(currentScope.offset - offset);
+
+        for(final Platform<?, ?> platform : platforms) {
+            expr.setStackSize(platform, currentScope.offsets.get(platform) - offsets.get(platform));
+        }
+
         popCurrentScope();
     }
 

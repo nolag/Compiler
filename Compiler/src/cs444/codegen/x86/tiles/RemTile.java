@@ -13,13 +13,15 @@ import cs444.codegen.x86.tiles.helpers.BinUniOpTile;
 import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 
 public class RemTile extends BinUniOpTile<RemainderExprSymbol>{
-    private RemTile() {
-        super(IDivMaker.maker, true);
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).rems.add(this);
+    private static RemTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass){
+        if(tile == null) tile = new RemTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).rems.add(tile);
     }
 
-    public static void init(){
-        new RemTile();
+    private RemTile() {
+        super(IDivMaker.maker, true);
     }
 
     @Override

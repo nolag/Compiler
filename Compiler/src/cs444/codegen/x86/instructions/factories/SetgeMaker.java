@@ -13,7 +13,7 @@ public class SetgeMaker implements UniOpMaker {
     private SetgeMaker(){ }
 
     @Override
-    public Setge make(final Register arg, final SizeHelper<X86Instruction, Size> sizeHelper) {
+    public Setge make(final Register arg, final SizeHelper<X86Instruction, Size> sizeHelper, final Size size) {
         return new Setge(arg, sizeHelper);
     }
 }

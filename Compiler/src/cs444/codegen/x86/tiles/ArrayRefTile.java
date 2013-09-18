@@ -12,15 +12,15 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.helpers.ArrayBaseTile;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
-public class ArrayRefTile extends ArrayBaseTile{
+public class ArrayRefTile extends ArrayBaseTile {
+    private static ArrayRefTile tile;
 
-    public static void init(){
-        new ArrayRefTile();
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new ArrayRefTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).arrayRefs.add(tile);
     }
 
-    private ArrayRefTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).arrayRefs.add(this);
-    }
+    private ArrayRefTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess,

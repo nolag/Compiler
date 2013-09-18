@@ -12,11 +12,11 @@ import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.types.APkgClassResolver;
 
 public class MethodTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, MethodSymbol>{
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<T> klass){
+    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new MethodTile<T, E>(klass);
     }
 
-    private MethodTile(final Class<T> klass){
+    private MethodTile(final Class<? extends Platform<T, E>> klass){
         TileSet.<T, E>getOrMake(klass).methods.add(this);
     }
 

@@ -3,7 +3,7 @@ package cs444.codegen.x86;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
-public class Register extends NotMemory{
+public class Register extends NotMemory {
     public static final Register ACCUMULATOR = new Register("a", 'x');
     public static final Register COUNTER = new Register("c", 'x');
     public static final Register DATA = new Register("d", 'x');
@@ -13,7 +13,7 @@ public class Register extends NotMemory{
     public static final Register SOURCE = new Register("s", 'i');
     public static final Register DESTINATION = new Register("d", 'i');
 
-    private final String name;
+    protected final String name;
     private final char ending;
 
     protected Register(final String name, final char ending) {
@@ -21,23 +21,23 @@ public class Register extends NotMemory{
         this.ending = ending;
     }
 
-    public String get8High(){
+    public String get8High() {
         return name + 'h';
     }
 
-    public String get8Low(){
+    public String get8Low() {
         return name + 'l';
     }
 
-    public String get16(){
+    public String get16() {
         return name + ending;
     }
 
-    public String get32(){
+    public String get32() {
         return 'e' + name + ending;
     }
 
-    public String get64(){
+    public String get64() {
         return 'r' + name + ending;
     }
 

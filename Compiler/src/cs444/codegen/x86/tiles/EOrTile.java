@@ -10,13 +10,15 @@ import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.expressions.EOrExprSymbol;
 
 public class EOrTile extends BinOpTile<EOrExprSymbol> {
-    public static void init(){
-        new EOrTile();
+    private static EOrTile tile;
+
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new EOrTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).eors.add(tile);
     }
 
-    private EOrTile(){
+    private EOrTile() {
         super(OrOpMaker.maker, false);
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).eors.add(this);
     }
 
     @Override

@@ -14,8 +14,9 @@ import cs444.codegen.x86.instructions.factories.UniOpMaker;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
-public abstract class CompOpTile<T extends BinOpExpr> extends BinOpTile<T>{
+public abstract class CompOpTile<T extends BinOpExpr> extends BinOpTile<T> {
     private final UniOpMaker uni;
+
     protected CompOpTile(final UniOpMaker uni, final boolean ordered) {
         super(CmpMaker.maker, ordered);
         this.uni = uni;
@@ -26,7 +27,7 @@ public abstract class CompOpTile<T extends BinOpExpr> extends BinOpTile<T>{
         final InstructionsAndTiming<X86Instruction> instructions = super.generate(bin, platform);
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         instructions.add(new Comment("Xor here CAN change the setl bit?"));
-        instructions.add(uni.make(Register.DATA, sizeHelper));
+        instructions.add(uni.make(Register.DATA, sizeHelper, sizeHelper.getDefaultSize()));
         instructions.add(new Comment("clear all bits in register"));
         instructions.add(new Xor(Register.ACCUMULATOR, Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Mov(Register.ACCUMULATOR, Register.DATA, Size.LOW, sizeHelper));

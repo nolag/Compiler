@@ -1,9 +1,6 @@
 package cs444.types;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import cs444.CompilerException;
 import cs444.codegen.CodeGenVisitor;
@@ -124,9 +121,9 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void linkLocalNamesToDcl(final Platform<?, ?> platform) throws CompilerException {
+    public void linkLocalNamesToDcl(final Collection<Platform<?, ?>> platforms) throws CompilerException {
         for(final ConstructorSymbol cs : constructors.values()){
-            cs.resolveLocalVars(fullName, platform);
+            cs.resolveLocalVars(fullName, platforms);
         }
     }
 
@@ -163,13 +160,12 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
 
     @Override
     public void computeFieldOffsets(final Platform<?, ?> platform){
-        fieldMap.get(JoosNonTerminal.LENGTH).setOffset(platform.getObjectLayout().objSize());
+        fieldMap.get(JoosNonTerminal.LENGTH).setOffset(platform.getObjectLayout().objSize(), platform);
     }
 
     @Override
-    public long getStackSize(final SizeHelper<?, ?> sizeHelper) {
-        //Length is an int
-        return 4;
+    public long getStackSize(final Platform<?, ?> platform) {
+        return platform.getSizeHelper().getBytePushSizeOfType("int");
     }
 
     @Override
@@ -193,8 +189,8 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void checkFields(final Platform<?, ?> platform) throws CompilerException{
-        final LocalDclLinker linker = new LocalDclLinker(fullName, true, platform);
+    public void checkFields(final Collection<Platform<?, ?>> platforms) throws CompilerException{
+        final LocalDclLinker linker = new LocalDclLinker(fullName, true, platforms);
         for(final DclSymbol dcl : getDcls()){
             dcl.accept(linker);
         }

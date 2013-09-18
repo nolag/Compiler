@@ -103,13 +103,14 @@ public abstract class AInterfaceOrClassSymbol extends AModifiersOptSymbol{
         for (final DclSymbol fieldDcl : this.getFields()) {
             if (fieldDcl.isStatic()) continue;
 
-            if(fieldDcl.getOffset() != 0 && nextOffset != fieldDcl.getOffset()){
+            final long offset = fieldDcl.getOffset(platform);
+            if(offset != 0 && nextOffset != offset){
                 //Should never get here this is an error!
                 System.err.println("DOES NOT ADD UP FOR INHERITING " + fieldDcl.dclName + " in " + dclName);
             }
 
             // not a field from super:
-            fieldDcl.setOffset(nextOffset);
+            fieldDcl.setOffset(nextOffset, platform);
             final TypeSymbol ts = fieldDcl.type;
             final SizeHelper<?, ?> sizeHelper = platform.getSizeHelper();
             if(ts.isArray) nextOffset += sizeHelper.getDefaultStackSize();

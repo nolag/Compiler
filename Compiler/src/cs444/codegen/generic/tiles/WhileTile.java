@@ -11,11 +11,11 @@ import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
 public class WhileTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, WhileExprSymbol>{
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<T> klass){
+    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new WhileTile<T, E>(klass);
     }
 
-    private WhileTile(final Class<T> klass){
+    private WhileTile(final Class<? extends Platform<T, E>> klass){
         TileSet.<T, E>getOrMake(klass).whiles.add(this);
     }
 

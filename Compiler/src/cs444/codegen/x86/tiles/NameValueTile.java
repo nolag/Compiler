@@ -16,14 +16,14 @@ import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.types.PkgClassResolver;
 
 public final class NameValueTile extends NumericHelperTile<SimpleNameSymbol>{
+    private static NameValueTile tile;
 
-    public static void init(){
-        new NameValueTile();
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new NameValueTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).nameValues.add(tile);
     }
 
-    private NameValueTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).nameValues.add(this);
-    }
+    private NameValueTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final SimpleNameSymbol name,
@@ -41,7 +41,7 @@ public final class NameValueTile extends NumericHelperTile<SimpleNameSymbol>{
         if(dcl.isLocal) base = Register.FRAME;
         else if(dcl.isStatic()) base = new Immediate(staticFieldLbl);
 
-        final InstructionArg from = new Memory(base, dcl.getOffset());
+        final InstructionArg from = new Memory(base, dcl.getOffset(platform));
         X86TileHelper.genMov(size, from, dcl.dclName, dcl, sizeHelper, instructions);
 
         return instructions;

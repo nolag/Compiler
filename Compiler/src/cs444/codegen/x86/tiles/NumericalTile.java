@@ -13,14 +13,14 @@ import cs444.codegen.x86.tiles.helpers.NumericHelperTile;
 import cs444.parser.symbols.ast.INumericLiteral;
 
 public class NumericalTile extends NumericHelperTile<INumericLiteral>{
+    private static NumericalTile tile;
 
-    public static void init(){
-        new NumericalTile();
+    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+        if(tile == null) tile = new NumericalTile();
+        TileSet.<X86Instruction, Size>getOrMake(klass).numbs.add(tile);
     }
 
-    private NumericalTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).numbs.add(this);
-    }
+    private NumericalTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final INumericLiteral num,

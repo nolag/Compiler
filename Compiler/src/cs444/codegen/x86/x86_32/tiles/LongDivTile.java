@@ -12,6 +12,7 @@ import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.codegen.x86.x86_32.tiles.helpers.LongOnlyTile;
 import cs444.codegen.x86.x86_32.tiles.helpers.X86_32TileHelper;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -19,13 +20,14 @@ import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 
 public class LongDivTile extends LongOnlyTile<DivideExprSymbol> {
+    private static LongDivTile tile;
+
     public static void init(){
-        new LongDivTile();
+        if(tile == null) tile = new LongDivTile();
+        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).divs.add(tile);
     }
 
-    private LongDivTile(){
-        TileSet.<X86Instruction, Size>getOrMake(X86Instruction.class).divs.add(this);
-    }
+    private LongDivTile() { }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final DivideExprSymbol div, final Platform<X86Instruction, Size> platform) {

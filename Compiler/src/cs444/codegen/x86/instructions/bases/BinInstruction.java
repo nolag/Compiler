@@ -4,7 +4,7 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
 
-public abstract class BinInstruction extends X86Instruction{
+public abstract class BinInstruction extends X86Instruction {
     public final String what;
     public final InstructionArg arg1;
     public final InstructionArg arg2;

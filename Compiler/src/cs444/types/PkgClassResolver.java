@@ -386,26 +386,28 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void linkLocalNamesToDcl(final Platform<?, ?> platform) throws CompilerException {
+    public void linkLocalNamesToDcl(final Collection<Platform<?, ?>> platforms) throws CompilerException {
         if(start == null) return;
-        for(final AMethodSymbol method : start.getUninheritedMethods()) method.resolveLocalVars(fullName, platform);
+        for(final AMethodSymbol method : start.getUninheritedMethods()) method.resolveLocalVars(fullName, platforms);
 
-        for(final ConstructorSymbol consturctor : start.getConstructors()) consturctor.resolveLocalVars(fullName, platform);
+        for(final ConstructorSymbol consturctor : start.getConstructors()) consturctor.resolveLocalVars(fullName, platforms);
 
-        long mySize = 0;
-        for(final DclSymbol dcl : fieldMap.values()) mySize += dcl.getType().getTypeDclNode().getRefStackSize(platform.getSizeHelper());
-        start.setStackSize(mySize);
+        for(final Platform<?, ?> platform : platforms){
+            long mySize = 0;
+            for(final DclSymbol dcl : fieldMap.values()) mySize += dcl.getType().getTypeDclNode().getRefStackSize(platform.getSizeHelper());
+            start.setStackSize(platform, mySize);
+        }
     }
 
     @Override
-    public void checkFields(final Platform<?, ?> platform) throws CompilerException{
+    public void checkFields(final Collection<Platform<?, ?>> platforms) throws CompilerException{
         if (start == null) return;
-        LocalDclLinker linker = new LocalDclLinker(fullName, true, platform);
+        LocalDclLinker linker = new LocalDclLinker(fullName, true, platforms);
         for(final DclSymbol dcl : this.getUninheritedNonStaticFields()){
             dcl.accept(linker);
         }
 
-        linker = new LocalDclLinker(fullName, false, platform);
+        linker = new LocalDclLinker(fullName, false, platforms);
         for(final DclSymbol dcl : this.getUninheritedStaticFields()){
             dcl.accept(linker);
         }
@@ -471,19 +473,15 @@ public class PkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public long getStackSize(final SizeHelper<?, ?> sizeHelper){
-        if(start != null) return start.getStackSize();
-        final long size = sizeHelper.getByteSizeOfType(name);
-        final int minSize = sizeHelper.getMinSize();
-        return size > minSize ? size : minSize;
+    public long getStackSize(final Platform<?, ?> platform){
+        if(start != null) return start.getStackSize(platform);
+        return platform.getSizeHelper().getBytePushSizeOfType(name);
     }
 
     @Override
     public long getRefStackSize(final SizeHelper<?, ?> sizeHelper) {
         if(start != null)return sizeHelper.getDefaultStackSize();
-        final long size = sizeHelper.getByteSizeOfType(name);
-        final int minSize = sizeHelper.getMinSize();
-        return size > minSize ? size : minSize;
+        return sizeHelper.getBytePushSizeOfType(name);
     }
 
     @Override

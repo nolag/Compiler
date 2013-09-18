@@ -12,11 +12,11 @@ import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.types.APkgClassResolver.Castable;
 
 public class UpCastTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, CastExpressionSymbol>{
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<T> klass){
+    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new UpCastTile<T, E>(klass);
     }
 
-    private UpCastTile(final Class<T> klass){
+    private UpCastTile(final Class<? extends Platform<T, E>> klass) {
         TileSet.<T, E>getOrMake(klass).casts.add(this);
     }
 

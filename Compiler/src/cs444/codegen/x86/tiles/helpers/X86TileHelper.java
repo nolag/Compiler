@@ -30,10 +30,9 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
     public static void genMov(final Size size, final InstructionArg from, final String value,
             final Typeable dcl, final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
 
-
         X86Instruction instruction;
 
-        if(size == Size.DWORD){
+        if(size == sizeHelper.getDefaultSize()){
             instruction = new Mov(Register.ACCUMULATOR, from, sizeHelper);
         }else if(JoosNonTerminal.unsigned.contains(dcl.getType().getTypeDclNode().fullName)){
             instruction = new Movzx(Register.ACCUMULATOR, from, size, sizeHelper);
@@ -82,19 +81,19 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
     public final void setupJumpNe(final String lblTo,
             final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
 
-        setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, lblTo, sizeHelper, instructions);
+        setupJumpNe(Register.ACCUMULATOR, Immediate.TRUE, lblTo, sizeHelper, instructions, sizeHelper.getDefaultSize());
     }
 
     @Override
     public final void setupJumpNeFalse(final String lblTo,
             final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
 
-        setupJumpNe(Register.ACCUMULATOR, Immediate.FALSE, lblTo, sizeHelper, instructions);
+        setupJumpNe(Register.ACCUMULATOR, Immediate.FALSE, lblTo, sizeHelper, instructions, sizeHelper.getDefaultSize());
     }
 
-    public static void setupJumpNe(final Register reg, final Immediate when,
-            final String lblTo, final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
-        instructions.add(new Cmp(reg, when, sizeHelper));
+    public static void setupJumpNe(final Register reg, final Immediate when, final String lblTo,
+            final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions, final Size size) {
+        instructions.add(new Cmp(reg, when, sizeHelper, size));
         instructions.add(new Jne(new Immediate(lblTo), sizeHelper));
     }
 
@@ -136,7 +135,7 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
         //return value is the new object
         instructions.add(new Pop(Register.ACCUMULATOR, sizeHelper));
 
-        final long mySize = cs.getStackSize() - sizeHelper.getDefaultStackSize();
+        final long mySize = cs.getStackSize(platform) - sizeHelper.getDefaultStackSize();
         if(mySize != 0){
             final Immediate by = new Immediate(String.valueOf(mySize));
             instructions.add(new Add(Register.STACK, by, sizeHelper));
@@ -203,7 +202,7 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         // NOTE: do not use INVOKE in here, invoke gets size from method,
         // but visitor may visit InvokeSymbol before MethodSymbol
-        final long mySize =  call.getStackSize();
+        final long mySize =  call.getStackSize(platform);
         if(mySize != 0){
             final Immediate by = new Immediate(mySize);
             instructions.add(new Add(Register.STACK, by, sizeHelper));
