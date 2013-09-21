@@ -18,6 +18,7 @@ import cs444.CompilerException;
 import cs444.acceptance.TestHelper;
 import cs444.codegen.Platform;
 import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
+import cs444.codegen.x86.x86_64.linux.X86_64LinuxPlatform;
 import cs444.types.PkgClassInfo;
 
 public class CorrectTiles {
@@ -26,9 +27,11 @@ public class CorrectTiles {
     public void setup(){
         PkgClassInfo.instance.clear();
         final File folder = new File(Compiler.OUTPUT_DIRECTORY);
-        for(final File file : folder.listFiles()){
-            if(file.getName().endsWith("runtime.s")) continue;
-            file.delete();
+        for(final File outfolders : folder.listFiles()){
+            for(final File file : outfolders.listFiles()){
+                if(file.getName().equals("runtime.s") || file.getName().equals("runtime.asm")) continue;
+                file.delete();
+            }
         }
     }
 
@@ -37,21 +40,24 @@ public class CorrectTiles {
         final Set<String> opts = Collections.emptySet();
         final Set<Platform<?, ?>> platforms = new HashSet<Platform<?, ?>>();
         platforms.add(new X86_32LinuxPlatform(opts));
+        platforms.add(new X86_64LinuxPlatform(opts));
 
         Compiler.compile(Arrays.asList(files), true, true, platforms);
-        final File folder = new File(Compiler.OUTPUT_DIRECTORY);
-        for(final File file : folder.listFiles()){
-            if(file.getName().endsWith("runtime.s") || file.getName().startsWith("_")) continue;
-            final byte[] b = new byte[(int) file.length()];
-            final FileInputStream fis = new FileInputStream(file);
-            fis.read(b);
-            fis.close();
-            final String s = new String(b);
-            if(s.contains(str)){
-                return true;
+
+        platforms: for(final Platform<?, ?> platform : platforms) {
+            final File folder = new File(platform.getOutputDir());
+            for(final File file : folder.listFiles()){
+                if(file.getName().endsWith("runtime.s") || file.getName().startsWith("_")) continue;
+                final byte[] b = new byte[(int) file.length()];
+                final FileInputStream fis = new FileInputStream(file);
+                fis.read(b);
+                fis.close();
+                final String s = new String(b);
+                if(s.contains(str)) continue platforms;
             }
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Test
