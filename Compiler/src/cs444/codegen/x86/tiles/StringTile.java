@@ -1,8 +1,6 @@
 package cs444.codegen.x86.tiles;
 
-import java.util.Arrays;
-
-import cs444.codegen.CodeGenVisitor;
+import cs444.codegen.ObjectLayout;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
@@ -12,18 +10,17 @@ import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.instructions.*;
+import cs444.codegen.x86.instructions.Add;
+import cs444.codegen.x86.instructions.Comment;
+import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.x86_32.linux.Runtime;
 import cs444.parser.symbols.JoosNonTerminal;
-import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
-import cs444.types.APkgClassResolver;
 import cs444.types.ArrayPkgClassResolver;
 import cs444.types.PkgClassInfo;
-import cs444.types.exceptions.UndeclaredException;
 
-public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymbol>{
+public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymbol> {
     private static StringTile tile;
 
     public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
@@ -44,9 +41,9 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        instructions.add(new Comment("allocate the string at the same time (why not)"));
+        final ObjectLayout<X86Instruction> objectLayout = platform.getObjectLayout();
 
-        final APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);
+        instructions.add(new Comment("allocate the string at the same time (why not)"));
 
         //2 per char + dword for int + obj size
         final long defaultStack = sizeHelper.getDefaultStackSize();
@@ -69,27 +66,14 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
             final Memory to = new Memory(Register.ACCUMULATOR, new Immediate(place));
             instructions.add(new Mov(to, new Immediate((cs[i])), Size.WORD, sizeHelper));
         }
-        try {
-            final String arg = charArray;
-            final ConstructorSymbol constructor = resolver.getConstructor(Arrays.asList(arg), resolver);
-            instructions.add(new Comment("First arg to new String"));
-            instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
-            instructions.add(new Comment("This pointer to new string"));
-            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(charsLen), sizeHelper));
-            platform.getObjectLayout().initialize(resolver, instructions);
-            instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
 
-            final Immediate carg = new Immediate(APkgClassResolver.generateFullId(constructor));
-            if(constructor.dclInResolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(carg));
-
-            instructions.add(new Call(carg, sizeHelper));
-            instructions.add(new Pop(Register.ACCUMULATOR, sizeHelper));
-            instructions.add(new Add(Register.STACK, new Immediate(defaultStack), sizeHelper));
-
-        } catch (final UndeclaredException e) {
-            //Should never get here
-            e.printStackTrace();
-        }
+        instructions.add(new Comment("Array for new String"));
+        instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR, sizeHelper));
+        instructions.add(new Comment("This pointer to new string"));
+        instructions.add(new Add(Register.ACCUMULATOR, new Immediate(charsLen), sizeHelper));
+        platform.getObjectLayout().initialize(stringSymbol.getType().getTypeDclNode(), instructions);
+        final Memory memory = new Memory(Register.ACCUMULATOR, objectLayout.objSize());
+        instructions.add(new Mov(memory, Register.DATA, sizeHelper));
 
         instructions.add(new Comment("End of New String!"));
         return instructions;
