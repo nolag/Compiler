@@ -1,4 +1,4 @@
-package cs444.codegen.peephole;
+package cs444.codegen.peepholes;
 
 import java.io.PrintStream;
 

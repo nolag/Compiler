@@ -1,5 +1,6 @@
 package cs444.codegen.x86.instructions;
 
+import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 
@@ -13,5 +14,10 @@ public class Leave extends X86Instruction{
     @Override
     public String generate() {
         return "leave";
+    }
+
+    @Override
+    public boolean writesTo(final InstructionArg what) {
+        return false;
     }
 }

@@ -5,7 +5,7 @@ import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
 
 public abstract class UniInstruction extends X86Instruction{
-    public final String what;
+    private final String what;
     public final InstructionArg data;
     public final Size size;
     public final SizeHelper<X86Instruction, Size> sizeHelper;
@@ -27,5 +27,10 @@ public abstract class UniInstruction extends X86Instruction{
     @Override
     public final String generate() {
         return what + " " + data.getValue(size, sizeHelper);
+    }
+
+    @Override
+    public boolean writesTo(final InstructionArg what) {
+        return data == what;
     }
 }

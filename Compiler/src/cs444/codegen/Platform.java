@@ -5,7 +5,7 @@ import java.util.*;
 
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
-import cs444.codegen.peephole.InstructionHolder;
+import cs444.codegen.peepholes.InstructionHolder;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ISymbol;
@@ -13,6 +13,7 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
 public abstract class Platform<T extends Instruction, E extends Enum<E>> {
+    public static final String NO_PEEPHOLE = "--no_peep";
 
     public interface PlatformFactory<T extends Instruction, E extends Enum<E>, P extends Platform<T, E>>{
         P getPlatform(Set<String> opts);

@@ -8,7 +8,7 @@ import java.util.List;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.peephole.InstructionHolder;
+import cs444.codegen.peepholes.InstructionHolder;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.Section.SectionType;

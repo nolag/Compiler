@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import cs444.codegen.instructions.Instruction;
-import cs444.codegen.peephole.InstructionHolder;
+import cs444.codegen.peepholes.InstructionHolder;
 import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;

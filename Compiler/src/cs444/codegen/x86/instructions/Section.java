@@ -1,5 +1,6 @@
 package cs444.codegen.x86.instructions;
 
+import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 
@@ -31,4 +32,8 @@ public class Section extends X86Instruction {
         return "section " + kind;
     }
 
+    @Override
+    public boolean writesTo(final InstructionArg what) {
+        return false;
+    }
 }

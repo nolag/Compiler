@@ -44,4 +44,9 @@ public class IMul extends X86Instruction {
         if(arg2 == null) return "imul " + arg1.getValue(sizeHelper);
         return "imul " + arg1.getValue(size, sizeHelper) + ", " + arg2.getValue(size, sizeHelper);
     }
+
+    @Override
+    public final boolean writesTo(final InstructionArg what) {
+        return what == arg1 || what == Register.DATA;
+    }
 }

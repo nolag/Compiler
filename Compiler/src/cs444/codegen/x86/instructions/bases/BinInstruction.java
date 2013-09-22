@@ -38,4 +38,9 @@ public abstract class BinInstruction extends X86Instruction {
     public final String generate() {
         return what + " " + arg1.getValue(size, sizeHelper) + ", " + arg2.getValue(size2, sizeHelper);
     }
+
+    @Override
+    public final boolean writesTo(final InstructionArg what) {
+        return arg1 == what;
+    }
 }

@@ -8,8 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import cs444.codegen.instructions.Instruction;
-import cs444.codegen.peephole.InstructionHolder;
-import cs444.codegen.peephole.InstructionPrinter;
+import cs444.codegen.peepholes.InstructionHolder;
+import cs444.codegen.peepholes.InstructionPrinter;
 
 public abstract class IndexedTableData<T extends Instruction, E extends Enum<E>> {
 

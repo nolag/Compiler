@@ -7,7 +7,7 @@ import java.util.List;
 
 import cs444.codegen.Addable;
 import cs444.codegen.instructions.Instruction;
-import cs444.codegen.peephole.InstructionHolder;
+import cs444.codegen.peepholes.InstructionHolder;
 
 public class InstructionsAndTiming<T extends Instruction> implements Addable<T>{
     private final List<T> instructions = new LinkedList<T>();

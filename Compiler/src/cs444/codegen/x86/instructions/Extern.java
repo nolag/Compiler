@@ -1,6 +1,7 @@
 package cs444.codegen.x86.instructions;
 
 import cs444.codegen.x86.Immediate;
+import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public class Extern extends X86Instruction {
@@ -18,5 +19,10 @@ public class Extern extends X86Instruction {
     @Override
     public String generate() {
         return lbl;
+    }
+
+    @Override
+    public final boolean writesTo(final InstructionArg what) {
+        return false;
     }
 }

@@ -5,14 +5,14 @@ import java.util.Map;
 
 import cs444.codegen.SizeHelper;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.instructions.bases.UniInstruction;
-import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.NotMemory;
 import cs444.codegen.x86.Register;
+import cs444.codegen.x86.instructions.bases.UniInstruction;
+import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 
-public class Push extends UniInstruction{
+public class Push extends UniInstruction {
     public static final Map<SizeHelper<X86Instruction, Size>, Push> map = new HashMap<SizeHelper<X86Instruction, Size>, Push>();
 
     public Push(final NotMemory what, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper){

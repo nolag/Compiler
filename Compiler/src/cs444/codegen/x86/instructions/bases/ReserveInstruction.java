@@ -1,5 +1,7 @@
 package cs444.codegen.x86.instructions.bases;
 
+import cs444.codegen.x86.InstructionArg;
+
 
 
 public abstract class ReserveInstruction extends X86Instruction {
@@ -17,5 +19,10 @@ public abstract class ReserveInstruction extends X86Instruction {
     @Override
     public String generate() {
         return name + ": \t" + this.getResName() + "\t " + quantity;
+    }
+
+    @Override
+    public final boolean writesTo(final InstructionArg what) {
+        return false;
     }
 }

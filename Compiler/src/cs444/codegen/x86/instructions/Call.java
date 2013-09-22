@@ -16,4 +16,10 @@ public class Call extends UniInstruction {
     public Call(final InstructionArg what, final SizeHelper<X86Instruction, Size> sizeHelper){
         super("call", what, sizeHelper, 5);
     }
+
+    @Override
+    public boolean writesTo(final InstructionArg what) {
+        //native call may need to back up ebx
+        return true;
+    }
 }

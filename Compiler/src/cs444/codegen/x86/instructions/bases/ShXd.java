@@ -27,4 +27,9 @@ public abstract class ShXd extends X86Instruction{
         return what + " " + arg1.getValue(size, sizeHelper) + ", " + arg2.getValue(size, sizeHelper)
                 + ", " + arg3.getValue(Size.LOW, sizeHelper);
     }
+
+    @Override
+    public final boolean writesTo(final InstructionArg what) {
+        return arg1 == what;
+    }
 }

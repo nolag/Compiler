@@ -21,4 +21,9 @@ public abstract class SetInstruciton extends X86Instruction{
     public final String generate() {
         return what + " " + arg.getValue(sizeHelper.getSize(1), sizeHelper);
     }
+
+    @Override
+    public final boolean writesTo(final InstructionArg what) {
+        return arg == what;
+    }
 }

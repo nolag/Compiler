@@ -33,4 +33,9 @@ public class Mul extends X86Instruction{
         if(arg2 == null) return "mul " + arg1.getValue(sizeHelper);
         return "mul " + arg1.getValue(sizeHelper) + ", " + arg2.getValue(sizeHelper);
     }
+
+    @Override
+    public boolean writesTo(final InstructionArg what) {
+        return what == arg1 || what == Register.DATA;
+    }
 }
