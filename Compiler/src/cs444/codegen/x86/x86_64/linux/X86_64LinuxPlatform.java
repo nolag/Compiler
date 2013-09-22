@@ -72,8 +72,8 @@ public class X86_64LinuxPlatform extends X86_64Platform{
 
     @Override
     public String[] getAssembleCmd(final String fileName) {
-        //return new String[] {"nasm", "-O1", "-f", "elf64", fileName};
+        return new String[] {"nasm", "-O1", "-f", "elf64", fileName};
         //This will add debugging to the compiled objects.  Use it for debugging failed tests
-        return new String[] {"nasm", "-O1", "-f", "elf64", "-g", "-F", "dwarf", fileName};
+        //return new String[] {"nasm", "-O1", "-f", "elf64", "-g", "-F", "dwarf", fileName};
     }
 }

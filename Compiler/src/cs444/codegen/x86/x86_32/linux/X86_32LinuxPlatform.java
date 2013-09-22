@@ -73,7 +73,7 @@ public class X86_32LinuxPlatform extends X86_32Platform{
     @Override
     public String[] getAssembleCmd(final String fileName) {
         return new String[] {"nasm", "-O1", "-f", "elf", fileName};
-        /*This will add debugging to the compiled objects.  Use it for debugging failed tests
-        new String[] {"nasm", "-O1", "-f", "elf", "-g", "-F", "dwarf", fileName};*/
+        //This will add debugging to the compiled objects.  Use it for debugging failed tests
+        //return new String[] {"nasm", "-O1", "-f", "elf", "-g", "-F", "dwarf", fileName};
     }
 }

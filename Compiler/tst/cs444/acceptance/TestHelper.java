@@ -47,7 +47,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.contains("J1_Hello")) continue;
+            //if (!fileName.contains("StringSevenLetters")) continue;
             //Use this line to stop when there are infinite loops
             //if(totalTests == 20) break;
 

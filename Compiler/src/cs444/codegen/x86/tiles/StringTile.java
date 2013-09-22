@@ -46,7 +46,7 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
         instructions.add(new Comment("allocate the string at the same time (why not)"));
 
         //2 per char + dword for int + obj size
-        final long defaultStack = sizeHelper.getDefaultStackSize();
+        final int defaultStack = sizeHelper.getDefaultStackSize();
         final long objlen = platform.getObjectLayout().objSize();
         final long charsLen = stringSymbol.strValue.length() * 2 + defaultStack + objlen;
         final long length =  charsLen + defaultStack + objlen;
@@ -61,10 +61,28 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
         instructions.add(new Mov(where, new Immediate(stringSymbol.strValue.length()), sizeHelper));
 
         final char [] cs = stringSymbol.strValue.toCharArray();
-        for(int i = 0; i < cs.length; i++){
-            final long place = 2 * i + platform.getObjectLayout().objSize() + defaultStack;
-            final Memory to = new Memory(Register.ACCUMULATOR, new Immediate(place));
-            instructions.add(new Mov(to, new Immediate((cs[i])), Size.WORD, sizeHelper));
+        final int charSize = sizeHelper.getBytePushSizeOfType(JoosNonTerminal.CHAR);
+        final int charSizeBits = charSize * 8;
+
+        int i = 0;
+
+        //can't move 64 bit immediate value, so numTogether can't be more than 2.
+        for(int numTogether =  2; numTogether > 0; numTogether /= 2) {
+            for(; i + numTogether <= cs.length; i += numTogether) {
+                final StringBuilder sb = new StringBuilder("moving chars:");
+                long togetherVal = 0;
+
+                for(int j = 0; j < numTogether; j ++) {
+                    final long c = cs[i + j];
+                    togetherVal += c << (j * charSizeBits);
+                    sb.append(" ").append(c);
+                }
+
+                final long place = 2 * i + platform.getObjectLayout().objSize() + defaultStack;
+                final Memory to = new Memory(Register.ACCUMULATOR, new Immediate(place));
+                instructions.add(new Comment(sb.toString()));
+                instructions.add(new Mov(to, new Immediate(togetherVal), sizeHelper.getSize(numTogether * charSize), sizeHelper));
+            }
         }
 
         instructions.add(new Comment("Array for new String"));
