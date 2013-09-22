@@ -1,0 +1,1 @@
+This repo is avalible under GPLV2, found in GPLv2.txt
