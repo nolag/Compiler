@@ -8,5 +8,5 @@ public abstract class X86Instruction extends Instruction{
         super(cost);
     }
 
-    public abstract boolean writesTo(InstructionArg what);
+    public abstract boolean uses(InstructionArg what);
 }

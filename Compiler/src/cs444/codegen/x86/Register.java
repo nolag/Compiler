@@ -52,4 +52,9 @@ public class Register extends NotMemory {
         }
         return null;
     }
+
+    @Override
+    public boolean uses(final InstructionArg what) {
+        return this == what;
+    }
 }

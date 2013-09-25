@@ -29,7 +29,7 @@ public abstract class ShXd extends X86Instruction{
     }
 
     @Override
-    public final boolean writesTo(final InstructionArg what) {
-        return arg1 == what;
+    public final boolean uses(final InstructionArg what) {
+        return arg1.uses(what);
     }
 }

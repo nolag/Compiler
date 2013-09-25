@@ -35,7 +35,7 @@ public class Mul extends X86Instruction{
     }
 
     @Override
-    public boolean writesTo(final InstructionArg what) {
-        return what == arg1 || what == Register.DATA;
+    public boolean uses(final InstructionArg what) {
+        return arg1.uses(what) || what == Register.DATA;
     }
 }

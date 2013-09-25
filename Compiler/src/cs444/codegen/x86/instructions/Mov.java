@@ -44,7 +44,7 @@ public class Mov extends X86Instruction {
     }
 
     @Override
-    public boolean writesTo(final InstructionArg what) {
-        return dest == what;
+    public boolean uses(final InstructionArg what) {
+        return dest.uses(what) || src.uses(what);
     }
 }

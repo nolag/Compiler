@@ -46,7 +46,7 @@ public class IMul extends X86Instruction {
     }
 
     @Override
-    public final boolean writesTo(final InstructionArg what) {
-        return what == arg1 || what == Register.DATA;
+    public final boolean uses(final InstructionArg what) {
+        return arg1.uses(what) || what == Register.DATA;
     }
 }

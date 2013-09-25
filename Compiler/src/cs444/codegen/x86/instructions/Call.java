@@ -18,7 +18,7 @@ public class Call extends UniInstruction {
     }
 
     @Override
-    public boolean writesTo(final InstructionArg what) {
+    public boolean uses(final InstructionArg what) {
         //native call may need to back up ebx
         return true;
     }

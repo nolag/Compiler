@@ -22,7 +22,7 @@ public abstract class ReserveInstruction extends X86Instruction {
     }
 
     @Override
-    public final boolean writesTo(final InstructionArg what) {
+    public final boolean uses(final InstructionArg what) {
         return false;
     }
 }

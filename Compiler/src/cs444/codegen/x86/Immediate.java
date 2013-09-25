@@ -87,4 +87,9 @@ public class Immediate extends NotMemory{
     public final String toString(){
         return value;
     }
+
+    @Override
+    public boolean uses(final InstructionArg what) {
+        return false;
+    }
 }

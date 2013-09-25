@@ -30,7 +30,7 @@ public abstract class UniInstruction extends X86Instruction{
     }
 
     @Override
-    public boolean writesTo(final InstructionArg what) {
-        return data == what;
+    public boolean uses(final InstructionArg what) {
+        return data.uses(what);
     }
 }

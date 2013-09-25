@@ -17,7 +17,7 @@ public class Ret extends X86Instruction {
     }
 
     @Override
-    public boolean writesTo(final InstructionArg what) {
+    public boolean uses(final InstructionArg what) {
         return false;
     }
 }

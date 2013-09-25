@@ -27,4 +27,6 @@ public abstract class InstructionArg {
     public final String getValue(final SizeHelper<X86Instruction, Size> sizeHelper) {
         return getValue(sizeHelper.getDefaultSize(), sizeHelper);
     }
+
+    public abstract boolean uses(InstructionArg what);
 }

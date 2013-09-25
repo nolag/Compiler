@@ -1,11 +1,14 @@
 package cs444.codegen.x86.peepholes;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 import cs444.codegen.SizeHelper;
+import cs444.codegen.peepholes.BasicInstrucitonHolder;
 import cs444.codegen.peepholes.InstructionHolder;
-import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Mov;
@@ -13,7 +16,7 @@ import cs444.codegen.x86.instructions.Pop;
 import cs444.codegen.x86.instructions.Push;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
-public class PushPopRemover implements InstructionHolder<X86Instruction> {
+public class PushPopRemover extends BasicInstrucitonHolder<X86Instruction> {
     private final Deque<List<X86Instruction>> instructions = new ArrayDeque<>();
     private final InstructionHolder<X86Instruction> next;
     private final SizeHelper<X86Instruction, Size> sizeHelper;
@@ -31,7 +34,7 @@ public class PushPopRemover implements InstructionHolder<X86Instruction> {
 
         boolean usedReg = false;
         for (final X86Instruction instruction : latest) {
-            if (instruction.writesTo(to)) {
+            if (instruction.uses(to)) {
                 usedReg = true;
                 break;
             }
@@ -60,25 +63,6 @@ public class PushPopRemover implements InstructionHolder<X86Instruction> {
             if (instructions.size() == 0)  next.add(instruction);
             else instructions.getLast().add(instruction);
         }
-    }
-
-    @Override
-    public void addAll(final X86Instruction[] instructions) {
-        for (final X86Instruction instruction : instructions) {
-            add(instruction);
-        }
-    }
-
-    @Override
-    public void addAll(final Collection<X86Instruction> instructions) {
-        for (final X86Instruction instruction : instructions) {
-            add(instruction);
-        }
-    }
-
-    @Override
-    public void addAll(final InstructionsAndTiming<X86Instruction> other) {
-        other.addToHolder(this);
     }
 
     @Override

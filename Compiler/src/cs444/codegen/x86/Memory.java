@@ -49,4 +49,9 @@ public class Memory extends InstructionArg{
         if(offset != 0 && null == offsetArg) return "[" + arg.getValue(sizeHelper) + " + " + offset + "]";
         return "[" + arg.getValue(sizeHelper) + " + " + offset + " + " + offsetArg.getValue(sizeHelper) + "]";
     }
+
+    @Override
+    public boolean uses(final InstructionArg what) {
+        return arg.uses(what) || offsetArg != null && offsetArg.uses(what);
+    }
 }

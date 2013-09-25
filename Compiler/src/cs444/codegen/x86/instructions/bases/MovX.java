@@ -30,7 +30,7 @@ public abstract class MovX extends X86Instruction {
     }
 
     @Override
-    public final boolean writesTo(final InstructionArg what) {
-        return what == dst;
+    public final boolean uses(final InstructionArg what) {
+        return dst.uses(what);
     }
 }
