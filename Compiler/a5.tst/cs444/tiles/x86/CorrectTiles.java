@@ -44,6 +44,8 @@ public class CorrectTiles {
 
         Compiler.compile(Arrays.asList(files), true, true, platforms);
 
+        boolean hasSoFar = false;
+
         platforms: for(final Platform<?, ?> platform : platforms) {
             final File folder = new File(platform.getOutputDir());
             for(final File file : folder.listFiles()){
@@ -53,8 +55,13 @@ public class CorrectTiles {
                 fis.read(b);
                 fis.close();
                 final String s = new String(b);
-                if(s.contains(str)) continue platforms;
+                if(s.contains(str)) {
+                    hasSoFar = true;
+                    continue platforms;
+                }
             }
+            //One platform has it and others don't this is bad.
+            assertFalse(hasSoFar);
             return false;
         }
         return true;
@@ -96,5 +103,28 @@ public class CorrectTiles {
         final String superBase = TILE_TESTS + "UpCast/";
         final String [] superPaths = {superBase +  "Base.java", superBase + "Object.java", superBase + "Super.java"};
         assertTrue(contains("Up cast to", superPaths));
+    }
+
+    //The tests from here on are not tile tests, but make sure the ISymbols worked.
+
+    @Test
+    public void addZero() throws CompilerException, IOException {
+        final String addBase = TILE_TESTS + "AddZero/";
+        final String [] superPaths = {addBase +  "Object.java", addBase + "String.java"};
+        assertFalse(contains(", 0", superPaths));
+    }
+
+    @Test
+    public void subZero() throws CompilerException, IOException {
+        final String subBase = TILE_TESTS + "SubZero/";
+        final String [] superPaths = {subBase +  "Object.java"};
+        assertFalse(contains(", 0", superPaths));
+    }
+
+    @Test
+    public void subAsNeg() throws CompilerException, IOException {
+        final String subBase = TILE_TESTS + "SubZero/";
+        final String [] superPaths = {subBase +  "Object.java"};
+        assertTrue(contains("neg ", superPaths));
     }
 }

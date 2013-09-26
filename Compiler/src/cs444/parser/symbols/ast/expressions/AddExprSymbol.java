@@ -37,7 +37,7 @@ public class AddExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public TypeableTerminal reduce() {
+    public Typeable reduce() {
         final Typeable rightOperand = (Typeable)getRightOperand();
         final Typeable leftOperand = (Typeable)getLeftOperand();
 
@@ -59,14 +59,18 @@ public class AddExprSymbol extends BinOpExpr {
             final String val1 = ((StringLiteralSymbol)leftOperand).strValue;
             final String val2 = getValFrom(rightOperand);
             return new StringLiteralSymbol(val1 + val2);
-        } else if(rightOperand instanceof StringLiteralSymbol &&
+        } else if (rightOperand instanceof StringLiteralSymbol &&
                 leftOperand instanceof StringLiteralSymbol){
             final String val1 = ((StringLiteralSymbol) leftOperand).strValue;
             final String val2 = ((StringLiteralSymbol) rightOperand).strValue;
             return new StringLiteralSymbol(val1 + val2);
-        }else{
-            return null;
+        } else if (rightOperand instanceof INumericLiteral) {
+            return zeroReducer((INumericLiteral) rightOperand, leftOperand);
+        } else if (leftOperand instanceof INumericLiteral) {
+            return zeroReducer((INumericLiteral) leftOperand, rightOperand);
         }
+
+        return null;
     }
 
     private String getValFrom(final ISymbol leftOperand) {

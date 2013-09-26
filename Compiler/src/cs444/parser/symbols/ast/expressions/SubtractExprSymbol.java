@@ -8,7 +8,7 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.INumericLiteral;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.LongLiteralSymbol;
-import cs444.parser.symbols.ast.TypeableTerminal;
+import cs444.parser.symbols.ast.Typeable;
 
 public class SubtractExprSymbol extends BinOpExpr {
     public final static String myName = "Subtract";
@@ -40,9 +40,9 @@ public class SubtractExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public TypeableTerminal reduce() {
-        final ISymbol rightOperand = getRightOperand();
-        final ISymbol leftOperand = getLeftOperand();
+    public Typeable reduce() {
+        final Typeable rightOperand = (Typeable) getRightOperand();
+        final Typeable leftOperand = (Typeable) getLeftOperand();
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
@@ -52,8 +52,16 @@ public class SubtractExprSymbol extends BinOpExpr {
                 return new LongLiteralSymbol(val1 - val2);
             }
             return new IntegerLiteralSymbol((int)(val1 - val2));
-        }else{
-            return null;
+        } else if (rightOperand instanceof INumericLiteral) {
+            return zeroReducer((INumericLiteral) rightOperand, leftOperand);
+        } else if (leftOperand instanceof INumericLiteral) {
+            final INumericLiteral num = (INumericLiteral) leftOperand;
+            if (num.getValue() == 0) {
+                final NegOpExprSymbol neg = new NegOpExprSymbol(rightOperand);
+                return neg;
+            }
         }
+
+        return null;
     }
 }
