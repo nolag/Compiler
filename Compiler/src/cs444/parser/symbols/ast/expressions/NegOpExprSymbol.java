@@ -7,7 +7,7 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.INumericLiteral;
 import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.LongLiteralSymbol;
-import cs444.parser.symbols.ast.TypeableTerminal;
+import cs444.parser.symbols.ast.Typeable;
 
 public class NegOpExprSymbol extends UnaryOpExprSymbol{
     public static final String myName = "Negative";
@@ -28,13 +28,15 @@ public class NegOpExprSymbol extends UnaryOpExprSymbol{
     }
 
     @Override
-    public TypeableTerminal reduce() {
+    public Typeable reduce() {
         final ISymbol operand = getOperand();
-
-        if (operand instanceof INumericLiteral){
+        if (operand instanceof INumericLiteral) {
             final long val = ((INumericLiteral)operand).getValue();
             return operand instanceof LongLiteralSymbol ? new LongLiteralSymbol(-val) : new IntegerLiteralSymbol((int)-val);
-        }else{
+        } else if (operand instanceof NegOpExprSymbol) {
+            final NegOpExprSymbol neg = (NegOpExprSymbol) operand;
+            return ((Typeable) neg.getOperand());
+        } else {
             return null;
         }
     }

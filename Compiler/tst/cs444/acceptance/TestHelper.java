@@ -49,16 +49,16 @@ public class TestHelper {
             // Use this line to test a single file
             //if (!fileName.contains("LongSubLeLt")) continue;
             //Use this line to stop when there are infinite loops
-            //if(totalTests == 20) break;
+            //if (totalTests == 20) break;
 
-            if (ignoreList.contains(fileName)){
+            if (ignoreList.contains(fileName)) {
                 System.out.print("*"); // skip file
                 filesSkipped++;
                 continue;
             }
 
             if (file.isFile() && fileName.toLowerCase().endsWith(".java") ||
-                    (file.isDirectory() && !fileName.toLowerCase().endsWith(".skip"))){
+                    (file.isDirectory() && !fileName.toLowerCase().endsWith(".skip"))) {
                 runTestCase(path, expectedReturnCode, printErrors, includeStdLib, failFiles, file, fileName);
                 totalTests++;
             } else {
@@ -77,11 +77,8 @@ public class TestHelper {
             final File file, final String fileName) throws IOException, InterruptedException {
         final List<String> sourceFiles = getAllFiles(file);
 
-        final String[] array = new String[sourceFiles.size()];
-        sourceFiles.toArray(array);
-
         if (!(callbacks.beforeCompile(file)
-                && compileAndTest(array, printErrors, includeStdLib) == expectedReturnCode
+                && compileAndTest(sourceFiles, printErrors, includeStdLib) == expectedReturnCode
                 && callbacks.afterCompile(file, platforms))) {
 
             failFiles.add(path + fileName);
@@ -109,8 +106,8 @@ public class TestHelper {
 
     private static List<String> getAllFiles(final File root) {
 
-        final ArrayList<String> result = new ArrayList<String>();
-        final Stack<File> toVisit = new Stack<File>();
+        final ArrayList<String> result = new ArrayList<>();
+        final Stack<File> toVisit = new Stack<>();
 
         toVisit.push(root);
 
@@ -119,7 +116,7 @@ public class TestHelper {
             if (currentFile.isFile()) {
                 final String fileName = currentFile.getAbsolutePath();
                 if (fileName.endsWith(".java"))
-                    if(fileName.endsWith("Main.java"))result.add(0, fileName);
+                    if (fileName.endsWith("Main.java"))result.add(0, fileName);
                     else result.add(fileName);
             } else if (currentFile.isDirectory()) {
                 for (final File sourceFile : currentFile.listFiles())
@@ -132,8 +129,8 @@ public class TestHelper {
 
     private static void printSummary(final int totalTests, final int filesSkipped, final List<String> failFiles) {
         System.out.println("\nNumber of tests: " + totalTests);
-        if(filesSkipped > 0) System.out.println("Number of files skipped: " + filesSkipped);
-        if (failFiles.size() != 0){
+        if (filesSkipped > 0) System.out.println("Number of files skipped: " + filesSkipped);
+        if (failFiles.size() != 0) {
             System.out.println("Failed " + failFiles.size());
             for (final String fileName: failFiles) {
                 System.out.println("\t" + fileName);
@@ -141,23 +138,20 @@ public class TestHelper {
         }
     }
 
-    public static void setupMaps(){
-        if(!hasStdlib){
+    public static void setupMaps() {
+        if (!hasStdlib) {
             PkgClassInfo.instance.clear();
-            PkgClassResolver.reset();
-            TileSet.reset();
-            CodeGenVisitor.reset();
             final List<String> files = getAllFiles(new File(TEST_LOCATION + "StdLib"));
             platforms = new HashSet<>();
             final Set<String> opts = Collections.emptySet();
-            for(final String platformStr : Compiler.defaultPlatforms){
+            for(final String platformStr : Compiler.defaultPlatforms) {
                 platforms.add(CompilerSettings.platformMap.get(platformStr).getPlatform(opts));
             }
             Compiler.compile(files, true, false, platforms);
             final PkgClassInfo info = PkgClassInfo.instance;
             nameSpaces = new HashMap<>();
             //because each entry is a map, we need to clone the maps or they will have entries put into them.
-            for(final Entry<String, Map<String, PkgClassResolver>> entry : info.nameSpaces.entrySet()){
+            for(final Entry<String, Map<String, PkgClassResolver>> entry : info.nameSpaces.entrySet()) {
                 final Map<String, PkgClassResolver> resolverClone = new HashMap<>(entry.getValue());
                 nameSpaces.put(entry.getKey(), resolverClone);
             }
@@ -168,26 +162,26 @@ public class TestHelper {
         }
     }
 
-    private static int compileAndTest(final String[] files, final boolean printErrors, final boolean includeStdlib)
+    private static int compileAndTest(final List<String> files, final boolean printErrors, final boolean includeStdlib)
             throws IOException, InterruptedException {
-
-        if(includeStdlib){
-            setupMaps();
-            PkgClassInfo.instance.clear(nameSpaces, symbolMap, pkgs);
-        }else{
-            PkgClassInfo.instance.clear();
-        }
 
         PkgClassResolver.reset();
         TileSet.reset();
         CodeGenVisitor.reset();
 
+        if (includeStdlib) {
+            setupMaps();
+            PkgClassInfo.instance.clear(nameSpaces, symbolMap, pkgs);
+        } else {
+            PkgClassInfo.instance.clear();
+        }
+
         final Set<String> opts = Collections.emptySet();
         platforms = new HashSet<>();
-        for(final String platformStr : Compiler.defaultPlatforms){
+        for(final String platformStr : Compiler.defaultPlatforms) {
             platforms.add(CompilerSettings.platformMap.get(platformStr).getPlatform(opts));
         }
 
-        return Compiler.compile(Arrays.asList(files), printErrors, TestHelper.outputAsmFiles, platforms);
+        return Compiler.compile(files, printErrors, TestHelper.outputAsmFiles, platforms);
     }
 }

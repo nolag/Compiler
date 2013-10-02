@@ -6,12 +6,12 @@ import cs444.ast.ISymbolVisitor;
 import cs444.codegen.CodeGenVisitor;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
-import cs444.parser.symbols.ast.TypeableTerminal;
+import cs444.parser.symbols.ast.Typeable;
 
 public class EAndExprSymbol extends BinOpExpr {
     public final static String myName = "And";
 
-    public EAndExprSymbol(ISymbol left, ISymbol right) {
+    public EAndExprSymbol(final ISymbol left, final ISymbol right) {
         super(myName, left, right);
     }
 
@@ -21,7 +21,7 @@ public class EAndExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(ISymbolVisitor visitor) throws CompilerException {
+    public void accept(final ISymbolVisitor visitor) throws CompilerException {
         children.get(0).accept(visitor);
         children.get(1).accept(visitor);
         visitor.visit(this);
@@ -31,23 +31,26 @@ public class EAndExprSymbol extends BinOpExpr {
     public boolean isCollapsable() {
         return false;
     }
-    
+
     @Override
-    public void accept(CodeGenVisitor<?, ?> visitor) {
+    public void accept(final CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 
     @Override
-    public TypeableTerminal reduce() {
-        ISymbol rightOperand = getRightOperand();
-        ISymbol leftOperand = getLeftOperand();
+    public Typeable reduce() {
+        final ISymbol rightOperand = getRightOperand();
+        final ISymbol leftOperand = getLeftOperand();
 
         if (rightOperand instanceof BooleanLiteralSymbol &&
-                leftOperand instanceof BooleanLiteralSymbol){
-            boolean val1 = ((BooleanLiteralSymbol)leftOperand).boolValue;
-            boolean val2 = ((BooleanLiteralSymbol)rightOperand).boolValue;
+                leftOperand instanceof BooleanLiteralSymbol) {
+
+            final boolean val1 = ((BooleanLiteralSymbol)leftOperand).boolValue;
+            final boolean val2 = ((BooleanLiteralSymbol)rightOperand).boolValue;
             return new BooleanLiteralSymbol(val1 & val2);
-        }else{
+        }else if (leftOperand instanceof NotOpExprSymbol && rightOperand instanceof NotOpExprSymbol) {
+                return new NotOpExprSymbol(new EOrExprSymbol(leftOperand, rightOperand));
+        } else {
             return null;
         }
     }

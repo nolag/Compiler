@@ -32,6 +32,7 @@ import cs444.codegen.Platform;
 
         @Override
         public boolean afterCompile(final File file, final Collection<Platform<?, ?>> platforms) throws IOException, InterruptedException {
+
             final String stdOut = getExpectedOutput(file, true);
             final String stdErr = getExpectedOutput(file, false);
 

@@ -24,6 +24,14 @@ import cs444.types.PkgClassInfo;
 public class CorrectTiles {
     public static final String TILE_TESTS = TestHelper.TEST_LOCATION + "TileTests/";
 
+    private static final Set<String> opts = Collections.emptySet();
+    private static final Set<Platform<?, ?>> platforms = new HashSet<Platform<?, ?>>();
+
+    static {
+        platforms.add(new X86_32LinuxPlatform(opts));
+        platforms.add(new X86_64LinuxPlatform(opts));
+    }
+
     public void setup(){
         PkgClassInfo.instance.clear();
         final File folder = new File(Compiler.OUTPUT_DIRECTORY);
@@ -35,17 +43,15 @@ public class CorrectTiles {
         }
     }
 
-    public boolean contains(final String str, final String ... files) throws IOException{
+    public boolean compileAndContains(final String str, final String ... files) throws IOException {
         setup();
-        final Set<String> opts = Collections.emptySet();
-        final Set<Platform<?, ?>> platforms = new HashSet<Platform<?, ?>>();
-        platforms.add(new X86_32LinuxPlatform(opts));
-        platforms.add(new X86_64LinuxPlatform(opts));
-
         Compiler.compile(Arrays.asList(files), true, true, platforms);
 
-        boolean hasSoFar = false;
+        return contains(str, files);
+    }
 
+    public boolean contains(final String str, final String ... files) throws IOException {
+        boolean hasSoFar = false;
         platforms: for(final Platform<?, ?> platform : platforms) {
             final File folder = new File(platform.getOutputDir());
             for(final File file : folder.listFiles()){
@@ -70,39 +76,39 @@ public class CorrectTiles {
     @Test
     public void finalMethodTest() throws CompilerException, IOException{
         final String path =  TILE_TESTS + "NonStaticFinalCall/Object.java";
-        assertTrue(contains("call java.lang.Object.getI", path));
+        assertTrue(compileAndContains("call java.lang.Object.getI", path));
     }
 
     @Test
     public void divZeroTest() throws CompilerException, IOException{
         final String path =  TILE_TESTS + "DivZero/Object.java";
-        assertFalse(contains("div", path));
+        assertFalse(compileAndContains("div", path));
     }
 
     @Test
     public void mulZeroTest() throws CompilerException, IOException{
         final String path =  TILE_TESTS + "MulZero/Object.java";
-        assertFalse(contains("mul", path));
+        assertFalse(compileAndContains("mul", path));
     }
 
     @Test
     public void superNew() throws CompilerException, IOException{
         final String superBase = TILE_TESTS + "SuperField/";
         final String [] superPaths = {superBase +  "Base.java", superBase + "Object.java", superBase + "Super.java"};
-        assertFalse(contains("je ", superPaths));
+        assertFalse(compileAndContains("je ", superPaths));
     }
 
     @Test
     public void superNew2() throws CompilerException, IOException{
         final String path =  TILE_TESTS + "NonStaticCall2/Object.java";
-        assertFalse(contains("je ", path));
+        assertFalse(compileAndContains("je ", path));
     }
 
     @Test
     public void upCast() throws CompilerException, IOException{
         final String superBase = TILE_TESTS + "UpCast/";
         final String [] superPaths = {superBase +  "Base.java", superBase + "Object.java", superBase + "Super.java"};
-        assertTrue(contains("Up cast to", superPaths));
+        assertTrue(compileAndContains("Up cast to", superPaths));
     }
 
     //The tests from here on are not tile tests, but make sure the ISymbols worked.
@@ -111,20 +117,28 @@ public class CorrectTiles {
     public void addZero() throws CompilerException, IOException {
         final String addBase = TILE_TESTS + "AddZero/";
         final String [] superPaths = {addBase +  "Object.java", addBase + "String.java"};
-        assertFalse(contains(", 0", superPaths));
+        assertFalse(compileAndContains(", 0", superPaths));
     }
 
     @Test
     public void subZero() throws CompilerException, IOException {
         final String subBase = TILE_TESTS + "SubZero/";
         final String [] superPaths = {subBase +  "Object.java"};
-        assertFalse(contains(", 0", superPaths));
+        assertFalse(compileAndContains("sub", superPaths));
+        assertTrue(contains("neg ", superPaths));
     }
 
     @Test
-    public void subAsNeg() throws CompilerException, IOException {
-        final String subBase = TILE_TESTS + "SubZero/";
+    //Note that or is similar and the xor instruciton is used so it was hard to test as well.  And will do for both.
+    public void andReduce() throws CompilerException, IOException {
+        final String subBase = TILE_TESTS + "AndOpts/";
         final String [] superPaths = {subBase +  "Object.java"};
-        assertTrue(contains("neg ", superPaths));
+        assertFalse(compileAndContains("Start Assignment Simple Name=And", superPaths));
+    }
+
+    public void negReducing() throws CompilerException, IOException {
+        final String subBase = TILE_TESTS + "NegNegNegNegOpt/";
+        final String [] superPaths = {subBase +  "Object.java"};
+        assertFalse(compileAndContains("neg", superPaths));
     }
 }

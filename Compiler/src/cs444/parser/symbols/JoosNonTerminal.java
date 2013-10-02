@@ -7,7 +7,7 @@ import cs444.ast.ISymbolVisitor;
 import cs444.codegen.CodeGenVisitor;
 import cs444.types.APkgClassResolver;
 
-public class JoosNonTerminal extends NonTerminal{
+public class JoosNonTerminal extends NonTerminal {
     public static final String BRACKET_PRIMARY = "BRACKETPRIMARY";
     public static final String ARRAY_TYPE = "ARRAYTYPE";
     public static final String TYPE = "TYPE";
@@ -82,6 +82,8 @@ public class JoosNonTerminal extends NonTerminal{
     public static final Set<String> unsigned = new HashSet<String>();
 
     public static final String ENTRY = APkgClassResolver.generateUniqueName("test", Collections.<String>emptyList());
+
+    public static final boolean ALLOW_SMART_REDUCTINO = false;
 
     static{
         noCollapse.add("MODIFIERS");
