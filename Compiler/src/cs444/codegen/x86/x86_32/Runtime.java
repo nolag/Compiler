@@ -1,4 +1,4 @@
-package cs444.codegen.x86.x86_32.linux;
+package cs444.codegen.x86.x86_32;
 
 import cs444.codegen.Addable;
 import cs444.codegen.IRuntime;

@@ -5,6 +5,7 @@ import java.util.*;
 import cs444.codegen.Platform;
 import cs444.codegen.Platform.PlatformFactory;
 import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
+import cs444.codegen.x86.x86_32.windows.X86_32WindowsPlatform;
 import cs444.codegen.x86.x86_64.linux.X86_64LinuxPlatform;
 
 public class CompilerSettings {
@@ -20,6 +21,13 @@ public class CompilerSettings {
         platformMap.put("-x64l", X86_64LinuxPlatform.Factory.factory);
         platformMap.put("-x86_64linux", X86_64LinuxPlatform.Factory.factory);
         platformMap.put("-x86_64l", X86_64LinuxPlatform.Factory.factory);
+
+        platformMap.put("-x86windows", X86_32WindowsPlatform.Factory.factory);
+        platformMap.put("-x86w", X86_32WindowsPlatform.Factory.factory);
+        platformMap.put("-x86win", X86_32WindowsPlatform.Factory.factory);
+        platformMap.put("-x86_32windows", X86_32WindowsPlatform.Factory.factory);
+        platformMap.put("-x86_32w", X86_32WindowsPlatform.Factory.factory);
+        platformMap.put("-x86_32win", X86_32WindowsPlatform.Factory.factory);
     }
 
     public final List<String> files = new ArrayList<String>();

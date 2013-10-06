@@ -12,6 +12,7 @@ import cs444.codegen.x86.Register;
 import cs444.codegen.x86.StaticFieldInit;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.x86_64.Runtime;
 import cs444.codegen.x86.x86_64.X86_64Platform;
 import cs444.codegen.x86.x86_64.instructions.Syscall;
 import cs444.codegen.x86.x86_64.tiles.helpers.X86_64TileHelper;
