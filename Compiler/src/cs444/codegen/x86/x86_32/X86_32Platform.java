@@ -20,7 +20,7 @@ import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
-public abstract class X86_32Platform extends X86Platform{
+public abstract class X86_32Platform extends X86Platform {
     public final X86SelectorIndexedTable sit;
 
     protected X86_32Platform(final IRuntime<X86Instruction> runtime, final Set<String> opts){

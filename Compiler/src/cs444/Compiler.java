@@ -22,14 +22,19 @@ import cs444.types.PkgClassInfo;
 
 public class Compiler {
     //public static final String BASE_DIRECTORY = "/mnt/hgfs/RAM/";
-    public static final String BASE_DIRECTORY = "E:/RAM/";
-    //public static final String BASE_DIRECTORY = "";
+    //public static final String BASE_DIRECTORY = "E:/RAM/";
+    public static final String BASE_DIRECTORY = "";
     public static final String OUTPUT_DIRECTORY = BASE_DIRECTORY + "output/";
 
     public static final int COMPILER_ERROR_CODE = 42;
 
+    //default to all supported platforms
+    public static final String [] defaultPlatforms = {"-x86l", "-x64l", "-x86w"};
+
+    //linux testing
     //public static final String [] defaultPlatforms = {"-x86l", "-x64l"};
-    public static final String [] defaultPlatforms = {"-x86w"};
+    //windows testing
+    //public static final String [] defaultPlatforms = {"-x86w"};
 
     /**
      * @param args

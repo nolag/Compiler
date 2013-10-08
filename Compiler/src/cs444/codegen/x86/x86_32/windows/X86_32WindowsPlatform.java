@@ -41,7 +41,6 @@ public class X86_32WindowsPlatform extends X86_32Platform{
         instructions.add(new Extern(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL)));
         instructions.add(new Call(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL), sizeHelper));
         instructions.add(new Call(new Immediate(methodName), sizeHelper));
-
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Extern(EXIT));
         instructions.add(new Call(EXIT, sizeHelper));
@@ -59,14 +58,15 @@ public class X86_32WindowsPlatform extends X86_32Platform{
 
     //Test methods
 
-    private static final String [] execute = new String[] {"main"};
+    private static final String [] execute = new String[] {Compiler.OUTPUT_DIRECTORY + "x86w/main"};
 
     //NOTE: this line must be changed to YOUR location of kernel32.lib.
     private static final String KERNEL32 = "\"C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v7.1A\\Lib\\Kernel32.lib\"";
 
     @Override
     public String[] getLinkCmd(final String fileName) {
-        return new String[] {"link", "/subsystem:console", "/machine:x86", "/nodefaultlib", "/entry:main", "/out:main.exe",  KERNEL32, fileName + File.separator + "*.obj"};
+        return new String[] {"link", "/subsystem:console", "/machine:x86", "/nodefaultlib", "/entry:main",
+                "/out:\"" + getOutputDir() + "main.exe\"",  KERNEL32, fileName + File.separator + "*.obj"};
     }
 
     @Override

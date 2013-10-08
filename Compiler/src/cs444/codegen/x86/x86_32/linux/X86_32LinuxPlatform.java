@@ -59,11 +59,11 @@ public class X86_32LinuxPlatform extends X86_32Platform{
 
     //Test methods
 
-    private static final String [] execute = new String[] {"./main"};
+    private static final String [] execute = new String[] {Compiler.OUTPUT_DIRECTORY + "x86l/main"};
 
     @Override
     public String[] getLinkCmd(final String fileName) {
-        return new String[] {"bash", "-c", "ld -melf_i386 -o main " + fileName + File.separator + "*.o"};
+        return new String[] {"bash", "-c", "ld -melf_i386 -o " + getOutputDir() + "main " + fileName + File.separator + "*.o"};
     }
 
     @Override

@@ -59,11 +59,11 @@ public class X86_64LinuxPlatform extends X86_64Platform{
 
     //Test methods
 
-    private static final String [] execute = new String[] {"./main"};
+    private static final String [] execute = new String[] { Compiler.OUTPUT_DIRECTORY + "x64l/main"};
 
     @Override
     public String[] getLinkCmd(final String fileName) {
-        return new String[] {"bash", "-c", "ld -melf_x86_64 -o main " + fileName + File.separator + "*.o"};
+        return new String[] {"bash", "-c", "ld -melf_x86_64 -o " + getOutputDir() + "main " + fileName + File.separator + "*.o"};
     }
 
     @Override
