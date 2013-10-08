@@ -14,7 +14,7 @@ import cs444.codegen.x86.instructions.Add;
 import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.x86_32.linux.Runtime;
+import cs444.codegen.x86.x86_32.Runtime;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
 import cs444.types.ArrayPkgClassResolver;

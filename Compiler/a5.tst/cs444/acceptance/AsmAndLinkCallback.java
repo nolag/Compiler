@@ -46,7 +46,10 @@ import cs444.codegen.Platform;
 
                 final String folderAbsPath = folder.getAbsolutePath();
 
-                if(execAndWait(platform.getLinkCmd(folderAbsPath), null, null) != 0) return false;
+                if(execAndWait(platform.getLinkCmd(folderAbsPath), null, null) != 0) {
+                    System.out.println("********link failed!********");
+                    return false;
+                }
 
                 final String [] command = platform.getExecuteCmd();
 

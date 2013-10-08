@@ -5,7 +5,7 @@ import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.x86_32.linux.Runtime;
+import cs444.codegen.x86.x86_32.Runtime;
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 
 public class FieldAccessTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, FieldAccessSymbol>{

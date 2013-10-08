@@ -5,8 +5,12 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+//Tests get harder so higher marmoset test.  If failing earlier ones it may pay to stop there first.
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class A5 {
 
     @Test

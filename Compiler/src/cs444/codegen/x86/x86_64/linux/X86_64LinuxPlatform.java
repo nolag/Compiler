@@ -12,6 +12,7 @@ import cs444.codegen.x86.Register;
 import cs444.codegen.x86.StaticFieldInit;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.x86_64.Runtime;
 import cs444.codegen.x86.x86_64.X86_64Platform;
 import cs444.codegen.x86.x86_64.instructions.Syscall;
 import cs444.codegen.x86.x86_64.tiles.helpers.X86_64TileHelper;
@@ -58,11 +59,11 @@ public class X86_64LinuxPlatform extends X86_64Platform{
 
     //Test methods
 
-    private static final String [] execute = new String[] {"./main"};
+    private static final String [] execute = new String[] { Compiler.OUTPUT_DIRECTORY + "x64l/main"};
 
     @Override
     public String[] getLinkCmd(final String fileName) {
-        return new String[] {"bash", "-c", "ld -melf_x86_64 -o main " + fileName + File.separator + "*.o"};
+        return new String[] {"bash", "-c", "ld -melf_x86_64 -o " + getOutputDir() + "main " + fileName + File.separator + "*.o"};
     }
 
     @Override
