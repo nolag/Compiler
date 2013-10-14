@@ -10,10 +10,10 @@ import cs444.types.APkgClassResolver;
 public abstract class SubtypeIndexedTable <T extends Instruction, E extends Enum<E>> {
     private final IndexedTableData<T, E> table;
 
-    protected SubtypeIndexedTable(final IndexedTableData<T, E> table, final List<APkgClassResolver> resolvers,
+    protected SubtypeIndexedTable(final Platform<T,E> platform, final IndexedTableData<T, E> table, final List<APkgClassResolver> resolvers,
             final boolean outputFile, final String directory, final SizeHelper<T, E> sizeHelper) throws IOException{
         this.table = table;
-        generateTable(resolvers, outputFile, directory, sizeHelper);
+        generateTable(platform, resolvers, outputFile, directory, sizeHelper);
     }
 
     public Map<String, String> addSubtype(final String fullName) {
@@ -32,8 +32,8 @@ public abstract class SubtypeIndexedTable <T extends Instruction, E extends Enum
         return table.getOffset(superType);
     }
 
-    public void generateTable(final List<APkgClassResolver> resolvers, final boolean outputFile,
-            final String directory, final SizeHelper<T, E> sizeHelper) throws IOException {
+    public void generateTable(final Platform<T, E> platform, final List<APkgClassResolver> resolvers,
+            final boolean outputFile, final String directory, final SizeHelper<T, E> sizeHelper) throws IOException {
 
 
         for(final APkgClassResolver resolver : resolvers){
@@ -41,6 +41,6 @@ public abstract class SubtypeIndexedTable <T extends Instruction, E extends Enum
         }
 
         table.genCode(sizeHelper);
-        if(outputFile) table.printCodeToFile(directory + "_joos.subtypeIT.s");
+        if(outputFile) table.printCodeToFile(platform, directory + "_joos.subtypeIT.s");
     }
 }

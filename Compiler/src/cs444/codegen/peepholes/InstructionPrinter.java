@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import cs444.codegen.Platform;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.InstructionsAndTiming;
 
@@ -13,7 +14,8 @@ public class InstructionPrinter<T extends Instruction> implements InstructionHol
     private List<T> instructions = new LinkedList<T>();
 
     @Override
-    public void flush(final PrintStream printer) {
+    public void flush(final Platform<T, ?> platform, final PrintStream printer) {
+        for(final T instruction : platform.getAssemblerDirectives()) printer.println(instruction.generate());
         for(final T instruction : instructions) printer.println(instruction.generate());
         instructions = new LinkedList<T>();
     }

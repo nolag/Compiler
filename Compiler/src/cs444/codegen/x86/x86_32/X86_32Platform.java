@@ -8,6 +8,7 @@ import java.util.Set;
 import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.IRuntime;
+import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
@@ -22,6 +23,8 @@ import cs444.types.APkgClassResolver;
 
 public abstract class X86_32Platform extends X86Platform {
     public final X86SelectorIndexedTable sit;
+
+    private static X86Instruction [] directives = { };
 
     protected X86_32Platform(final IRuntime<X86Instruction> runtime, final Set<String> opts){
         super(opts, X86_32TileInit.instance, runtime, X86SizeHelper.sizeHelper32);
@@ -106,5 +109,15 @@ public abstract class X86_32Platform extends X86Platform {
     @Override
     public final TileSet<X86Instruction, Size> getTiles(){
         return TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class);
+    }
+
+    @Override
+    public X86Instruction[] getAssemblerDirectives() {
+        return directives;
+    }
+
+    @Override
+    public TileHelper<X86Instruction, Size> getTileHelper() {
+        return X86_32TileHelper.instance;
     }
 }

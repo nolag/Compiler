@@ -58,11 +58,11 @@ public abstract class IndexedTableData<T extends Instruction, E extends Enum<E>>
 
     public abstract void genCode(SizeHelper<T, E> sizeHelper);
 
-    public final void printCodeToFile(final String filePath) throws IOException {
+    public final void printCodeToFile(final Platform<T, E>platform, final String filePath) throws IOException {
         final File file = new File(filePath);
         file.createNewFile();
         final PrintStream printer = new PrintStream(file);
-        instructions.flush(printer);
+        instructions.flush(platform, printer);
         printer.close();
     }
 }

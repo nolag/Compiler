@@ -33,14 +33,14 @@ public abstract class SelectorIndexedTable<T extends Instruction, E extends Enum
         return table.getOffset(selector);
     }
 
-    public final void generateSIT(final List<APkgClassResolver> resolvers, final boolean outputFile,
-            final String directory) throws IOException{
+    public final void generateSIT(final Platform<T, E> platform, final List<APkgClassResolver> resolvers,
+            final boolean outputFile, final String directory) throws IOException{
 
         for(final APkgClassResolver resolver : resolvers){
             if(resolver.shouldGenCode()) resolver.addToSelectorIndexedTable(this);
         }
 
         table.genCode(sizeHelper);
-        if(outputFile) table.printCodeToFile(directory + "_joos.sit.s");
+        if(outputFile) table.printCodeToFile(platform, directory + "_joos.sit.s");
     }
 }

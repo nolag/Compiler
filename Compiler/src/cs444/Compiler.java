@@ -34,7 +34,7 @@ public class Compiler {
     //linux testing
     //public static final String [] defaultPlatforms = {"-x86l", "-x64l"};
     //windows testing
-    //public static final String [] defaultPlatforms = {"-x86w"};
+    //public static final String [] defaultPlatforms = {"-x86w", "-x64w"};
 
     /**
      * @param args
@@ -120,7 +120,7 @@ public class Compiler {
         PrintStream printer;
         final String outputDir = platform.getOutputDir();
 
-        platform.getSelectorIndex().generateSIT(resolvers, outputFile, outputDir);
+        platform.generateSIT(resolvers, outputFile, outputDir);
         platform.makeSubtypeTable(resolvers, outputFile, outputDir);
 
         for (final APkgClassResolver resolver : resolvers) resolver.computeFieldOffsets(platform);

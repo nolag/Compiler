@@ -5,16 +5,13 @@ import java.util.Set;
 
 import cs444.Compiler;
 import cs444.codegen.Addable;
-import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.StaticFieldInit;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.x86_32.Runtime;
 import cs444.codegen.x86.x86_32.X86_32Platform;
-import cs444.codegen.x86.x86_32.tiles.helpers.X86_32TileHelper;
 
 public class X86_32WindowsPlatform extends X86_32Platform{
     public static class Factory implements X86PlatformFactory<X86_32WindowsPlatform>{
@@ -44,11 +41,6 @@ public class X86_32WindowsPlatform extends X86_32Platform{
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Extern(EXIT));
         instructions.add(new Call(EXIT, sizeHelper));
-    }
-
-    @Override
-    public TileHelper<X86Instruction, Size> getTileHelper() {
-        return X86_32TileHelper.instance;
     }
 
     @Override

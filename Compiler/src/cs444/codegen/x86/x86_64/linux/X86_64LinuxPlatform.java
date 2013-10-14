@@ -5,9 +5,7 @@ import java.util.Set;
 
 import cs444.Compiler;
 import cs444.codegen.Addable;
-import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.StaticFieldInit;
 import cs444.codegen.x86.instructions.*;
@@ -15,7 +13,6 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.x86_64.Runtime;
 import cs444.codegen.x86.x86_64.X86_64Platform;
 import cs444.codegen.x86.x86_64.instructions.Syscall;
-import cs444.codegen.x86.x86_64.tiles.helpers.X86_64TileHelper;
 
 public class X86_64LinuxPlatform extends X86_64Platform{
     public static class Factory implements X86PlatformFactory<X86_64LinuxPlatform>{
@@ -45,11 +42,6 @@ public class X86_64LinuxPlatform extends X86_64Platform{
         instructions.add(new Mov(Register.DESTINATION, Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Mov(Register.ACCUMULATOR, EXIT, sizeHelper));
         instructions.add(new Syscall());
-    }
-
-    @Override
-    public TileHelper<X86Instruction, Size> getTileHelper() {
-        return X86_64TileHelper.instance;
     }
 
     @Override

@@ -71,7 +71,7 @@ public abstract class X86Platform extends Platform<X86Instruction, Size> {
     @Override
     public final void makeSubtypeTable(final List<APkgClassResolver> resolvers, final boolean outputFile,
             final String directory) throws IOException {
-                subtype = new X86SubtypeIndexedTable(resolvers, outputFile, directory, getSizeHelper());
+                subtype = new X86SubtypeIndexedTable(this, resolvers, outputFile, directory, getSizeHelper());
     }
 
     @Override

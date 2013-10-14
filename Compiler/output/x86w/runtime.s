@@ -10,7 +10,7 @@ extern _HeapAlloc@12
 global __malloc
 global __malloc_clear
 __malloc:
-push eax ;number of bytes to allocate
+	push eax ;number of bytes to allocate
 	push 0; no flags
 	;current process heap is an arg
 	call _GetProcessHeap@0 ;get the current process heap

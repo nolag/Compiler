@@ -385,7 +385,7 @@ public class CodeGenVisitor <T extends Instruction, E extends Enum<E>> {
     }
 
     public void printToFileAndEmpty(final PrintStream printer){
-        instructions.flush(printer);
+        instructions.flush(platform, printer);
     }
 
     private void binOpHelper(final BinOpExpr bin){

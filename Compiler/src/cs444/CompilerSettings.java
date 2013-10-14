@@ -7,6 +7,7 @@ import cs444.codegen.Platform.PlatformFactory;
 import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
 import cs444.codegen.x86.x86_32.windows.X86_32WindowsPlatform;
 import cs444.codegen.x86.x86_64.linux.X86_64LinuxPlatform;
+import cs444.codegen.x86.x86_64.windows.X86_64WindowsPlatform;
 
 public class CompilerSettings {
     public static final Map<String, PlatformFactory<?, ?, ?>> platformMap = new HashMap<String, PlatformFactory<?, ?, ?>>();
@@ -28,6 +29,14 @@ public class CompilerSettings {
         platformMap.put("-x86_32windows", X86_32WindowsPlatform.Factory.factory);
         platformMap.put("-x86_32w", X86_32WindowsPlatform.Factory.factory);
         platformMap.put("-x86_32win", X86_32WindowsPlatform.Factory.factory);
+
+
+        platformMap.put("-x64windows", X86_64WindowsPlatform.Factory.factory);
+        platformMap.put("-x64w", X86_64WindowsPlatform.Factory.factory);
+        platformMap.put("-x64win", X86_64WindowsPlatform.Factory.factory);
+        platformMap.put("-X86_64windows", X86_64WindowsPlatform.Factory.factory);
+        platformMap.put("-X86_64w", X86_64WindowsPlatform.Factory.factory);
+        platformMap.put("-X86_64win", X86_64WindowsPlatform.Factory.factory);
     }
 
     public final List<String> files = new ArrayList<String>();

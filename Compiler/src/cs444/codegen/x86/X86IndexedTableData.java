@@ -21,7 +21,7 @@ public class X86IndexedTableData extends IndexedTableData<X86Instruction, Size> 
 
     @Override
     public void genCode(final SizeHelper<X86Instruction, Size> sizeHelper) {
-        // having data section in different files confuses GDB, f needed comment this line because link.exe in windows needs it
+        // having data section in different files confuses GDB, needed to uncomment this line because link.exe in windows needs it
         instructions.add(new Section(SectionType.DATA));
 
         for (final String colHeaderLabel : indexedTable.keySet()) {

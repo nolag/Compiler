@@ -6,6 +6,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
+import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.peepholes.BasicInstrucitonHolder;
 import cs444.codegen.peepholes.InstructionHolder;
@@ -66,13 +67,13 @@ public class PushPopRemover extends BasicInstrucitonHolder<X86Instruction> {
     }
 
     @Override
-    public void flush(final PrintStream printer) {
+    public void flush(final Platform<X86Instruction, ?> platform, final PrintStream printer) {
         for(final List<X86Instruction> instructionList : instructions) {
             next.addAll(instructionList);
         }
 
         instructions.clear();
 
-        next.flush(printer);
+        next.flush(platform, printer);
     }
 }

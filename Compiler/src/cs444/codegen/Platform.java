@@ -39,6 +39,11 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
         return new CodeGenVisitor<T, E>(this);
     }
 
+    public void generateSIT(final List<APkgClassResolver> resolvers,
+            final boolean outputFile, final String directory) throws IOException {
+        getSelectorIndex().generateSIT(this, resolvers, outputFile, directory);
+    }
+
     @Override
     public boolean equals(final Object other) {
         if(other == null) return false;
@@ -84,6 +89,8 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
     public abstract void zeroStaticLong(final String staticLbl, final Addable<T> instructions);
 
     public abstract String getOutputDir();
+
+    public abstract T [] getAssemblerDirectives();
 
     //These functions are used for testing and can be changed to assemble or execute differently if cross compiling
 

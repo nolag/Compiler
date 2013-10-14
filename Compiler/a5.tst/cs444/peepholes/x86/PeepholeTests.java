@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.peepholes.InstructionHolder;
 import cs444.codegen.tiles.InstructionsAndTiming;
@@ -47,7 +48,7 @@ public class PeepholeTests {
         }
 
         @Override
-        public void flush(final PrintStream printer) { }
+        public void flush(final Platform<X86Instruction, ?> platform, final PrintStream printer) { }
     }
 
     @Test
@@ -57,7 +58,7 @@ public class PeepholeTests {
         final InstructionHolder<X86Instruction> holder = new PushPopRemover(mock, sizeHelper);
         holder.add(new Push(Register.ACCUMULATOR, sizeHelper));
         holder.add(new Pop(Register.ACCUMULATOR, sizeHelper));
-        holder.flush(null);
+        holder.flush(null, null);
         assertTrue(mock.instructions.size() == 0);
     }
 
@@ -68,7 +69,7 @@ public class PeepholeTests {
         final InstructionHolder<X86Instruction> holder = new PushPopRemover(mock, sizeHelper);
         holder.add(new Push(Register.ACCUMULATOR, sizeHelper));
         holder.add(new Pop(Register.COUNTER, sizeHelper));
-        holder.flush(null);
+        holder.flush(null, null);
         assertTrue(mock.instructions.size() == 1);
         final Mov mov = (Mov) mock.instructions.get(0);
         assertEquals(Register.ACCUMULATOR, mov.src);
@@ -86,7 +87,7 @@ public class PeepholeTests {
         holder.add(new Mov(Register.DESTINATION, Register.SOURCE, sizeHelper));
         holder.add(new Pop(Register.DATA, sizeHelper));
         holder.add(new Pop(Register.COUNTER, sizeHelper));
-        holder.flush(null);
+        holder.flush(null, null);
 
         assertEquals(4, mock.instructions.size());
 
@@ -110,7 +111,7 @@ public class PeepholeTests {
         holder.add(new Mov(Register.DESTINATION, Register.SOURCE, sizeHelper));
         holder.add(new Pop(Register.DATA, sizeHelper));
         holder.add(new Pop(Register.COUNTER, sizeHelper));
-        holder.flush(null);
+        holder.flush(null, null);
 
         assertEquals(5, mock.instructions.size());
         final Mov mov = (Mov) mock.instructions.get(2);
