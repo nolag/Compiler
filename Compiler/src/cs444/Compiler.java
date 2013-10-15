@@ -29,7 +29,7 @@ public class Compiler {
     public static final int COMPILER_ERROR_CODE = 42;
 
     //default to all supported platforms
-    public static final String [] defaultPlatforms = {"-x86l", "-x64l", "-x86w"};
+    public static final String [] defaultPlatforms = {"-x86l", "-x64l", "-x86w", "-x64w"};
 
     //linux testing
     //public static final String [] defaultPlatforms = {"-x86l", "-x64l"};
