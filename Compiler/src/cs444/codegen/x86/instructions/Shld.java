@@ -10,18 +10,18 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public class Shld extends ShXd{
     public Shld(final Register reg, final Register reg2, final Immediate arg, final SizeHelper<X86Instruction, Size> sizeHelper){
-        super("shld", reg, reg2, arg, sizeHelper, 2);
+        super("shld", reg, reg2, arg, sizeHelper, 2, 4);
     }
 
     public Shld(final Memory mem, final Register reg2, final Immediate arg, final SizeHelper<X86Instruction, Size> sizeHelper){
-        super("shld", mem, reg2, arg, sizeHelper, 3);
+        super("shld", mem, reg2, arg, sizeHelper, 3, 6);
     }
 
     public Shld(final Register reg, final Register reg2, final Register reg3, final SizeHelper<X86Instruction, Size> sizeHelper){
-        super("shld", reg, reg2, reg3, sizeHelper, 3);
+        super("shld", reg, reg2, reg3, sizeHelper, 3, 3);
     }
 
     public Shld(final Memory mem, final Register reg2, final Register reg3, final SizeHelper<X86Instruction, Size> sizeHelper){
-        super("shld", mem, reg2, reg3, sizeHelper, 4);
+        super("shld", mem, reg2, reg3, sizeHelper, 4, 5);
     }
 }

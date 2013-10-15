@@ -13,8 +13,8 @@ public abstract class BinInstruction extends X86Instruction {
     public final Size size2;
 
     protected BinInstruction(final String what, final InstructionArg arg1, final InstructionArg arg2,
-            final SizeHelper<X86Instruction, Size> sizeHelper, final Size size, final Size size2, final long cost){
-        super(cost);
+final SizeHelper<X86Instruction, Size> sizeHelper, final Size size, final Size size2, final int time, final int instSize) {
+        super(time, instSize);
         this.what = what;
         this.arg1 = arg1;
         this.arg2 = arg2;
@@ -24,14 +24,14 @@ public abstract class BinInstruction extends X86Instruction {
     }
 
     protected BinInstruction(final String what, final InstructionArg arg1, final InstructionArg arg2,
-            final SizeHelper<X86Instruction, Size> sizeHelper, final Size size, final long cost){
-        this(what, arg1, arg2, sizeHelper, size, size, cost);
+            final SizeHelper<X86Instruction, Size> sizeHelper, final Size size, final int time, final int instSize){
+        this(what, arg1, arg2, sizeHelper, size, size, time, instSize);
     }
 
     protected BinInstruction(final String what, final InstructionArg arg1, final InstructionArg arg2,
-            final SizeHelper<X86Instruction, Size> sizeHelper, final long cost){
+            final SizeHelper<X86Instruction, Size> sizeHelper, final int time, final int instSize){
 
-        this(what, arg1, arg2, sizeHelper, sizeHelper.getDefaultSize(), sizeHelper.getDefaultSize(), cost);
+        this(what, arg1, arg2, sizeHelper, sizeHelper.getDefaultSize(), sizeHelper.getDefaultSize(), time, instSize);
     }
 
     @Override

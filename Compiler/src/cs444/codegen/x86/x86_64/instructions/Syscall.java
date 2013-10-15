@@ -6,8 +6,9 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 public class Syscall extends X86Instruction{
 
     public Syscall() {
-        //No idea the cost, assume it's the same as int
-        super(26);
+        //No idea the time, assume it's the same as int
+        //No idea the space, but it can't be replaced anyways
+        super(26, 1);
     }
 
     @Override

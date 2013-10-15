@@ -8,7 +8,7 @@ public class Global extends X86Instruction{
     private final String lbl;
 
     public Global(final String lbl){
-        super(0);
+        super(0, 0);
         this.lbl = "global " + lbl;
     }
 

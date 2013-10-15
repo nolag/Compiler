@@ -10,10 +10,10 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public class Setne extends SetInstruciton{
     public Setne(final Register arg, final SizeHelper<X86Instruction, Size> sizeHelper) {
-        super("setne", arg, sizeHelper, 3);
+        super("setne", arg, sizeHelper, 3, 3);
     }
 
     public Setne(final Memory arg, final SizeHelper<X86Instruction, Size> sizeHelper) {
-        super("setne", arg, sizeHelper, 4);
+        super("setne", arg, sizeHelper, 4, 3);
     }
 }

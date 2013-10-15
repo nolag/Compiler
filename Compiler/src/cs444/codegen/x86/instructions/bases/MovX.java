@@ -13,9 +13,18 @@ public abstract class MovX extends X86Instruction {
     public final SizeHelper<X86Instruction, Size> sizeHelper;
     public final Size size;
 
-    //NOTE register register is legal, but I don't see why we would want it.
+    public MovX(final String what, final Register dst, final Register src, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper){
+        super(3, 3);
+        this.what = what;
+        this.dst = dst;
+        this.src = src;
+        this.sizeHelper = sizeHelper;
+        this.size = size;
+    }
+
     public MovX(final String what, final Register dst, final InstructionArg src, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper){
-        super(3);
+        //size is 3-7 so use 7
+        super(3, 7);
         this.what = what;
         this.dst = dst;
         this.src = src;

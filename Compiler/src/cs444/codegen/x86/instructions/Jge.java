@@ -9,6 +9,7 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 public class Jge extends UniInstruction{
     public Jge(final InstructionArg arg1, final SizeHelper<X86Instruction, Size> sizeHelper){
         //1 w/o jump 3 with ~= 2
-        super("jge", arg1, sizeHelper, 2);
+        //2 short 4 long
+        super("jge", arg1, sizeHelper, 2, 4);
     }
 }

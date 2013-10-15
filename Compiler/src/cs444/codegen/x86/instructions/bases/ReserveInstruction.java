@@ -10,8 +10,8 @@ public abstract class ReserveInstruction extends X86Instruction {
 
     protected abstract String getResName();
 
-    public ReserveInstruction(final String name, final long quantity, final long cost) {
-        super(cost);
+    public ReserveInstruction(final String name, final long quantity, final int time, final int size) {
+        super(time, size);
         this.name = name;
         this.quantity = quantity;
     }

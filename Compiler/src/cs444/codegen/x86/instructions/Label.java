@@ -8,7 +8,7 @@ public class Label extends X86Instruction{
     private final String lbl;
 
     public Label(final String lbl){
-        super(0);
+        super(0, 0);
         this.lbl = lbl + ":";
     }
 

@@ -10,8 +10,8 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
@@ -27,7 +27,41 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
 
     protected X86TileHelper(){ }
 
-    public static void genMov(final Size size, final InstructionArg from, final String value,
+    public static void genMov(final Size size, final Register from, final String value,
+            final Typeable dcl, final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
+
+        X86Instruction instruction;
+
+        if(size == sizeHelper.getDefaultSize()){
+            instruction = new Mov(Register.ACCUMULATOR, from, sizeHelper);
+        }else if(JoosNonTerminal.unsigned.contains(dcl.getType().getTypeDclNode().fullName)){
+            instruction = new Movzx(Register.ACCUMULATOR, from, size, sizeHelper);
+        }else{
+            instruction = new Movsx(Register.ACCUMULATOR, from, size, sizeHelper);
+        }
+
+        instructions.add(new Comment("getting value of " + value));
+        instructions.add(instruction);
+    }
+
+    public static void genMov(final Size size, final Memory from, final String value,
+            final Typeable dcl, final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
+
+        X86Instruction instruction;
+
+        if(size == sizeHelper.getDefaultSize()){
+            instruction = new Mov(Register.ACCUMULATOR, from, sizeHelper);
+        }else if(JoosNonTerminal.unsigned.contains(dcl.getType().getTypeDclNode().fullName)){
+            instruction = new Movzx(Register.ACCUMULATOR, from, size, sizeHelper);
+        }else{
+            instruction = new Movsx(Register.ACCUMULATOR, from, size, sizeHelper);
+        }
+
+        instructions.add(new Comment("getting value of " + value));
+        instructions.add(instruction);
+    }
+
+    public static void genMov(final Size size, final Immediate from, final String value,
             final Typeable dcl, final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions){
 
         X86Instruction instruction;

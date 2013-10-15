@@ -8,7 +8,7 @@ public class Leave extends X86Instruction{
     public static final Leave LEAVE = new Leave();
 
     private Leave(){
-        super(5);
+        super(5, 1);
     }
 
     @Override

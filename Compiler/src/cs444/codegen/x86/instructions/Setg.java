@@ -10,10 +10,10 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public class Setg extends SetInstruciton{
     public Setg(final Register arg, final SizeHelper<X86Instruction, Size> sizeHelper){
-        super("setg", arg, sizeHelper, 3);
+        super("setg", arg, sizeHelper, 3, 3);
     }
 
     public Setg(final Memory arg, final SizeHelper<X86Instruction, Size> sizeHelper){
-        super("setg", arg, sizeHelper, 4);
+        super("setg", arg, sizeHelper, 4, 3);
     }
 }

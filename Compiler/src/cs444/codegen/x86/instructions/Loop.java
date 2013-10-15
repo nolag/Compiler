@@ -10,7 +10,7 @@ public class Loop extends X86Instruction {
 
     public Loop(final String s){
         //6 on loop 2 on no loop, assume most loop would round to 6
-        super(6);
+        super(6, 2);
         this.s = s;
     }
 

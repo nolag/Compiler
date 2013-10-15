@@ -10,10 +10,10 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public class Not extends UniInstruction{
     public Not(final Memory what, final SizeHelper<X86Instruction, Size> sizeHelper){
-        super("not", what, sizeHelper, 3);
+        super("not", what, sizeHelper, 3, 4);
     }
 
     public Not(final Register what, final SizeHelper<X86Instruction, Size> sizeHelper){
-        super("not", what, sizeHelper, 1);
+        super("not", what, sizeHelper, 1, 2);
     }
 }

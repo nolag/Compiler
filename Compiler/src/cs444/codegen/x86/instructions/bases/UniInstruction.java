@@ -11,17 +11,17 @@ public abstract class UniInstruction extends X86Instruction{
     public final SizeHelper<X86Instruction, Size> sizeHelper;
 
     protected UniInstruction(final String what, final InstructionArg data, final Size size,
-            final SizeHelper<X86Instruction, Size> sizeHelper, final long cost){
+            final SizeHelper<X86Instruction, Size> sizeHelper, final int time, final int instSize){
 
-        super(cost);
+        super(time, instSize);
         this.what = what;
         this.data = data;
         this.size = size;
         this.sizeHelper = sizeHelper;
     }
 
-    protected UniInstruction(final String what, final InstructionArg data, final SizeHelper<X86Instruction, Size> sizeHelper, final long cost) {
-        this(what, data, sizeHelper.getDefaultSize(), sizeHelper, cost);
+    protected UniInstruction(final String what, final InstructionArg data, final SizeHelper<X86Instruction, Size> sizeHelper, final int time, final int size) {
+        this(what, data, sizeHelper.getDefaultSize(), sizeHelper, time, size);
     }
 
     @Override

@@ -9,12 +9,13 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 
 public class Call extends UniInstruction {
+    //can't find size, but it's not like it can easily be replaced
     public Call(final Immediate what, final SizeHelper<X86Instruction, Size> sizeHelper){
-        super("call", what, sizeHelper, 3);
+        super("call", what, sizeHelper, 3, 1);
     }
 
     public Call(final InstructionArg what, final SizeHelper<X86Instruction, Size> sizeHelper){
-        super("call", what, sizeHelper, 5);
+        super("call", what, sizeHelper, 5, 1);
     }
 
     @Override

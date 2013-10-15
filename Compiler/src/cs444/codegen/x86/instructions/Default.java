@@ -9,7 +9,7 @@ public class Default extends X86Instruction {
     private final String what;
 
     private Default(final String what) {
-        super(0);
+        super(0, 0);
         this.what = what;
     }
 

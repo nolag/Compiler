@@ -10,8 +10,10 @@ public abstract class SetInstruciton extends X86Instruction{
     public final InstructionArg arg;
     public final SizeHelper<X86Instruction, Size> sizeHelper;
 
-    protected SetInstruciton(final String what, final InstructionArg arg, final SizeHelper<X86Instruction, Size> sizeHelper, final long cost){
-        super(cost);
+    protected SetInstruciton(final String what, final InstructionArg arg,
+            final SizeHelper<X86Instruction, Size> sizeHelper, final int time, final int size){
+
+        super(time, size);
         this.what = what;
         this.arg = arg;
         this.sizeHelper = sizeHelper;

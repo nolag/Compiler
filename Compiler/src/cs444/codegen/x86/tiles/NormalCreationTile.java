@@ -8,7 +8,6 @@ import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Comment;
@@ -41,7 +40,7 @@ public class NormalCreationTile implements ITile<X86Instruction, Size, CreationE
         final APkgClassResolver typeDclNode = creation.getType().getTypeDclNode();
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         final long allocSize = typeDclNode.getStackSize(platform) + platform.getObjectLayout().objSize();
-        final InstructionArg bytes = new Immediate(allocSize);
+        final Immediate bytes = new Immediate(allocSize);
         instructions.add(new Comment("Allocate " + allocSize + " bytes for " + typeDclNode.fullName));
         instructions.add(new Mov(Register.ACCUMULATOR, bytes, sizeHelper));
 

@@ -8,6 +8,6 @@ import cs444.codegen.x86.instructions.bases.UniInstruction;
 public class Db extends UniInstruction{
     public Db(final Immediate data) {
         //Immediate won't need a sizeHelper
-        super("db", data, Size.DWORD, null, 0);
+        super("db", data, Size.DWORD, null, 0, 0);
     }
 }

@@ -41,7 +41,7 @@ public final class NameValueTile extends NumericHelperTile<SimpleNameSymbol>{
         if(dcl.isLocal) base = Register.FRAME;
         else if(dcl.isStatic()) base = new Immediate(staticFieldLbl);
 
-        final InstructionArg from = new Memory(base, dcl.getOffset(platform));
+        final Memory from = new Memory(base, dcl.getOffset(platform));
         X86TileHelper.genMov(size, from, dcl.dclName, dcl, sizeHelper, instructions);
 
         return instructions;

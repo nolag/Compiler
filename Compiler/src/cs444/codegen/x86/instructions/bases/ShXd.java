@@ -12,8 +12,8 @@ public abstract class ShXd extends X86Instruction{
     public final SizeHelper<X86Instruction, Size> sizeHelper;
 
     protected ShXd(final String what, final InstructionArg arg1, final InstructionArg arg2, final InstructionArg arg3,
-            final SizeHelper<X86Instruction, Size> sizeHelper, final long cost){
-        super(cost);
+            final SizeHelper<X86Instruction, Size> sizeHelper, final int time, final int size){
+        super(time, size);
         this.what = what;
         this.arg1 = arg1;
         this.arg2 = arg2;

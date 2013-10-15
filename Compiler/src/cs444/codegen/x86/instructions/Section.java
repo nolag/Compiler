@@ -9,7 +9,7 @@ public class Section extends X86Instruction {
 
     private final SectionType type;
     public Section(final SectionType type){
-        super(0);
+        super(0, 0);
         this.type = type;
     }
 

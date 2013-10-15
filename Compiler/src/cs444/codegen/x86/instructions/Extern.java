@@ -8,7 +8,7 @@ public class Extern extends X86Instruction {
     private final String lbl;
 
     public Extern(final String lbl){
-        super(0);
+        super(0, 0);
         this.lbl = "extern " + lbl;
     }
 

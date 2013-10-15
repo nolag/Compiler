@@ -11,25 +11,29 @@ import cs444.codegen.peepholes.InstructionHolder;
 
 public class InstructionsAndTiming<T extends Instruction> implements Addable<T>{
     private final List<T> instructions = new LinkedList<T>();
-    private double totalCost = 0;
+    private long totaltime = 0;
+    private long totalSpace = 0;
 
     @Override
     public void add(final T instruction){
-        totalCost += instruction.cost;
+        totaltime += instruction.time;
+        totalSpace += instruction.space;
         instructions.add(instruction);
     }
 
     @Override
     public void addAll(final Collection<T> instructions){
         for(final T instruction : instructions){
-            totalCost += instruction.cost;
+            totaltime += instruction.time;
+            totalSpace += instruction.space;
             this.instructions.add(instruction);
         }
     }
 
     @Override
     public void addAll(final InstructionsAndTiming<T> other){
-        totalCost += other.totalCost;
+        totaltime += other.totaltime;
+        totalSpace += other.totalSpace;
         instructions.addAll(other.instructions);
     }
 
@@ -38,7 +42,7 @@ public class InstructionsAndTiming<T extends Instruction> implements Addable<T>{
     }
 
     public boolean isBetterThan(final InstructionsAndTiming<T> other){
-        return other == null || totalCost < other.totalCost;
+        return other == null || totaltime < other.totaltime || (totaltime == other.totaltime && totalSpace < other.totalSpace);
     }
 
     @Override

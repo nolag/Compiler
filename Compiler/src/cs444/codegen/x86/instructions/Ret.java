@@ -8,7 +8,7 @@ public class Ret extends X86Instruction {
     public static final Ret RET = new Ret();
 
     private Ret(){
-        super(5);
+        super(5, 1);
     }
 
     @Override
