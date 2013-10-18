@@ -92,4 +92,17 @@ public class Immediate extends NotMemory{
     public boolean uses(final InstructionArg what) {
         return false;
     }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (!(other instanceof Immediate)) return false;
+        final Immediate imm = (Immediate) other;
+        if (imm == this) return true;
+        return value.equals(imm.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
+    }
 }

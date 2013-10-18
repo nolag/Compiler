@@ -9,7 +9,7 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 public class Mov extends X86Instruction {
     public final InstructionArg src;
     public final InstructionArg dest;
-    private final SizeHelper<X86Instruction, Size> sizeHelper;
+    public final SizeHelper<X86Instruction, Size> sizeHelper;
     private final Size size;
 
     //TODO Note immediate 64 was not used for size, think about this later?

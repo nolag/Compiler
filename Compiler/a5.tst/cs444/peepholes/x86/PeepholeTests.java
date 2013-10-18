@@ -15,13 +15,14 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.peepholes.InstructionHolder;
 import cs444.codegen.tiles.InstructionsAndTiming;
+import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.Register;
-import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.Pop;
 import cs444.codegen.x86.instructions.Push;
+import cs444.codegen.x86.instructions.Xor;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.peepholes.MovZeroRegRemover;
 import cs444.codegen.x86.peepholes.PushPopRemover;
 
 public class PeepholeTests {
@@ -117,5 +118,25 @@ public class PeepholeTests {
         final Mov mov = (Mov) mock.instructions.get(2);
         assertEquals(Register.SOURCE, mov.src);
         assertEquals(Register.DATA, mov.dest);
+    }
+
+    @Test
+    public void movZeroRemoved() {
+        final MockInstrucionHolder mock = new MockInstrucionHolder();
+        final MovZeroRegRemover holder = new MovZeroRegRemover(mock);
+        final SizeHelper<X86Instruction, Size> sizeHelper = X86SizeHelper.sizeHelper32;
+        final X86Instruction mov1 = new Mov(new Memory(Register.ACCUMULATOR), Immediate.ZERO, sizeHelper);
+        holder.add(mov1);
+        final X86Instruction mov2 = new Mov(Register.ACCUMULATOR, Immediate.ZERO, sizeHelper);
+        holder.add(mov2);
+        final X86Instruction mov3 = new Mov(Register.ACCUMULATOR, Immediate.ONE, sizeHelper);
+        holder.add(mov3);
+
+        assertEquals(3, mock.instructions.size());
+        assertEquals(mov1, mock.instructions.get(0));
+        final Xor xor = (Xor) mock.instructions.get(1);
+        assertEquals(Register.ACCUMULATOR, xor.arg1);
+        assertEquals(Register.ACCUMULATOR, xor.arg2);
+        assertEquals(mov3, mock.instructions.get(2));
     }
 }

@@ -13,6 +13,7 @@ import cs444.codegen.x86.instructions.Section.SectionType;
 import cs444.codegen.x86.instructions.bases.ReserveInstruction;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.instructions.factories.ReserveInstructionMaker;
+import cs444.codegen.x86.peepholes.MovZeroRegRemover;
 import cs444.codegen.x86.peepholes.PushPopRemover;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
@@ -34,12 +35,13 @@ public abstract class X86Platform extends Platform<X86Instruction, Size> {
             final IRuntime<X86Instruction> runtime, final X86SizeHelper sizeHelper) {
         super(options);
 
-        final InstructionPrinter<X86Instruction> printer = new InstructionPrinter<>();
+        final InstructionHolder<X86Instruction> printer = new InstructionPrinter<>();
 
         if(options.contains(NO_PEEPHOLE)) {
             instrucitons = printer;
         } else {
-            instrucitons = new PushPopRemover(printer, sizeHelper);
+            final InstructionHolder<X86Instruction> pushPop = new PushPopRemover(printer, sizeHelper);
+            instrucitons = new MovZeroRegRemover(pushPop);
         }
 
         tiles.init(options);
