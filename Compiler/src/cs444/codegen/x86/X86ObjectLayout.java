@@ -20,10 +20,12 @@ public class X86ObjectLayout implements ObjectLayout<X86Instruction> {
 
     public final int SUBTYPE_OFFSET;
     public final X86SizeHelper sizeHelper;
+    private final MemoryFormat format;
 
     private X86ObjectLayout(final boolean use64){
         sizeHelper = use64 ? X86SizeHelper.sizeHelper64 : X86SizeHelper.sizeHelper32;
         SUBTYPE_OFFSET = sizeHelper.getDefaultStackSize();
+        format = new AddMemoryFormat(Register.ACCUMULATOR, new Immediate(SUBTYPE_OFFSET));
     }
 
     @Override
@@ -32,21 +34,21 @@ public class X86ObjectLayout implements ObjectLayout<X86Instruction> {
         instructions.add(new Comment("Initializing Pointer to SIT Column"));
         final Immediate classSITLabel = new Immediate(typeDclNode.generateSIT());
         instructions.add(new Extern(classSITLabel));
-        instructions.add(new Mov(new Memory(Register.ACCUMULATOR), classSITLabel, sizeHelper));
+        instructions.add(new Mov(new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.ACCUMULATOR)), classSITLabel, sizeHelper));
 
         instructions.add(new Comment("Initializing Pointer to Subtype Column"));
         final Immediate subtypeITLabel = new Immediate(typeDclNode.generateSubtypeIT());
         instructions.add(new Extern(subtypeITLabel));
-        instructions.add(new Mov(new Memory(Register.ACCUMULATOR, SUBTYPE_OFFSET), subtypeITLabel, sizeHelper));
+        instructions.add(new Mov(new Memory(format), subtypeITLabel, sizeHelper));
     }
 
     @Override
     public List<X86Instruction> subtypeCheckCode(final TypeSymbol subType, final Platform<X86Instruction, ?> platform) {
         final List<X86Instruction> instructions = new LinkedList<X86Instruction>();
         instructions.add(new Comment("Subtype lookup"));
-        instructions.add(new Mov(Register.ACCUMULATOR, new Memory(Register.ACCUMULATOR, SUBTYPE_OFFSET), sizeHelper));
-        final long offset = platform.getSubtypeTable().getOffset(subType.getTypeDclNode().fullName);
-        final Memory instanceOfInfo = new Memory(Register.ACCUMULATOR, offset);
+        instructions.add(new Mov(Register.ACCUMULATOR, new Memory(format), sizeHelper));
+        final Immediate offset = new Immediate(platform.getSubtypeTable().getOffset(subType.getTypeDclNode().fullName));
+        final Memory instanceOfInfo = new Memory(new AddMemoryFormat(Register.ACCUMULATOR, offset));
         instructions.add(new Movzx(Register.ACCUMULATOR, instanceOfInfo, SubtypeCellGen.dataSize, sizeHelper));
         return instructions;
     }

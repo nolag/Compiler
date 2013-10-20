@@ -55,14 +55,14 @@ public abstract class X86_64Platform extends X86Platform {
     @Override
     public final void moveStaticLong(final String staticLbl, final Addable<X86Instruction> instructions){
         final Immediate lbl = new Immediate(staticLbl);
-        final Memory toAddr = new Memory(lbl);
+        final Memory toAddr = new Memory(new BasicMemoryFormat(lbl));
         instructions.add(new Mov(toAddr, Register.ACCUMULATOR, sizeHelper));
     }
 
     @Override
     public final void zeroStaticLong(final String staticLbl, final Addable<X86Instruction> instructions){
         final Immediate lbl = new Immediate(staticLbl);
-        final Memory toAddr = new Memory(lbl);
+        final Memory toAddr = new Memory(new BasicMemoryFormat(lbl));
         instructions.add(new Mov(toAddr, Immediate.ZERO, sizeHelper));
     }
 
@@ -75,7 +75,7 @@ public abstract class X86_64Platform extends X86Platform {
         for (final DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
             final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
-            final Memory fieldAddr = new Memory(Register.BASE, fieldDcl.getOffset(this));
+            final Memory fieldAddr = new Memory(new AddMemoryFormat(Register.BASE, new Immediate(fieldDcl.getOffset(this))));
 
             if(!fieldDcl.children.isEmpty()){
                 instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));

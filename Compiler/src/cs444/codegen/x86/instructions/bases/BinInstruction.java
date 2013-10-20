@@ -13,7 +13,7 @@ public abstract class BinInstruction extends X86Instruction {
     public final Size size2;
 
     protected BinInstruction(final String what, final InstructionArg arg1, final InstructionArg arg2,
-final SizeHelper<X86Instruction, Size> sizeHelper, final Size size, final Size size2, final int time, final int instSize) {
+            final SizeHelper<X86Instruction, Size> sizeHelper, final Size size, final Size size2, final int time, final int instSize) {
         super(time, instSize);
         this.what = what;
         this.arg1 = arg1;

@@ -56,8 +56,8 @@ public abstract class X86_32Platform extends X86Platform {
     @Override
     public final void moveStaticLong(final String staticLbl, final Addable<X86Instruction> instructions){
         final Immediate lbl = new Immediate(staticLbl);
-        final Memory toAddrL = new Memory(lbl);
-        final Memory toAddrH = new Memory(lbl, 4);
+        final Memory toAddrL = new Memory(new BasicMemoryFormat(lbl));
+        final Memory toAddrH = new Memory(new AddMemoryFormat(lbl, Immediate.FOUR));
         instructions.add(new Mov(toAddrL, Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Mov(toAddrH, Register.DATA, sizeHelper));
     }
@@ -65,8 +65,8 @@ public abstract class X86_32Platform extends X86Platform {
     @Override
     public final void zeroStaticLong(final String staticLbl, final Addable<X86Instruction> instructions){
         final Immediate lbl = new Immediate(staticLbl);
-        final Memory toAddrL = new Memory(lbl);
-        final Memory toAddrH = new Memory(lbl, 4);
+        final Memory toAddrL = new Memory(new BasicMemoryFormat(lbl));
+        final Memory toAddrH = new Memory(new AddMemoryFormat(lbl, Immediate.FOUR));
         instructions.add(new Mov(toAddrL, Immediate.ZERO, sizeHelper));
         instructions.add(new Mov(toAddrH, Immediate.ZERO, sizeHelper));
     }
@@ -81,7 +81,7 @@ public abstract class X86_32Platform extends X86Platform {
             final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
             final long offset = fieldDcl.getOffset(this);
-            final Memory fieldAddr = new Memory(Register.BASE, offset);
+            final Memory fieldAddr = new Memory(new AddMemoryFormat(Register.BASE, new Immediate(offset)));
 
             if(!fieldDcl.children.isEmpty()){
                 instructions.add(new Comment("Initializing field " + fieldDcl.dclName + "."));
@@ -94,7 +94,7 @@ public abstract class X86_32Platform extends X86Platform {
                 instructions.addAll(getBest(field));
 
                 if(fieldDcl.getType().value.equals(JoosNonTerminal.LONG)){
-                    final Memory fieldAddrH = new Memory(Register.BASE, offset + 4);
+                    final Memory fieldAddrH = new Memory(new AddMemoryFormat(Register.BASE, new Immediate(offset + 4)));
                     instructions.add(new Mov(fieldAddr, Register.ACCUMULATOR, Size.DWORD, sizeHelper));
                     instructions.add(new Mov(fieldAddrH, Register.DATA, Size.DWORD, sizeHelper));
                 }else{

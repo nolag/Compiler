@@ -4,7 +4,7 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.x86.InstructionArg;
 import cs444.codegen.x86.InstructionArg.Size;
 
-public abstract class UniInstruction extends X86Instruction{
+public abstract class UniInstruction extends X86Instruction {
     private final String what;
     public final InstructionArg data;
     public final Size size;

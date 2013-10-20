@@ -4,9 +4,8 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
+import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.Memory;
-import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.Pop;
@@ -45,8 +44,8 @@ public class LongAssignmentTile extends LongOnlyTile<AssignmentExprSymbol> {
         platform.getTileHelper().makeLong(rightHandSide, instructions, sizeHelper);
 
         instructions.add(new Pop(Register.COUNTER, sizeHelper));
-        final Memory toh = new Memory(Register.COUNTER, 4);
-        final Memory tol = new Memory(Register.COUNTER);
+        final Memory toh = new Memory(new AddMemoryFormat(Register.COUNTER, Immediate.FOUR));
+        final Memory tol = new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.COUNTER));
         instructions.add(new Mov(tol, Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Mov(toh, Register.DATA, sizeHelper));
         instructions.add(new Comment("End Long Assignment"));

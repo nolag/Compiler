@@ -37,11 +37,11 @@ public final class NameValueTile extends NumericHelperTile<SimpleNameSymbol>{
 
         if(dcl.isStatic() && dcl.dclInResolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(staticFieldLbl));
 
-        InstructionArg base = Register.ACCUMULATOR;
+        NotMemory base = Register.ACCUMULATOR;
         if(dcl.isLocal) base = Register.FRAME;
         else if(dcl.isStatic()) base = new Immediate(staticFieldLbl);
 
-        final Memory from = new Memory(base, dcl.getOffset(platform));
+        final Memory from = new Memory(new AddMemoryFormat(base, new Immediate(dcl.getOffset(platform))));
         X86TileHelper.genMov(size, from, dcl.dclName, dcl, sizeHelper, instructions);
 
         return instructions;

@@ -6,6 +6,7 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
+import cs444.codegen.x86.BasicMemoryFormat;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
@@ -46,7 +47,7 @@ public class AssignmentTile extends NumericHelperTile<AssignmentExprSymbol> {
         instructions.addAll(platform.getBest(rightHandSide));
 
         instructions.add(new Pop(Register.DATA, sizeHelper));
-        final Memory to = new Memory(Register.DATA);
+        final Memory to = new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.DATA));
 
         final Size size = CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).lhsSize;
 

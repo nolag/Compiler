@@ -38,12 +38,12 @@ public final class LongNameValueTile extends LongOnlyTile<SimpleNameSymbol> {
         if(dcl.isStatic() && dcl.dclInResolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile)
             instructions.add(new Extern(staticFieldLbl));
 
-        InstructionArg base = Register.ACCUMULATOR;
+        NotMemory base = Register.ACCUMULATOR;
         if(dcl.isLocal) base = Register.FRAME;
         else if(dcl.isStatic()) base = new Immediate(staticFieldLbl);
 
-        final Memory fromh = new Memory(base, dcl.getOffset(platform) + 4);
-        final Memory froml = new Memory(base, dcl.getOffset(platform));
+        final Memory fromh = new Memory(new AddMemoryFormat(base, new Immediate(dcl.getOffset(platform) + 4)));
+        final Memory froml = new Memory(new AddMemoryFormat(base, new Immediate(dcl.getOffset(platform))));
         instructions.add(new Mov(Register.DATA, fromh, sizeHelper));
         instructions.add(new Mov(Register.ACCUMULATOR, froml, sizeHelper));
 

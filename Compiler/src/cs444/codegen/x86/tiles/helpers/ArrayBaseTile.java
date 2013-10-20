@@ -41,7 +41,7 @@ public abstract class ArrayBaseTile implements ITile<X86Instruction, Size, Array
         instructions.add(new Label(ok));
 
         ok = "arrayAccessOk" + myVal;
-        final Memory len = new Memory(Register.BASE, new Immediate(platform.getObjectLayout().objSize()));
+        final Memory len = new Memory(new AddMemoryFormat(Register.BASE, new Immediate(platform.getObjectLayout().objSize())));
         instructions.add(new Cmp(len, Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Jg(new Immediate(ok), sizeHelper));
         Runtime.instance.throwException(instructions, "Invalid array access");

@@ -7,16 +7,17 @@ import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.X86Platform;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.*;
+import cs444.codegen.x86.tiles.opt.MultPow2Tile;
 
-public abstract class X86TileInit extends TileInit{
+public abstract class X86TileInit extends TileInit {
     protected final Class<? extends X86Platform> klass;
 
-    protected X86TileInit(final Class<? extends X86Platform> klass){
+    protected X86TileInit(final Class<? extends X86Platform> klass) {
         this.klass =klass;
     }
 
     @Override
-    public void initBase(){
+    public void initBase() {
         AddTile.init(klass);
         AndTile.<X86Instruction, Size>init(klass);
         ANonTerminalTile.init(klass);
@@ -67,8 +68,9 @@ public abstract class X86TileInit extends TileInit{
     }
 
     @Override
-    public void initBasicOpt(){
+    public void initBasicOpt() {
         DivZeroTile.<X86Instruction, Size>init(klass);
+        MultPow2Tile.init(klass);
         NonNullFieldAccess.<X86Instruction, Size>init(klass);
         RemZeroTile.<X86Instruction, Size>init(klass);
         UpCastTile.<X86Instruction, Size>init(klass);

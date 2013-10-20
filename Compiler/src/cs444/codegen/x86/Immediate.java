@@ -17,7 +17,7 @@ public class Immediate extends NotMemory{
     public static final Immediate ONE = new Immediate("1");
     public static final Immediate ZERO = new Immediate("0");
     public static final Immediate QWORD_I = new Immediate("8");
-    public static final Immediate DWORD_I = new Immediate("4");
+    public static final Immediate FOUR = new Immediate("4");
     public static final Immediate TWO = new Immediate("2");
     public static final Immediate QWORD_S = new Immediate("3");;
     public static final Immediate THIRTY_ONE = new Immediate("31");
@@ -34,7 +34,7 @@ public class Immediate extends NotMemory{
     public static final Immediate WORD_S = ONE;
 
 
-    //same value as ONE
+    //same value as ZERO
     public static final Immediate NULL = ZERO;
     public static final Immediate FALSE = ZERO;
     public static final Immediate BYTE_S = ZERO;
@@ -42,6 +42,9 @@ public class Immediate extends NotMemory{
     //same value as TWO
     public static final Immediate WORD_I = TWO;
     public static final Immediate DWORD_S = TWO;
+
+    //same value as FOUR
+    public static final Immediate DWORD_I = FOUR;
 
     public Immediate(final String value){
         this.value = value;

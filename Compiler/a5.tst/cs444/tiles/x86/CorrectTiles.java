@@ -129,6 +129,15 @@ public class CorrectTiles {
     }
 
     @Test
+    public void multDivPow2() throws CompilerException, IOException {
+        final String subBase = TILE_TESTS + "MultDivPow2/";
+        final String [] superPaths = {subBase +  "Object.java"};
+        assertFalse(compileAndContains("mul ", superPaths));
+        //IDiv cannot be replaced by sar because they round differently for -ve numbers
+        //assertFalse(contains("div", superPaths));
+    }
+
+    @Test
     //Note that or is similar and the xor instruciton is used so it was hard to test as well.  And will do for both.
     public void andReduce() throws CompilerException, IOException {
         final String subBase = TILE_TESTS + "AndOpts/";

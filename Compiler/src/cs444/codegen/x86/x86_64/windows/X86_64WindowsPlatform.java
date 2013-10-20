@@ -71,8 +71,8 @@ public class X86_64WindowsPlatform extends X86_64Platform {
 
     @Override
     public String[] getAssembleCmd(final String fileName) {
-        //return new String[] {"nasm", "-O1", "-f", "win64", fileName};
+        return new String[] {"nasm", "-O1", "-f", "win64", fileName};
         //This will add debugging to the compiled objects.  Use it for debugging failed tests
-        return new String[] {"nasm", "-O1", "-f", "win64", "-g", fileName};
+        //return new String[] {"nasm", "-O1", "-f", "win64", "-g", fileName};
     }
 }

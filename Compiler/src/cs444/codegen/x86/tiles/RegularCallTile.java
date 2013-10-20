@@ -6,9 +6,8 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
+import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.Memory;
-import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
@@ -48,12 +47,12 @@ public class RegularCallTile implements ITile<X86Instruction, Size, SimpleMethod
 
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Comment("get SIT column of " + call.dclName));
-        instructions.add(new Mov(Register.BASE, new Memory(Register.BASE), sizeHelper));
+        instructions.add(new Mov(Register.BASE, new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.BASE)), sizeHelper));
 
         Memory methodAddr = null;
         try {
             final long by = platform.getSelectorIndex().getOffset(PkgClassResolver.generateUniqueName(call, call.dclName));
-            methodAddr = new Memory(Register.BASE, by);
+            methodAddr = new Memory(new AddMemoryFormat(Register.BASE, new Immediate(by)));
         } catch (final UndeclaredException e) {
             // shouldn't get here
             e.printStackTrace();

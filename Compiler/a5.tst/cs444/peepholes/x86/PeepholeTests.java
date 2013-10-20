@@ -125,7 +125,7 @@ public class PeepholeTests {
         final MockInstrucionHolder mock = new MockInstrucionHolder();
         final MovZeroRegRemover holder = new MovZeroRegRemover(mock);
         final SizeHelper<X86Instruction, Size> sizeHelper = X86SizeHelper.sizeHelper32;
-        final X86Instruction mov1 = new Mov(new Memory(Register.ACCUMULATOR), Immediate.ZERO, sizeHelper);
+        final X86Instruction mov1 = new Mov(new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.ACCUMULATOR)), Immediate.ZERO, sizeHelper);
         holder.add(mov1);
         final X86Instruction mov2 = new Mov(Register.ACCUMULATOR, Immediate.ZERO, sizeHelper);
         holder.add(mov2);

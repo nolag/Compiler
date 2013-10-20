@@ -4,9 +4,8 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
+import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.Memory;
-import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Pop;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.helpers.NumericArrayTile;
@@ -15,6 +14,7 @@ import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
 public final class ArrayValueTile extends NumericArrayTile{
     private static ArrayValueTile tile;
+    private static MemoryFormat format = new AddMemoryFormat(Register.ACCUMULATOR, Register.BASE);
 
     public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
         if(tile == null) tile = new ArrayValueTile();
@@ -34,7 +34,7 @@ public final class ArrayValueTile extends NumericArrayTile{
         Size elementSize;
         if(stackSize >= sizeHelper.getDefaultStackSize()) elementSize = sizeHelper.getDefaultSize();
         else elementSize = sizeHelper.getSize(stackSize);
-        final Memory mem = new Memory(Register.ACCUMULATOR, Register.BASE);
+        final Memory mem = new Memory(format);
         X86TileHelper.genMov(elementSize, mem, "array", arrayAccess, sizeHelper, instructions);
         instructions.add(new Pop(Register.BASE, sizeHelper));
         return instructions;

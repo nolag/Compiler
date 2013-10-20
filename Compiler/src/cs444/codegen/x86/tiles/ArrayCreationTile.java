@@ -69,10 +69,9 @@ public class ArrayCreationTile implements ITile<X86Instruction, Size, CreationEx
         instructions.add(new Comment("Pop the size"));
         instructions.add(new Pop(Register.DATA, sizeHelper));
 
-        final long lengthIndex = platform.getObjectLayout().objSize();
-        final Immediate li = new Immediate(String.valueOf(lengthIndex));
+        final Immediate lengthIndex = new Immediate(platform.getObjectLayout().objSize());
 
-        instructions.add(new Mov(new Memory(Register.ACCUMULATOR, li), Register.DATA, sizeHelper));
+        instructions.add(new Mov(new Memory(new AddMemoryFormat(Register.ACCUMULATOR, lengthIndex)), Register.DATA, sizeHelper));
         platform.getObjectLayout().initialize(typeDclNode, instructions);
         instructions.add(new Comment("Done creating object"));
         return instructions;
