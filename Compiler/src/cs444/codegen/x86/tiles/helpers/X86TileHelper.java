@@ -89,11 +89,18 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
         return  power == Math.round(power) ? power : null;
     }
 
-    public static Long getLongValue(final ISymbol symbol, final long maxVal) {
+    public static Long getLongValue(final ISymbol symbol, final long maxVal, final long minVal) {
         if (!(symbol instanceof INumericLiteral)) return null;
         final INumericLiteral number = (INumericLiteral) symbol;
         final long value = number.getValue();
-        return value <= maxVal ? value: null;
+        return value <= maxVal  && value >= minVal ? value: null;
+    }
+
+    public static Integer getIntValue(final ISymbol symbol, final int maxVal, final int minVal) {
+        if (!(symbol instanceof INumericLiteral)) return null;
+        final INumericLiteral number = (INumericLiteral) symbol;
+        final int value = (int) number.getValue();
+        return value <= maxVal && value >= minVal ? value: null;
     }
 
     @Override

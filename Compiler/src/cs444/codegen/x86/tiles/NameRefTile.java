@@ -6,13 +6,9 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.Immediate;
+import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.Register;
-import cs444.codegen.x86.instructions.Add;
-import cs444.codegen.x86.instructions.Comment;
-import cs444.codegen.x86.instructions.Extern;
-import cs444.codegen.x86.instructions.Mov;
+import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
@@ -37,19 +33,19 @@ public class NameRefTile implements ITile<X86Instruction, Size, SimpleNameSymbol
         final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
-        X86Instruction instruction = new Add(Register.ACCUMULATOR, new Immediate(dcl.getOffset(platform)), sizeHelper);
+        instructions.add(new Comment("Move reference of " + dcl.dclName + " in to Accumulator"));
         if(dcl.isStatic()){
             if (dcl.dclInResolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile) {
                 instructions.add(new Extern(staticFieldLbl));
             }
-            instruction = new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl), sizeHelper);
+            instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(staticFieldLbl), sizeHelper));
         }else if(dcl.isLocal){
             instructions.add(new Comment("mov frame to accumulator because it is local"));
-            instructions.add(new Mov(Register.ACCUMULATOR, Register.FRAME, sizeHelper));
+            instructions.add(new Lea(Register.ACCUMULATOR, new Memory(new AddMemoryFormat(Register.FRAME, new Immediate(dcl.getOffset(platform)))), sizeHelper));
+        } else {
+            instructions.add(new Add(Register.ACCUMULATOR, new Immediate(dcl.getOffset(platform)), sizeHelper));
         }
 
-        instructions.add(new Comment("Move reference of " + dcl.dclName + " in to Accumulator"));
-        instructions.add(instruction);
         return instructions;
     }
 
