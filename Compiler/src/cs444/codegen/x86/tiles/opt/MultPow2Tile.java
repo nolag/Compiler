@@ -1,8 +1,8 @@
 package cs444.codegen.x86.tiles.opt;
 
-import static cs444.codegen.x86.tiles.helpers.X86TileHelper.powerOrNull;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
+import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
@@ -25,7 +25,7 @@ public class MultPow2Tile implements ITile<X86Instruction, Size, MultiplyExprSym
     @Override
     public boolean fits(final MultiplyExprSymbol op, final Platform<X86Instruction, Size> platform) {
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final boolean canUes = powerOrNull(op.children.get(0))  != null|| powerOrNull(op.children.get(1)) != null;
+        final boolean canUes = TileHelper.powerTwoOrNull(op.children.get(0))  != null|| TileHelper.powerTwoOrNull(op.children.get(1)) != null;
         return canUes && sizeHelper.getDefaultStackSize()  >= sizeHelper.getByteSizeOfType(op.getType().getTypeDclNode().fullName);
     }
 
@@ -34,16 +34,16 @@ public class MultPow2Tile implements ITile<X86Instruction, Size, MultiplyExprSym
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<>();
         final ISymbol first = symbol.children.get(0);
         final ISymbol second = symbol.children.get(1);
-        Double value = powerOrNull(first);
+        Integer value = TileHelper.powerTwoOrNull(first);
         ISymbol other = second;
 
         if (value == null) {
-            value = powerOrNull(second);
+            value = TileHelper.powerTwoOrNull(second);
             other = first;
         }
 
         instructions.addAll(platform.getBest(other));
-        instructions.add(new Shl(Register.ACCUMULATOR, new Immediate((long)(double)value), platform.getSizeHelper()));
+        instructions.add(new Shl(Register.ACCUMULATOR, new Immediate((long)value), platform.getSizeHelper()));
 
         return instructions;
     }

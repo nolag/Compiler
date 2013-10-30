@@ -15,6 +15,8 @@ public class Object{
         if (number != 25) i = 8;
         number = number * 16;
         if (number != 400) i = 16;
+        number = number * 9;
+        if (number != 3600) i = 32;
         return 0;
     }
 }

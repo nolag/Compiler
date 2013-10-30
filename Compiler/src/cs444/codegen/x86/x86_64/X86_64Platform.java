@@ -23,7 +23,7 @@ import cs444.types.APkgClassResolver;
 public abstract class X86_64Platform extends X86Platform {
     public final X86SelectorIndexedTable sit;
 
-    private static X86Instruction [] directives = { Default.rel };
+    private static X86Instruction [] directives = { };
 
     protected X86_64Platform(final IRuntime<X86Instruction> runtime, final Set<String> opts){
         super(opts, X86_64TileInit.instance, runtime, X86SizeHelper.sizeHelper64);

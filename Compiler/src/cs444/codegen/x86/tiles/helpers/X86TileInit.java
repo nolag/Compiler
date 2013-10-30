@@ -8,6 +8,7 @@ import cs444.codegen.x86.X86Platform;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.*;
 import cs444.codegen.x86.tiles.opt.LeaForMultTile;
+import cs444.codegen.x86.tiles.opt.LeaForMultOffOneTile;
 import cs444.codegen.x86.tiles.opt.MultPow2Tile;
 
 public abstract class X86TileInit extends TileInit {
@@ -72,6 +73,7 @@ public abstract class X86TileInit extends TileInit {
     public void initBasicOpt() {
         DivZeroTile.<X86Instruction, Size>init(klass);
         LeaForMultTile.init(klass);
+        LeaForMultOffOneTile.init(klass);
         MultPow2Tile.init(klass);
         NonNullFieldAccess.<X86Instruction, Size>init(klass);
         RemZeroTile.<X86Instruction, Size>init(klass);

@@ -78,31 +78,6 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
         instructions.add(instruction);
     }
 
-    private static double getPowerOfTwo(final INumericLiteral number) {
-        return Math.log(number.getValue()) / Math.log(2);
-    }
-
-    public static Double powerOrNull(final ISymbol symbol) {
-        if (!(symbol instanceof INumericLiteral)) return null;
-        final INumericLiteral number = (INumericLiteral) symbol;
-        final double power = getPowerOfTwo(number);
-        return  power == Math.round(power) ? power : null;
-    }
-
-    public static Long getLongValue(final ISymbol symbol, final long maxVal, final long minVal) {
-        if (!(symbol instanceof INumericLiteral)) return null;
-        final INumericLiteral number = (INumericLiteral) symbol;
-        final long value = number.getValue();
-        return value <= maxVal  && value >= minVal ? value: null;
-    }
-
-    public static Integer getIntValue(final ISymbol symbol, final int maxVal, final int minVal) {
-        if (!(symbol instanceof INumericLiteral)) return null;
-        final INumericLiteral number = (INumericLiteral) symbol;
-        final int value = (int) number.getValue();
-        return value <= maxVal && value >= minVal ? value: null;
-    }
-
     @Override
     public final void ifNullJmpCode(final String ifNullLbl,  final SizeHelper<X86Instruction, Size> sizeHelper,
             final Addable<X86Instruction> instructions) {

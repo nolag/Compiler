@@ -26,7 +26,7 @@ public class Compiler {
     public static final String [] defaultPlatforms = {"-x86l", "-x64l", "-x86w", "-x64w"};
 
     //windows testing
-    /*public static final String BASE_DIRECTORY = "E:/RAM/";
+    /*public static final String BASE_DIRECTORY = "Y:/";
     public static final String [] defaultPlatforms = {"-x86w", "-x64w"};*/
 
     //linux testing
@@ -35,8 +35,6 @@ public class Compiler {
 
     public static final String OUTPUT_DIRECTORY = BASE_DIRECTORY + "output/";
     public static final int COMPILER_ERROR_CODE = 42;
-
-
 
     /**
      * @param args

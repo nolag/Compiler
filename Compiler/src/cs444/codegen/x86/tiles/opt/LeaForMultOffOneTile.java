@@ -6,30 +6,30 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
+import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.Memory;
-import cs444.codegen.x86.MultiplyMemoryFormat;
-import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Lea;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
 
-public class LeaForMultTile implements ITile<X86Instruction, Size, MultiplyExprSymbol> {
-    private static LeaForMultTile tile;
+public class LeaForMultOffOneTile implements ITile<X86Instruction, Size, MultiplyExprSymbol> {
+    private static LeaForMultOffOneTile tile;
 
     public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
-        if(tile == null) tile = new LeaForMultTile();
+        if(tile == null) tile = new LeaForMultOffOneTile();
         TileSet.<X86Instruction, Size>getOrMake(klass).mults.add(tile);
     }
 
-    private LeaForMultTile() { }
+    private LeaForMultOffOneTile() { }
 
     @Override
     public boolean fits(final MultiplyExprSymbol op, final Platform<X86Instruction, Size> platform) {
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         if (!(sizeHelper.getDefaultStackSize() >= sizeHelper.getByteSizeOfType(op.getType().getTypeDclNode().fullName))) return false;
-        return TileHelper.powerTwoOrNull(op.getChildren().get(0), 8) != null || TileHelper.powerTwoOrNull(op.children.get(1), 8) != null;
+        Integer lhs = TileHelper.powerTwoOrNull(op.getChildren().get(0), 8, 1);
+        Integer rhs = TileHelper.powerTwoOrNull(op.children.get(1), 8, 1);
+        return  lhs != null && lhs != 1 || rhs != null && rhs != 1;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class LeaForMultTile implements ITile<X86Instruction, Size, MultiplyExprS
 
         final ISymbol multWith;
         long value;
-        if (TileHelper.powerTwoOrNull(left, 8) != null) {
+        if (TileHelper.powerTwoOrNull(left, 8, 1) != null) {
             multWith = right;
             value = TileHelper.getValue(left);
         } else {

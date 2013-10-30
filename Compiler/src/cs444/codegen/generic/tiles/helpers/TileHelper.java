@@ -69,4 +69,50 @@ public abstract class TileHelper<T extends Instruction, E extends Enum<E>> {
 
     public abstract void pushLong(final Typeable item,
             final Addable<X86Instruction> instructions, final SizeHelper<X86Instruction, Size> sizeHelper);
+
+    public static Integer powerTwoOrNull(final ISymbol symbol, final long max, final long offset) {
+        if (!(symbol instanceof INumericLiteral)) return null;
+        final INumericLiteral number = (INumericLiteral) symbol;
+        long value = number.getValue();
+        if (value < 1) return null;
+        value = value - offset;
+        if (value > max) return null;
+        final double power = Math.log(value) / Math.log(2);
+        return  power == Math.round(power) ? (int)power : null;
+    }
+
+    public static Integer powerTwoOrNull(final ISymbol symbol, final long max) {
+        return powerTwoOrNull(symbol, max, 0);
+    }
+
+    public static Integer powerTwoOrNull(final ISymbol symbol) {
+        return powerTwoOrNull(symbol, Long.MAX_VALUE, 0);
+    }
+
+    public static PowerTwoOffset intOffsetFromPow2(final ISymbol symbol) {
+        if (!(symbol instanceof INumericLiteral)) return null;
+        final INumericLiteral number = (INumericLiteral) symbol;
+        final long value = number.getValue();
+        if (value < 1) return null;
+        final double raw_power = Math.log(value) / Math.log(2);
+        final long power = (int) raw_power;
+        final long offset = value - (long)(Math.pow(2, power));
+        return new PowerTwoOffset(power, offset);
+    }
+
+    public static class PowerTwoOffset {
+        public final long power;
+        public final long offset;
+
+        private PowerTwoOffset(final long power, final long offset) {
+            this.power = power;
+            this.offset = offset;
+        }
+    }
+    
+    public static Long getValue(final ISymbol symbol) {
+        if (!(symbol instanceof INumericLiteral)) return null;
+        final INumericLiteral number = (INumericLiteral) symbol;
+        return number.getValue();
+    }
 }
