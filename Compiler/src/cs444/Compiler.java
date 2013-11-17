@@ -21,19 +21,12 @@ import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassInfo;
 
 public class Compiler {
+    //NOTE, if I want to allow the output directory to change, I need to copy each OS's runtime for each platform.
     public static final String BASE_DIRECTORY = "";
     //default to all supported platforms
-    public static final String [] defaultPlatforms = {"-x86l", "-x64l", "-x86w", "-x64w"};
+    public static final String [] defaultPlatforms = {"-x86", "-x64"};
 
-    //windows testing
-    /*public static final String BASE_DIRECTORY = "Y:/";
-    public static final String [] defaultPlatforms = {"-x86w", "-x64w"};*/
-
-    //linux testing
-    /*public static final String BASE_DIRECTORY = "/mnt/hgfs/RAM/";
-    public static final String [] defaultPlatforms = {"-x86l", "-x64l"};*/
-
-    public static final String OUTPUT_DIRECTORY = BASE_DIRECTORY + "output/";
+    public static final String OUTPUT_DIRECTORY = BASE_DIRECTORY + "output";
     public static final int COMPILER_ERROR_CODE = 42;
 
     /**
@@ -118,9 +111,9 @@ public class Compiler {
             final boolean outputFile, final Platform<?, ?> platform) throws IOException{
 
         PrintStream printer;
-        final String outputDir = platform.getOutputDir();
+        final String outputDir = platform.getOutputDir() ;
 
-        platform.generateSIT(resolvers, outputFile, outputDir);
+        platform.generateSIT(resolvers, outputFile);
         platform.makeSubtypeTable(resolvers, outputFile, outputDir);
 
         for (final APkgClassResolver resolver : resolvers) resolver.computeFieldOffsets(platform);
@@ -135,8 +128,8 @@ public class Compiler {
             resolver.generateCode(codeGen);
             if (outputFile){
                 File file;
-                if(resolver.pkg == APkgClassResolver.DEFAULT_PKG) file = new File(outputDir + resolver.name + ".s");
-                else file = new File(outputDir + resolver.fullName + ".s");
+                if(resolver.pkg == APkgClassResolver.DEFAULT_PKG) file = new File(outputDir, resolver.name + ".s");
+                else file = new File(outputDir, resolver.fullName + ".s");
                 file.createNewFile();
                 printer = new PrintStream(file);
             }else{

@@ -1,8 +1,10 @@
 package cs444.codegen;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import cs444.Compiler;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.peepholes.InstructionHolder;
@@ -15,14 +17,16 @@ import cs444.types.APkgClassResolver;
 public abstract class Platform<T extends Instruction, E extends Enum<E>> {
     public static final String NO_PEEPHOLE = "--no_peep";
 
-    public interface PlatformFactory<T extends Instruction, E extends Enum<E>, P extends Platform<T, E>>{
+    public interface PlatformFactory<T extends Instruction, E extends Enum<E>, P extends Platform<T, E>> {
         P getPlatform(Set<String> opts);
     }
-
+    
     private final Set<String> options;
+    private final String outDir;
 
-    protected Platform(final Set<String> options){
+    protected Platform(final Set<String> options, final String name){
         this.options = new HashSet<>(options);
+        outDir = Compiler.OUTPUT_DIRECTORY + File.separator + name;
     }
 
     private final Map<ISymbol, InstructionsAndTiming<T>> bests = new HashMap<ISymbol, InstructionsAndTiming<T>> ();
@@ -40,8 +44,8 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
     }
 
     public void generateSIT(final List<APkgClassResolver> resolvers,
-            final boolean outputFile, final String directory) throws IOException {
-        getSelectorIndex().generateSIT(this, resolvers, outputFile, directory);
+            final boolean outputFile) throws IOException {
+        getSelectorIndex().generateSIT(this, resolvers, outputFile);
     }
 
     @Override
@@ -69,6 +73,9 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
     public abstract InstructionHolder<T> getInstructionHolder();
     public abstract void generateStaticCode(final List<APkgClassResolver> resolvers,
             final boolean outputFile, final String directory) throws IOException;
+    
+    //Note, it is a large refactoring, but the best way to do this is to add P extends Platform<T, E, P> and use P
+    public abstract OperatingSystem<? extends Platform<?, ?>>[] getOperatingSystems();
 
     //Functions for file headers
     public abstract void genStartInstructions(final String methodName, final Addable<T> instructions);
@@ -88,15 +95,7 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
 
     public abstract void zeroStaticLong(final String staticLbl, final Addable<T> instructions);
 
-    public abstract String getOutputDir();
-
-    public abstract T [] getAssemblerDirectives();
-
-    //These functions are used for testing and can be changed to assemble or execute differently if cross compiling
-
-    public abstract String [] getLinkCmd(String fileName);
-
-    public abstract String [] getAssembleCmd(String fileName);
-
-    public abstract String [] getExecuteCmd();
+    public final String getOutputDir() {
+        return outDir;
+    }
 }

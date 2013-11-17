@@ -1,5 +1,6 @@
 package cs444.codegen;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,6 @@ public abstract class SubtypeIndexedTable <T extends Instruction, E extends Enum
         }
 
         table.genCode(sizeHelper);
-        if(outputFile) table.printCodeToFile(platform, directory + "_joos.subtypeIT.s");
+        if(outputFile) table.printCodeToFile(platform, directory + File.separator + "_joos.subtypeIT.s");
     }
 }

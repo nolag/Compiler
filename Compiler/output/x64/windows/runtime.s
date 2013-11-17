@@ -1,12 +1,19 @@
-default rel    ; RIP-relative adresses
-
 section .text
 
-extern  GetStdHandle
-extern  WriteFile
-extern  ExitProcess
+extern GetStdHandle
+extern WriteFile
+extern ExitProcess
 extern GetProcessHeap
 extern HeapAlloc
+
+global main
+main:
+extern entry
+call entry
+mov rcx, rax
+;add shadow space
+sub rsp, 32
+call ExitProcess
 
 ; Allocates eax bytes of memory. Pointer to allocated memory returned in eax.
 global __malloc

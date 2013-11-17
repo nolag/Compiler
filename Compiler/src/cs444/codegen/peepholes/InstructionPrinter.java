@@ -15,7 +15,6 @@ public class InstructionPrinter<T extends Instruction> implements InstructionHol
 
     @Override
     public void flush(final Platform<T, ?> platform, final PrintStream printer) {
-        for(final T instruction : platform.getAssemblerDirectives()) printer.println(instruction.generate());
         for(final T instruction : instructions) printer.println(instruction.generate());
         instructions = new LinkedList<T>();
     }

@@ -46,9 +46,5 @@ Compiler/JoosRules.txt
 # file to submit
 *.zip
 
-# Compiler output destination
-output/
-**/output/
-
 # Compiler output final executable
 main

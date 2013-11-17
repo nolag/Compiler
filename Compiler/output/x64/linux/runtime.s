@@ -1,5 +1,13 @@
 section .text
 
+global _start
+_start:
+extern entry
+call entry
+mov rdi, rax
+mov rax, 60
+syscall
+
 global __malloc
 global __malloc_clear
 __malloc:

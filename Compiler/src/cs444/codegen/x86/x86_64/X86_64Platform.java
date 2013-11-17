@@ -5,9 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import utils.generics.GenericMaker;
 import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
-import cs444.codegen.IRuntime;
+import cs444.codegen.OperatingSystem;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.*;
@@ -20,13 +21,25 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
-public abstract class X86_64Platform extends X86Platform {
+public class X86_64Platform extends X86Platform {    
     public final X86SelectorIndexedTable sit;
+    
+    private final OperatingSystem<X86_64Platform> [] oses = GenericMaker.<OperatingSystem<X86_64Platform>>makeArray(
+            new X86_64Linux(this), new X86_64Windows(this));
 
-    private static X86Instruction [] directives = { };
+    public static class Factory implements X86PlatformFactory<X86_64Platform>{
+        public static final Factory FACTORY = new Factory();
 
-    protected X86_64Platform(final IRuntime<X86Instruction> runtime, final Set<String> opts){
-        super(opts, X86_64TileInit.instance, runtime, X86SizeHelper.sizeHelper64);
+        private Factory(){ }
+
+        @Override
+        public X86_64Platform getPlatform(final Set<String> opts){
+            return new X86_64Platform(opts);
+        }
+    }
+    
+    private X86_64Platform(final Set<String> opts){
+        super(opts, X86_64TileInit.instance, Runtime.instance, X86SizeHelper.sizeHelper64, "x64");
         sit = new X86SelectorIndexedTable(sizeHelper);
     }
 
@@ -100,12 +113,12 @@ public abstract class X86_64Platform extends X86Platform {
     }
 
     @Override
-    public X86Instruction[] getAssemblerDirectives() {
-        return directives;
+    public TileHelper<X86Instruction, Size> getTileHelper() {
+        return X86_64TileHelper.instance;
     }
 
     @Override
-    public TileHelper<X86Instruction, Size> getTileHelper() {
-        return X86_64TileHelper.instance;
+    public OperatingSystem<X86_64Platform>[] getOperatingSystems() {
+        return oses;
     }
 }

@@ -6,6 +6,13 @@ extern  _ExitProcess@4
 extern _GetProcessHeap@0
 extern _HeapAlloc@12
 
+global _main
+_main:
+extern entry
+call entry
+push eax
+call _ExitProcess@4
+
 ; Allocates eax bytes of memory. Pointer to allocated memory returned in eax.
 global __malloc
 global __malloc_clear

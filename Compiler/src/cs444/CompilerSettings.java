@@ -4,39 +4,17 @@ import java.util.*;
 
 import cs444.codegen.Platform;
 import cs444.codegen.Platform.PlatformFactory;
-import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
-import cs444.codegen.x86.x86_32.windows.X86_32WindowsPlatform;
-import cs444.codegen.x86.x86_64.linux.X86_64LinuxPlatform;
-import cs444.codegen.x86.x86_64.windows.X86_64WindowsPlatform;
-
+import cs444.codegen.x86.x86_32.X86_32Platform;
+import cs444.codegen.x86.x86_64.X86_64Platform;
 public class CompilerSettings {
     public static final Map<String, PlatformFactory<?, ?, ?>> platformMap = new HashMap<String, PlatformFactory<?, ?, ?>>();
 
     static{
-        platformMap.put("-x86linux", X86_32LinuxPlatform.Factory.factory);
-        platformMap.put("-x86l", X86_32LinuxPlatform.Factory.factory);
-        platformMap.put("-x86_32linux", X86_32LinuxPlatform.Factory.factory);
-        platformMap.put("-x86_32l", X86_32LinuxPlatform.Factory.factory);
-
-        platformMap.put("-x64linux", X86_64LinuxPlatform.Factory.factory);
-        platformMap.put("-x64l", X86_64LinuxPlatform.Factory.factory);
-        platformMap.put("-x86_64linux", X86_64LinuxPlatform.Factory.factory);
-        platformMap.put("-x86_64l", X86_64LinuxPlatform.Factory.factory);
-
-        platformMap.put("-x86windows", X86_32WindowsPlatform.Factory.factory);
-        platformMap.put("-x86w", X86_32WindowsPlatform.Factory.factory);
-        platformMap.put("-x86win", X86_32WindowsPlatform.Factory.factory);
-        platformMap.put("-x86_32windows", X86_32WindowsPlatform.Factory.factory);
-        platformMap.put("-x86_32w", X86_32WindowsPlatform.Factory.factory);
-        platformMap.put("-x86_32win", X86_32WindowsPlatform.Factory.factory);
-
-
-        platformMap.put("-x64windows", X86_64WindowsPlatform.Factory.factory);
-        platformMap.put("-x64w", X86_64WindowsPlatform.Factory.factory);
-        platformMap.put("-x64win", X86_64WindowsPlatform.Factory.factory);
-        platformMap.put("-X86_64windows", X86_64WindowsPlatform.Factory.factory);
-        platformMap.put("-X86_64w", X86_64WindowsPlatform.Factory.factory);
-        platformMap.put("-X86_64win", X86_64WindowsPlatform.Factory.factory);
+        platformMap.put("-x86", X86_32Platform.Factory.FACTORY);
+        platformMap.put("-x86_32", X86_32Platform.Factory.FACTORY);
+        
+        platformMap.put("-x64", X86_64Platform.Factory.FACTORY);
+        platformMap.put("-x86_64", X86_64Platform.Factory.FACTORY);
     }
 
     public final List<String> files = new ArrayList<String>();
@@ -65,6 +43,5 @@ public class CompilerSettings {
         }else{
             for(final PlatformFactory<?, ?, ?> pf : pfs) platforms.add(pf.getPlatform(arguments));
         }
-
     }
 }

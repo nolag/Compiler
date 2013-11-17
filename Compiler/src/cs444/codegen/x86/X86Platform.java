@@ -25,15 +25,20 @@ public abstract class X86Platform extends Platform<X86Instruction, Size> {
         @Override
         P getPlatform(Set<String> opts);
     }
+    
+    private static final String ENTRY = "entry";
+    private static final X86Instruction ENTRY_GLOBAL = new Global(ENTRY);
+    private static final X86Instruction ENTRY_LBL = new Label(ENTRY);
+    private static final X86Instruction STATIC_INIT_EXTERN = new Extern(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL));
 
     private final InstructionHolder<X86Instruction> instrucitons;
     protected final IRuntime<X86Instruction> runtime;
     protected final X86SizeHelper sizeHelper;
     private SubtypeIndexedTable<X86Instruction, Size> subtype;
 
-    protected X86Platform(final Set<String> options, final TileInit tiles,
-            final IRuntime<X86Instruction> runtime, final X86SizeHelper sizeHelper) {
-        super(options);
+    protected X86Platform(final Set<String> options, final TileInit tiles, final IRuntime<X86Instruction> runtime,
+            final X86SizeHelper sizeHelper, final String name) {
+        super(options, name);
 
         final InstructionHolder<X86Instruction> printer = new InstructionPrinter<>();
 
@@ -117,4 +122,15 @@ public abstract class X86Platform extends Platform<X86Instruction, Size> {
             }
         }
     }
+    
+    @Override
+    public final void genStartInstructions(final String methodName, final Addable<X86Instruction> instructions) {
+        instructions.add(ENTRY_GLOBAL);
+        instructions.add(ENTRY_LBL);
+        instructions.add(STATIC_INIT_EXTERN);
+        instructions.add(new Call(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL), sizeHelper));
+    }
+    
+    @Override
+    public abstract OperatingSystem<? extends X86Platform>[] getOperatingSystems();
 }

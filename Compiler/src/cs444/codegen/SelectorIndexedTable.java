@@ -1,5 +1,6 @@
 package cs444.codegen;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -34,13 +35,13 @@ public abstract class SelectorIndexedTable<T extends Instruction, E extends Enum
     }
 
     public final void generateSIT(final Platform<T, E> platform, final List<APkgClassResolver> resolvers,
-            final boolean outputFile, final String directory) throws IOException{
+            final boolean outputFile) throws IOException{
 
         for(final APkgClassResolver resolver : resolvers){
             if(resolver.shouldGenCode()) resolver.addToSelectorIndexedTable(this);
         }
 
         table.genCode(sizeHelper);
-        if(outputFile) table.printCodeToFile(platform, directory + "_joos.sit.s");
+        if(outputFile) table.printCodeToFile(platform, platform.getOutputDir() + File.separator + "_joos.sit.s");
     }
 }

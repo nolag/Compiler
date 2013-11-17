@@ -8,24 +8,36 @@ import java.util.Collection;
 import java.util.Scanner;
 
 import cs444.Compiler;
+import cs444.codegen.OperatingSystem;
 import cs444.codegen.Platform;
 
-    public class AsmAndLinkCallback implements ITestCallbacks{
+    public class AsmAndLinkCallback implements ITestCallbacks {
+        //NOTE: change this if you are testing on another os or if you cahnge the exec/link to work multi os
+        private static final String osToTest = "linux";
+        
+        private static final String EXEC = "main";
         private static final int EXPECTED_DEFAULT_RTN_CODE = 123;
 
-        //TODO this class's stuff can be in parallel.
+        private static void deleteNonRuntime(final File root) {
+            for (File child : root.listFiles()) {
+                if (child.getName().equals("runtime.s") || child.getName().equals("runtime.asm")) continue;
+                if (child.isDirectory()) {
+                    deleteNonRuntime(child);
+                    continue;
+                }
+                if (!child.delete()){
+                    System.err.println("Couldn't delete file: " + child.getAbsolutePath());
+                }
+            }
+        }
+        
+        //TODO this class's stuff can be in parallel, check if it's worth it.
 
         @Override
         public boolean beforeCompile(final File _) throws IOException {
             final File outputDir = new File(Compiler.OUTPUT_DIRECTORY);
-            final File [] outputFolders = outputDir.listFiles();
-            for(final File platformFolder : outputFolders){
-                for (final File file : platformFolder.listFiles()) {
-                    if (file.getName().equals("runtime.s") || file.getName().equals("runtime.asm")) continue;
-                    if (!file.delete()){
-                        System.err.println("Couldn't delete file: " + file.getAbsolutePath());
-                    }
-                }
+            for(final File platformFolder : outputDir.listFiles()) {
+                deleteNonRuntime(platformFolder);
             }
             return true;
         }
@@ -41,17 +53,29 @@ import cs444.codegen.Platform;
             boolean pass = true;
 
             for(final Platform<?, ?> platform : platforms){
+                OperatingSystem<?> os = null;
+                
+                for (OperatingSystem <?> tmp : platform.getOperatingSystems()) {
+                    if (tmp.name.equals(osToTest)) {
+                        os = tmp;
+                        break;
+                    }
+                }
+                
                 final File folder = new File(platform.getOutputDir());
-                if (!assembleOutput(folder, platform)) return false;
-
-                final String folderAbsPath = folder.getAbsolutePath();
-
-                if(execAndWait(platform.getLinkCmd(folderAbsPath), null, null) != 0) {
+                if (!assembleOutput(folder, os)) return false;
+                
+                final String [] link = os.getLinkCmd(EXEC);
+                if(execAndWait(link, null, null) != 0) {
                     System.out.println("********link failed!********");
+                    for (String part : link) {
+                        System.out.print(part + " ");
+                    }
+                    System.out.println();
                     return false;
                 }
 
-                final String [] command = platform.getExecuteCmd();
+                final String [] command = os.getExecuteCmd(EXEC);
 
                 final int returnCode = execAndWait(command, stdOut, stdErr);
 
@@ -93,13 +117,17 @@ import cs444.codegen.Platform;
             }
         }
 
-        private boolean assembleOutput(final File folder, final Platform<?, ?> platform) throws IOException, InterruptedException {
+        private boolean assembleOutput(final File folder, final OperatingSystem<?> os) throws IOException, InterruptedException {
             for (final File file : folder.listFiles()) {
                 final String fileName = file.getAbsolutePath();
                 if (!fileName.endsWith(".s")) continue;
-                final String[] command = platform.getAssembleCmd(fileName);
+                final String[] command = os.getAssembleCmd(file);
                 if (execAndWait(command, null, null) != 0) return false;
             }
+            
+            final String[] command = os.getAssembleCmd(os.getRuntimeFile());
+            if (execAndWait(command, null, null) != 0) return false;
+            
             return true;
         }
 
@@ -153,7 +181,7 @@ import cs444.codegen.Platform;
                 System.out.println("Expected:\n" + err + "\n Got:\n" + errorGobbler.getMessage());
                 return -3;
             }
-
+            
             return proc.exitValue();
         }
 

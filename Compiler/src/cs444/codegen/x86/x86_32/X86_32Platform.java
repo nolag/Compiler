@@ -1,13 +1,13 @@
 package cs444.codegen.x86.x86_32;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import utils.generics.GenericMaker;
 import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
-import cs444.codegen.IRuntime;
+import cs444.codegen.OperatingSystem;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.*;
@@ -21,13 +21,25 @@ import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
-public abstract class X86_32Platform extends X86Platform {
+public class X86_32Platform extends X86Platform {
+    private final OperatingSystem<X86_32Platform> [] oses = GenericMaker.<OperatingSystem<X86_32Platform>>makeArray(
+            new X86_32Linux(this), new X86_32Windows(this));
+    
     public final X86SelectorIndexedTable sit;
+    
+    public static class Factory implements X86PlatformFactory<X86_32Platform>{
+        public static final Factory FACTORY = new Factory();
 
-    private static X86Instruction [] directives = { };
+        private Factory(){ }
 
-    protected X86_32Platform(final IRuntime<X86Instruction> runtime, final Set<String> opts){
-        super(opts, X86_32TileInit.instance, runtime, X86SizeHelper.sizeHelper32);
+        @Override
+        public X86_32Platform getPlatform(final Set<String> opts){
+            return new X86_32Platform(opts);
+        }
+    }
+
+    private X86_32Platform(final Set<String> opts){
+        super(opts, X86_32TileInit.instance, Runtime.instance, X86SizeHelper.sizeHelper32, "x86");
         sit = new X86SelectorIndexedTable(sizeHelper);
     }
 
@@ -112,12 +124,12 @@ public abstract class X86_32Platform extends X86Platform {
     }
 
     @Override
-    public X86Instruction[] getAssemblerDirectives() {
-        return directives;
+    public TileHelper<X86Instruction, Size> getTileHelper() {
+        return X86_32TileHelper.instance;
     }
 
     @Override
-    public TileHelper<X86Instruction, Size> getTileHelper() {
-        return X86_32TileHelper.instance;
+    public OperatingSystem<? extends X86Platform>[] getOperatingSystems() {
+        return oses;
     }
 }

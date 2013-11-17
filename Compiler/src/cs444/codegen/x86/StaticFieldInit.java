@@ -34,7 +34,7 @@ public class StaticFieldInit {
 
         fInit.genCode(resolvers);
         if(outputFile){
-            final File file = new File(directory + STATIC_FIELD_INIT_FILE);
+            final File file = new File(directory, STATIC_FIELD_INIT_FILE);
             file.createNewFile();
             final PrintStream printer = new PrintStream(file);
             fInit.print(printer);

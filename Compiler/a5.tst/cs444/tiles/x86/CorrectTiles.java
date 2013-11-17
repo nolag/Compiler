@@ -17,8 +17,8 @@ import cs444.Compiler;
 import cs444.CompilerException;
 import cs444.acceptance.TestHelper;
 import cs444.codegen.Platform;
-import cs444.codegen.x86.x86_32.linux.X86_32LinuxPlatform;
-import cs444.codegen.x86.x86_64.linux.X86_64LinuxPlatform;
+import cs444.codegen.x86.x86_32.X86_32Platform;
+import cs444.codegen.x86.x86_64.X86_64Platform;
 import cs444.types.PkgClassInfo;
 
 public class CorrectTiles {
@@ -28,8 +28,8 @@ public class CorrectTiles {
     private static final Set<Platform<?, ?>> platforms = new HashSet<Platform<?, ?>>();
 
     static {
-        platforms.add(new X86_32LinuxPlatform(opts));
-        platforms.add(new X86_64LinuxPlatform(opts));
+        platforms.add(X86_32Platform.Factory.FACTORY.getPlatform(opts));
+        platforms.add(X86_64Platform.Factory.FACTORY.getPlatform(opts));
     }
 
     public void setup(){
@@ -55,7 +55,8 @@ public class CorrectTiles {
         platforms: for(final Platform<?, ?> platform : platforms) {
             final File folder = new File(platform.getOutputDir());
             for(final File file : folder.listFiles()){
-                if(file.getName().endsWith("runtime.s") || file.getName().startsWith("_")) continue;
+                if (file.getName().endsWith("runtime.s") || file.getName().startsWith("_")) continue;
+                if (file.isDirectory()) continue;
                 final byte[] b = new byte[(int) file.length()];
                 final FileInputStream fis = new FileInputStream(file);
                 fis.read(b);

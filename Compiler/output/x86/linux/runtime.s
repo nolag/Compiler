@@ -1,5 +1,13 @@
 section .text
 
+global _start
+_start:
+extern entry
+call entry
+mov ebx, eax
+mov eax, 1 ;1 is exit
+int 80h ;software interupt
+
 ; Allocates eax bytes of memory. Pointer to allocated memory returned in eax.
 global __malloc
 global __malloc_clear
