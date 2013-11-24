@@ -25,7 +25,7 @@ public class X86_64Platform extends X86Platform {
     public final X86SelectorIndexedTable sit;
     
     private final OperatingSystem<X86_64Platform> [] oses = GenericMaker.<OperatingSystem<X86_64Platform>>makeArray(
-            new X86_64Linux(this), new X86_64Windows(this));
+            new Linux(this), new Windows(this));
 
     public static class Factory implements X86PlatformFactory<X86_64Platform>{
         public static final Factory FACTORY = new Factory();

@@ -2,8 +2,8 @@ package cs444.codegen.x86.x86_32;
 
 import cs444.codegen.x86.X86OperatingSystem;
 
-class X86_32Windows extends X86OperatingSystem<X86_32Platform> {
-    X86_32Windows (X86_32Platform platform) {
+class Windows extends X86OperatingSystem<X86_32Platform> {
+    Windows (X86_32Platform platform) {
         super("windows", "win32", ".obj", ".exe", platform);
     }
 

@@ -23,7 +23,7 @@ import cs444.types.APkgClassResolver;
 
 public class X86_32Platform extends X86Platform {
     private final OperatingSystem<X86_32Platform> [] oses = GenericMaker.<OperatingSystem<X86_32Platform>>makeArray(
-            new X86_32Linux(this), new X86_32Windows(this));
+            new Linux(this), new Windows(this), new OSX(this));
     
     public final X86SelectorIndexedTable sit;
     
