@@ -57,10 +57,11 @@ public abstract class LongJxxTile<T extends BinOpExpr> implements ITile<X86Instr
 
         instructions.add(new Pop(Register.COUNTER, sizeHelper));
         instructions.add(new Cmp(Register.DATA, Register.COUNTER, sizeHelper));
+        instructions.add(new Pop(Register.COUNTER, sizeHelper));
+        
         if(finishEarlyT != null) instructions.add(finishEarlyT.make(end, sizeHelper));
         if(finishEarlyF != null) instructions.add(finishEarlyF.make(endFalse, sizeHelper));
 
-        instructions.add(new Pop(Register.COUNTER, sizeHelper));
         instructions.add(new Cmp(Register.ACCUMULATOR, Register.COUNTER, sizeHelper));
         instructions.add(finishRegular.make(end, sizeHelper));
 

@@ -15,7 +15,6 @@ import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.instructions.factories.ReserveInstructionMaker;
 import cs444.codegen.x86.peepholes.MovZeroRegRemover;
 import cs444.codegen.x86.peepholes.PushPopRemover;
-import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
@@ -110,16 +109,9 @@ public abstract class X86Platform extends Platform<X86Instruction, Size> {
         for (final DclSymbol fieldDcl : staticFields) {
             final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
             final String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
-            if(fieldDcl.getType().value.equals(JoosNonTerminal.LONG)) {
-                instructions.add(new Resd(fieldLbl + "_high", 1));
-                instructions.add(new Global(fieldLbl));
-                instructions.add(new Resd(fieldLbl, 1));
-
-            }else{
-                instructions.add(new Global(fieldLbl));
-                final ReserveInstruction data = ReserveInstructionMaker.make(fieldLbl, size);
-                instructions.add(data);
-            }
+            instructions.add(new Global(fieldLbl));
+            final ReserveInstruction data = ReserveInstructionMaker.make(fieldLbl, size);
+            instructions.add(data);
         }
     }
     
