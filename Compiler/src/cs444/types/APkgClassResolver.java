@@ -98,17 +98,19 @@ public abstract class APkgClassResolver {
         final String name = methodSymbol instanceof ConstructorSymbol ? "this" : methodSymbol.dclName;
         String value = null;
         try{
-            value = methodSymbol.dclInResolver.fullName + "." + generateUniqueName(methodSymbol, name);
+            //Add a ? at the beginning, OSX seems to have problems with items that begin with "List".
+            //I can't imagine this is the only ?special? symbol start for any platform so add a ? to avoid this            
+            value = (methodSymbol.isNative() ? "" : "?") + methodSymbol.dclInResolver.fullName + "." + generateUniqueName(methodSymbol, name);
         }catch(final UndeclaredException e){ /*Should never happen based on where it is called from*/}
         return value;
     }
 
     public String generateSIT(){
-        return fullName + "@SIT";
+        return "?" + fullName + "@SIT";
     }
 
     public String generateSubtypeIT() {
-        return fullName + "@Subtype";
+        return "?" + fullName + "@Subtype";
     }
 
     public static String getUniqueNameFor(final DclSymbol fieldDcl) {

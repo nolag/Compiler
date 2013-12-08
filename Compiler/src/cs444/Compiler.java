@@ -22,12 +22,9 @@ import cs444.types.PkgClassInfo;
 
 public class Compiler {
     //NOTE, if I want to allow the output directory to change, I need to copy each OS's runtime for each platform.
-    //TODO revert
-    public static final String BASE_DIRECTORY = "/Volumes/RAM2/";
-    //public static final String BASE_DIRECTORY = "";
+    public static final String BASE_DIRECTORY = "";
     //default to all supported platforms
-    //TODO revert
-    public static final String [] defaultPlatforms = {"-x86"/*, "-x64"*/};
+    public static final String [] defaultPlatforms = {"-x86", "-x64"};
 
     public static final String OUTPUT_DIRECTORY = BASE_DIRECTORY + "output";
     public static final int COMPILER_ERROR_CODE = 42;
