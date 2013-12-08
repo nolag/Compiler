@@ -6,7 +6,7 @@ import cs444.codegen.x86.instructions.bases.UniInstruction;
 
 
 public class Dq extends UniInstruction{
-    public Dq(final Immediate data) {
+    public Dq(final Immediate ... data) {
         //Immediate won't need a sizeHelper
         super("dq", data, Size.QWORD, null, 0, 0);
     }

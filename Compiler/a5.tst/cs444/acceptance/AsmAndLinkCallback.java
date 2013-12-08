@@ -13,7 +13,7 @@ import cs444.codegen.Platform;
 
     public class AsmAndLinkCallback implements ITestCallbacks {
         //NOTE: change this if you are testing on another os or if you cahnge the exec/link to work multi os
-        private static final String osToTest = "linux";
+        private static final String osToTest = "osx";
         
         private static final String EXEC = "main";
         private static final int EXPECTED_DEFAULT_RTN_CODE = 123;
@@ -37,6 +37,8 @@ import cs444.codegen.Platform;
         public boolean beforeCompile(final File _) throws IOException {
             final File outputDir = new File(Compiler.OUTPUT_DIRECTORY);
             for(final File platformFolder : outputDir.listFiles()) {
+                //some computers (my mac) make files like .DS_Store...
+                if (platformFolder.isFile()) continue;
                 deleteNonRuntime(platformFolder);
             }
             return true;
