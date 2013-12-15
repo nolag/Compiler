@@ -3,43 +3,23 @@ package cs444.codegen.x86;
 import java.util.LinkedList;
 import java.util.List;
 
-import cs444.codegen.Addable;
 import cs444.codegen.ObjectLayout;
 import cs444.codegen.Platform;
 import cs444.codegen.x86.instructions.Comment;
-import cs444.codegen.x86.instructions.Extern;
 import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.Movzx;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ast.TypeSymbol;
-import cs444.types.APkgClassResolver;
 
-public class X86ObjectLayout implements ObjectLayout<X86Instruction> {
-    public static final X86ObjectLayout object32 = new X86ObjectLayout(false);
-    public static final X86ObjectLayout object64 = new X86ObjectLayout(true);
-
+public abstract class X86ObjectLayout implements ObjectLayout<X86Instruction> {
     public final int SUBTYPE_OFFSET;
     public final X86SizeHelper sizeHelper;
-    private final MemoryFormat format;
+    protected final MemoryFormat format;
 
-    private X86ObjectLayout(final boolean use64){
-        sizeHelper = use64 ? X86SizeHelper.sizeHelper64 : X86SizeHelper.sizeHelper32;
+    protected X86ObjectLayout(X86SizeHelper sizeHelper){
+        this.sizeHelper = sizeHelper;
         SUBTYPE_OFFSET = sizeHelper.getDefaultStackSize();
         format = new AddMemoryFormat(Register.ACCUMULATOR, new Immediate(SUBTYPE_OFFSET));
-    }
-
-    @Override
-    public void initialize(final APkgClassResolver typeDclNode, final Addable<X86Instruction> instructions) {
-
-        instructions.add(new Comment("Initializing Pointer to SIT Column"));
-        final Immediate classSITLabel = new Immediate(typeDclNode.generateSIT());
-        instructions.add(new Extern(classSITLabel));
-        instructions.add(new Mov(new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.ACCUMULATOR)), classSITLabel, sizeHelper));
-
-        instructions.add(new Comment("Initializing Pointer to Subtype Column"));
-        final Immediate subtypeITLabel = new Immediate(typeDclNode.generateSubtypeIT());
-        instructions.add(new Extern(subtypeITLabel));
-        instructions.add(new Mov(new Memory(format), subtypeITLabel, sizeHelper));
     }
 
     @Override

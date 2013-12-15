@@ -124,11 +124,15 @@ import cs444.codegen.Platform;
                 final String fileName = file.getAbsolutePath();
                 if (!fileName.endsWith(".s")) continue;
                 final String[] command = os.getAssembleCmd(file);
-                if (execAndWait(command, null, null) != 0) return false;
+                if (execAndWait(command, null, null) != 0) {
+                    return false;
+                }
             }
             
             final String[] command = os.getAssembleCmd(os.getRuntimeFile());
-            if (execAndWait(command, null, null) != 0) return false;
+            if (execAndWait(command, null, null) != 0) {
+                return false;
+            }
             
             return true;
         }

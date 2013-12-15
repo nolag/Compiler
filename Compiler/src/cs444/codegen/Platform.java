@@ -91,6 +91,10 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
 
     public abstract TileHelper<T, E> getTileHelper();
 
+    public abstract void moveStatic(final String staticLbl, E size, final Addable<T> instructions);
+
+    public abstract void zeroStatic(final String staticLbl, E size, final Addable<T> instructions);
+    
     public abstract void moveStaticLong(final String staticLbl, final Addable<T> instructions);
 
     public abstract void zeroStaticLong(final String staticLbl, final Addable<T> instructions);

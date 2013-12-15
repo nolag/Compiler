@@ -47,7 +47,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.equals("CallInsideArgument")) continue;
+            //if (!fileName.equals("SmallStringTest")) continue;
             //Use this line to stop when there are infinite loops
             //if (totalTests == 20) break;
 

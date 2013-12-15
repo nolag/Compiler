@@ -1,19 +1,16 @@
 package cs444.codegen.x86.tiles;
 
-import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.*;
 import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.instructions.Extern;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.helpers.NumericHelperTile;
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
-import cs444.types.PkgClassResolver;
 
 public final class NameValueTile extends NumericHelperTile<SimpleNameSymbol>{
     private static NameValueTile tile;
@@ -24,6 +21,11 @@ public final class NameValueTile extends NumericHelperTile<SimpleNameSymbol>{
     }
 
     private NameValueTile() { }
+    
+    @Override
+    public boolean fits(final SimpleNameSymbol name, final Platform<X86Instruction, Size> platform) {
+        return super.fits(name, platform) && !name.dcl.isStatic();
+    }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final SimpleNameSymbol name,
@@ -33,13 +35,8 @@ public final class NameValueTile extends NumericHelperTile<SimpleNameSymbol>{
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final DclSymbol dcl = name.dcl;
         final Size size = sizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
-        final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
 
-        if(dcl.isStatic() && dcl.dclInResolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(staticFieldLbl));
-
-        NotMemory base = Register.ACCUMULATOR;
-        if(dcl.isLocal) base = Register.FRAME;
-        else if(dcl.isStatic()) base = new Immediate(staticFieldLbl);
+        NotMemory base = dcl.isLocal ? Register.FRAME : Register.ACCUMULATOR;
 
         final Memory from = new Memory(new AddMemoryFormat(base, new Immediate(dcl.getOffset(platform))));
         X86TileHelper.genMov(size, from, dcl.dclName, dcl, sizeHelper, instructions);

@@ -69,12 +69,10 @@ public class StaticFieldInit {
 
                 if(fieldDcl.children.isEmpty()){
                     final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
-                    final Memory toAddr = new Memory(new BasicMemoryFormat(new Immediate(fieldNameLbl)));
                     if(fieldDcl.getType().value.equals(JoosNonTerminal.LONG)){
                         platform.zeroStaticLong(fieldNameLbl, instructions);
                     }else{
-                        //NOTE that this assumes that 0 is null otherwise numbers need to be done differently
-                        instructions.add(new Mov(toAddr, Immediate.NULL, size, platform.getSizeHelper()));
+                        platform.zeroStatic(fieldNameLbl, size, instructions);
                     }
                 }
             }
@@ -89,7 +87,7 @@ public class StaticFieldInit {
                 if(!fieldDcl.children.isEmpty()){
                     final String fieldNameLbl = PkgClassResolver.getUniqueNameFor(fieldDcl);
                     final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
-                    final Memory toAddr = new Memory(new BasicMemoryFormat(new Immediate(fieldNameLbl)));
+
                     instructions.add(new Comment("Initializing static field " + fieldNameLbl + " to 0, if forward referenced it must be 0."));
                     final ISymbol field = fieldDcl.children.get(0);
                     field.accept(new CodeGenVisitor<X86Instruction, Size>(platform));
@@ -97,7 +95,7 @@ public class StaticFieldInit {
                     if(fieldDcl.getType().value.equals(JoosNonTerminal.LONG)){
                         platform.moveStaticLong(fieldNameLbl, instructions);
                     }else{
-                        instructions.add(new Mov(toAddr, Register.ACCUMULATOR, size, platform.getSizeHelper()));
+                        platform.moveStatic(fieldNameLbl, size, instructions);
                     }
                 }
             }

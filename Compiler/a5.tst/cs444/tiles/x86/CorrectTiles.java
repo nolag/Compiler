@@ -77,7 +77,7 @@ public class CorrectTiles {
     @Test
     public void finalMethodTest() throws CompilerException, IOException{
         final String path =  TILE_TESTS + "NonStaticFinalCall/Object.java";
-        assertTrue(compileAndContains("call java.lang.Object.getI", path));
+        assertTrue(compileAndContains("call ?java.lang.Object.getI", path));
     }
 
     @Test

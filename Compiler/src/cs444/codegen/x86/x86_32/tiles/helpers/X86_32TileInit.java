@@ -33,5 +33,6 @@ public class X86_32TileInit extends X86TileInit{
         LongRigthShiftTile.init();
         LongSubTile.init();
         LongUnsignedRightShift.init();
+        StaticNameValue.init();
     }
 }

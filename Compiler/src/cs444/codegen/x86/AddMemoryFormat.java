@@ -20,6 +20,8 @@ public class AddMemoryFormat extends MemoryFormat {
 
     @Override
     public String getValue(final SizeHelper<X86Instruction, Size> sizeHelper) {
+        if ("0".equals(rhs.getValue(sizeHelper))) return lhs.getValue(sizeHelper);
+        if ("0".equals(lhs.getValue(sizeHelper))) return rhs.getValue(sizeHelper);
         return lhs.getValue(sizeHelper) + " + " + rhs.getValue(sizeHelper);
     }
 
