@@ -26,13 +26,13 @@ public class X86_64ObjectLayout extends X86ObjectLayout {
         instructions.add(new Comment("Initializing Pointer to SIT Column"));
         final Immediate classSITLabel = new Immediate(typeDclNode.generateSIT());
         instructions.add(new Extern(classSITLabel));
-        instructions.add(new Mov(Register.DATA, classSITLabel, sizeHelper));
-        instructions.add(new Mov(new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.ACCUMULATOR)), Register.DATA, sizeHelper));
+        instructions.add(new Mov(Register.COUNTER, classSITLabel, sizeHelper));
+        instructions.add(new Mov(new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.ACCUMULATOR)), Register.COUNTER, sizeHelper));
 
         instructions.add(new Comment("Initializing Pointer to Subtype Column"));
         final Immediate subtypeITLabel = new Immediate(typeDclNode.generateSubtypeIT());
         instructions.add(new Extern(subtypeITLabel));
-        instructions.add(new Mov(Register.DATA, subtypeITLabel, sizeHelper));
-        instructions.add(new Mov(new Memory(format), Register.DATA, sizeHelper));
+        instructions.add(new Mov(Register.COUNTER, subtypeITLabel, sizeHelper));
+        instructions.add(new Mov(new Memory(format), Register.COUNTER, sizeHelper));
     }
 }

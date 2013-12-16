@@ -17,7 +17,7 @@ public abstract class X86OperatingSystem<T extends X86Platform> extends Operatin
     public String[] getAssembleCmd(File file) {
         final String name = file.getName();
         //add -g (-F "dwarf" also for linux) for debugging
-        return new String[] {"nasm", "-O1", "-f", assembleName, file.getAbsolutePath(), "-o", 
+        return new String[] {"nasm", "-O1", "-f",  assembleName, file.getAbsolutePath(), "-o", 
                 getOutputDir() + name.substring(0, name.length() - 2) + objEnding};
     }
 }
