@@ -13,7 +13,6 @@ class Windows extends X86OperatingSystem<X86_64Platform> {
     @Override
     public String[] getLinkCmd(final String execName) {;
         return new String[] { "link", "/subsystem:console", "/machine:x64", "/nodefaultlib", "/entry:main",
-                /*TODO fix this so it's not needed*/ "/LARGEADDRESSAWARE:NO",
                 "/out:\"" + getOutputDir() + execName + ".exe\"",  KERNEL32, getAllObects() };
     }
 }

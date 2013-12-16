@@ -55,7 +55,8 @@ __exception:
 ; Outputs the low-order byte of rax to standard output.
 global NATIVEjava.io.OutputStream.nativeWrite
 NATIVEjava.io.OutputStream.nativeWrite:
-	mov [char], al ; save the low order byte in memory
+	mov rdx, char
+    mov [rdx], al ; save the low order byte in memory
     mov rax, 1     ; sys_write system call
     mov rsi, char  ; address of bytes to write
     mov rdi, 1     ; stdout

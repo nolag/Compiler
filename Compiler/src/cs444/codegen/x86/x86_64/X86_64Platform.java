@@ -25,7 +25,7 @@ public class X86_64Platform extends X86Platform {
     public final X86SelectorIndexedTable sit;
     
     private final OperatingSystem<X86_64Platform> [] oses = GenericMaker.<OperatingSystem<X86_64Platform>>makeArray(
-            new Linux(this), new Windows(this));
+            new Linux(this), new Windows(this), new OSX(this));
 
     public static class Factory implements X86PlatformFactory<X86_64Platform>{
         public static final Factory FACTORY = new Factory();
@@ -45,7 +45,7 @@ public class X86_64Platform extends X86Platform {
 
     @Override
     public final X86ObjectLayout getObjectLayout() {
-        return X86ObjectLayout.object64;
+        return X86_64ObjectLayout.layout;
     }
 
     @Override
@@ -64,19 +64,31 @@ public class X86_64Platform extends X86Platform {
     public final void genInstructorInvoke(final APkgClassResolver resolver, final Addable<X86Instruction> instructions) {
         X86_64TileHelper.instance.invokeConstructor(resolver, Collections.<ISymbol>emptyList(), this, instructions);
     }
+    
+    @Override
+    public final void moveStatic(final String staticLbl, final Size size, final Addable<X86Instruction> instructions) {
+        final Immediate toAddr = new Immediate(staticLbl);
+        instructions.add(new Mov(Register.DATA, toAddr, sizeHelper));
+        instructions.add(new Mov(new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.DATA)), 
+                Register.ACCUMULATOR, size, sizeHelper));
+    }
+
+    @Override
+    public final void zeroStatic(final String staticLbl, final Size size, final Addable<X86Instruction> instructions) {
+        final Immediate toAddr = new Immediate(staticLbl);
+        instructions.add(new Mov(Register.DATA, toAddr, sizeHelper));
+        instructions.add(new Mov(new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.DATA)), 
+                Immediate.ZERO, size, sizeHelper));
+    }
 
     @Override
     public final void moveStaticLong(final String staticLbl, final Addable<X86Instruction> instructions){
-        final Immediate lbl = new Immediate(staticLbl);
-        final Memory toAddr = new Memory(new BasicMemoryFormat(lbl));
-        instructions.add(new Mov(toAddr, Register.ACCUMULATOR, sizeHelper));
+        moveStatic(staticLbl, Size.QWORD, instructions);
     }
 
     @Override
     public final void zeroStaticLong(final String staticLbl, final Addable<X86Instruction> instructions){
-        final Immediate lbl = new Immediate(staticLbl);
-        final Memory toAddr = new Memory(new BasicMemoryFormat(lbl));
-        instructions.add(new Mov(toAddr, Immediate.ZERO, sizeHelper));
+        zeroStatic(staticLbl, Size.QWORD, instructions);
     }
 
     @Override

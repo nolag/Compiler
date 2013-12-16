@@ -82,7 +82,8 @@ __exception:
 ; Outputs the low-order byte of eax to standard output.
 global NATIVEjava.io.OutputStream.nativeWrite
 NATIVEjava.io.OutputStream.nativeWrite:
-	mov [char], al
+	mov rdx, char
+    mov [rdx], al ; save the low order byte in memory
 	;make shadow space + space for last var
 	sub rsp, 40
 	;GetStdHandle( STDOUTPUTHANDLE)

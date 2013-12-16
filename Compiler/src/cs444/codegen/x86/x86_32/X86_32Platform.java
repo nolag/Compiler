@@ -45,7 +45,7 @@ public class X86_32Platform extends X86Platform {
 
     @Override
     public final X86ObjectLayout getObjectLayout() {
-        return X86ObjectLayout.object32;
+        return X86_32ObjectLayout.layout;
     }
 
     @Override
@@ -64,9 +64,21 @@ public class X86_32Platform extends X86Platform {
     public final void genInstructorInvoke(final APkgClassResolver resolver, final Addable<X86Instruction> instructions) {
         X86_32TileHelper.instance.invokeConstructor(resolver, Collections.<ISymbol>emptyList(), this, instructions);
     }
+    
+    @Override
+    public final void moveStatic(final String staticLbl, final Size size, final Addable<X86Instruction> instructions) {
+        final Memory toAddr = new Memory(new BasicMemoryFormat(new Immediate(staticLbl)));
+        instructions.add(new Mov(toAddr, Register.ACCUMULATOR, size, sizeHelper));
+    }
 
     @Override
-    public final void moveStaticLong(final String staticLbl, final Addable<X86Instruction> instructions){
+    public final void zeroStatic(final String staticLbl, final Size size, final Addable<X86Instruction> instructions) {
+        final Memory toAddr = new Memory(new BasicMemoryFormat(new Immediate(staticLbl)));
+        instructions.add(new Mov(toAddr, Immediate.ZERO, size, sizeHelper));
+    }
+
+    @Override
+    public final void moveStaticLong(final String staticLbl, final Addable<X86Instruction> instructions) {
         final Immediate lbl = new Immediate(staticLbl);
         final Memory toAddrL = new Memory(new BasicMemoryFormat(lbl));
         final Memory toAddrH = new Memory(new AddMemoryFormat(lbl, Immediate.FOUR));
@@ -75,7 +87,7 @@ public class X86_32Platform extends X86Platform {
     }
 
     @Override
-    public final void zeroStaticLong(final String staticLbl, final Addable<X86Instruction> instructions){
+    public final void zeroStaticLong(final String staticLbl, final Addable<X86Instruction> instructions) {
         final Immediate lbl = new Immediate(staticLbl);
         final Memory toAddrL = new Memory(new BasicMemoryFormat(lbl));
         final Memory toAddrH = new Memory(new AddMemoryFormat(lbl, Immediate.FOUR));
