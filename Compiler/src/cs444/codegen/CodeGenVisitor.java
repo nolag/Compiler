@@ -262,6 +262,11 @@ public class CodeGenVisitor <T extends Instruction, E extends Enum<E>> {
         tiles.<LtExprSymbol>addBest(tiles.lts, op, platform);
     }
 
+    public void visit(final GtExprSymbol op) {
+        binOpHelper(op);
+        tiles.<GtExprSymbol>addBest(tiles.gts, op, platform);
+    }
+    
     public void visit(final EqExprSymbol op) {
         binOpHelper(op);
         tiles.<EqExprSymbol>addBest(tiles.eqs, op, platform);
@@ -299,6 +304,12 @@ public class CodeGenVisitor <T extends Instruction, E extends Enum<E>> {
         tiles.<LeExprSymbol>addBest(tiles.les, op, platform);
     }
 
+    public void visit(final GeExprSymbol op) {
+        binOpHelper(op);
+        tiles.<GeExprSymbol>addBest(tiles.ges, op, platform);
+    }
+
+    
     public void visit(final InstanceOfExprSymbol op) {
         op.getLeftOperand().accept(this);
         tiles.<InstanceOfExprSymbol>addBest(tiles.insts, op, platform);

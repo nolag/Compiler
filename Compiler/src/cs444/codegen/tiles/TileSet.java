@@ -42,6 +42,8 @@ public class TileSet <T extends Instruction, E extends Enum<E>>{
     public final List<ITile<T, E,  URSExprSymbol>> urss = new LinkedList<ITile<T, E,  URSExprSymbol>>();
     public final List<ITile<T, E,  LtExprSymbol>> lts = new LinkedList<ITile<T, E,  LtExprSymbol>>();
     public final List<ITile<T, E,  LeExprSymbol>> les = new LinkedList<ITile<T, E,  LeExprSymbol>>();
+    public final List<ITile<T, E,  GtExprSymbol>> gts = new LinkedList<ITile<T, E,  GtExprSymbol>>();
+    public final List<ITile<T, E,  GeExprSymbol>> ges = new LinkedList<ITile<T, E,  GeExprSymbol>>();
     public final List<ITile<T, E,  EqExprSymbol>> eqs = new LinkedList<ITile<T, E,  EqExprSymbol>>();
     public final List<ITile<T, E,  NeExprSymbol>> nes = new LinkedList<ITile<T, E,  NeExprSymbol>>();
     public final List<ITile<T, E,  EAndExprSymbol>> eands = new LinkedList<ITile<T, E,  EAndExprSymbol>>();

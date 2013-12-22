@@ -625,9 +625,19 @@ public class LocalDclLinker extends EmptyVisitor {
     public void visit(final LtExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
         bothIntHelper(JoosNonTerminal.BOOLEAN, op);
     }
+    
+    @Override
+    public void visit(final GtExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
+        bothIntHelper(JoosNonTerminal.BOOLEAN, op);
+    }
 
     @Override
     public void visit(final LeExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
+        bothIntHelper(JoosNonTerminal.BOOLEAN, op);
+    }
+    
+    @Override
+    public void visit(final GeExprSymbol op) throws UndeclaredException, BadOperandsTypeException  {
         bothIntHelper(JoosNonTerminal.BOOLEAN, op);
     }
 

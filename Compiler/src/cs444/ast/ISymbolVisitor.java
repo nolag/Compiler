@@ -61,6 +61,7 @@ public interface ISymbolVisitor {
     void visit(final RSExprSymbol op) throws CompilerException;
     void visit(final URSExprSymbol op) throws CompilerException;
     void visit(final LtExprSymbol op) throws CompilerException;
+    void visit(final GtExprSymbol op) throws CompilerException;
     void visit(final EqExprSymbol op) throws CompilerException;
     void visit(final NeExprSymbol op) throws CompilerException;
     void visit(final AndExprSymbol op) throws CompilerException;
@@ -68,6 +69,7 @@ public interface ISymbolVisitor {
     void visit(final EAndExprSymbol op) throws CompilerException;
     void visit(final EOrExprSymbol op) throws CompilerException;
     void visit(final LeExprSymbol op) throws CompilerException;
+    void visit(final GeExprSymbol op) throws CompilerException;
     void visit(final InstanceOfExprSymbol op) throws CompilerException;
     void visit(final IntegerLiteralSymbol intLiteral) throws CompilerException;
     void visit(final LongLiteralSymbol longLiteral) throws CompilerException;

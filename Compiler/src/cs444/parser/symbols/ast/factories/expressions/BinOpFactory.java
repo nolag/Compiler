@@ -33,9 +33,9 @@ public class BinOpFactory extends ASTSymbolFactory{
         if(typeName.equals(Token.Type.RS.toString())) return new RSExprSymbol(left, right);
         if(typeName.equals(Token.Type.URS.toString())) return new URSExprSymbol(left, right);
         if(typeName.equals(Token.Type.LT.toString())) return new LtExprSymbol(left, right);
-        if(typeName.equals(Token.Type.GT.toString())) return new LtExprSymbol(right, left);
+        if(typeName.equals(Token.Type.GT.toString())) return new GtExprSymbol(left, right);
         if(typeName.equals(Token.Type.LE.toString())) return new LeExprSymbol(left, right);
-        if(typeName.equals(Token.Type.GE.toString())) return new LeExprSymbol(right, left);
+        if(typeName.equals(Token.Type.GE.toString())) return new GeExprSymbol(left, right);
         if(typeName.equals(Token.Type.INSTANCEOF.toString())){
             TypeSymbol type;
             if (right instanceof TypeSymbol){

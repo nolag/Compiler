@@ -36,6 +36,8 @@ public abstract class X86TileInit extends TileInit {
         EAndTile.init(klass);
         EOrTile.init(klass);
         EQTile.init(klass);
+        GETile.init(klass);
+        GTTile.init(klass);
         FieldAccessTile.<X86Instruction, Size>init(klass);
         ForTile.init(klass);
         IfTile.<X86Instruction, Size>init(klass);

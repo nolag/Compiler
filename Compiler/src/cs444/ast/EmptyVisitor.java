@@ -90,6 +90,9 @@ public abstract class EmptyVisitor implements ISymbolVisitor {
     public void visit(final LtExprSymbol op) throws CompilerException { }
 
     @Override
+    public void visit(final GtExprSymbol op) throws CompilerException { }
+    
+    @Override
     public void visit(final EqExprSymbol op) throws CompilerException { }
 
     @Override
@@ -103,6 +106,9 @@ public abstract class EmptyVisitor implements ISymbolVisitor {
 
     @Override
     public void visit(final LeExprSymbol op) throws CompilerException { }
+    
+    @Override
+    public void visit(final GeExprSymbol op) throws CompilerException { }
 
     @Override
     public void visit(final InstanceOfExprSymbol op) throws CompilerException { }
