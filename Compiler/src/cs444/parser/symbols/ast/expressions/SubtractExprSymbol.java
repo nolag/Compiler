@@ -46,8 +46,8 @@ public class SubtractExprSymbol extends BinOpExpr {
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
-            final long val1 = ((INumericLiteral)leftOperand).getValue();
-            final long val2 = ((INumericLiteral)rightOperand).getValue();
+            final long val1 = ((INumericLiteral)leftOperand).getAsLongValue();
+            final long val2 = ((INumericLiteral)rightOperand).getAsLongValue();
             if (rightOperand instanceof LongLiteralSymbol || leftOperand instanceof LongLiteralSymbol) {
                 return new LongLiteralSymbol(val1 - val2);
             }
@@ -56,7 +56,7 @@ public class SubtractExprSymbol extends BinOpExpr {
             return zeroReducer((INumericLiteral) rightOperand, leftOperand);
         } else if (leftOperand instanceof INumericLiteral) {
             final INumericLiteral num = (INumericLiteral) leftOperand;
-            if (num.getValue() == 0) {
+            if (num.getAsLongValue() == 0) {
                 final NegOpExprSymbol neg = new NegOpExprSymbol(rightOperand);
                 return neg;
             }

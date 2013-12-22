@@ -1,6 +1,7 @@
 package cs444.parser.symbols.ast;
 
 
-public interface INumericLiteral extends Typeable{
-    public long getValue();
+public interface INumericLiteral extends Typeable, ILiteralSymbol {
+    @Override
+    public long getAsLongValue();
 }

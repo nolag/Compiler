@@ -15,7 +15,7 @@ public abstract class BinOpExpr extends BaseExprSymbol{
     }
 
     protected static Typeable zeroReducer(final INumericLiteral number, final Typeable leftOperand) {
-        if (number.getValue() == 0) {
+        if (number.getAsLongValue() == 0) {
             if (number instanceof LongLiteralSymbol && !leftOperand.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)) {
                 final CastExpressionSymbol cast = new CastExpressionSymbol(number.getType(), leftOperand);
                 return cast;

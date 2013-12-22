@@ -25,7 +25,7 @@ public class ShortLiteralSymbol extends TypeableTerminal implements INumericLite
     }
 
     @Override
-    public final long getValue() {
+    public final long getAsLongValue() {
         return shortVal;
     }
 }

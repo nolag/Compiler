@@ -22,7 +22,7 @@ public abstract class TileHelper<T extends Instruction, E extends Enum<E>> {
     public static boolean isZero(final ISymbol symbol){
         if(symbol instanceof INumericLiteral){
             final INumericLiteral numLit = (INumericLiteral) symbol;
-            return numLit.getValue() == 0;
+            return numLit.getAsLongValue() == 0;
         }
         return false;
     }
@@ -73,7 +73,7 @@ public abstract class TileHelper<T extends Instruction, E extends Enum<E>> {
     public static Integer powerTwoOrNull(final ISymbol symbol, final long max, final long offset) {
         if (!(symbol instanceof INumericLiteral)) return null;
         final INumericLiteral number = (INumericLiteral) symbol;
-        long value = number.getValue();
+        long value = number.getAsLongValue();
         if (value < 1) return null;
         value = value - offset;
         if (value > max) return null;
@@ -92,7 +92,7 @@ public abstract class TileHelper<T extends Instruction, E extends Enum<E>> {
     public static PowerTwoOffset intOffsetFromPow2(final ISymbol symbol) {
         if (!(symbol instanceof INumericLiteral)) return null;
         final INumericLiteral number = (INumericLiteral) symbol;
-        final long value = number.getValue();
+        final long value = number.getAsLongValue();
         if (value < 1) return null;
         final double raw_power = Math.log(value) / Math.log(2);
         final long power = (int) raw_power;
@@ -113,6 +113,6 @@ public abstract class TileHelper<T extends Instruction, E extends Enum<E>> {
     public static Long getValue(final ISymbol symbol) {
         if (!(symbol instanceof INumericLiteral)) return null;
         final INumericLiteral number = (INumericLiteral) symbol;
-        return number.getValue();
+        return number.getAsLongValue();
     }
 }

@@ -25,7 +25,7 @@ public class ByteLiteralSymbol extends TypeableTerminal implements INumericLiter
     }
 
     @Override
-    public final long getValue() {
+    public final long getAsLongValue() {
         return byteVal;
     }
 }

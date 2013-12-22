@@ -38,7 +38,7 @@ public class IntegerLiteralSymbol extends TypeableTerminal implements INumericLi
     }
 
     @Override
-    public final long getValue() {
+    public final long getAsLongValue() {
         return intVal;
     }
 }

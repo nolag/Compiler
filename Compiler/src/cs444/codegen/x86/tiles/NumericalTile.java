@@ -28,7 +28,7 @@ public class NumericalTile extends NumericHelperTile<INumericLiteral>{
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(num.getValue()), sizeHelper));
+        instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(num.getAsLongValue()), sizeHelper));
         return instructions;
     }
 }

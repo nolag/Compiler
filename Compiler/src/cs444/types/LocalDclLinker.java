@@ -526,7 +526,7 @@ public class LocalDclLinker extends EmptyVisitor {
 
         if(assigned instanceof INumericLiteral && SizeHelper.maxValues.containsKey(toType.value)){
             final INumericLiteral numeric = (INumericLiteral)assigned;
-            final long val = numeric.getValue();
+            final long val = numeric.getAsLongValue();
             final long max = SizeHelper.maxValues.get(toType.value);
             if(toType.isArray || (type.value.equals(JoosNonTerminal.LONG) && !toType.value.equals(JoosNonTerminal.LONG)) ||
                     val >  max || val < 0 && JoosNonTerminal.unsigned.contains(toType.value) || val < -max - 1){

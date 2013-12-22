@@ -5,7 +5,7 @@ import cs444.ast.ISymbolVisitor;
 import cs444.codegen.CodeGenVisitor;
 import cs444.parser.symbols.JoosNonTerminal;
 
-public class BooleanLiteralSymbol extends TypeableTerminal{
+public class BooleanLiteralSymbol extends TypeableTerminal implements ILiteralSymbol {
     private static final String SYM_NAME = "Boolean";
     public final boolean boolValue;
 
@@ -27,5 +27,10 @@ public class BooleanLiteralSymbol extends TypeableTerminal{
     @Override
     public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public long getAsLongValue() {
+        return boolValue ? 1 : 0;
     }
 }

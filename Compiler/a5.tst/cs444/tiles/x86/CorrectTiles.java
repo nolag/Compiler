@@ -146,9 +146,18 @@ public class CorrectTiles {
         assertFalse(compileAndContains("Start Assignment Simple Name=And", superPaths));
     }
 
+    @Test
     public void negReducing() throws CompilerException, IOException {
         final String subBase = TILE_TESTS + "NegNegNegNegOpt/";
         final String [] superPaths = {subBase +  "Object.java"};
         assertFalse(compileAndContains("neg", superPaths));
+    }
+    
+    @Test
+    public void rhsSimplifiy() throws CompilerException, IOException {
+        final String subBase = TILE_TESTS + "Literals/";
+        final String [] superPaths = {subBase +  "Object.java", subBase +  "String.java"};
+        assertFalse(compileAndContains("eax, ecx", superPaths));
+        assertFalse(contains("rax, rcx", superPaths));
     }
 }

@@ -31,7 +31,7 @@ public class NegOpExprSymbol extends UnaryOpExprSymbol{
     public Typeable reduce() {
         final ISymbol operand = getOperand();
         if (operand instanceof INumericLiteral) {
-            final long val = ((INumericLiteral)operand).getValue();
+            final long val = ((INumericLiteral)operand).getAsLongValue();
             return operand instanceof LongLiteralSymbol ? new LongLiteralSymbol(-val) : new IntegerLiteralSymbol((int)-val);
         } else if (operand instanceof NegOpExprSymbol) {
             final NegOpExprSymbol neg = (NegOpExprSymbol) operand;

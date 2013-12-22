@@ -45,8 +45,8 @@ public class MultiplyExprSymbol extends BinOpExpr {
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
-            final long val1 = ((INumericLiteral)leftOperand).getValue();
-            final long val2 = ((INumericLiteral)rightOperand).getValue();
+            final long val1 = ((INumericLiteral)leftOperand).getAsLongValue();
+            final long val2 = ((INumericLiteral)rightOperand).getAsLongValue();
             if(rightOperand instanceof LongLiteralSymbol || leftOperand instanceof LongLiteralSymbol){
                 return new LongLiteralSymbol(val1 * val2);
             }

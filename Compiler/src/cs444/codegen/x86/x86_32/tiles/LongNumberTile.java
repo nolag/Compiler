@@ -29,9 +29,9 @@ public class LongNumberTile extends LongOnlyTile<INumericLiteral> {
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
-        instructions.add(new Comment("putting long " + num.getValue() + " in eax and edx"));
-        final int aval = (int) num.getValue();
-        final int dval = (int) (num.getValue() >> 32);
+        instructions.add(new Comment("putting long " + num.getAsLongValue() + " in eax and edx"));
+        final int aval = (int) num.getAsLongValue();
+        final int dval = (int) (num.getAsLongValue() >> 32);
         final Immediate aimd = new Immediate(aval);
         final Immediate dimd = new Immediate(dval);
         instructions.add(new Mov(Register.ACCUMULATOR, aimd, sizeHelper));

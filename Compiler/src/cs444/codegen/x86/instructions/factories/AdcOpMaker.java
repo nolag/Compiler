@@ -1,6 +1,7 @@
 package cs444.codegen.x86.instructions.factories;
 
 import cs444.codegen.SizeHelper;
+import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Adc;
@@ -18,7 +19,17 @@ public class AdcOpMaker implements BinOpMaker {
     }
 
     @Override
-    public X86Instruction make(final Register one, final Register two, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
+    public Adc make(final Register one, final Register two, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
+        return new Adc(one, two, size, sizeHelper);
+    }
+    
+    @Override
+    public Adc make(final Register one, final Immediate two, final SizeHelper<X86Instruction, Size> sizeHelper) {
+        return new Adc(one, two, sizeHelper);
+    }
+
+    @Override
+    public Adc make(final Register one, final Immediate two, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Adc(one, two, size, sizeHelper);
     }
 }

@@ -1,6 +1,7 @@
 package cs444.codegen.x86.instructions.factories;
 
 import cs444.codegen.SizeHelper;
+import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Shr;
@@ -18,7 +19,17 @@ public class URSOpMaker implements BinOpMaker {
     }
 
     @Override
-    public X86Instruction make(final Register one, final Register two, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
+    public Shr make(final Register one, final Register two, final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
+        return new Shr(one, two, size, sizeHelper);
+    }
+
+    @Override
+    public Shr make(Register one, Immediate two, SizeHelper<X86Instruction, Size> sizeHelper) {
+        return new Shr(one, two, sizeHelper);
+    }
+
+    @Override
+    public Shr make(Register one, Immediate two, Size size, SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Shr(one, two, size, sizeHelper);
     }
 }

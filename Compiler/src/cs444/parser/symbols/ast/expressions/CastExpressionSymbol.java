@@ -54,15 +54,15 @@ public class CastExpressionSymbol extends BaseExprSymbol{
             final INumericLiteral literal = (INumericLiteral) operand;
 
             if(toType.equals(JoosNonTerminal.LONG)){
-                return new LongLiteralSymbol(literal.getValue());
+                return new LongLiteralSymbol(literal.getAsLongValue());
             }else if (toType.equals(JoosNonTerminal.INTEGER)){
-                return new IntegerLiteralSymbol((int)literal.getValue());
+                return new IntegerLiteralSymbol((int)literal.getAsLongValue());
             }else if (toType.equals(JoosNonTerminal.SHORT)){
-                return new ShortLiteralSymbol((short)literal.getValue());
+                return new ShortLiteralSymbol((short)literal.getAsLongValue());
             }else if (toType.equals(JoosNonTerminal.BYTE)){
-                return new ByteLiteralSymbol((byte)literal.getValue());
+                return new ByteLiteralSymbol((byte)literal.getAsLongValue());
             }else if (toType.equals(JoosNonTerminal.CHAR)){
-                return new CharacterLiteralSymbol((char)literal.getValue());
+                return new CharacterLiteralSymbol((char)literal.getAsLongValue());
             }
         }
 

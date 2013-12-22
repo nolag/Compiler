@@ -15,11 +15,13 @@ import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
+import cs444.codegen.x86.instructions.factories.UniOpMaker;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.*;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
 import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
+import cs444.parser.symbols.ast.expressions.BinOpExpr;
 import cs444.types.APkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
@@ -278,5 +280,24 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
             final SizeHelper<X86Instruction, Size> sizeHelper){
 
         instructions.add(new Mov(Register.ACCUMULATOR, bool ? Immediate.TRUE : Immediate.FALSE, sizeHelper));
+    }
+
+    public static void addCompEnding(final Addable<X86Instruction> instructions,
+            final UniOpMaker uni, final Platform<X86Instruction, Size> platform) {
+        
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        instructions.add(new Comment("Xor here CAN change the setl bit?"));
+        instructions.add(uni.make(Register.DATA, sizeHelper, sizeHelper.getDefaultSize()));
+        instructions.add(new Comment("clear all bits in register"));
+        instructions.add(new Xor(Register.ACCUMULATOR, Register.ACCUMULATOR, sizeHelper));
+        instructions.add(new Mov(Register.ACCUMULATOR, Register.DATA, Size.LOW, sizeHelper));
+    }
+    
+    public static boolean fitsSizedCompare(final BinOpExpr op, final Platform<X86Instruction, Size> platform) {
+        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        final Typeable ts1 = (Typeable) op.children.get(0);
+        final Typeable ts2 = (Typeable) op.children.get(1);
+        return sizeHelper.getDefaultStackSize() >= sizeHelper.getByteSizeOfType(ts1.getType().getTypeDclNode().fullName)
+                && sizeHelper.getDefaultStackSize() >= sizeHelper.getByteSizeOfType(ts2.getType().getTypeDclNode().fullName);
     }
 }

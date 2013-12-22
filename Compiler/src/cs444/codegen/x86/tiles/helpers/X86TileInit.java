@@ -7,9 +7,19 @@ import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.X86Platform;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.*;
+import cs444.codegen.x86.tiles.opt.AddWithConstTile;
+import cs444.codegen.x86.tiles.opt.EAndWithConstTile;
+import cs444.codegen.x86.tiles.opt.EOrWithConstTile;
+import cs444.codegen.x86.tiles.opt.EQWithConstTile;
+import cs444.codegen.x86.tiles.opt.GERHSConstTile;
+import cs444.codegen.x86.tiles.opt.GTRHSConstTile;
+import cs444.codegen.x86.tiles.opt.LERHSConstTile;
+import cs444.codegen.x86.tiles.opt.LTRHSConstTile;
 import cs444.codegen.x86.tiles.opt.LeaForMultTile;
 import cs444.codegen.x86.tiles.opt.LeaForMultOffOneTile;
 import cs444.codegen.x86.tiles.opt.MultPow2Tile;
+import cs444.codegen.x86.tiles.opt.NeWithConstTile;
+import cs444.codegen.x86.tiles.opt.SubRHSConstTile;
 
 public abstract class X86TileInit extends TileInit {
     protected final Class<? extends X86Platform> klass;
@@ -73,12 +83,22 @@ public abstract class X86TileInit extends TileInit {
 
     @Override
     public void initBasicOpt() {
+        AddWithConstTile.init(klass);
         DivZeroTile.<X86Instruction, Size>init(klass);
+        EAndWithConstTile.init(klass);
+        EOrWithConstTile.init(klass);
+        EQWithConstTile.init(klass);
+        GERHSConstTile.init(klass);
+        GTRHSConstTile.init(klass);
         LeaForMultTile.init(klass);
         LeaForMultOffOneTile.init(klass);
+        LERHSConstTile.init(klass);
+        LTRHSConstTile.init(klass);
         MultPow2Tile.init(klass);
+        NeWithConstTile.init(klass);
         NonNullFieldAccess.<X86Instruction, Size>init(klass);
         RemZeroTile.<X86Instruction, Size>init(klass);
+        SubRHSConstTile.init(klass);
         UpCastTile.<X86Instruction, Size>init(klass);
         ZeroMultTile.<X86Instruction, Size>init(klass);
     }

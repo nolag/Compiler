@@ -43,8 +43,8 @@ public class AddExprSymbol extends BinOpExpr {
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
-            final long val1 = ((INumericLiteral)leftOperand).getValue();
-            final long val2 = ((INumericLiteral)rightOperand).getValue();
+            final long val1 = ((INumericLiteral)leftOperand).getAsLongValue();
+            final long val2 = ((INumericLiteral)rightOperand).getAsLongValue();
             if(rightOperand instanceof LongLiteralSymbol || leftOperand instanceof LongLiteralSymbol){
                 return new LongLiteralSymbol(val1 + val2);
             }
@@ -74,7 +74,7 @@ public class AddExprSymbol extends BinOpExpr {
     }
 
     private String getValFrom(final ISymbol leftOperand) {
-        final long val1 = ((INumericLiteral)leftOperand).getValue();
+        final long val1 = ((INumericLiteral)leftOperand).getAsLongValue();
         String strVal = String.valueOf(val1);
         if (leftOperand instanceof CharacterLiteralSymbol){
             strVal = String.valueOf((char)val1);

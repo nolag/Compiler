@@ -45,8 +45,8 @@ public class GeExprSymbol extends BinOpExpr {
 
         if (rightOperand instanceof INumericLiteral &&
                 leftOperand instanceof INumericLiteral){
-            final long val1 = ((INumericLiteral)leftOperand).getValue();
-            final long val2 = ((INumericLiteral)rightOperand).getValue();
+            final long val1 = ((INumericLiteral)leftOperand).getAsLongValue();
+            final long val2 = ((INumericLiteral)rightOperand).getAsLongValue();
             return new BooleanLiteralSymbol(val1 >= val2);
         }else{
             return null;

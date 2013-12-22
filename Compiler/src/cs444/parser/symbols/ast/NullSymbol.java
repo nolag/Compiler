@@ -4,7 +4,7 @@ import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.codegen.CodeGenVisitor;
 
-public class NullSymbol extends TypeableTerminal {
+public class NullSymbol extends TypeableTerminal implements ILiteralSymbol {
 
     public NullSymbol() {
         super("null", "null");
@@ -18,5 +18,10 @@ public class NullSymbol extends TypeableTerminal {
     @Override
     public void accept(final CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public long getAsLongValue() {
+        return 0;
     }
 }

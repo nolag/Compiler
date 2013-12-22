@@ -48,7 +48,7 @@ public class CharacterLiteralSymbol extends TypeableTerminal implements INumeric
     }
 
     @Override
-    public final long getValue() {
+    public final long getAsLongValue() {
         return charVal;
     }
 }
