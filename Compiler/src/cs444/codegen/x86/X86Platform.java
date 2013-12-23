@@ -35,7 +35,7 @@ public abstract class X86Platform extends Platform<X86Instruction, Size> {
     protected final X86SizeHelper sizeHelper;
     private SubtypeIndexedTable<X86Instruction, Size> subtype;
 
-    protected X86Platform(final Set<String> options, final TileInit tiles, final IRuntime<X86Instruction> runtime,
+    protected X86Platform(final Set<String> options, final TileInit<X86Instruction, Size> tiles, final IRuntime<X86Instruction> runtime,
             final X86SizeHelper sizeHelper, final String name) {
         super(options, name);
 

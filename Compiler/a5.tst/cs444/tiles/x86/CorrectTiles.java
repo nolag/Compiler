@@ -160,4 +160,12 @@ public class CorrectTiles {
         assertFalse(compileAndContains("eax, ecx", superPaths));
         assertFalse(contains("rax, rcx", superPaths));
     }
+    
+    @Test
+    public void lhsSimplifiy() throws CompilerException, IOException {
+        final String subBase = TILE_TESTS + "Literals2/";
+        final String [] superPaths = {subBase +  "Object.java", subBase +  "String.java"};
+        assertFalse(compileAndContains("eax, ecx", superPaths));
+        assertFalse(contains("rax, rcx", superPaths));
+    }
 }
