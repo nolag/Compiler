@@ -141,7 +141,7 @@ public class X86_32Platform extends X86Platform {
     }
 
     @Override
-    public OperatingSystem<? extends X86Platform>[] getOperatingSystems() {
+    public OperatingSystem<X86_32Platform>[] getOperatingSystems() {
         return oses;
     }
 }

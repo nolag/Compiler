@@ -25,53 +25,32 @@ public abstract class X86Platform extends Platform<X86Instruction, Size> {
         P getPlatform(Set<String> opts);
     }
     
-    private static final String ENTRY = "entry";
-    private static final X86Instruction ENTRY_GLOBAL = new Global(ENTRY);
-    private static final X86Instruction ENTRY_LBL = new Label(ENTRY);
+    private static final X86Instruction ENTRY_GLOBAL = new Global(Platform.ENTRY);
+    private static final X86Instruction ENTRY_LBL = new Label(Platform.ENTRY);
     private static final X86Instruction STATIC_INIT_EXTERN = new Extern(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL));
-
-    private final InstructionHolder<X86Instruction> instrucitons;
-    protected final IRuntime<X86Instruction> runtime;
+    
     protected final X86SizeHelper sizeHelper;
     private SubtypeIndexedTable<X86Instruction, Size> subtype;
+    
+    private static InstructionHolder<X86Instruction> genInstructionHolder(final Set<String> options, final X86SizeHelper sizeHelper) {
+        final InstructionHolder<X86Instruction> printer = new InstructionPrinter<>();
+        if(options.contains(NO_PEEPHOLE)) {
+            return printer;
+        } else {
+            final InstructionHolder<X86Instruction> pushPop = new PushPopRemover(printer, sizeHelper);
+            return new MovZeroRegRemover(pushPop);
+        }
+    }
 
     protected X86Platform(final Set<String> options, final TileInit<X86Instruction, Size> tiles, final IRuntime<X86Instruction> runtime,
             final X86SizeHelper sizeHelper, final String name) {
-        super(options, name);
-
-        final InstructionHolder<X86Instruction> printer = new InstructionPrinter<>();
-
-        if(options.contains(NO_PEEPHOLE)) {
-            instrucitons = printer;
-        } else {
-            final InstructionHolder<X86Instruction> pushPop = new PushPopRemover(printer, sizeHelper);
-            instrucitons = new MovZeroRegRemover(pushPop);
-        }
-
-        tiles.init(options);
-        this.runtime = runtime;
+        super(options, name, runtime, tiles, genInstructionHolder(options, sizeHelper));
         this.sizeHelper = sizeHelper;
     }
 
     @Override
     public final X86SizeHelper getSizeHelper() {
         return sizeHelper;
-    }
-
-    @Override
-    public abstract X86ObjectLayout getObjectLayout();
-
-    @Override
-    public abstract X86SelectorIndexedTable getSelectorIndex();
-
-    @Override
-    public final IRuntime<X86Instruction> getRunime() {
-        return runtime;
-    }
-
-    @Override
-    public final InstructionHolder<X86Instruction> getInstructionHolder() {
-        return instrucitons;
     }
 
     @Override
@@ -122,7 +101,4 @@ public abstract class X86Platform extends Platform<X86Instruction, Size> {
         instructions.add(STATIC_INIT_EXTERN);
         instructions.add(new Call(new Immediate(StaticFieldInit.STATIC_FIELD_INIT_LBL), sizeHelper));
     }
-    
-    @Override
-    public abstract OperatingSystem<? extends X86Platform>[] getOperatingSystems();
 }

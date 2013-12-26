@@ -15,7 +15,11 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
 public abstract class Platform<T extends Instruction, E extends Enum<E>> {
-    public static final String NO_PEEPHOLE = "--no_peep";
+    protected static final String NO_PEEPHOLE = "--no_peep";
+    
+    private final InstructionHolder<T> instrucitons;
+    
+    protected final IRuntime<T> runtime;
 
     public interface PlatformFactory<T extends Instruction, E extends Enum<E>, P extends Platform<T, E>> {
         P getPlatform(Set<String> opts);
@@ -24,12 +28,17 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
     private final Set<String> options;
     private final String outDir;
 
-    protected Platform(final Set<String> options, final String name){
+    protected Platform(final Set<String> options, final String name, final IRuntime<T> runtime,
+            final TileInit<T, E> tiles, final InstructionHolder<T> instrucitons){
         this.options = new HashSet<>(options);
         outDir = Compiler.OUTPUT_DIRECTORY + File.separator + name;
+        this.runtime = runtime;
+        this.instrucitons = instrucitons;
+        tiles.init(options);
     }
 
     private final Map<ISymbol, InstructionsAndTiming<T>> bests = new HashMap<ISymbol, InstructionsAndTiming<T>> ();
+    public static final String ENTRY = "entry";
 
     public void addBest(final ISymbol symbol, final InstructionsAndTiming<T> tile){
         bests.put(symbol, tile);
@@ -69,13 +78,20 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
             final boolean outputFile, final String directory) throws IOException;
 
     public abstract SubtypeIndexedTable<T, E> getSubtypeTable();
-    public abstract IRuntime<T> getRunime();
-    public abstract InstructionHolder<T> getInstructionHolder();
+    
+    public final IRuntime<T> getRunime() {
+        return runtime;
+    }
+    
+    public InstructionHolder<T> getInstructionHolder() {
+        return instrucitons;
+    }
+    
     public abstract void generateStaticCode(final List<APkgClassResolver> resolvers,
             final boolean outputFile, final String directory) throws IOException;
     
     //Note, it is a large refactoring, but the best way to do this is to add P extends Platform<T, E, P> and use P
-    public abstract OperatingSystem<? extends Platform<?, ?>>[] getOperatingSystems();
+    public abstract OperatingSystem<? extends Platform<T, E>>[] getOperatingSystems();
 
     //Functions for file headers
     public abstract void genStartInstructions(final String methodName, final Addable<T> instructions);
@@ -85,18 +101,14 @@ public abstract class Platform<T extends Instruction, E extends Enum<E>> {
 
     public abstract TileSet<T, E> getTiles();
 
-    public abstract void zeroDefaultLocation(final Addable<T> instructions);
-
     public abstract void genLayoutForStaticFields(final Iterable<DclSymbol> staticFields, final Addable<T> instructions);
 
     public abstract TileHelper<T, E> getTileHelper();
-
-    public abstract void moveStatic(final String staticLbl, E size, final Addable<T> instructions);
-
-    public abstract void zeroStatic(final String staticLbl, E size, final Addable<T> instructions);
     
+    public abstract void zeroDefaultLocation(final Addable<T> instructions);
+    public abstract void moveStatic(final String staticLbl, E size, final Addable<T> instructions);
+    public abstract void zeroStatic(final String staticLbl, E size, final Addable<T> instructions);
     public abstract void moveStaticLong(final String staticLbl, final Addable<T> instructions);
-
     public abstract void zeroStaticLong(final String staticLbl, final Addable<T> instructions);
 
     public final String getOutputDir() {
