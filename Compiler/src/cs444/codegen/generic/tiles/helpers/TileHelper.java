@@ -78,7 +78,7 @@ public abstract class TileHelper<T extends Instruction, E extends Enum<E>> {
         value = value - offset;
         if (value > max) return null;
         final double power = Math.log(value) / Math.log(2);
-        return  power == Math.round(power) ? (int)power : null;
+        return  power == Math.floor(power) ? (int)power : null;
     }
 
     public static Integer powerTwoOrNull(final ISymbol symbol, final long max) {

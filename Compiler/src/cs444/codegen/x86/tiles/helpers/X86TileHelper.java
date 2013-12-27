@@ -163,6 +163,7 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
         } catch (final UndeclaredException e) {
             //Should never get here
             e.printStackTrace();
+            return;
         }
 
         final Immediate arg = new Immediate(APkgClassResolver.generateFullId(cs));

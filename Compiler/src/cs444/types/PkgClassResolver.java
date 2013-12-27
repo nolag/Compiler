@@ -22,7 +22,6 @@ public class PkgClassResolver extends APkgClassResolver {
     private final Map<String, PkgClassResolver> samepkgMap = new HashMap<String, PkgClassResolver>();
     private final Map<String, PkgClassResolver> staredMap = new HashMap<String, PkgClassResolver>();
     private final Set<String> imported = new HashSet<String>();
-    protected boolean isBuilt = false;
     public static final PkgClassResolver badResolve = new PkgClassResolver("!invalid");
     private static final Map<AInterfaceOrClassSymbol, PkgClassResolver> resolverMap = new HashMap<AInterfaceOrClassSymbol, PkgClassResolver>();
 
@@ -229,7 +228,7 @@ public class PkgClassResolver extends APkgClassResolver {
         final Map<String, AMethodSymbol> remOldFrom = oldMethod.isStatic() ? methodMap : smethodMap;
 
         final String uniqueName = generateUniqueName(oldMethod, oldMethod.dclName);
-        start.children.remove(uniqueName);
+        start.children.remove(oldMethod);
         start.children.add(newMethod);
         remOldFrom.remove(uniqueName);
         addOldTo.put(uniqueName, oldMethod);
@@ -319,8 +318,6 @@ public class PkgClassResolver extends APkgClassResolver {
                 }
                 constructorSymbol.dclInResolver = this;
             }
-
-            mustBeInterface |= !start.isClass();
 
             PkgClassResolver building = null;
 

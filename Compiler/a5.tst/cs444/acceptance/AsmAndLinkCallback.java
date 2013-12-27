@@ -120,6 +120,12 @@ import cs444.codegen.Platform;
         }
 
         private boolean assembleOutput(final File folder, final OperatingSystem<?> os) throws IOException, InterruptedException {
+            
+            if (os == null) {
+                System.out.println("No operating, skipping os!");
+                return true;
+            }
+            
             for (final File file : folder.listFiles()) {
                 final String fileName = file.getAbsolutePath();
                 if (!fileName.endsWith(".s")) continue;

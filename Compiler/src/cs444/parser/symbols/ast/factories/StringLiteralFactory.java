@@ -13,9 +13,9 @@ public class StringLiteralFactory extends ASTSymbolFactory {
 	protected ISymbol convert(ISymbol from) throws OutOfRangeException {
 		String name = from.getName();
 
-		if (name == Token.Type.CHAR_LITERAL.toString()) return new CharacterLiteralSymbol((Terminal)from);
+		if (name.equals(Token.Type.CHAR_LITERAL.toString())) return new CharacterLiteralSymbol((Terminal)from);
 
-		if (name == Token.Type.STR_LITERAL.toString()) return new StringLiteralSymbol((Terminal)from);
+		if (name.equals(Token.Type.STR_LITERAL.toString())) return new StringLiteralSymbol((Terminal)from);
 
 		return from;
 	}

@@ -15,7 +15,6 @@ import cs444.types.exceptions.UndeclaredException;
 
 public class ArrayPkgClassResolver extends APkgClassResolver {
     public final APkgClassResolver resolver;
-    public boolean isBuilt = false;
 
     public static String getArrayName(final String name){
         return name + "__array";

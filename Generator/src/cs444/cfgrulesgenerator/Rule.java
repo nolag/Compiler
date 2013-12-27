@@ -116,11 +116,17 @@ public class Rule{
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
     	if (!obj.getClass().equals(Rule.class)) return false;
 
     	Rule other = (Rule) obj;
         // let's use toString for now
         return this.toString().equals(other.toString());
+    }
+    
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
     }
 
     // check if token is representing one of the symbols ; , = + ...

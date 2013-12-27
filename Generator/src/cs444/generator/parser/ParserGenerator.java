@@ -38,7 +38,7 @@ public class ParserGenerator {
         } catch (IOException e) {
             System.err.println("Error writing to JoosDFA.java.");
         } finally {
-            writer.close();
+            if (writer != null) writer.close();
         }
     }
 }
