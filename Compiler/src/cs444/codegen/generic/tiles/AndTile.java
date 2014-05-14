@@ -10,9 +10,9 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 
-public class AndTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, AndExprSymbol>{
+public class AndTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, AndExprSymbol>{
 
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
+    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new AndTile<T, E>(klass);
     }
 

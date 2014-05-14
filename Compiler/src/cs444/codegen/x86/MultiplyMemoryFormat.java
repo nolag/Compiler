@@ -1,7 +1,8 @@
 package cs444.codegen.x86;
 
 import cs444.codegen.SizeHelper;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.instructions.InstructionArg;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public class MultiplyMemoryFormat extends MemoryFormat {
@@ -19,7 +20,7 @@ public class MultiplyMemoryFormat extends MemoryFormat {
     }
 
     @Override
-    public boolean uses(final InstructionArg what) {
+    public boolean uses(final InstructionArg<X86Instruction, ?> what) {
         return what == lhs;
     }
 }

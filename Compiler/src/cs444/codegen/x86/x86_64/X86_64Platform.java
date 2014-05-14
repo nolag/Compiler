@@ -1,8 +1,6 @@
 package cs444.codegen.x86.x86_64;
 
-import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import utils.generics.GenericMaker;
@@ -12,7 +10,6 @@ import cs444.codegen.OperatingSystem;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.*;
-import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.x86_64.tiles.helpers.X86_64TileHelper;
@@ -22,8 +19,6 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
 public class X86_64Platform extends X86Platform {    
-    public final X86SelectorIndexedTable sit;
-    
     private final OperatingSystem<X86_64Platform> [] oses = GenericMaker.<OperatingSystem<X86_64Platform>>makeArray(
             new Linux(this), new Windows(this), new OSX(this));
 
@@ -40,24 +35,11 @@ public class X86_64Platform extends X86Platform {
     
     private X86_64Platform(final Set<String> opts){
         super(opts, X86_64TileInit.instance, Runtime.instance, X86SizeHelper.sizeHelper64, "x64");
-        sit = new X86SelectorIndexedTable(sizeHelper);
     }
 
     @Override
     public final X86ObjectLayout getObjectLayout() {
         return X86_64ObjectLayout.layout;
-    }
-
-    @Override
-    public final X86SelectorIndexedTable getSelectorIndex() {
-        return sit;
-    }
-
-    @Override
-    public final void generateStaticCode(final List<APkgClassResolver> resolvers,
-            final boolean outputFile, final String directory) throws IOException {
-
-        StaticFieldInit.generateCode(resolvers, this, outputFile, directory);
     }
 
     @Override

@@ -10,9 +10,9 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ast.expressions.OrExprSymbol;
 
-public class OrTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, OrExprSymbol>{
+public class OrTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, OrExprSymbol>{
 
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
+    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new OrTile<T, E>(klass);
     }
 

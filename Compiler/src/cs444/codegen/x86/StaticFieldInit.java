@@ -9,9 +9,8 @@ import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.peepholes.InstructionHolder;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.*;
-import cs444.codegen.x86.instructions.Section.SectionType;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.x86_32.Runtime;
 import cs444.parser.symbols.ISymbol;
@@ -52,7 +51,7 @@ public class StaticFieldInit {
     }
 
     private void genCode(final List<APkgClassResolver> resolvers) {
-        instructions.add(new Section(SectionType.TEXT));
+        instructions.add(Section.TEXT);
         instructions.add(new Global(STATIC_FIELD_INIT_LBL));
         Runtime.instance.externAll(instructions);
         instructions.add(new Label(STATIC_FIELD_INIT_LBL));

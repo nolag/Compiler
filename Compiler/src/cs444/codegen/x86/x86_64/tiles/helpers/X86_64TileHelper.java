@@ -2,9 +2,9 @@ package cs444.codegen.x86.x86_64.tiles.helpers;
 
 import cs444.codegen.Addable;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Comment;
+import cs444.codegen.x86.Size;
+import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Movsx;
 import cs444.codegen.x86.instructions.Push;
 import cs444.codegen.x86.instructions.bases.X86Instruction;

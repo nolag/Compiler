@@ -3,13 +3,21 @@ package cs444.codegen;
 import java.util.List;
 
 import cs444.codegen.instructions.Instruction;
-import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.types.APkgClassResolver;
 
 
-public interface ObjectLayout<T extends Instruction> {
-    public void initialize(final APkgClassResolver typeDclNode, final Addable<X86Instruction> instructions);
-    public List<T> subtypeCheckCode(final TypeSymbol subType, final Platform<T, ?> platform);
-    public long objSize();
+public abstract class ObjectLayout<T extends Instruction<T>, E extends Enum<E>> {
+    public final int SUBTYPE_OFFSET;
+    
+    protected ObjectLayout(SizeHelper<T, E> sizeHelper) {
+        SUBTYPE_OFFSET = sizeHelper.getDefaultStackSize();
+    }
+    
+    public abstract void initialize(final APkgClassResolver typeDclNode, final Addable<T> instructions);
+    public abstract List<T> subtypeCheckCode(final TypeSymbol subType, final Platform<T, E> platform);
+    
+    public long objSize(){
+        return SUBTYPE_OFFSET  * 2;
+    }
 }

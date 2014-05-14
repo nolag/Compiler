@@ -7,7 +7,7 @@ import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.Call;
 import cs444.codegen.x86.instructions.Extern;
 import cs444.codegen.x86.instructions.bases.X86Instruction;

@@ -10,9 +10,9 @@ import cs444.parser.symbols.ast.FieldAccessSymbol;
 import cs444.parser.symbols.ast.Thisable;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
 
-public class NonNullFieldAccess<T extends Instruction, E extends Enum<E>> implements ITile<T, E, FieldAccessSymbol>{
+public class NonNullFieldAccess<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, FieldAccessSymbol>{
 
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
+    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new NonNullFieldAccess<T, E>(klass);
     }
 

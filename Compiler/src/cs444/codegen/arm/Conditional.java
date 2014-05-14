@@ -1,7 +1,7 @@
 package cs444.codegen.arm;
 
 import cs444.codegen.SizeHelper;
-import cs444.codegen.arm.instructions.bases.ARMInstruction;
+import cs444.codegen.arm.instructions.bases.ArmInstruction;
 
 public class Conditional extends SimpleInstructionArg {
     public static final Conditional EQ = new Conditional("EQ");
@@ -28,7 +28,7 @@ public class Conditional extends SimpleInstructionArg {
     }
 
     @Override
-    public String getValue(Size size, SizeHelper<ARMInstruction, Size> sizeHelper) {
+    public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
         return when;
     }
 }

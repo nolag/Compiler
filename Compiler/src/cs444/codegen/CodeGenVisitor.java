@@ -18,7 +18,7 @@ import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.expressions.*;
 import cs444.types.APkgClassResolver;
 
-public class CodeGenVisitor <T extends Instruction, E extends Enum<E>> {
+public class CodeGenVisitor <T extends Instruction<T>, E extends Enum<E>> {
     private static Map<Platform<?, ?>, CodeGenVisitor<?, ?>> codeGens = new HashMap<Platform<?, ?>, CodeGenVisitor<?, ?>>();
 
     //NOTE: this is for testing
@@ -27,7 +27,7 @@ public class CodeGenVisitor <T extends Instruction, E extends Enum<E>> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Instruction, E extends Enum<E>> CodeGenVisitor<T, E> getCurrentCodeGen(
+    public static <T extends Instruction<T>, E extends Enum<E>> CodeGenVisitor<T, E> getCurrentCodeGen(
             final Platform<T, E> platform){
 
         return (CodeGenVisitor<T, E>) codeGens.get(platform);

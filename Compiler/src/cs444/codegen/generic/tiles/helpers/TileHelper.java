@@ -6,8 +6,6 @@ import cs444.codegen.Addable;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.Instruction;
-import cs444.codegen.x86.InstructionArg.Size;
-import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.INumericLiteral;
@@ -18,7 +16,7 @@ import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.types.APkgClassResolver;
 
-public abstract class TileHelper<T extends Instruction, E extends Enum<E>> {
+public abstract class TileHelper<T extends Instruction<T>, E extends Enum<E>> {
     public static boolean isZero(final ISymbol symbol){
         if(symbol instanceof INumericLiteral){
             final INumericLiteral numLit = (INumericLiteral) symbol;
@@ -65,10 +63,10 @@ public abstract class TileHelper<T extends Instruction, E extends Enum<E>> {
     public abstract void loadBool(final boolean bool, final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
 
     public abstract void makeLong(final Typeable item,
-            final Addable<X86Instruction> instructions, final SizeHelper<X86Instruction, Size> sizeHelper);
+            final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
 
     public abstract void pushLong(final Typeable item,
-            final Addable<X86Instruction> instructions, final SizeHelper<X86Instruction, Size> sizeHelper);
+            final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
 
     public static Integer powerTwoOrNull(final ISymbol symbol, final long max, final long offset) {
         if (!(symbol instanceof INumericLiteral)) return null;

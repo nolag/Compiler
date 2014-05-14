@@ -2,7 +2,7 @@ package cs444.codegen.x86.tiles.helpers;
 
 import cs444.codegen.Platform;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.instructions.factories.CmpMaker;
 import cs444.codegen.x86.instructions.factories.UniOpMaker;

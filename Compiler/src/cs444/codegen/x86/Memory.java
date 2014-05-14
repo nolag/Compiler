@@ -4,10 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cs444.codegen.SizeHelper;
+import cs444.codegen.instructions.InstructionArg;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 
-public class Memory extends InstructionArg {
+public class Memory extends InstructionArg<X86Instruction, Size> {
     public static final Map<SizeHelper<X86Instruction, Size>, Memory> thisPointers =
             new HashMap<SizeHelper<X86Instruction, Size>, Memory>();
 
@@ -33,7 +34,7 @@ public class Memory extends InstructionArg {
     }
 
     @Override
-    public boolean uses(final InstructionArg what) {
+    public boolean uses(final InstructionArg<X86Instruction, ?> what) {
         return format.uses(what);
     }
 }

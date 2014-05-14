@@ -17,8 +17,8 @@ import cs444.codegen.generic.tiles.opt.UpCastTile;
 import cs444.codegen.generic.tiles.opt.ZeroMultTile;
 import cs444.codegen.instructions.Instruction;
 
-public abstract class TileInit <T extends Instruction, E extends Enum<E>> {
-    private final Class<? extends Platform<T, E>> klass;
+public abstract class TileInit <T extends Instruction<T>, E extends Enum<E>> {
+    protected final Class<? extends Platform<T, E>> klass;
     
     protected TileInit(final Class<? extends Platform<T, E>> klass) {
         this.klass = klass;

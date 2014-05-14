@@ -6,7 +6,7 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.MultiplyMemoryFormat;
 import cs444.codegen.x86.Register;

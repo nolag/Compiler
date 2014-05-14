@@ -1,6 +1,6 @@
 package cs444.codegen.x86.instructions;
 
-import cs444.codegen.x86.InstructionArg;
+import cs444.codegen.instructions.InstructionArg;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 
@@ -18,7 +18,7 @@ public class Global extends X86Instruction{
     }
 
     @Override
-    public final boolean uses(final InstructionArg what) {
+    public final boolean uses(final InstructionArg<X86Instruction, ?> what) {
         return false;
     }
 }

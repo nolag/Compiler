@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cs444.codegen.SizeHelper;
+import cs444.codegen.instructions.InstructionArg;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 
@@ -91,7 +92,7 @@ public class Immediate extends NotMemory{
     }
 
     @Override
-    public boolean uses(final InstructionArg what) {
+    public boolean uses(final InstructionArg<X86Instruction, ?> what) {
         return false;
     }
 

@@ -7,7 +7,6 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.x86.*;
-import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.x86_32.Runtime;
@@ -20,7 +19,7 @@ public abstract class ArrayBaseTile implements ITile<X86Instruction, Size, Array
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final ObjectLayout<X86Instruction> objectLayout = platform.getObjectLayout();
+        final ObjectLayout<X86Instruction, Size> objectLayout = platform.getObjectLayout();
 
         instructions.add(new Comment("Accessing array"));
         instructions.addAll(platform.getBest(arrayAccess.children.get(0)));

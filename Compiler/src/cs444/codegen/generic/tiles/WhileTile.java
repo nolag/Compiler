@@ -10,8 +10,8 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
-public class WhileTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, WhileExprSymbol>{
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
+public class WhileTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, WhileExprSymbol>{
+    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new WhileTile<T, E>(klass);
     }
 

@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cs444.codegen.SizeHelper;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.instructions.InstructionArg;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public class BasicMemoryFormat extends MemoryFormat {
@@ -36,7 +37,7 @@ public class BasicMemoryFormat extends MemoryFormat {
     }
 
     @Override
-    public boolean uses(final InstructionArg what) {
+    public boolean uses(final InstructionArg<X86Instruction, ?> what) {
         return what == arg;
     }
 }

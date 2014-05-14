@@ -1,9 +1,10 @@
 package cs444.codegen.arm;
 
 import cs444.codegen.SizeHelper;
-import cs444.codegen.arm.instructions.bases.ARMInstruction;
+import cs444.codegen.arm.instructions.bases.ArmInstruction;
 
 public class Register extends SimpleInstructionArg implements Operand2 {
+    public static final Register R0 = new Register(0);
     public static final Register R1 = new Register(1);
     public static final Register R2 = new Register(2);
     public static final Register R3 = new Register(3);
@@ -26,7 +27,7 @@ public class Register extends SimpleInstructionArg implements Operand2 {
     }
 
     @Override
-    public String getValue(Size size, SizeHelper<ARMInstruction, Size> sizeHelper) {
+    public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
         return "R" + number;
     }
 }

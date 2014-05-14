@@ -2,10 +2,10 @@ package cs444.codegen.x86.x86_32;
 
 import cs444.codegen.Addable;
 import cs444.codegen.IRuntime;
+import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.X86SizeHelper;
 import cs444.codegen.x86.instructions.Call;
-import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.instructions.Extern;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 

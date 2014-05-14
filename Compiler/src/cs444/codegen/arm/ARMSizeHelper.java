@@ -1,10 +1,9 @@
 package cs444.codegen.arm;
 
 import cs444.codegen.SizeHelper;
-import cs444.codegen.arm.InstructionArg.Size;
-import cs444.codegen.arm.instructions.bases.ARMInstruction;
+import cs444.codegen.arm.instructions.bases.ArmInstruction;
 
-public class ARMSizeHelper extends SizeHelper<ARMInstruction, Size> {
+public class ArmSizeHelper extends SizeHelper<ArmInstruction, Size> {
 
     @Override
     public int getByteSizeOfType(String typeName) {
@@ -67,9 +66,19 @@ public class ARMSizeHelper extends SizeHelper<ARMInstruction, Size> {
     }
 
     @Override
-    public ARMInstruction allocDefaultSpace(String s) {
+    public Size getCellSize() {
+        return Size.W;
+    }
+
+    @Override
+    public ArmInstruction[] alloceMinCellSpace(String s) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
+    public ArmInstruction[] alloceDefaultCellSpace(String s) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

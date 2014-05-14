@@ -11,8 +11,8 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.types.APkgClassResolver;
 
-public class MethodTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, MethodSymbol>{
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
+public class MethodTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, MethodSymbol>{
+    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new MethodTile<T, E>(klass);
     }
 

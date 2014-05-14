@@ -9,9 +9,9 @@ import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 
-public class DivZeroTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, DivideExprSymbol> {
+public class DivZeroTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, DivideExprSymbol> {
 
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
+    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
         new DivZeroTile<T, E>(klass);
     }
 

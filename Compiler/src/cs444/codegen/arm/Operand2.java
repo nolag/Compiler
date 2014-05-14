@@ -1,3 +1,6 @@
 package cs444.codegen.arm;
 
-public interface Operand2 extends InstructionPart { }
+import cs444.codegen.arm.instructions.bases.ArmInstruction;
+import cs444.codegen.instructions.InstructionPart;
+
+public interface Operand2 extends InstructionPart<ArmInstruction, Size> { }

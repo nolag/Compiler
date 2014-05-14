@@ -1,34 +1,15 @@
 package cs444.codegen.x86.tiles.helpers;
 
 import cs444.codegen.TileInit;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.X86Platform;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.*;
-import cs444.codegen.x86.tiles.opt.AddWithConstTile;
-import cs444.codegen.x86.tiles.opt.EAndWithConstTile;
-import cs444.codegen.x86.tiles.opt.EOrWithConstTile;
-import cs444.codegen.x86.tiles.opt.EQWithConstTile;
-import cs444.codegen.x86.tiles.opt.GELHSConstTile;
-import cs444.codegen.x86.tiles.opt.GERHSConstTile;
-import cs444.codegen.x86.tiles.opt.GTLHSConstTile;
-import cs444.codegen.x86.tiles.opt.GTRHSConstTile;
-import cs444.codegen.x86.tiles.opt.LELHSConstTile;
-import cs444.codegen.x86.tiles.opt.LERHSConstTile;
-import cs444.codegen.x86.tiles.opt.LTLHSConstTile;
-import cs444.codegen.x86.tiles.opt.LTRHSConstTile;
-import cs444.codegen.x86.tiles.opt.LeaForMultTile;
-import cs444.codegen.x86.tiles.opt.LeaForMultOffOneTile;
-import cs444.codegen.x86.tiles.opt.MultPow2Tile;
-import cs444.codegen.x86.tiles.opt.NeWithConstTile;
-import cs444.codegen.x86.tiles.opt.SubRHSConstTile;
+import cs444.codegen.x86.tiles.opt.*;
 
 public abstract class X86TileInit extends TileInit<X86Instruction, Size> {
-    protected final Class<? extends X86Platform> klass;
-
     protected X86TileInit(final Class<? extends X86Platform> klass) {
         super(klass);
-        this.klass =klass;
     }
 
     @Override

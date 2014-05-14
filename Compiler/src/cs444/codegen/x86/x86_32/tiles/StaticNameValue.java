@@ -8,7 +8,7 @@ import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.BasicMemoryFormat;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Memory;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.Extern;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.helpers.NumericHelperTile;

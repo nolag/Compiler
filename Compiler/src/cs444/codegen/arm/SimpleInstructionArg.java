@@ -1,8 +1,11 @@
 package cs444.codegen.arm;
 
-public abstract class SimpleInstructionArg extends InstructionArg {
+import cs444.codegen.arm.instructions.bases.ArmInstruction;
+import cs444.codegen.instructions.InstructionArg;
+
+public abstract class SimpleInstructionArg extends InstructionArg<ArmInstruction, Size> {
     @Override
-    public final boolean uses(InstructionArg what) {
+    public final boolean uses(InstructionArg<ArmInstruction, ?> what) {
         return this == what;
     }
 }

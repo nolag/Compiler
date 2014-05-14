@@ -7,7 +7,6 @@ import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.*;
-import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.instructions.Add;
 import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.instructions.Mov;
@@ -39,7 +38,7 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final ObjectLayout<X86Instruction> objectLayout = platform.getObjectLayout();
+        final ObjectLayout<X86Instruction, Size> objectLayout = platform.getObjectLayout();
 
         instructions.add(new Comment("allocate the string at the same time (why not)"));
 

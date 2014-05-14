@@ -9,9 +9,9 @@ import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
 
-public class ZeroMultTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, MultiplyExprSymbol>{
+public class ZeroMultTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, MultiplyExprSymbol>{
 
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
+    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
         new ZeroMultTile<T, E>(klass);
     }
 
