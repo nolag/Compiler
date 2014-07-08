@@ -62,8 +62,8 @@ public class IndexedTableData<T extends Instruction<T>, E extends Enum<E>> {
         instructions.add(platform.getDataSection());
 
         for (final String colHeaderLabel : indexedTable.keySet()) {
-            instructions.add(platform.getGlobal(colHeaderLabel));
-            instructions.add(platform.getLabel(colHeaderLabel));
+            instructions.add(platform.makeGlobal(colHeaderLabel));
+            instructions.add(platform.makeLabel(colHeaderLabel));
 
             final Map<String, String> column = indexedTable.get(colHeaderLabel);
 

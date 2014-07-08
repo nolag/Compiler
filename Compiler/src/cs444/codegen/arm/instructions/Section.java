@@ -7,10 +7,10 @@ public class Section extends ArmInstruction {
     public static Section DATA = new Section("data");
     public static Section BSS = new Section("bss");
     public static Section TEXT = new Section("text");
-    
+
     private final String type;
-    
-    private Section(final String type){
+
+    private Section(final String type) {
         super(0, 0);
         this.type = type;
     }

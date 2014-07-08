@@ -19,7 +19,7 @@ public abstract class X86ObjectLayout extends ObjectLayout<X86Instruction, Size>
     protected X86ObjectLayout(X86SizeHelper sizeHelper) {
         super(sizeHelper);
         this.sizeHelper = sizeHelper;
-        format = new AddMemoryFormat(Register.ACCUMULATOR, new Immediate(SUBTYPE_OFFSET));
+        format = new AddMemoryFormat(Register.ACCUMULATOR, new Immediate(suptypeOffset));
     }
 
     @Override

@@ -50,13 +50,13 @@ public class SelectorIndexedTable<T extends Instruction<T>, E extends Enum<E>> {
 
     private class SelectorCellGen implements ICellGen<T, E> {
         public void genEmptyCelCode(String colHeaderLabel, String rowName, InstructionHolder<T> instructions) {
-            instructions.add(platform.comment(colHeaderLabel + " does not have access to " + rowName + ":"));
+            instructions.add(platform.makeComment(colHeaderLabel + " does not have access to " + rowName + ":"));
             // Immediate won't need a sizeHelper so null is ok.
             instructions.addAll(sizeHelper.alloceDefaultCellSpace(platform.getNullStr()));
         }
 
         public void genCellCode(String colHeaderLabel, String rowName, String data, InstructionHolder<T> instructions) {
-            instructions.add(platform.getExtern(data));
+            instructions.add(platform.makeExtern(data));
             // Immediate won't need a sizeHelper so null is ok.
             instructions.addAll(sizeHelper.alloceDefaultCellSpace(data));
         }

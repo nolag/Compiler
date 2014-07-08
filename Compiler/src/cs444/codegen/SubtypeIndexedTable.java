@@ -49,7 +49,7 @@ public class SubtypeIndexedTable<T extends Instruction<T>, E extends Enum<E>> {
         @Override
         public void genEmptyCelCode(final String colHeaderLabel, final String rowName, final InstructionHolder<T> instructions) {
 
-            instructions.add(platform.comment(colHeaderLabel + " is not subtype of " + rowName));
+            instructions.add(platform.makeComment(colHeaderLabel + " is not subtype of " + rowName));
             instructions.addAll(sizeHelper.alloceMinCellSpace(platform.getFalseStr()));
         }
 
@@ -57,7 +57,7 @@ public class SubtypeIndexedTable<T extends Instruction<T>, E extends Enum<E>> {
         public void genCellCode(final String colHeaderLabel, final String rowName, final String data,
                 final InstructionHolder<T> instructions) {
 
-            instructions.add(platform.comment(colHeaderLabel + " is subtype of " + rowName));
+            instructions.add(platform.makeComment(colHeaderLabel + " is subtype of " + rowName));
             instructions.addAll(sizeHelper.alloceMinCellSpace(platform.getTrueStr()));
         }
 

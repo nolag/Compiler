@@ -81,4 +81,14 @@ public class ArmSizeHelper extends SizeHelper<ArmInstruction, Size> {
         // TODO Auto-generated method stub
         return null;
     }
+
+    public ArmInstruction makeCall(String what) {
+        // TODO
+        return null;
+    }
+
+    public ArmInstruction makeRet() {
+        // TODO
+        return null;
+    }
 }
