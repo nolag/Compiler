@@ -6,7 +6,6 @@ import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.InstructionsAndTiming;
 
 public interface Addable<T extends Instruction<T>> {
-
     public void add(T instruction);
     public void addAll(T [] instructions);
     public void addAll(Collection<T> instructions);

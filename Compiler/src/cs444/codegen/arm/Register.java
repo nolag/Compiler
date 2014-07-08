@@ -19,9 +19,12 @@ public class Register extends SimpleInstructionArg implements Operand2 {
     public static final Register R12 = new Register(12);
     public static final Register STACK = new Register(13);
     public static final Register LINK = new Register(14);
-    
+
+    //Do not use except for return and jump
+    public static final Register PC = new Register(15);
+
     public final int number;
-    
+
     protected Register(int number) {
         this.number = number;
     }
@@ -29,5 +32,10 @@ public class Register extends SimpleInstructionArg implements Operand2 {
     @Override
     public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
         return "R" + number;
+    }
+
+    @Override
+    public ShiftType getShiftType() {
+        return ShiftType.NO_SHIFT;
     }
 }
