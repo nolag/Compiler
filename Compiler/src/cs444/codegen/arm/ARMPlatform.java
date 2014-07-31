@@ -88,7 +88,7 @@ public abstract class ArmPlatform extends Platform<ArmInstruction, Size> {
 
     @Override
     public ArmInstruction makeCall(String what) {
-        return new Bl(new ImmediateStr(what));
+        return new Bl(what);
     }
 
     @Override

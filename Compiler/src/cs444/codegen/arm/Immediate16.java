@@ -6,7 +6,7 @@ import cs444.codegen.instructions.InstructionArg;
 
 //0-65535
 public class Immediate16 extends InstructionArg<ArmInstruction, Size> {
-    public final short value;
+    public final int value;
 
     public static final Immediate16 ZERO = new Immediate16((short) 0);
     public static final Immediate16 ONE = new Immediate16((short) 1);
@@ -18,8 +18,8 @@ public class Immediate16 extends InstructionArg<ArmInstruction, Size> {
     // same as one
     public static final Immediate16 TRUE = ONE;
 
-    public Immediate16(final short value) {
-        this.value = value;
+    public Immediate16(final int i) {
+        this.value = i;
     }
 
     @Override
@@ -29,6 +29,6 @@ public class Immediate16 extends InstructionArg<ArmInstruction, Size> {
 
     @Override
     public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return Short.toString(value);
+        return Integer.toString(value);
     }
 }

@@ -8,7 +8,7 @@ public class ImmediateStr extends InstructionArg<ArmInstruction, Size> {
     public final String value;
 
     public ImmediateStr(final String value) {
-        this.value = value;
+        this.value = "#" + value;
     }
 
     @Override
@@ -18,6 +18,11 @@ public class ImmediateStr extends InstructionArg<ArmInstruction, Size> {
 
     @Override
     public String getValue(final Size size, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+        return value;
+    }
+
+    @Override
+    public String toString() {
         return value;
     }
 }
