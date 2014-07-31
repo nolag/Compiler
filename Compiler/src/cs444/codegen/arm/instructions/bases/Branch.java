@@ -4,14 +4,29 @@ import cs444.codegen.arm.ImmediateStr;
 import cs444.codegen.instructions.InstructionArg;
 
 public abstract class Branch extends ArmInstruction {
+    public enum Condition {
+        EQ, NE, HS, LO, MI, PL, VS, CS, HI, LS, GE, LT, GT, LE, AL {
+            @Override
+            public String toString() {
+                return "";
+            }
+        };
 
-    private final String instruction;
-    private final ImmediateStr where;
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
+    }
 
-    protected Branch(String instruction, ImmediateStr where) {
+    public final String instruction;
+    public final ImmediateStr where;
+    public final Condition c;
+
+    protected Branch(String instruction, Condition c, ImmediateStr where) {
         super(0);
         this.instruction = instruction;
         this.where = where;
+        this.c = c;
     }
 
     @Override
@@ -21,6 +36,6 @@ public abstract class Branch extends ArmInstruction {
 
     @Override
     public String generate() {
-        return instruction + " " + where;
+        return instruction + " " + c.toString() + " " + where;
     }
 }

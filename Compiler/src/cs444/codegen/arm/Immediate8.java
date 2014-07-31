@@ -4,14 +4,13 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.instructions.InstructionArg;
 
-//0-255
-public class Immediate8 extends InstructionArg<ArmInstruction, Size> {
-    public final byte value;
-    
-    public Immediate8(final byte value) {
+public class Immediate8 extends InstructionArg<ArmInstruction, Size> implements Operand2 {
+    public final char value;
+
+    public Immediate8(final char value) {
         this.value = value;
     }
-    
+
     @Override
     public boolean uses(InstructionArg<ArmInstruction, ?> what) {
         return false;
@@ -19,6 +18,11 @@ public class Immediate8 extends InstructionArg<ArmInstruction, Size> {
 
     @Override
     public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return Short.toString(value);
+        return Character.toString(value);
+    }
+
+    @Override
+    public ShiftType getShiftType() {
+        return ShiftType.NO_SHIFT;
     }
 }

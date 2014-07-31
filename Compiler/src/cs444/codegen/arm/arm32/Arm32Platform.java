@@ -7,7 +7,10 @@ import cs444.codegen.ObjectLayout;
 import cs444.codegen.OperatingSystem;
 import cs444.codegen.Platform;
 import cs444.codegen.arm.ArmPlatform;
+import cs444.codegen.arm.ArmSizeHelper;
+import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
+import cs444.codegen.arm.instructions.Eor;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.TileSet;
@@ -22,8 +25,7 @@ public class Arm32Platform extends ArmPlatform {
 
     @Override
     public ObjectLayout<ArmInstruction, Size> getObjectLayout() {
-        // TODO Auto-generated method stub
-        return null;
+        return Arm32ObjectLayout.instance;
     }
 
     @Override
@@ -46,8 +48,7 @@ public class Arm32Platform extends ArmPlatform {
 
     @Override
     public TileSet<ArmInstruction, Size> getTiles() {
-        // TODO Auto-generated method stub
-        return null;
+        return TileSet.<ArmInstruction, Size> getOrMake(Arm32Platform.class);
     }
 
     @Override
@@ -58,20 +59,18 @@ public class Arm32Platform extends ArmPlatform {
 
     @Override
     public void zeroDefaultLocation(Addable<ArmInstruction> instructions) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new Eor(Register.R0, Register.R0, Register.R0, sizeHelper));
     }
 
     @Override
     public void moveStatic(String staticLbl, Size size, Addable<ArmInstruction> instructions) {
-        // TODO Auto-generated method stub
-
+        instructions.addAll(ArmSizeHelper.storeStatic(Register.R0, staticLbl, sizeHelper));
     }
 
     @Override
     public void zeroStatic(String staticLbl, Size size, Addable<ArmInstruction> instructions) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new Eor(Register.R0, Register.R0, Register.R0, sizeHelper));
+        instructions.addAll(ArmSizeHelper.storeStatic(Register.R0, staticLbl, sizeHelper));
     }
 
     @Override
@@ -85,5 +84,4 @@ public class Arm32Platform extends ArmPlatform {
         // TODO Auto-generated method stub
 
     }
-
 }

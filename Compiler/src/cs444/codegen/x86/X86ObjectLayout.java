@@ -1,6 +1,6 @@
 package cs444.codegen.x86;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import cs444.codegen.ObjectLayout;
@@ -24,7 +24,7 @@ public abstract class X86ObjectLayout extends ObjectLayout<X86Instruction, Size>
 
     @Override
     public List<X86Instruction> subtypeCheckCode(final TypeSymbol subType, final Platform<X86Instruction, Size> platform) {
-        final List<X86Instruction> instructions = new LinkedList<X86Instruction>();
+        final List<X86Instruction> instructions = new ArrayList<X86Instruction>();
         instructions.add(new Comment("Subtype lookup"));
         instructions.add(new Mov(Register.ACCUMULATOR, new Memory(format), sizeHelper));
         SubtypeIndexedTable<X86Instruction, Size> subTypeTable = platform.getSubtypeTable();
