@@ -10,20 +10,16 @@ public class X86SizeHelper extends SizeHelper<X86Instruction, Size> {
     public static final X86SizeHelper sizeHelper64 = new X86SizeHelper(true);
 
     private static final int MIN_BYTE_SIZE = 2;
-    private final int defaultStackPower;
     private final int defaultStackSize;
     private final Size defaultStack;
     private final boolean use64;
 
     private X86SizeHelper(final boolean use64) {
+        this.use64 = use64;
         if (use64) {
-            this.use64 = true;
-            defaultStackPower = 3;
             defaultStackSize = 8;
             defaultStack = Size.QWORD;
         } else {
-            this.use64 = false;
-            defaultStackPower = 2;
             defaultStackSize = 4;
             defaultStack = Size.DWORD;
         }
@@ -31,27 +27,22 @@ public class X86SizeHelper extends SizeHelper<X86Instruction, Size> {
 
     @Override
     public int getByteSizeOfType(final String typeName) {
-        return X86SizeHelper.stackSizes.containsKey(typeName) ? X86SizeHelper.stackSizes.get(typeName) : defaultStackSize;
+        return stackSizes.containsKey(typeName) ? stackSizes.get(typeName) : defaultStackSize;
     }
 
     @Override
     public int getBytePushSizeOfType(final String typeName) {
         int size = getByteSizeOfType(typeName);
-        if (use64 && size == 4)
-            size = 8;
+        if (use64 && size == 4) size = 8;
         return size > MIN_BYTE_SIZE ? size : MIN_BYTE_SIZE;
     }
 
     @Override
     public Size getSize(final long stackSize) {
-        if (stackSize == 8)
-            return Size.QWORD;
-        if (stackSize == 4)
-            return Size.DWORD;
-        if (stackSize == 2)
-            return Size.WORD;
-        if (stackSize == 1)
-            return Size.LOW;
+        if (stackSize == 8) return Size.QWORD;
+        if (stackSize == 4) return Size.DWORD;
+        if (stackSize == 2) return Size.WORD;
+        if (stackSize == 1) return Size.LOW;
         throw new IllegalArgumentException("Nothing is of size " + stackSize);
     }
 
@@ -62,10 +53,8 @@ public class X86SizeHelper extends SizeHelper<X86Instruction, Size> {
 
     @Override
     public final Size getPushSize(final Size size) {
-        if (size == Size.HIGH || size == Size.LOW)
-            return Size.WORD;
-        if (use64 && size == Size.DWORD)
-            return Size.QWORD;
+        if (size == Size.HIGH || size == Size.LOW) return Size.WORD;
+        if (use64 && size == Size.DWORD) return Size.QWORD;
         return size;
     }
 
@@ -110,11 +99,6 @@ public class X86SizeHelper extends SizeHelper<X86Instruction, Size> {
         default:
             return "ERROR!";
         }
-    }
-
-    @Override
-    public final int getDefaultStackPower() {
-        return defaultStackPower;
     }
 
     @Override

@@ -2,22 +2,17 @@ package cs444.codegen.arm.tiles.helpers;
 
 import java.util.List;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import cs444.codegen.Addable;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.Immediate16;
 import cs444.codegen.arm.Immediate8;
+import cs444.codegen.arm.ImmediateStr;
 import cs444.codegen.arm.Operand2;
 import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
-import cs444.codegen.arm.instructions.Add;
-import cs444.codegen.arm.instructions.Comment;
-import cs444.codegen.arm.instructions.Global;
-import cs444.codegen.arm.instructions.Label;
-import cs444.codegen.arm.instructions.Mov;
-import cs444.codegen.arm.instructions.Movt;
-import cs444.codegen.arm.instructions.Pop;
-import cs444.codegen.arm.instructions.Push;
+import cs444.codegen.arm.instructions.*;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.parser.symbols.ISymbol;
@@ -38,7 +33,7 @@ public class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
 
     @Override
     public void ifNullJmpCode(String ifNullLbl, SizeHelper<ArmInstruction, Size> sizeHelper, Addable<ArmInstruction> instructions) {
-
+        //TODO
     }
 
     @Override
@@ -50,9 +45,8 @@ public class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
     }
 
     @Override
-    public void methEpilogue(MethodOrConstructorSymbol method, Addable<ArmInstruction> instructions) {
+    public void methEpilogue(Addable<ArmInstruction> instructions) {
         instructions.add(LEAVE);
-        instructions.add(new Comment("End of method " + method.dclName));
     }
 
     @Override
@@ -109,7 +103,7 @@ public class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
         // but visitor may visit InvokeSymbol before MethodSymbol
         final long mySize = call.getStackSize(platform);
         if (mySize != 0) {
-            instructions.add(new Add(Register.STACK, Register.STACK, setupOp2(Register.R1, mySize, instructions, sizeHelper), sizeHelper));
+            instructions.add(new Add(Register.STACK, Register.STACK, setupOp2(Register.R0, mySize, instructions, sizeHelper), sizeHelper));
         }
 
         if (call.isNative()) {
@@ -135,36 +129,33 @@ public class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
 
     @Override
     public void setupLbl(String lbl, Addable<ArmInstruction> instructions) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new Label(lbl));
     }
 
     @Override
     public void setupExtern(String extern, Addable<ArmInstruction> instructions) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new Extern(new ImmediateStr(extern)));
     }
 
     @Override
     public void loadBool(boolean bool, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new Mov(Register.R0, bool ? Immediate16.TRUE : Immediate16.FALSE, sizeHelper));
     }
 
     @Override
     public void makeLong(Typeable item, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
         // TODO Auto-generated method stub
-
+        throw new NotImplementedException();
     }
 
     @Override
     public void pushLong(Typeable item, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        // TODO Auto-generated method stub
+        throw new NotImplementedException();
     }
 
     public static Operand2 setupOp2(Register pref, long n, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
         if (n >= 0) {
-            if (n <= 255) { return new Immediate8((char) n); }
+            if (n <= 255) return new Immediate8((char) n);
             //TODO other number optimizations that are shifts
         }
 
@@ -176,5 +167,42 @@ public class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
         instructions.add(new Mov(pref, new Immediate16(ival & 0xFFFF), sizeHelper));
         instructions.add(new Movt(pref, new Immediate16(ival & 0xFFFF0000 >> 16), sizeHelper));
         return pref;
+    }
+
+    public static void setupNumberLoad(Register dest, long n, Addable<ArmInstruction> instructions,
+            SizeHelper<ArmInstruction, Size> sizeHelper) {
+        if (n >= 0) {
+            if (n <= 65535) {
+                instructions.add(new Mov(dest, new Immediate16((char) n), sizeHelper));
+                return;
+            }
+            //TODO other number optimizations that are shifts
+        }
+
+        if (n > Integer.MAX_VALUE || n < Integer.MIN_VALUE) {
+            //TODO long literal that must be long
+            throw new NumberFormatException(n + " is too big or small for now :(");
+        }
+        int ival = (int) n;
+        instructions.add(new Mov(dest, new Immediate16(ival & 0xFFFF), sizeHelper));
+        instructions.add(new Movt(dest, new Immediate16(ival & 0xFFFF0000 >> 16), sizeHelper));
+    }
+
+    @Override
+    public void allocateStackSpace(String what, Addable<ArmInstruction> instructions, long amount, Platform<ArmInstruction, Size> platform) {
+        if (0 != amount) {
+            final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+            instructions.add(platform.makeComment("add stack space for " + what));
+            instructions.add(new Sub(Register.STACK, Register.STACK, setupOp2(Register.R0, amount, instructions, sizeHelper), sizeHelper));
+        }
+    }
+
+    @Override
+    public void cleanStackSpace(String what, Addable<ArmInstruction> instructions, long amount, Platform<ArmInstruction, Size> platform) {
+        if (0 != amount) {
+            final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+            instructions.add(platform.makeComment("clean stack space from " + what));
+            instructions.add(new Add(Register.STACK, Register.STACK, setupOp2(Register.R0, amount, instructions, sizeHelper), sizeHelper));
+        }
     }
 }

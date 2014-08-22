@@ -11,13 +11,13 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.types.APkgClassResolver;
 
-public class MethodTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, MethodSymbol>{
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
+public class MethodTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, MethodSymbol> {
+    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
         new MethodTile<T, E>(klass);
     }
 
-    private MethodTile(final Class<? extends Platform<T, E>> klass){
-        TileSet.<T, E>getOrMake(klass).methods.add(this);
+    private MethodTile(final Class<? extends Platform<T, E>> klass) {
+        TileSet.<T, E> getOrMake(klass).methods.add(this);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class MethodTile<T extends Instruction<T>, E extends Enum<E>> implements 
     public InstructionsAndTiming<T> generate(final MethodSymbol method, final Platform<T, E> platform) {
         final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
 
-        if(!method.isNative()) {
+        if (!method.isNative()) {
 
             final TileHelper<T, E> tileHelper = platform.getTileHelper();
 
@@ -37,8 +37,9 @@ public class MethodTile<T extends Instruction<T>, E extends Enum<E>> implements 
             final String methodName = APkgClassResolver.generateFullId(method);
 
             tileHelper.methProlog(method, methodName, sizeHelper, instructions);
-            for(final ISymbol child : method.children) instructions.addAll(platform.getBest(child));
-            tileHelper.methEpilogue(method, instructions);
+            for (final ISymbol child : method.children)
+                instructions.addAll(platform.getBest(child));
+            tileHelper.methEpilogue(instructions);
         }
 
         return instructions;

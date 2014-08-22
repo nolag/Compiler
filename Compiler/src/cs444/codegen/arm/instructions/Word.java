@@ -1,15 +1,18 @@
 package cs444.codegen.arm.instructions;
 
-import cs444.codegen.arm.ImmediateStr;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.instructions.InstructionArg;
 
-public class Extern extends ArmInstruction {
-    private final ImmediateStr what;
+public class Word extends ArmInstruction {
+    public final int value;
 
-    public Extern(final ImmediateStr what) {
-        super(0);
-        this.what = what;
+    public Word() {
+        this(0);
+    }
+
+    public Word(int value) {
+        super(0, 0);
+        this.value = value;
     }
 
     @Override
@@ -19,7 +22,6 @@ public class Extern extends ArmInstruction {
 
     @Override
     public String generate() {
-        //Note that extern may be good if another assembler is uesd
-        return "; extern " + what;
+        return ".word " + value;
     }
 }
