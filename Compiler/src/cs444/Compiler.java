@@ -32,6 +32,7 @@ public class Compiler {
     public static final String BASE_DIRECTORY = "/Volumes/RAM/";
     //default to all supported platforms
     public static final String[] defaultPlatforms = { "-x86", "-x64" };
+    //public static final String[] defaultPlatforms = { "-x86", "-x64", "-a32" };
 
     public static final String OUTPUT_DIRECTORY = BASE_DIRECTORY + "output";
     public static final int COMPILER_ERROR_CODE = 42;

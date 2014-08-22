@@ -1,6 +1,9 @@
 package cs444.codegen.x86.tiles.helpers;
 
 import cs444.codegen.TileInit;
+import cs444.codegen.generic.tiles.ANonTerminalTile;
+import cs444.codegen.generic.tiles.ForTile;
+import cs444.codegen.generic.tiles.RetTile;
 import cs444.codegen.x86.Size;
 import cs444.codegen.x86.X86Platform;
 import cs444.codegen.x86.instructions.bases.X86Instruction;

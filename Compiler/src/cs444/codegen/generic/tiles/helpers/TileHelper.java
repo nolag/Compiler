@@ -17,8 +17,8 @@ import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.types.APkgClassResolver;
 
 public abstract class TileHelper<T extends Instruction<T>, E extends Enum<E>> {
-    public static boolean isZero(final ISymbol symbol){
-        if(symbol instanceof INumericLiteral){
+    public static boolean isZero(final ISymbol symbol) {
+        if (symbol instanceof INumericLiteral) {
             final INumericLiteral numLit = (INumericLiteral) symbol;
             return numLit.getAsLongValue() == 0;
         }
@@ -33,26 +33,26 @@ public abstract class TileHelper<T extends Instruction<T>, E extends Enum<E>> {
 
     public abstract void ifNullJmpCode(final String ifNullLbl, final SizeHelper<T, E> sizeHelper, final Addable<T> instructions);
 
-    public abstract void methProlog(final MethodOrConstructorSymbol method, final String methodName,
-            final SizeHelper<T, E> sizeHelper, final Addable<T> instructions);
+    public abstract void methProlog(final MethodOrConstructorSymbol method, final String methodName, final SizeHelper<T, E> sizeHelper,
+            final Addable<T> instructions);
 
-    public abstract void methEpilogue(final MethodOrConstructorSymbol method, final Addable<T> instructions);
+    public abstract void methEpilogue(final Addable<T> instructions);
 
     public abstract void setupJumpNe(String lblTo, SizeHelper<T, E> sizeHelper, Addable<T> instructions);
 
     public abstract void setupJumpNeFalse(String lblTo, SizeHelper<T, E> sizeHelper, Addable<T> instructions);
 
-    public abstract void invokeConstructor(final APkgClassResolver resolver, final List<ISymbol> children,
-            final Platform<T, E> platform, final Addable<T> instructions);
+    public abstract void invokeConstructor(final APkgClassResolver resolver, final List<ISymbol> children, final Platform<T, E> platform,
+            final Addable<T> instructions);
 
-    public abstract void strPartHelper(final ISymbol child, final APkgClassResolver resolver,
-            final Addable<T> instructions, final Platform<T, E> platform);
+    public abstract void strPartHelper(final ISymbol child, final APkgClassResolver resolver, final Addable<T> instructions,
+            final Platform<T, E> platform);
 
     public abstract void callStartHelper(final SimpleMethodInvoke invoke, final Addable<T> instructions, final Platform<T, E> platform);
 
     public abstract void callEndHelper(final MethodOrConstructorSymbol call, final Addable<T> instructions, final Platform<T, E> platform);
 
-    public abstract void setupJump(final String lblTo, SizeHelper<T, E> sizeHelper, final  Addable<T> instructions);
+    public abstract void setupJump(final String lblTo, SizeHelper<T, E> sizeHelper, final Addable<T> instructions);
 
     public abstract void setupComment(final String comment, final Addable<T> instructions);
 
@@ -62,11 +62,14 @@ public abstract class TileHelper<T extends Instruction<T>, E extends Enum<E>> {
 
     public abstract void loadBool(final boolean bool, final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
 
-    public abstract void makeLong(final Typeable item,
-            final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
+    public abstract void makeLong(final Typeable item, final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
 
-    public abstract void pushLong(final Typeable item,
-            final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
+    public abstract void pushLong(final Typeable item, final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
+
+    public abstract void allocateStackSpace(final String what, final Addable<T> instructions, final long amount,
+            final Platform<T, E> platform);
+
+    public abstract void cleanStackSpace(final String what, final Addable<T> instructions, final long amount, final Platform<T, E> platform);
 
     public static Integer powerTwoOrNull(final ISymbol symbol, final long max, final long offset) {
         if (!(symbol instanceof INumericLiteral)) return null;
@@ -76,7 +79,7 @@ public abstract class TileHelper<T extends Instruction<T>, E extends Enum<E>> {
         value = value - offset;
         if (value > max) return null;
         final double power = Math.log(value) / Math.log(2);
-        return  power == Math.floor(power) ? (int)power : null;
+        return power == Math.floor(power) ? (int) power : null;
     }
 
     public static Integer powerTwoOrNull(final ISymbol symbol, final long max) {
@@ -94,7 +97,7 @@ public abstract class TileHelper<T extends Instruction<T>, E extends Enum<E>> {
         if (value < 1) return null;
         final double raw_power = Math.log(value) / Math.log(2);
         final long power = (int) raw_power;
-        final long offset = value - (long)(Math.pow(2, power));
+        final long offset = value - (long) (Math.pow(2, power));
         return new PowerTwoOffset(power, offset);
     }
 
@@ -107,7 +110,7 @@ public abstract class TileHelper<T extends Instruction<T>, E extends Enum<E>> {
             this.offset = offset;
         }
     }
-    
+
     public static Long getValue(final ISymbol symbol) {
         if (!(symbol instanceof INumericLiteral)) return null;
         final INumericLiteral number = (INumericLiteral) symbol;

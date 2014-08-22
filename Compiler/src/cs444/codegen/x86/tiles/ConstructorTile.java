@@ -7,9 +7,9 @@ import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.Size;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.Call;
 import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
@@ -21,11 +21,11 @@ public class ConstructorTile implements ITile<X86Instruction, Size, ConstructorS
     private static ConstructorTile tile;
 
     public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
-        if(tile == null) tile = new ConstructorTile();
-        TileSet.<X86Instruction, Size>getOrMake(klass).constructors.add(tile);
+        if (tile == null) tile = new ConstructorTile();
+        TileSet.<X86Instruction, Size> getOrMake(klass).constructors.add(tile);
     }
 
-    private ConstructorTile() { }
+    private ConstructorTile() {}
 
     @Override
     public boolean fits(final ConstructorSymbol symbol, final Platform<X86Instruction, Size> platform) {
@@ -33,8 +33,7 @@ public class ConstructorTile implements ITile<X86Instruction, Size, ConstructorS
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final ConstructorSymbol constructor,
-            final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final ConstructorSymbol constructor, final Platform<X86Instruction, Size> platform) {
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
 
@@ -47,9 +46,10 @@ public class ConstructorTile implements ITile<X86Instruction, Size, ConstructorS
 
         instructions.add(new Call(new Immediate(CodeGenVisitor.INIT_OBJECT_FUNC), sizeHelper));
 
-        for(final ISymbol child : constructor.children) instructions.addAll(platform.getBest(child));
+        for (final ISymbol child : constructor.children)
+            instructions.addAll(platform.getBest(child));
 
-        platform.getTileHelper().methEpilogue(constructor, instructions);
+        platform.getTileHelper().methEpilogue(instructions);
         return instructions;
     }
 

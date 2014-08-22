@@ -113,7 +113,7 @@ public abstract class X86Platform extends Platform<X86Instruction, Size> {
     }
 
     @Override
-    public ReserveInstruction makeSpace(String name, Size size) {
-        return ReserveInstructionMaker.make(name, size);
+    public ReserveInstruction[] makeSpace(String name, Size size) {
+        return new ReserveInstruction[] { ReserveInstructionMaker.make(name, size) };
     }
 }

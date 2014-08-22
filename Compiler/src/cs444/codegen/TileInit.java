@@ -17,38 +17,38 @@ import cs444.codegen.generic.tiles.opt.UpCastTile;
 import cs444.codegen.generic.tiles.opt.ZeroMultTile;
 import cs444.codegen.instructions.Instruction;
 
-public abstract class TileInit <T extends Instruction<T>, E extends Enum<E>> {
+public abstract class TileInit<T extends Instruction<T>, E extends Enum<E>> {
     protected final Class<? extends Platform<T, E>> klass;
-    
+
     protected TileInit(final Class<? extends Platform<T, E>> klass) {
         this.klass = klass;
     }
-    
+
     public static final String NO_OPT = "--no-opt";
 
-    public void init(final Set<String> options){
+    public final void init(final Set<String> options) {
         initBase();
-        if(!options.contains(NO_OPT)){
+        if (!options.contains(NO_OPT)) {
             initBasicOpt();
         }
     }
 
     protected void initBase() {
-        AndTile.<T, E>init(klass);
-        BoolTile.<T, E>init(klass);
-        FieldAccessTile.<T, E>init(klass);
-        IfTile.<T, E>init(klass);
-        InstanceOfTile.<T, E>init(klass);
-        MethodTile.<T, E>init(klass);
-        OrTile.<T, E>init(klass);
-        WhileTile.<T, E>init(klass);
+        AndTile.<T, E> init(klass);
+        BoolTile.<T, E> init(klass);
+        FieldAccessTile.<T, E> init(klass);
+        IfTile.<T, E> init(klass);
+        InstanceOfTile.<T, E> init(klass);
+        MethodTile.<T, E> init(klass);
+        OrTile.<T, E> init(klass);
+        WhileTile.<T, E> init(klass);
     }
-    
+
     protected void initBasicOpt() {
-        DivZeroTile.<T, E>init(klass);
-        NonNullFieldAccess.<T, E>init(klass);
-        RemZeroTile.<T, E>init(klass);
-        UpCastTile.<T, E>init(klass);
-        ZeroMultTile.<T, E>init(klass);
+        DivZeroTile.<T, E> init(klass);
+        NonNullFieldAccess.<T, E> init(klass);
+        RemZeroTile.<T, E> init(klass);
+        UpCastTile.<T, E> init(klass);
+        ZeroMultTile.<T, E> init(klass);
     }
 }

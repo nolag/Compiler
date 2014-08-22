@@ -42,7 +42,9 @@ public abstract class SizeHelper<T extends Instruction<T>, U extends Enum<U>> {
 
     public abstract int getIntSize(final U size);
 
-    public abstract int getDefaultStackPower();
+    public final int getDefaultStackPower() {
+        return 31 - Integer.numberOfLeadingZeros(getDefaultStackSize());
+    }
 
     public abstract int getDefaultStackSize();
 

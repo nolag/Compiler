@@ -10,14 +10,14 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 
-public class AndTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, AndExprSymbol>{
+public class AndTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, AndExprSymbol> {
 
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
+    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
         new AndTile<T, E>(klass);
     }
 
-    private AndTile(final Class<? extends Platform<T, E>> klass){
-        TileSet.<T, E>getOrMake(klass).ands.add(this);
+    private AndTile(final Class<? extends Platform<T, E>> klass) {
+        TileSet.<T, E> getOrMake(klass).ands.add(this);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class AndTile<T extends Instruction<T>, E extends Enum<E>> implements ITi
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final AndExprSymbol op, final Platform<T, E> platform){
+    public InstructionsAndTiming<T> generate(final AndExprSymbol op, final Platform<T, E> platform) {
         final SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
         final TileHelper<T, E> tileHelper = platform.getTileHelper();
         final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();

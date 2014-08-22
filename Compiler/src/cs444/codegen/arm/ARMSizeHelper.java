@@ -1,76 +1,86 @@
 package cs444.codegen.arm;
 
 import cs444.codegen.SizeHelper;
+import cs444.codegen.arm.instructions.Bl;
 import cs444.codegen.arm.instructions.Comment;
+import cs444.codegen.arm.instructions.Label;
 import cs444.codegen.arm.instructions.Ldr;
 import cs444.codegen.arm.instructions.Movt;
 import cs444.codegen.arm.instructions.Movw;
+import cs444.codegen.arm.instructions.Pop;
 import cs444.codegen.arm.instructions.Str;
+import cs444.codegen.arm.instructions.Word;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 
 public class ArmSizeHelper extends SizeHelper<ArmInstruction, Size> {
     public static ArmSizeHelper sizeHelper32 = new ArmSizeHelper();
 
-    private ArmSizeHelper() {}
+    private static final int MIN_BYTE_SIZE = 2;
+
+    private final int defaultStackSize;
+
+    private ArmSizeHelper() {
+        defaultStackSize = 4;
+    }
 
     @Override
     public int getByteSizeOfType(String typeName) {
-        // TODO Auto-generated method stub
-        return 0;
+        return stackSizes.containsKey(typeName) ? stackSizes.get(typeName) : defaultStackSize;
     }
 
     @Override
     public int getBytePushSizeOfType(String typeName) {
-        // TODO Auto-generated method stub
-        return 0;
+        int size = getByteSizeOfType(typeName);
+        return size > MIN_BYTE_SIZE ? size : MIN_BYTE_SIZE;
     }
 
     @Override
     public Size getSize(long stackSize) {
-        // TODO Auto-generated method stub
-        return null;
+        if (stackSize == 8) return Size.D;
+        if (stackSize == 4) return Size.W;
+        if (stackSize == 2) return Size.H;
+        if (stackSize == 1) return Size.B;
+        throw new IllegalArgumentException("Nothing is of size " + stackSize);
     }
 
     @Override
     public Size getSizeOfType(String typeName) {
-        // TODO Auto-generated method stub
-        return null;
+        return getSize(getByteSizeOfType(typeName));
     }
 
     @Override
     public Size getPushSize(Size size) {
-        // TODO Auto-generated method stub
-        return null;
+        if (size == Size.D) return Size.D;
+        return Size.W;
     }
 
     @Override
     public int getIntSize(Size size) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public int getDefaultStackPower() {
-        // TODO Auto-generated method stub
-        return 0;
+        switch (size) {
+        case D:
+            return 8;
+        case W:
+            return 4;
+        case H:
+            return 2;
+        default:
+            return 1;
+        }
     }
 
     @Override
     public int getDefaultStackSize() {
-        // TODO Auto-generated method stub
-        return 0;
+        return defaultStackSize;
     }
 
     @Override
     public int getMinSize() {
-        // TODO Auto-generated method stub
-        return 0;
+        return MIN_BYTE_SIZE;
     }
 
     @Override
     public Size getDefaultSize() {
-        // TODO Auto-generated method stub
-        return null;
+        return Size.W;
     }
 
     @Override
@@ -80,24 +90,20 @@ public class ArmSizeHelper extends SizeHelper<ArmInstruction, Size> {
 
     @Override
     public ArmInstruction[] alloceMinCellSpace(String s) {
-        // TODO Auto-generated method stub
-        return null;
+        return new ArmInstruction[] { new Label(s), new Word(0) };
     }
 
     @Override
     public ArmInstruction[] alloceDefaultCellSpace(String s) {
-        // TODO Auto-generated method stub
-        return null;
+        return new ArmInstruction[] { new Label(s), new Word(0) };
     }
 
     public ArmInstruction makeCall(String what) {
-        // TODO
-        return null;
+        return new Bl(new ImmediateStr(what));
     }
 
     public ArmInstruction makeRet() {
-        // TODO
-        return null;
+        return new Pop(Register.INTRA_PROCEDURE, Register.PC);
     }
 
     public static ArmInstruction[] putInReg(final Register reg, final String loc, final SizeHelper<ArmInstruction, Size> sizeHelper) {

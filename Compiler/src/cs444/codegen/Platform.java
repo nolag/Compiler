@@ -21,7 +21,7 @@ import cs444.types.APkgClassResolver;
 public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
     protected static final String NO_PEEPHOLE = "--no_peep";
 
-    private final InstructionHolder<T> instrucitons;
+    private final InstructionHolder<T> instructions;
 
     protected final IRuntime<T> runtime;
 
@@ -43,7 +43,7 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
         this.options = new HashSet<>(options);
         outDir = Compiler.OUTPUT_DIRECTORY + File.separator + name;
         this.runtime = runtime;
-        this.instrucitons = instrucitons;
+        this.instructions = instrucitons;
         this.sizeHelper = sizeHelper;
         sit = new SelectorIndexedTable<>(this);
         tiles.init(options);
@@ -104,7 +104,7 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
     }
 
     public final InstructionHolder<T> getInstructionHolder() {
-        return instrucitons;
+        return instructions;
     }
 
     // Note, it is a large refactoring, but the best way to do this is to add P
@@ -142,7 +142,7 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
             final E size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
             final String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
             instructions.add(makeGlobal(fieldLbl));
-            instructions.add(makeSpace(fieldLbl, size));
+            instructions.addAll(makeSpace(fieldLbl, size));
         }
     }
 
@@ -183,7 +183,7 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
 
     public abstract T getRet();
 
-    public abstract T makeSpace(String name, E size);
+    public abstract T[] makeSpace(String name, E size);
 
     public final String getOutputDir() {
         return outDir;

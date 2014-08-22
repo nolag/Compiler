@@ -12,12 +12,13 @@ import cs444.codegen.arm.instructions.Global;
 import cs444.codegen.arm.instructions.Label;
 import cs444.codegen.arm.instructions.Mov;
 import cs444.codegen.arm.instructions.Section;
+import cs444.codegen.arm.instructions.Word;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.peepholes.InstructionHolder;
 import cs444.codegen.peepholes.InstructionPrinter;
 
 public abstract class ArmPlatform extends Platform<ArmInstruction, Size> {
-    public interface ARMPlatformFactory<P extends ArmPlatform> extends PlatformFactory<ArmInstruction, Size, P> {
+    public interface ArmPlatformFactory<P extends ArmPlatform> extends PlatformFactory<ArmInstruction, Size, P> {
         @Override
         P getPlatform(Set<String> opts);
     }
@@ -58,7 +59,7 @@ public abstract class ArmPlatform extends Platform<ArmInstruction, Size> {
 
     @Override
     public ArmInstruction makeExtern(final String what) {
-        return new Extern(what);
+        return new Extern(new ImmediateStr(what));
     }
 
     @Override
@@ -88,7 +89,7 @@ public abstract class ArmPlatform extends Platform<ArmInstruction, Size> {
 
     @Override
     public ArmInstruction makeCall(String what) {
-        return new Bl(what);
+        return new Bl(new ImmediateStr(what));
     }
 
     @Override
@@ -97,8 +98,7 @@ public abstract class ArmPlatform extends Platform<ArmInstruction, Size> {
     }
 
     @Override
-    public ArmInstruction makeSpace(String name, Size size) {
-        //TODO
-        return null;
+    public ArmInstruction[] makeSpace(String name, Size size) {
+        return new ArmInstruction[] { new Label(name), new Word(0) };
     }
 }
