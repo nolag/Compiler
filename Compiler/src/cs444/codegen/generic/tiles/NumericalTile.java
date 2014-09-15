@@ -1,0 +1,37 @@
+package cs444.codegen.generic.tiles;
+
+import cs444.codegen.Platform;
+import cs444.codegen.SizeHelper;
+import cs444.codegen.generic.tiles.helpers.TileHelper;
+import cs444.codegen.instructions.Instruction;
+import cs444.codegen.tiles.ITile;
+import cs444.codegen.tiles.InstructionsAndTiming;
+import cs444.codegen.tiles.TileSet;
+import cs444.parser.symbols.ast.INumericLiteral;
+
+public class NumericalTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, INumericLiteral> {
+    private static NumericalTile<?, ?> tile;
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
+        if (tile == null) tile = new NumericalTile<T, E>();
+        TileSet.<T, E> getOrMake(klass).numbs.add((ITile<T, E, INumericLiteral>) tile);
+    }
+
+    private NumericalTile() {}
+
+    @Override
+    public boolean fits(INumericLiteral symbol, final Platform<T, E> platform) {
+        return true;
+    }
+
+    @Override
+    public InstructionsAndTiming<T> generate(final INumericLiteral num, final Platform<T, E> platform) {
+
+        final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<>();
+        final SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
+        final TileHelper<T, E> tileHelper = platform.getTileHelper();
+        tileHelper.loadNumberToDefault(num, instructions, sizeHelper);
+        return instructions;
+    }
+}

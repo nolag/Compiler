@@ -11,14 +11,15 @@ import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ast.expressions.AndExprSymbol;
 
 public class AndTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, AndExprSymbol> {
+    private static AndTile<?, ?> tile;
 
+    @SuppressWarnings("unchecked")
     public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        new AndTile<T, E>(klass);
+        if (tile == null) tile = new AndTile<T, E>();
+        TileSet.<T, E> getOrMake(klass).ands.add((ITile<T, E, AndExprSymbol>) tile);
     }
 
-    private AndTile(final Class<? extends Platform<T, E>> klass) {
-        TileSet.<T, E> getOrMake(klass).ands.add(this);
-    }
+    private AndTile() {}
 
     @Override
     public boolean fits(final AndExprSymbol symbol, final Platform<T, E> platform) {

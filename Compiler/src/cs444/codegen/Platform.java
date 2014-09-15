@@ -166,6 +166,7 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
 
     public abstract String getTrueStr();
 
+    //TODO make these like the rest and just take Addable as an arg.  More consistant and won't need to return T[] ever
     // Extern is not always needed depending on the assembler
     public abstract T makeExtern(final String what);
 

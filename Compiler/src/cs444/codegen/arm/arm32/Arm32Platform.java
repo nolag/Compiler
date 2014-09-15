@@ -71,9 +71,6 @@ public class Arm32Platform extends ArmPlatform {
         instructions.add(new Mov(Register.R11, Register.R0, sizeHelper));
 
         for (final DclSymbol fieldDcl : resolver.getUninheritedNonStaticFields()) {
-            //TODO I feel like I Need to use this size in str?
-            //final Size size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
-
             final long offset = fieldDcl.getOffset(this);
 
             if (!fieldDcl.children.isEmpty()) {

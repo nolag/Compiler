@@ -9,6 +9,7 @@ import cs444.codegen.instructions.Instruction;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.INumericLiteral;
+import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
@@ -17,6 +18,8 @@ import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.types.APkgClassResolver;
 
 public abstract class TileHelper<T extends Instruction<T>, E extends Enum<E>> {
+    public static final char NULL = 0;
+
     public static boolean isZero(final ISymbol symbol) {
         if (symbol instanceof INumericLiteral) {
             final INumericLiteral numLit = (INumericLiteral) symbol;
@@ -31,7 +34,7 @@ public abstract class TileHelper<T extends Instruction<T>, E extends Enum<E>> {
         return !JoosNonTerminal.primativeNumbers.contains(typeName) && !JoosNonTerminal.otherPrimatives.contains(typeName);
     }
 
-    public abstract void ifNullJmpCode(final String ifNullLbl, final SizeHelper<T, E> sizeHelper, final Addable<T> instructions);
+    public abstract void setupJmpNull(final String ifNullLbl, final SizeHelper<T, E> sizeHelper, final Addable<T> instructions);
 
     public abstract void methProlog(final MethodOrConstructorSymbol method, final String methodName, final SizeHelper<T, E> sizeHelper,
             final Addable<T> instructions);
@@ -116,4 +119,14 @@ public abstract class TileHelper<T extends Instruction<T>, E extends Enum<E>> {
         final INumericLiteral number = (INumericLiteral) symbol;
         return number.getAsLongValue();
     }
+
+    public abstract void loadThisToDefault(final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
+
+    public abstract void loadNumberToDefault(final INumericLiteral numeric, final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
+
+    public void loadNumberToDefault(final int numeric, final Addable<T> instructions, final SizeHelper<T, E> sizeHelper) {
+        loadNumberToDefault(new IntegerLiteralSymbol(numeric), instructions, sizeHelper);
+    }
+
+    public abstract void makeCall(final String to, final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
 }

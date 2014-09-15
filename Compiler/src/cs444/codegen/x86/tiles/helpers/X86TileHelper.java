@@ -85,13 +85,13 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
     }
 
     @Override
-    public final void ifNullJmpCode(final String ifNullLbl, final SizeHelper<X86Instruction, Size> sizeHelper,
+    public final void setupJmpNull(final String ifNullLbl, final SizeHelper<X86Instruction, Size> sizeHelper,
             final Addable<X86Instruction> instructions) {
 
-        ifNullJmpCode(Register.ACCUMULATOR, ifNullLbl, sizeHelper, instructions);
+        setupJmpNull(Register.ACCUMULATOR, ifNullLbl, sizeHelper, instructions);
     }
 
-    public static void ifNullJmpCode(final Register register, final String ifNullLbl, final SizeHelper<X86Instruction, Size> sizeHelper,
+    public static void setupJmpNull(final Register register, final String ifNullLbl, final SizeHelper<X86Instruction, Size> sizeHelper,
             final Addable<X86Instruction> instructions) {
         instructions.add(new Comment("null check"));
         instructions.add(new Cmp(register, Immediate.NULL, sizeHelper));
@@ -321,5 +321,17 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
             instructions.add(platform.makeComment("clean stack space from " + what));
             instructions.add(new Add(Register.STACK, by, sizeHelper));
         }
+    }
+
+    @Override
+    public void loadThisToDefault(final Addable<X86Instruction> instructions, final SizeHelper<X86Instruction, Size> sizeHelper) {
+        instructions.add(new Comment("This (or super) pointer"));
+        instructions.add(new Mov(Register.ACCUMULATOR, Memory.getThisPointer(sizeHelper), sizeHelper));
+    }
+
+    @Override
+    public void makeCall(final String to, final Addable<X86Instruction> instructions, final SizeHelper<X86Instruction, Size> sizeHelper) {
+        final Immediate arg = new Immediate(to);
+        instructions.add(new Call(arg, sizeHelper));
     }
 }

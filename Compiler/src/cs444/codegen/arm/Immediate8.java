@@ -1,24 +1,23 @@
 package cs444.codegen.arm;
 
-import cs444.codegen.SizeHelper;
-import cs444.codegen.arm.instructions.bases.ArmInstruction;
-import cs444.codegen.instructions.InstructionArg;
+import cs444.codegen.generic.tiles.helpers.TileHelper;
 
-public class Immediate8 extends InstructionArg<ArmInstruction, Size> implements Operand2 {
-    public final char value;
+public class Immediate8 extends Immediate12 implements Operand2 {
+    public static final Immediate8 ZERO = new Immediate8((char) 0);
+    public static final Immediate8 ONE = new Immediate8((char) 1);
+    public static final Immediate8 TWO = new Immediate8((char) 2);
+    public static final Immediate8 THREE = new Immediate8((char) 2);
+
+    public static final Immediate8 NULL = new Immediate8(TileHelper.NULL);
+
+    // same of zero
+    public static final Immediate8 FALSE = ZERO;
+
+    // same as one
+    public static final Immediate8 TRUE = ONE;
 
     public Immediate8(final char value) {
-        this.value = value;
-    }
-
-    @Override
-    public boolean uses(InstructionArg<ArmInstruction, ?> what) {
-        return false;
-    }
-
-    @Override
-    public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return Character.toString(value);
+        super((short) value);
     }
 
     @Override

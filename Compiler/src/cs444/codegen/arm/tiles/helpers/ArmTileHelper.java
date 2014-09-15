@@ -1,11 +1,14 @@
 package cs444.codegen.arm.tiles.helpers;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import cs444.codegen.Addable;
+import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
+import cs444.codegen.arm.Immediate12;
 import cs444.codegen.arm.Immediate16;
 import cs444.codegen.arm.Immediate8;
 import cs444.codegen.arm.ImmediateStr;
@@ -14,17 +17,22 @@ import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
 import cs444.codegen.arm.instructions.*;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
+import cs444.codegen.arm.instructions.bases.Branch.Condition;
+import cs444.codegen.arm.instructions.factories.Imm12OrRegMaker;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
+import cs444.parser.symbols.ast.AMethodSymbol;
 import cs444.parser.symbols.ast.AModifiersOptSymbol.ProtectionLevel;
+import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
 import cs444.types.APkgClassResolver;
+import cs444.types.exceptions.UndeclaredException;
 
-public class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
+public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
     private static final Push ENTER = new Push(Register.INTRA_PROCEDURE, Register.LINK);
     private static final Pop LEAVE = new Pop(Register.INTRA_PROCEDURE, Register.PC);
 
@@ -32,8 +40,15 @@ public class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
     private static final Pop NATIVE_LEAVE = new Pop(Register.R8, Register.R9, Register.R10, Register.R11);
 
     @Override
-    public void ifNullJmpCode(String ifNullLbl, SizeHelper<ArmInstruction, Size> sizeHelper, Addable<ArmInstruction> instructions) {
-        //TODO
+    public void setupJmpNull(String ifNullLbl, SizeHelper<ArmInstruction, Size> sizeHelper, Addable<ArmInstruction> instructions) {
+        setupJmpNull(Register.R0, ifNullLbl, sizeHelper, instructions);
+    }
+
+    static void setupJmpNull(Register reg, String ifNullLbl, SizeHelper<ArmInstruction, Size> sizeHelper,
+            Addable<ArmInstruction> instructions) {
+        instructions.add(new Comment("check if null"));
+        instructions.add(new Cmp(reg, Immediate8.NULL, sizeHelper));
+        instructions.add(new B(Condition.EQ, new ImmediateStr(ifNullLbl)));
     }
 
     @Override
@@ -51,28 +66,89 @@ public class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
 
     @Override
     public void setupJumpNe(String lblTo, SizeHelper<ArmInstruction, Size> sizeHelper, Addable<ArmInstruction> instructions) {
-        // TODO Auto-generated method stub
-
+        setupJumpNe(Register.R0, Immediate8.TRUE, lblTo, sizeHelper, instructions);
     }
 
     @Override
     public void setupJumpNeFalse(String lblTo, SizeHelper<ArmInstruction, Size> sizeHelper, Addable<ArmInstruction> instructions) {
-        // TODO Auto-generated method stub
+        setupJumpNe(Register.R0, Immediate8.FALSE, lblTo, sizeHelper, instructions);
+    }
 
+    public static void setupJumpNe(final Register reg, final Immediate8 when, final String lblTo,
+            final SizeHelper<ArmInstruction, Size> sizeHelper, final Addable<ArmInstruction> instructions) {
+        instructions.add(new Cmn(reg, when, sizeHelper));
+        instructions.add(new B(Condition.NE, new ImmediateStr(lblTo)));
     }
 
     @Override
     public void invokeConstructor(APkgClassResolver resolver, List<ISymbol> children, Platform<ArmInstruction, Size> platform,
             Addable<ArmInstruction> instructions) {
-        // TODO Auto-generated method stub
+        final List<String> types = new LinkedList<String>();
+        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+
+        instructions.add(new Comment("Back up addr of obj in Base so it is safe"));
+        instructions.add(new Push(Register.R8));
+        instructions.add(new Mov(Register.R8, Register.R0, sizeHelper));
+
+        for (final ISymbol child : children) {
+            instructions.addAll(platform.getBest(child));
+            final Typeable arg = (Typeable) child;
+            final TypeSymbol ts = arg.getType();
+            if (ts.value.equals(JoosNonTerminal.LONG)) pushLong(arg, instructions, sizeHelper);
+            else instructions.add(new Push(Register.R0));
+            types.add(ts.getTypeDclNode().fullName);
+        }
+
+        instructions.add(new Push(Register.R8));
+
+        ConstructorSymbol cs = null;
+        try {
+            cs = resolver.getConstructor(types, resolver);
+        } catch (final UndeclaredException e) {
+            //Should never get here
+            e.printStackTrace();
+            return;
+        }
+
+        final ImmediateStr arg = new ImmediateStr(APkgClassResolver.generateFullId(cs));
+        if (resolver != CodeGenVisitor.<ArmInstruction, Size> getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(arg));
+
+        instructions.add(new Bl(arg));
+        //return value is the new object
+        instructions.add(new Pop(Register.R0));
+
+        final long mySize = cs.getStackSize(platform) - sizeHelper.getDefaultStackSize();
+        if (mySize != 0) {
+            final Operand2 op2 = setupOp2(Register.R0, mySize, instructions, sizeHelper);
+            instructions.add(new Add(Register.STACK, Register.STACK, op2, sizeHelper));
+        }
+        instructions.add(new Comment("Restore Base register"));
+        instructions.add(new Pop(Register.R8));
 
     }
 
     @Override
     public void strPartHelper(ISymbol child, APkgClassResolver resolver, Addable<ArmInstruction> instructions,
             Platform<ArmInstruction, Size> platform) {
-        // TODO Auto-generated method stub
+        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        final String firstType = ((Typeable) child).getType().getTypeDclNode().fullName;
+        instructions.addAll(platform.getBest(child));
+        AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(firstType), false);
+        if (ms == null) ms = resolver.safeFindMethod(JoosNonTerminal.TO_STR, true, Arrays.asList(JoosNonTerminal.OBJECT), false);
 
+        final Size lastSize = sizeHelper.getPushSize(sizeHelper.getSize(sizeHelper.getByteSizeOfType(firstType)));
+        final int pop = sizeHelper.getIntSize(lastSize);
+
+        instructions.add(new Push(Register.R0));
+
+        final ImmediateStr arg = new ImmediateStr(APkgClassResolver.generateFullId(ms));
+
+        if (ms.dclInResolver != CodeGenVisitor.<ArmInstruction, Size> getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(
+                arg));
+        instructions.add(new Bl(arg));
+
+        final Operand2 op2 = setupOp2(Register.R0, pop, instructions, sizeHelper);
+        instructions.add(new Add(Register.STACK, Register.STACK, op2, sizeHelper));
     }
 
     @Override
@@ -117,14 +193,12 @@ public class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
 
     @Override
     public void setupJump(String lblTo, SizeHelper<ArmInstruction, Size> sizeHelper, Addable<ArmInstruction> instructions) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new B(new ImmediateStr(lblTo)));
     }
 
     @Override
     public void setupComment(String comment, Addable<ArmInstruction> instructions) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new Comment(comment));
     }
 
     @Override
@@ -139,18 +213,7 @@ public class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
 
     @Override
     public void loadBool(boolean bool, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        instructions.add(new Mov(Register.R0, bool ? Immediate16.TRUE : Immediate16.FALSE, sizeHelper));
-    }
-
-    @Override
-    public void makeLong(Typeable item, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        // TODO Auto-generated method stub
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public void pushLong(Typeable item, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        throw new NotImplementedException();
+        instructions.add(new Mov(Register.R0, (Immediate16) (bool ? Immediate8.TRUE : Immediate8.FALSE), sizeHelper));
     }
 
     public static Operand2 setupOp2(Register pref, long n, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
@@ -169,8 +232,18 @@ public class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
         return pref;
     }
 
-    public static void setupNumberLoad(Register dest, long n, Addable<ArmInstruction> instructions,
-            SizeHelper<ArmInstruction, Size> sizeHelper) {
+    public static void makeInstruction(final Register dest, final Register r1, final Register pref, final int val1,
+            final Imm12OrRegMaker maker, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
+        if (val1 <= 4095) {
+            instructions.add(maker.make(dest, r1, new Immediate12((short) val1), sizeHelper));
+            return;
+        }
+        setupNumberLoad(pref, val1, instructions, sizeHelper);
+        instructions.add(maker.make(dest, r1, pref, sizeHelper));
+    }
+
+    public static void setupNumberLoad(final Register dest, final int n, final Addable<ArmInstruction> instructions,
+            final SizeHelper<ArmInstruction, Size> sizeHelper) {
         if (n >= 0) {
             if (n <= 65535) {
                 instructions.add(new Mov(dest, new Immediate16((char) n), sizeHelper));
@@ -179,10 +252,6 @@ public class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
             //TODO other number optimizations that are shifts
         }
 
-        if (n > Integer.MAX_VALUE || n < Integer.MIN_VALUE) {
-            //TODO long literal that must be long
-            throw new NumberFormatException(n + " is too big or small for now :(");
-        }
         int ival = (int) n;
         instructions.add(new Mov(dest, new Immediate16(ival & 0xFFFF), sizeHelper));
         instructions.add(new Movt(dest, new Immediate16(ival & 0xFFFF0000 >> 16), sizeHelper));
@@ -204,5 +273,17 @@ public class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
             instructions.add(platform.makeComment("clean stack space from " + what));
             instructions.add(new Add(Register.STACK, Register.STACK, setupOp2(Register.R0, amount, instructions, sizeHelper), sizeHelper));
         }
+    }
+
+    @Override
+    public void loadThisToDefault(Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void makeCall(String to, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
+        final ImmediateStr arg = new ImmediateStr(to);
+        instructions.add(new Bl(arg));
     }
 }

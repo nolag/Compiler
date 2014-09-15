@@ -12,13 +12,15 @@ import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.types.APkgClassResolver;
 
 public class MethodTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, MethodSymbol> {
+    private static MethodTile<?, ?> tile;
+
+    @SuppressWarnings("unchecked")
     public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        new MethodTile<T, E>(klass);
+        if (tile == null) tile = new MethodTile<T, E>();
+        TileSet.<T, E> getOrMake(klass).methods.add((ITile<T, E, MethodSymbol>) tile);
     }
 
-    private MethodTile(final Class<? extends Platform<T, E>> klass) {
-        TileSet.<T, E> getOrMake(klass).methods.add(this);
-    }
+    private MethodTile() {}
 
     @Override
     public boolean fits(final MethodSymbol method, final Platform<T, E> platform) {

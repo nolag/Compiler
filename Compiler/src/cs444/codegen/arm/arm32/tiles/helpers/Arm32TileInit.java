@@ -30,7 +30,6 @@ public class Arm32TileInit extends ArmTileInit {
         LongNameValueTile.init();
         LongNegTile.init();
         LongNeTile.init();
-        LongNumberTile.init();
         LongRemTile.init();
         LongRigthShiftTile.init();
         LongSubTile.init();

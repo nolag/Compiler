@@ -10,14 +10,16 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
-public class WhileTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, WhileExprSymbol>{
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
-        new WhileTile<T, E>(klass);
+public class WhileTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, WhileExprSymbol> {
+    private static WhileTile<?, ?> tile;
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
+        if (tile == null) tile = new WhileTile<T, E>();
+        TileSet.<T, E> getOrMake(klass).whiles.add((WhileTile<T, E>) tile);
     }
 
-    private WhileTile(final Class<? extends Platform<T, E>> klass){
-        TileSet.<T, E>getOrMake(klass).whiles.add(this);
-    }
+    private WhileTile() {}
 
     @Override
     public boolean fits(final WhileExprSymbol symbol, final Platform<T, E> platform) {
