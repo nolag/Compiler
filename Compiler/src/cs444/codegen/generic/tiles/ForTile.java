@@ -11,13 +11,15 @@ import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ast.expressions.ForExprSymbol;
 
 public class ForTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, ForExprSymbol> {
+    private static ForTile<?, ?> tile;
+
+    @SuppressWarnings("unchecked")
     public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        new ForTile<T, E>(klass);
+        if (tile == null) tile = new ForTile<T, E>();
+        TileSet.<T, E> getOrMake(klass).fors.add((ITile<T, E, ForExprSymbol>) tile);
     }
 
-    private ForTile(final Class<? extends Platform<T, E>> klass) {
-        TileSet.<T, E> getOrMake(klass).fors.add(this);
-    }
+    private ForTile() {}
 
     @Override
     public boolean fits(final ForExprSymbol symbol, final Platform<T, E> platform) {

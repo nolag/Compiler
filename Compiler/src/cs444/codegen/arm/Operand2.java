@@ -8,5 +8,13 @@ public interface Operand2 extends InstructionPart<ArmInstruction, Size> {
         NO_SHIFT, CONST_SHIFT, REG_SHIFT
     };
 
+    public static enum Shift {
+        ASR, LSL, LSR, ROR;
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
+    };
+
     public ShiftType getShiftType();
 }

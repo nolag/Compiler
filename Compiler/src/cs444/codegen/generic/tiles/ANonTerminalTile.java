@@ -11,13 +11,15 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 
 public class ANonTerminalTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, ANonTerminal> {
+    private static ANonTerminalTile<?, ?> tile;
+
+    @SuppressWarnings("unchecked")
     public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        new ANonTerminalTile<T, E>(klass);
+        if (tile == null) tile = new ANonTerminalTile<T, E>();
+        TileSet.<T, E> getOrMake(klass).anonTerms.add((ITile<T, E, ANonTerminal>) tile);
     }
 
-    private ANonTerminalTile(final Class<? extends Platform<T, E>> klass) {
-        TileSet.<T, E> getOrMake(klass).anonTerms.add(this);
-    }
+    private ANonTerminalTile() {}
 
     @Override
     public boolean fits(final ANonTerminal symbol, final Platform<T, E> platform) {

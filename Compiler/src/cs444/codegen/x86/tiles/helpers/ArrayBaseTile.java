@@ -24,7 +24,7 @@ public abstract class ArrayBaseTile implements ITile<X86Instruction, Size, Array
         instructions.add(new Comment("Accessing array"));
         instructions.addAll(platform.getBest(arrayAccess.children.get(0)));
 
-        platform.getTileHelper().ifNullJmpCode(Runtime.EXCEPTION_LBL, sizeHelper, instructions);
+        platform.getTileHelper().setupJmpNull(Runtime.EXCEPTION_LBL, sizeHelper, instructions);
 
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Mov(Register.BASE, Register.ACCUMULATOR, sizeHelper));

@@ -9,15 +9,16 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ast.BooleanLiteralSymbol;
 
+public class BoolTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, BooleanLiteralSymbol> {
+    private static BoolTile<?, ?> tile;
 
-public class BoolTile  <T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, BooleanLiteralSymbol>{
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
-        new BoolTile<T, E>(klass);
+    @SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
+        if (tile == null) tile = new BoolTile<T, E>();
+        TileSet.<T, E> getOrMake(klass).bools.add((ITile<T, E, BooleanLiteralSymbol>) tile);
     }
 
-    private BoolTile(final Class<? extends Platform<T, E>> klass){
-        TileSet.<T, E>getOrMake(klass).bools.add(this);
-    }
+    private BoolTile() {}
 
     @Override
     public boolean fits(final BooleanLiteralSymbol symbol, final Platform<T, E> platform) {
@@ -25,8 +26,7 @@ public class BoolTile  <T extends Instruction<T>, E extends Enum<E>> implements 
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final BooleanLiteralSymbol boolSymbol,
-            final Platform<T, E> platform) {
+    public InstructionsAndTiming<T> generate(final BooleanLiteralSymbol boolSymbol, final Platform<T, E> platform) {
 
         final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
         final SizeHelper<T, E> sizeHelper = platform.getSizeHelper();

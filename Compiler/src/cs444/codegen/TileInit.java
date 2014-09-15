@@ -2,14 +2,7 @@ package cs444.codegen;
 
 import java.util.Set;
 
-import cs444.codegen.generic.tiles.AndTile;
-import cs444.codegen.generic.tiles.BoolTile;
-import cs444.codegen.generic.tiles.FieldAccessTile;
-import cs444.codegen.generic.tiles.IfTile;
-import cs444.codegen.generic.tiles.InstanceOfTile;
-import cs444.codegen.generic.tiles.MethodTile;
-import cs444.codegen.generic.tiles.OrTile;
-import cs444.codegen.generic.tiles.WhileTile;
+import cs444.codegen.generic.tiles.*;
 import cs444.codegen.generic.tiles.opt.DivZeroTile;
 import cs444.codegen.generic.tiles.opt.NonNullFieldAccess;
 import cs444.codegen.generic.tiles.opt.RemZeroTile;
@@ -35,12 +28,22 @@ public abstract class TileInit<T extends Instruction<T>, E extends Enum<E>> {
 
     protected void initBase() {
         AndTile.<T, E> init(klass);
+        ANonTerminalTile.init(klass);
         BoolTile.<T, E> init(klass);
+        ConstructorTile.init(klass);
         FieldAccessTile.<T, E> init(klass);
+        ForTile.init(klass);
         IfTile.<T, E> init(klass);
         InstanceOfTile.<T, E> init(klass);
+        LongCastTile.init(klass);
         MethodTile.<T, E> init(klass);
+        NormalCreationTile.init(klass);
+        NullTile.init(klass);
+        NumericalTile.init(klass);
         OrTile.<T, E> init(klass);
+        RetTile.init(klass);
+        StaticCallTile.init(klass);
+        ThisTile.init(klass);
         WhileTile.<T, E> init(klass);
     }
 

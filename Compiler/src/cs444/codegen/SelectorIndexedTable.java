@@ -39,25 +39,21 @@ public class SelectorIndexedTable<T extends Instruction<T>, E extends Enum<E>> {
     public final void generateSIT(final List<APkgClassResolver> resolvers, final boolean outputFile) throws IOException {
 
         for (final APkgClassResolver resolver : resolvers) {
-            if (resolver.shouldGenCode())
-                resolver.addToSelectorIndexedTable(this);
+            if (resolver.shouldGenCode()) resolver.addToSelectorIndexedTable(this);
         }
 
         table.genCode();
-        if (outputFile)
-            table.printCodeToFile(platform, platform.getOutputDir() + File.separator + "_joos.sit.s");
+        if (outputFile) table.printCodeToFile(platform, platform.getOutputDir() + File.separator + "_joos.sit.s");
     }
 
     private class SelectorCellGen implements ICellGen<T, E> {
         public void genEmptyCelCode(String colHeaderLabel, String rowName, InstructionHolder<T> instructions) {
             instructions.add(platform.makeComment(colHeaderLabel + " does not have access to " + rowName + ":"));
-            // Immediate won't need a sizeHelper so null is ok.
             instructions.addAll(sizeHelper.alloceDefaultCellSpace(platform.getNullStr()));
         }
 
         public void genCellCode(String colHeaderLabel, String rowName, String data, InstructionHolder<T> instructions) {
             instructions.add(platform.makeExtern(data));
-            // Immediate won't need a sizeHelper so null is ok.
             instructions.addAll(sizeHelper.alloceDefaultCellSpace(data));
         }
 
