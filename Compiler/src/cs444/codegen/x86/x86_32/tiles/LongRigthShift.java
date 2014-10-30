@@ -1,22 +1,20 @@
 package cs444.codegen.x86.x86_32.tiles;
 
 import cs444.codegen.SizeHelper;
-import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.Cdq;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.instructions.factories.RSOpMaker;
 import cs444.codegen.x86.instructions.factories.ShrdMaker;
-import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.codegen.x86.x86_32.tiles.helpers.LongShiftTile;
 import cs444.parser.symbols.ast.expressions.RSExprSymbol;
 
 public class LongRigthShift extends LongShiftTile<RSExprSymbol> {
     private static LongRigthShift tile;
 
-    public static void init(){
-        if(tile == null) tile = new LongRigthShift();
-        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).rss.add(tile);
+    public static LongRigthShift getTile() {
+        if (tile == null) tile = new LongRigthShift();
+        return tile;
     }
 
     private LongRigthShift() {

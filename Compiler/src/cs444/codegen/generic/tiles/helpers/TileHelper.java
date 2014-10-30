@@ -14,6 +14,7 @@ import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
+import cs444.parser.symbols.ast.expressions.BinOpExpr;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 import cs444.types.APkgClassResolver;
 
@@ -129,4 +130,12 @@ public abstract class TileHelper<T extends Instruction<T>, E extends Enum<E>> {
     }
 
     public abstract void makeCall(final String to, final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
+
+    public boolean fitsSizedCompare(final BinOpExpr op, final Platform<T, E> platform) {
+        final SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
+        final Typeable ts1 = (Typeable) op.children.get(0);
+        final Typeable ts2 = (Typeable) op.children.get(1);
+        return sizeHelper.getDefaultStackSize() >= sizeHelper.getByteSizeOfType(ts1.getType().getTypeDclNode().fullName)
+                && sizeHelper.getDefaultStackSize() >= sizeHelper.getByteSizeOfType(ts2.getType().getTypeDclNode().fullName);
+    }
 }

@@ -7,18 +7,20 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.ConstructorSymbol;
 import cs444.types.APkgClassResolver;
 
+@SuppressWarnings("rawtypes")
 public class ConstructorTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, ConstructorSymbol> {
-    private static ConstructorTile<?, ?> tile;
+        private static ConstructorTile tile;
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        if (tile == null) tile = new ConstructorTile<T, E>();
-        TileSet.<T, E> getOrMake(klass).constructors.add((ITile<T, E, ConstructorSymbol>) tile);
+    
+@SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> ConstructorTile<T, E> getTile() {
+        if (tile == null) tile = new ConstructorTile();
+        return tile;
     }
 
     private ConstructorTile() {}

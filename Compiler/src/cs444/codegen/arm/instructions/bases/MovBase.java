@@ -6,12 +6,15 @@ import cs444.codegen.arm.ImmediateStr;
 import cs444.codegen.arm.Operand2;
 import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
+import cs444.codegen.arm.instructions.bases.Branch.Condition;
 import cs444.codegen.instructions.InstructionArg;
 import cs444.codegen.instructions.InstructionPart;
 
 public abstract class MovBase extends ArmInstruction {
+    public final Condition cond;
     public final Register dest;
     public final InstructionPart<ArmInstruction, Size> src;
+
     private final SizeHelper<ArmInstruction, Size> sizeHelper;
     private final String what;
 
@@ -27,28 +30,46 @@ public abstract class MovBase extends ArmInstruction {
         }
     }
 
-    public MovBase(final String what, final Register dest, final Operand2 src, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    public MovBase(final String what, final Condition cond, final Register dest, final Operand2 src,
+            final SizeHelper<ArmInstruction, Size> sizeHelper) {
         super(calcCost(src));
+        this.cond = cond;
         this.what = what;
         this.dest = dest;
         this.src = src;
         this.sizeHelper = sizeHelper;
     }
 
-    public MovBase(final String what, final Register dest, final Immediate16 imm, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    public MovBase(final String what, final Condition cond, final Register dest, final Immediate16 imm,
+            final SizeHelper<ArmInstruction, Size> sizeHelper) {
         super(1);
+        this.cond = cond;
         this.what = what;
         this.dest = dest;
         this.src = imm;
         this.sizeHelper = sizeHelper;
     }
 
-    public MovBase(final String what, final Register dest, final ImmediateStr imm, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    public MovBase(final String what, final Condition cond, final Register dest, final ImmediateStr imm,
+            final SizeHelper<ArmInstruction, Size> sizeHelper) {
         super(1);
+        this.cond = cond;
         this.what = what;
         this.dest = dest;
         this.src = imm;
         this.sizeHelper = sizeHelper;
+    }
+
+    public MovBase(final String what, final Register dest, final Operand2 src, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+        this(what, Condition.AL, dest, src, sizeHelper);
+    }
+
+    public MovBase(final String what, final Register dest, final Immediate16 imm, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+        this(what, Condition.AL, dest, imm, sizeHelper);
+    }
+
+    public MovBase(final String what, final Register dest, final ImmediateStr imm, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+        this(what, Condition.AL, dest, imm, sizeHelper);
     }
 
     @Override

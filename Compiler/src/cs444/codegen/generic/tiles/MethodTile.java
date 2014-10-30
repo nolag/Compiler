@@ -6,18 +6,20 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.MethodSymbol;
 import cs444.types.APkgClassResolver;
 
+@SuppressWarnings("rawtypes")
 public class MethodTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, MethodSymbol> {
-    private static MethodTile<?, ?> tile;
+        private static MethodTile tile;
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        if (tile == null) tile = new MethodTile<T, E>();
-        TileSet.<T, E> getOrMake(klass).methods.add((ITile<T, E, MethodSymbol>) tile);
+    
+@SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> MethodTile<T, E> getTile() {
+        if (tile == null) tile = new MethodTile();
+        return tile;
     }
 
     private MethodTile() {}

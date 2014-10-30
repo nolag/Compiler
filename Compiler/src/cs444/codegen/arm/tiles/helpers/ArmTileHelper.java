@@ -117,7 +117,7 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
         //return value is the new object
         instructions.add(new Pop(Register.R0));
 
-        final long mySize = cs.getStackSize(platform) - sizeHelper.getDefaultStackSize();
+        final int mySize = (int) cs.getStackSize(platform) - sizeHelper.getDefaultStackSize();
         if (mySize != 0) {
             final Operand2 op2 = setupOp2(Register.R0, mySize, instructions, sizeHelper);
             instructions.add(new Add(Register.STACK, Register.STACK, op2, sizeHelper));
@@ -177,7 +177,7 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
         final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
         // NOTE: do not use INVOKE in here, invoke gets size from method,
         // but visitor may visit InvokeSymbol before MethodSymbol
-        final long mySize = call.getStackSize(platform);
+        final int mySize = (int) call.getStackSize(platform);
         if (mySize != 0) {
             instructions.add(new Add(Register.STACK, Register.STACK, setupOp2(Register.R0, mySize, instructions, sizeHelper), sizeHelper));
         }
@@ -216,16 +216,12 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
         instructions.add(new Mov(Register.R0, (Immediate16) (bool ? Immediate8.TRUE : Immediate8.FALSE), sizeHelper));
     }
 
-    public static Operand2 setupOp2(Register pref, long n, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
+    public static Operand2 setupOp2(Register pref, int n, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
         if (n >= 0) {
             if (n <= 255) return new Immediate8((char) n);
             //TODO other number optimizations that are shifts
         }
 
-        if (n > Integer.MAX_VALUE || n < Integer.MIN_VALUE) {
-            //TODO long literal that must be long
-            throw new NumberFormatException(n + " is too big or small for now :(");
-        }
         int ival = (int) n;
         instructions.add(new Mov(pref, new Immediate16(ival & 0xFFFF), sizeHelper));
         instructions.add(new Movt(pref, new Immediate16(ival & 0xFFFF0000 >> 16), sizeHelper));
@@ -262,7 +258,8 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
         if (0 != amount) {
             final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
             instructions.add(platform.makeComment("add stack space for " + what));
-            instructions.add(new Sub(Register.STACK, Register.STACK, setupOp2(Register.R0, amount, instructions, sizeHelper), sizeHelper));
+            instructions.add(new Sub(Register.STACK, Register.STACK, setupOp2(Register.R0, (int) amount, instructions, sizeHelper),
+                    sizeHelper));
         }
     }
 
@@ -271,14 +268,15 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
         if (0 != amount) {
             final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
             instructions.add(platform.makeComment("clean stack space from " + what));
-            instructions.add(new Add(Register.STACK, Register.STACK, setupOp2(Register.R0, amount, instructions, sizeHelper), sizeHelper));
+            instructions.add(new Add(Register.STACK, Register.STACK, setupOp2(Register.R0, (int) amount, instructions, sizeHelper),
+                    sizeHelper));
         }
     }
 
     @Override
     public void loadThisToDefault(Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        // TODO Auto-generated method stub
-
+        instructions.add(new Comment("This (or super) pointer"));
+        instructions.add(new Ldr(Register.R0, Register.STACK, new Immediate12((short) (sizeHelper.getDefaultStackSize() * 2)), sizeHelper));
     }
 
     @Override

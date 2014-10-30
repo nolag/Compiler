@@ -3,7 +3,7 @@ package cs444.codegen.x86.x86_64;
 import java.util.Collections;
 import java.util.Set;
 
-import utils.generics.GenericMaker;
+import utils.GenericMaker;
 import cs444.codegen.Addable;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.OperatingSystem;

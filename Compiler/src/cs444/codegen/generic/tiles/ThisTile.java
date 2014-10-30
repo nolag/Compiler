@@ -5,16 +5,18 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.parser.symbols.ast.Thisable;
 
+@SuppressWarnings("rawtypes")
 public class ThisTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, Thisable> {
-    private static ThisTile<?, ?> tile;
+        private static ThisTile tile;
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        if (tile == null) tile = new ThisTile<T, E>();
-        TileSet.<T, E> getOrMake(klass).thisables.add((ITile<T, E, Thisable>) tile);
+    
+@SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> ThisTile<T, E> getTile() {
+        if (tile == null) tile = new ThisTile();
+        return tile;
     }
 
     private ThisTile() {}

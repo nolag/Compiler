@@ -5,7 +5,7 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.codegen.x86.*;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
@@ -16,9 +16,9 @@ import cs444.types.PkgClassResolver;
 public class NameRefTile implements ITile<X86Instruction, Size, SimpleNameSymbol> {
     private static NameRefTile tile;
 
-    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+    public static NameRefTile getTile() {
         if(tile == null) tile = new NameRefTile();
-        TileSet.<X86Instruction, Size>getOrMake(klass).nameRefs.add(tile);
+        return tile;
     }
 
     private NameRefTile() { }

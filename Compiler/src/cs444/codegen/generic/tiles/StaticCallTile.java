@@ -5,19 +5,21 @@ import cs444.codegen.Platform;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
 import cs444.types.APkgClassResolver;
 
+@SuppressWarnings("rawtypes")
 public class StaticCallTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, SimpleMethodInvoke> {
     public static final String NATIVE_NAME = "NATIVE";
-    private static StaticCallTile<?, ?> tile;
+        private static StaticCallTile tile;
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        if (tile == null) tile = new StaticCallTile<T, E>();
-        TileSet.<T, E> getOrMake(klass).invokes.add((ITile<T, E, SimpleMethodInvoke>) tile);
+    
+@SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> StaticCallTile<T, E> getTile() {
+        if (tile == null) tile = new StaticCallTile();
+        return tile;
     }
 
     private StaticCallTile() {}
