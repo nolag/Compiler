@@ -8,18 +8,20 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
 import cs444.types.APkgClassResolver;
 
+@SuppressWarnings("rawtypes")
 public class NormalCreationTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, CreationExpression> {
-    private static NormalCreationTile<?, ?> tile;
+        private static NormalCreationTile tile;
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        if (tile == null) tile = new NormalCreationTile<T, E>();
-        TileSet.<T, E> getOrMake(klass).creation.add((ITile<T, E, CreationExpression>) tile);
+    
+@SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> NormalCreationTile<T, E> getTile() {
+        if (tile == null) tile = new NormalCreationTile();
+        return tile;
     }
 
     private NormalCreationTile() {}

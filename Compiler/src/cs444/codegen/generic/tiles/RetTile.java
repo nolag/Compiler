@@ -4,16 +4,18 @@ import cs444.codegen.Platform;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
 
+@SuppressWarnings("rawtypes")
 public class RetTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, ReturnExprSymbol> {
-    private static RetTile<?, ?> tile;
+        private static RetTile tile;
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        if (tile == null) tile = new RetTile<T, E>();
-        TileSet.<T, E> getOrMake(klass).rets.add((ITile<T, E, ReturnExprSymbol>) tile);
+    
+@SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> RetTile<T, E> getTile() {
+        if (tile == null) tile = new RetTile();
+        return tile;
     }
 
     private RetTile() {}

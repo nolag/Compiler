@@ -5,18 +5,19 @@ import cs444.codegen.Platform;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 
+@SuppressWarnings("rawtypes")
 public class ANonTerminalTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, ANonTerminal> {
-    private static ANonTerminalTile<?, ?> tile;
+
+    private static ANonTerminalTile tile;
 
     @SuppressWarnings("unchecked")
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        if (tile == null) tile = new ANonTerminalTile<T, E>();
-        TileSet.<T, E> getOrMake(klass).anonTerms.add((ITile<T, E, ANonTerminal>) tile);
+    public static <T extends Instruction<T>, E extends Enum<E>> ANonTerminalTile<T, E> getTile() {
+        if (tile == null) tile = new ANonTerminalTile();
+        return tile;
     }
 
     private ANonTerminalTile() {}

@@ -23,16 +23,15 @@ import cs444.codegen.arm.instructions.factories.StrMaker;
 import cs444.codegen.arm.tiles.helpers.ArmTileHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
 import cs444.types.APkgClassResolver;
 
 public class ArrayCreationTile implements ITile<ArmInstruction, Size, CreationExpression> {
     private static ArrayCreationTile tile;
 
-    public static void init(final Class<? extends Platform<ArmInstruction, Size>> klass) {
+    public static ArrayCreationTile getTile() {
         if (tile == null) tile = new ArrayCreationTile();
-        TileSet.<ArmInstruction, Size> getOrMake(klass).creation.add(tile);
+        return tile;
     }
 
     private ArrayCreationTile() {}
@@ -74,7 +73,7 @@ public class ArrayCreationTile implements ITile<ArmInstruction, Size, CreationEx
 
         instructions.add(platform.makeComment("Adding space for SIT, cast info, and length " + typeDclNode.fullName));
         //Int + object's size
-        final long baseSize = platform.getObjectLayout().objSize() + sizeHelper.getIntSize(sizeHelper.getPushSize(Size.H));
+        final int baseSize = (int) (platform.getObjectLayout().objSize() + sizeHelper.getIntSize(sizeHelper.getPushSize(Size.H)));
         final Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, baseSize, instructions, sizeHelper);
         instructions.add(new Add(Register.R0, Register.R0, op2, sizeHelper));
         instructions.add(platform.makeComment("Allocate for array" + typeDclNode.fullName));

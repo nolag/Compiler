@@ -7,13 +7,11 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.LongOnlyTile;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.codegen.x86.x86_32.tiles.helpers.X86_32TileHelper;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.Typeable;
@@ -22,9 +20,9 @@ import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 public class LongRemTile extends LongOnlyTile<X86Instruction, Size, RemainderExprSymbol> {
     private static LongRemTile tile;
 
-    public static void init() {
+    public static LongRemTile getTile() {
         if (tile == null) tile = new LongRemTile();
-        TileSet.<X86Instruction, Size> getOrMake(X86_32Platform.class).rems.add(tile);
+        return tile;
     }
 
     private LongRemTile() {}

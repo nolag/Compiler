@@ -4,7 +4,7 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.NumericHelperTile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.codegen.x86.AddMemoryFormat;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Memory;
@@ -19,9 +19,9 @@ import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 public final class NameValueTile extends NumericHelperTile<X86Instruction, Size, SimpleNameSymbol> {
     private static NameValueTile tile;
 
-    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+    public static NameValueTile getTile() {
         if (tile == null) tile = new NameValueTile();
-        TileSet.<X86Instruction, Size> getOrMake(klass).nameValues.add(tile);
+        return tile;
     }
 
     private NameValueTile() {}

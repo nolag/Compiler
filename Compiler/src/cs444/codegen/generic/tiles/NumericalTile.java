@@ -6,16 +6,18 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.parser.symbols.ast.INumericLiteral;
 
+@SuppressWarnings("rawtypes")
 public class NumericalTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, INumericLiteral> {
-    private static NumericalTile<?, ?> tile;
+        private static NumericalTile tile;
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        if (tile == null) tile = new NumericalTile<T, E>();
-        TileSet.<T, E> getOrMake(klass).numbs.add((ITile<T, E, INumericLiteral>) tile);
+    
+@SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> NumericalTile<T, E> getTile() {
+        if (tile == null) tile = new NumericalTile();
+        return tile;
     }
 
     private NumericalTile() {}

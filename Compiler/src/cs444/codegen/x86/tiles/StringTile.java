@@ -5,7 +5,7 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.codegen.x86.*;
 import cs444.codegen.x86.instructions.Add;
 import cs444.codegen.x86.instructions.Comment;
@@ -20,9 +20,9 @@ import cs444.types.PkgClassInfo;
 public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymbol> {
     private static StringTile tile;
 
-    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+    public static StringTile getTile() {
         if(tile == null) tile = new StringTile();
-        TileSet.<X86Instruction, Size>getOrMake(klass).strs.add(tile);
+        return tile;
     }
 
     private StringTile() { }

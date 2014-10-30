@@ -5,7 +5,7 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.codegen.x86.Size;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.MultiplyMemoryFormat;
@@ -18,9 +18,9 @@ import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
 public class LeaForAddMultTile implements ITile<X86Instruction, Size, MultiplyExprSymbol> {
     private static LeaForAddMultTile tile;
 
-    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+    public static LeaForAddMultTile getTile() {
         if(tile == null) tile = new LeaForAddMultTile();
-        TileSet.<X86Instruction, Size>getOrMake(klass).mults.add(tile);
+        return tile;
     }
 
     private LeaForAddMultTile() { }

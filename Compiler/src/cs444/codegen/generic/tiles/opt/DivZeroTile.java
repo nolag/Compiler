@@ -5,19 +5,20 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 
+@SuppressWarnings("rawtypes")
 public class DivZeroTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, DivideExprSymbol> {
+    private static DivZeroTile tile;
 
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        new DivZeroTile<T, E>(klass);
+    @SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> DivZeroTile<T, E> getTile() {
+        if (tile == null) tile = new DivZeroTile();
+        return tile;
     }
 
-    private DivZeroTile(final Class<? extends Platform<T, E>> klass) {
-        TileSet.<T, E>getOrMake(klass).divs.add(this);
-    }
+    private DivZeroTile() {}
 
     @Override
     public boolean fits(final DivideExprSymbol symbol, final Platform<T, E> platform) {

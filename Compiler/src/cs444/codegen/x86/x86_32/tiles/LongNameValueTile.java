@@ -5,7 +5,6 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.LongOnlyTile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.AddMemoryFormat;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Memory;
@@ -15,7 +14,6 @@ import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.Extern;
 import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.types.PkgClassResolver;
@@ -23,9 +21,9 @@ import cs444.types.PkgClassResolver;
 public final class LongNameValueTile extends LongOnlyTile<X86Instruction, Size, SimpleNameSymbol> {
     private static LongNameValueTile tile;
 
-    public static void init() {
+    public static LongNameValueTile getTile() {
         if (tile == null) tile = new LongNameValueTile();
-        TileSet.<X86Instruction, Size> getOrMake(X86_32Platform.class).nameValues.add(tile);
+        return tile;
     }
 
     private LongNameValueTile() {}

@@ -7,16 +7,18 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.parser.symbols.ast.expressions.ForExprSymbol;
 
+@SuppressWarnings("rawtypes")
 public class ForTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, ForExprSymbol> {
-    private static ForTile<?, ?> tile;
+        private static ForTile tile;
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Instruction<T>, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        if (tile == null) tile = new ForTile<T, E>();
-        TileSet.<T, E> getOrMake(klass).fors.add((ITile<T, E, ForExprSymbol>) tile);
+    
+@SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> ForTile<T, E> getTile() {
+        if (tile == null) tile = new ForTile();
+        return tile;
     }
 
     private ForTile() {}

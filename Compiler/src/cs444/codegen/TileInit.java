@@ -9,6 +9,7 @@ import cs444.codegen.generic.tiles.opt.RemZeroTile;
 import cs444.codegen.generic.tiles.opt.UpCastTile;
 import cs444.codegen.generic.tiles.opt.ZeroMultTile;
 import cs444.codegen.instructions.Instruction;
+import cs444.codegen.tiles.TileSet;
 
 public abstract class TileInit<T extends Instruction<T>, E extends Enum<E>> {
     protected final Class<? extends Platform<T, E>> klass;
@@ -27,31 +28,33 @@ public abstract class TileInit<T extends Instruction<T>, E extends Enum<E>> {
     }
 
     protected void initBase() {
-        AndTile.<T, E> init(klass);
-        ANonTerminalTile.init(klass);
-        BoolTile.<T, E> init(klass);
-        ConstructorTile.init(klass);
-        FieldAccessTile.<T, E> init(klass);
-        ForTile.init(klass);
-        IfTile.<T, E> init(klass);
-        InstanceOfTile.<T, E> init(klass);
-        LongCastTile.init(klass);
-        MethodTile.<T, E> init(klass);
-        NormalCreationTile.init(klass);
-        NullTile.init(klass);
-        NumericalTile.init(klass);
-        OrTile.<T, E> init(klass);
-        RetTile.init(klass);
-        StaticCallTile.init(klass);
-        ThisTile.init(klass);
-        WhileTile.<T, E> init(klass);
+        final TileSet<T, E> set = TileSet.<T, E> getOrMake(klass);
+        set.ands.add(AndTile.<T, E> getTile());
+        set.anonTerms.add(ANonTerminalTile.<T, E> getTile());
+        set.bools.add(BoolTile.<T, E> getTile());
+        set.constructors.add(ConstructorTile.<T, E> getTile());
+        set.fieldAccess.add(FieldAccessTile.<T, E> getTile());
+        set.fors.add(ForTile.<T, E> getTile());
+        set.ifs.add(IfTile.<T, E> getTile());
+        set.insts.add(InstanceOfTile.<T, E> getTile());
+        set.casts.add(LongCastTile.<T, E> getTile());
+        set.methods.add(MethodTile.<T, E> getTile());
+        set.creation.add(NormalCreationTile.<T, E> getTile());
+        set.nulls.add(NullTile.<T, E> getTile());
+        set.numbs.add(NumericalTile.<T, E> getTile());
+        set.ors.add(OrTile.<T, E> getTile());
+        set.rets.add(RetTile.<T, E> getTile());
+        set.invokes.add(StaticCallTile.<T, E> getTile());
+        set.thisables.add(ThisTile.<T, E> getTile());
+        set.whiles.add(WhileTile.<T, E> getTile());
     }
 
     protected void initBasicOpt() {
-        DivZeroTile.<T, E> init(klass);
-        NonNullFieldAccess.<T, E> init(klass);
-        RemZeroTile.<T, E> init(klass);
-        UpCastTile.<T, E> init(klass);
-        ZeroMultTile.<T, E> init(klass);
+        final TileSet<T, E> set = TileSet.<T, E> getOrMake(klass);
+        set.divs.add(DivZeroTile.<T, E> getTile());
+        set.fieldAccess.add(NonNullFieldAccess.<T, E> getTile());
+        set.rems.add(RemZeroTile.<T, E> getTile());
+        set.casts.add(UpCastTile.<T, E> getTile());
+        set.mults.add(ZeroMultTile.<T, E> getTile());
     }
 }

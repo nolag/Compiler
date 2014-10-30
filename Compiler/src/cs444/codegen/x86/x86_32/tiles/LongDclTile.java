@@ -5,21 +5,19 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.LongOnlyTile;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.Push;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.Typeable;
 
 public class LongDclTile extends LongOnlyTile<X86Instruction, Size, DclSymbol> {
     private static LongDclTile tile;
 
-    public static void init() {
+    public static LongDclTile getTile() {
         if (tile == null) tile = new LongDclTile();
-        TileSet.<X86Instruction, Size> getOrMake(X86_32Platform.class).dcls.add(tile);
+        return tile;
     }
 
     private LongDclTile() {}
