@@ -18,21 +18,9 @@ public abstract class MovBase extends ArmInstruction {
     private final SizeHelper<ArmInstruction, Size> sizeHelper;
     private final String what;
 
-    private static int calcCost(Operand2 lhs) {
-        switch (lhs.getShiftType()) {
-        case NO_SHIFT:
-        case CONST_SHIFT:
-            return 1;
-        case REG_SHIFT:
-            return 2;
-        default:
-            throw new IllegalArgumentException("Shift Type unknown");
-        }
-    }
-
-    public MovBase(final String what, final Condition cond, final Register dest, final Operand2 src,
+    private MovBase(final String what, Condition cond, Register dest, InstructionPart<ArmInstruction, Size> src,
             final SizeHelper<ArmInstruction, Size> sizeHelper) {
-        super(calcCost(src));
+        super(1);
         this.cond = cond;
         this.what = what;
         this.dest = dest;
@@ -40,24 +28,20 @@ public abstract class MovBase extends ArmInstruction {
         this.sizeHelper = sizeHelper;
     }
 
+    public MovBase(final String what, final Condition cond, final Register dest, final Operand2 src,
+            final SizeHelper<ArmInstruction, Size> sizeHelper) {
+        this(what, cond, dest, (InstructionPart<ArmInstruction, Size>) src, sizeHelper);
+
+    }
+
     public MovBase(final String what, final Condition cond, final Register dest, final Immediate16 imm,
             final SizeHelper<ArmInstruction, Size> sizeHelper) {
-        super(1);
-        this.cond = cond;
-        this.what = what;
-        this.dest = dest;
-        this.src = imm;
-        this.sizeHelper = sizeHelper;
+        this(what, cond, dest, (InstructionPart<ArmInstruction, Size>) imm, sizeHelper);
     }
 
     public MovBase(final String what, final Condition cond, final Register dest, final ImmediateStr imm,
             final SizeHelper<ArmInstruction, Size> sizeHelper) {
-        super(1);
-        this.cond = cond;
-        this.what = what;
-        this.dest = dest;
-        this.src = imm;
-        this.sizeHelper = sizeHelper;
+        this(what, cond, dest, (InstructionPart<ArmInstruction, Size>) imm, sizeHelper);
     }
 
     public MovBase(final String what, final Register dest, final Operand2 src, final SizeHelper<ArmInstruction, Size> sizeHelper) {

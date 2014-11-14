@@ -6,17 +6,17 @@ import java.util.Map;
 import cs444.codegen.Platform;
 import cs444.codegen.arm.Size;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
-import cs444.codegen.arm.instructions.factories.BinOpMaker;
+import cs444.codegen.arm.instructions.factories.BinOpRegMaker;
 import cs444.codegen.arm.tiles.helpers.BinOpTile;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
 @SuppressWarnings("rawtypes")
 public class EBooleanTile<T extends BinOpExpr> extends BinOpTile<T> {
-    private static final Map<BinOpMaker, EBooleanTile> tiles = new HashMap<>();
+    private static final Map<BinOpRegMaker, EBooleanTile> tiles = new HashMap<>();
 
     @SuppressWarnings("unchecked")
-    public static <T extends BinOpExpr> EBooleanTile<T> getTile(final BinOpMaker maker) {
+    public static <T extends BinOpExpr> EBooleanTile<T> getTile(final BinOpRegMaker maker) {
         EBooleanTile<T> tile = tiles.get(maker);
         if (tile == null) {
             tile = new EBooleanTile(maker);
@@ -25,7 +25,7 @@ public class EBooleanTile<T extends BinOpExpr> extends BinOpTile<T> {
         return tile;
     }
 
-    private EBooleanTile(BinOpMaker maker) {
+    private EBooleanTile(BinOpRegMaker maker) {
         super(maker);
     }
 

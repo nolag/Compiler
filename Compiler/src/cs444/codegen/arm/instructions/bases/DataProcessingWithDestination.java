@@ -17,22 +17,9 @@ public abstract class DataProcessingWithDestination extends ArmInstruction {
     public final Operand2 lhs;
     private final SizeHelper<ArmInstruction, Size> sizeHelper;
 
-    private static int calcCost(Operand2 lhs) {
-        switch (lhs.getShiftType()) {
-        case NO_SHIFT:
-            return 1;
-        case CONST_SHIFT:
-            return 2;
-        case REG_SHIFT:
-            return 3;
-        default:
-            throw new IllegalArgumentException("Shift Type unknown");
-        }
-    }
-
     protected DataProcessingWithDestination(final String instruction, final boolean s, final Conditional when, final Register dest,
             final Register rhs, final Operand2 lhs, final SizeHelper<ArmInstruction, Size> sizeHelper) {
-        super(calcCost(lhs));
+        super(1);
         this.instruction = instruction;
         this.s = s;
         this.when = when;

@@ -5,7 +5,8 @@ import cs444.codegen.instructions.InstructionArg;
 
 public abstract class Branch extends ArmInstruction {
     public enum Condition {
-        EQ, NE, HS, LO, MI, PL, VS, CS, HI, LS, GE, LT, GT, LE, AL {
+        EQ, NE, HS, LO, MI, PL, VS, VC, HI, LS, GE, LT, GT, LE, AL {
+
             @Override
             public String toString() {
                 return "";
@@ -15,6 +16,41 @@ public abstract class Branch extends ArmInstruction {
         @Override
         public String toString() {
             return name().toLowerCase();
+        }
+
+        public Condition getOpposite() {
+            switch (this) {
+            case EQ:
+                return NE;
+            case GE:
+                return LT;
+            case GT:
+                return LE;
+            case HI:
+                return LS;
+            case HS:
+                return LO;
+            case LE:
+                return GT;
+            case LO:
+                return HS;
+            case LS:
+                return HI;
+            case LT:
+                return GE;
+            case MI:
+                return PL;
+            case NE:
+                return EQ;
+            case PL:
+                return MI;
+            case VS:
+                return VC;
+            case VC:
+                return VS;
+            default:
+                return null;
+            }
         }
     }
 

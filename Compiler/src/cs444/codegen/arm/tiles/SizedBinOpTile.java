@@ -7,25 +7,25 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.Size;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
-import cs444.codegen.arm.instructions.factories.BinOpMaker;
+import cs444.codegen.arm.instructions.factories.BinOpRegMaker;
 import cs444.codegen.arm.tiles.helpers.BinOpTile;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
 @SuppressWarnings("rawtypes")
 public class SizedBinOpTile<T extends BinOpExpr> extends BinOpTile<T> {
-    private static final Map<Class<? extends BinOpExpr>, SizedBinOpTile> tiles = new HashMap<>();
+    private static final Map<BinOpRegMaker, SizedBinOpTile> tiles = new HashMap<>();
 
     @SuppressWarnings("unchecked")
-    public static <T extends BinOpExpr> SizedBinOpTile<T> getTile(final BinOpMaker maker, Class<T> klass) {
-        SizedBinOpTile<T> tile = tiles.get(klass);
+    public static <T extends BinOpExpr> SizedBinOpTile<T> getTile(final BinOpRegMaker maker) {
+        SizedBinOpTile<T> tile = tiles.get(maker);
         if (tile == null) {
             tile = new SizedBinOpTile(maker);
-            tiles.put(klass, tile);
+            tiles.put(maker, tile);
         }
         return tile;
     }
 
-    private SizedBinOpTile(final BinOpMaker maker) {
+    protected SizedBinOpTile(final BinOpRegMaker maker) {
         super(maker);
     }
 

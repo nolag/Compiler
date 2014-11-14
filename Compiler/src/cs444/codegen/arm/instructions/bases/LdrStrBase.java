@@ -104,8 +104,8 @@ public abstract class LdrStrBase extends ArmInstruction {
 
     @Override
     public String generate() {
-        final StringBuilder sb = new StringBuilder(name).append(" ").append(size.toString()).append(" ").append(condition.toString())
-                .append(" ").append(dest.getValue(sizeHelper)).append(", ");
+        final StringBuilder sb = new StringBuilder(name).append(size.toString()).append(" ").append(condition.toString()).append(" ")
+                .append(dest.getValue(sizeHelper)).append(", ");
 
         if (dest2 != null) sb.append(dest2.getValue(sizeHelper)).append(", ");
 

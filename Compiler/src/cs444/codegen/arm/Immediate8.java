@@ -19,9 +19,4 @@ public class Immediate8 extends Immediate12 implements Operand2 {
     public Immediate8(final char value) {
         super((short) value);
     }
-
-    @Override
-    public ShiftType getShiftType() {
-        return ShiftType.NO_SHIFT;
-    }
 }

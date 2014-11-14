@@ -4,10 +4,6 @@ import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.instructions.InstructionPart;
 
 public interface Operand2 extends InstructionPart<ArmInstruction, Size> {
-    public static enum ShiftType {
-        NO_SHIFT, CONST_SHIFT, REG_SHIFT
-    };
-
     public static enum Shift {
         ASR, LSL, LSR, ROR;
         @Override
@@ -15,6 +11,4 @@ public interface Operand2 extends InstructionPart<ArmInstruction, Size> {
             return super.toString().toLowerCase();
         }
     };
-
-    public ShiftType getShiftType();
 }

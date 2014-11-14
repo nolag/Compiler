@@ -1,4 +1,7 @@
-package cs444.codegen.arm.tiles.helpers;
+package cs444.codegen.arm.tiles;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
@@ -19,13 +22,24 @@ import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
+@SuppressWarnings("rawtypes")
 public class CompOpTile<T extends BinOpExpr> implements ITile<ArmInstruction, Size, T> {
-    public final Condition tcond;
-    public final Condition fcond;
+    private static final Map<Condition, CompOpTile> tiles = new HashMap<>();
 
-    protected CompOpTile(final Condition tcond, final Condition fcond) {
+    public final Condition tcond;
+
+    @SuppressWarnings("unchecked")
+    public static <T extends BinOpExpr> CompOpTile<T> getTile(final Condition tcond) {
+        CompOpTile<T> tile = tiles.get(tcond);
+        if (tile == null) {
+            tile = new CompOpTile(tcond);
+            tiles.put(tcond, tile);
+        }
+        return tile;
+    }
+
+    private CompOpTile(final Condition tcond) {
         this.tcond = tcond;
-        this.fcond = fcond;
     }
 
     @Override
@@ -57,7 +71,7 @@ public class CompOpTile<T extends BinOpExpr> implements ITile<ArmInstruction, Si
 
         instructions.add(new Cmp(Register.R1, Register.R0, sizeHelper));
         instructions.add(new Mov(tcond, Register.R0, (Immediate16) Immediate8.TRUE, sizeHelper));
-        instructions.add(new Mov(tcond, Register.R0, (Immediate16) Immediate8.FALSE, sizeHelper));
+        instructions.add(new Mov(tcond.getOpposite(), Register.R0, (Immediate16) Immediate8.FALSE, sizeHelper));
 
         return instructions;
     }
