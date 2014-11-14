@@ -1,25 +1,28 @@
-package cs444.codegen.x86.tiles;
+package cs444.codegen.arm.tiles;
 
 import cs444.codegen.ObjectLayout;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
+import cs444.codegen.arm.ArmSizeHelper;
+import cs444.codegen.arm.Immediate12;
+import cs444.codegen.arm.Immediate16;
+import cs444.codegen.arm.Operand2;
+import cs444.codegen.arm.Register;
+import cs444.codegen.arm.Size;
+import cs444.codegen.arm.instructions.Add;
+import cs444.codegen.arm.instructions.Comment;
+import cs444.codegen.arm.instructions.Mov;
+import cs444.codegen.arm.instructions.Str;
+import cs444.codegen.arm.instructions.bases.ArmInstruction;
+import cs444.codegen.arm.tiles.helpers.ArmTileHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.x86.AddMemoryFormat;
-import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.Memory;
-import cs444.codegen.x86.Register;
-import cs444.codegen.x86.Size;
-import cs444.codegen.x86.instructions.Add;
-import cs444.codegen.x86.instructions.Comment;
-import cs444.codegen.x86.instructions.Mov;
-import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
 import cs444.types.ArrayPkgClassResolver;
 import cs444.types.PkgClassInfo;
 
-public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymbol> {
+public class StringTile implements ITile<ArmInstruction, Size, StringLiteralSymbol> {
     private static StringTile tile;
 
     public static StringTile getTile() {
@@ -30,17 +33,17 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
     private StringTile() {}
 
     @Override
-    public boolean fits(final StringLiteralSymbol op, final Platform<X86Instruction, Size> platform) {
+    public boolean fits(final StringLiteralSymbol op, final Platform<ArmInstruction, Size> platform) {
         return true;
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final StringLiteralSymbol stringSymbol,
-            final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<ArmInstruction> generate(final StringLiteralSymbol stringSymbol,
+            final Platform<ArmInstruction, Size> platform) {
 
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final ObjectLayout<X86Instruction, Size> objectLayout = platform.getObjectLayout();
+        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
+        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        final ObjectLayout<ArmInstruction, Size> objectLayout = platform.getObjectLayout();
 
         instructions.add(new Comment("allocate the string at the same time (why not)"));
 
@@ -50,26 +53,24 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
         final long charsLen = stringSymbol.strValue.length() * 2 + defaultStack + objlen;
         final long length = charsLen + defaultStack + objlen;
 
-        instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(length), sizeHelper));
+        instructions.add(new Mov(Register.R0, new Immediate16((int) length), sizeHelper));
         //no need to zero out, it will be set for sure so the second last arg does not matter
         platform.getRunime().mallocNoClear(instructions);
         final String charArray = ArrayPkgClassResolver.getArrayName(JoosNonTerminal.CHAR);
         platform.getObjectLayout().initialize(PkgClassInfo.instance.getSymbol(charArray), instructions);
 
-        final Memory where = new Memory(new AddMemoryFormat(Register.ACCUMULATOR, new Immediate(2 * defaultStack)));
-        instructions.add(new Mov(where, new Immediate(stringSymbol.strValue.length()), sizeHelper));
+        instructions.addAll(ArmSizeHelper.putInReg(Register.R1, stringSymbol.strValue.length(), sizeHelper));
+        instructions.add(new Str(Register.R1, Register.R0, new Immediate12((short) (2 * defaultStack)), sizeHelper));
 
         final char[] cs = stringSymbol.strValue.toCharArray();
         final int charSize = sizeHelper.getBytePushSizeOfType(JoosNonTerminal.CHAR);
         final int charSizeBits = charSize * 8;
 
         int i = 0;
-
-        //can't move 64 bit immediate value, so numTogether can't be more than 2.
         for (int numTogether = 2; numTogether > 0; numTogether /= 2) {
             for (; i + numTogether <= cs.length; i += numTogether) {
                 final StringBuilder sb = new StringBuilder("moving chars:");
-                long togetherVal = 0;
+                int togetherVal = 0;
 
                 for (int j = 0; j < numTogether; j++) {
                     final long c = cs[i + j];
@@ -77,20 +78,23 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
                     sb.append(" ").append(c);
                 }
 
-                final Immediate place = new Immediate(2 * i + platform.getObjectLayout().objSize() + defaultStack);
-                final Memory to = new Memory(new AddMemoryFormat(Register.ACCUMULATOR, place));
                 instructions.add(new Comment(sb.toString()));
-                instructions.add(new Mov(to, new Immediate(togetherVal), sizeHelper.getSize(numTogether * charSize), sizeHelper));
+
+                instructions.addAll(ArmSizeHelper.putInReg(Register.R1, togetherVal, sizeHelper));
+
+                final Immediate12 place = new Immediate12((short) (2 * i + platform.getObjectLayout().objSize() + defaultStack));
+                instructions.add(new Str(sizeHelper.getSize(numTogether * charSize), Register.R1, Register.R0, place, sizeHelper));
             }
         }
 
         instructions.add(new Comment("Array for new String"));
-        instructions.add(new Mov(Register.DATA, Register.ACCUMULATOR, sizeHelper));
+        instructions.add(new Mov(Register.R1, Register.R0, sizeHelper));
         instructions.add(new Comment("This pointer to new string"));
-        instructions.add(new Add(Register.ACCUMULATOR, new Immediate(charsLen), sizeHelper));
+        final Operand2 op2 = ArmTileHelper.setupOp2(Register.R2, (int) charsLen, instructions, sizeHelper);
+        instructions.add(new Add(Register.R0, Register.R0, op2, sizeHelper));
         platform.getObjectLayout().initialize(stringSymbol.getType().getTypeDclNode(), instructions);
-        final Memory memory = new Memory(new AddMemoryFormat(Register.ACCUMULATOR, new Immediate(objectLayout.objSize())));
-        instructions.add(new Mov(memory, Register.DATA, sizeHelper));
+
+        instructions.add(new Str(Register.R1, Register.R0, new Immediate12((short) objectLayout.objSize()), sizeHelper));
 
         instructions.add(new Comment("End of New String!"));
         return instructions;

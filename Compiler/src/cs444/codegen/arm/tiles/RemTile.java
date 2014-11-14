@@ -9,6 +9,7 @@ import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
 import cs444.codegen.arm.instructions.B;
 import cs444.codegen.arm.instructions.Cmp;
+import cs444.codegen.arm.instructions.Muls;
 import cs444.codegen.arm.instructions.Pop;
 import cs444.codegen.arm.instructions.Push;
 import cs444.codegen.arm.instructions.Sdiv;
@@ -18,25 +19,25 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
-import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
+import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 
-public class DivTile extends NumericHelperTile<ArmInstruction, Size, DivideExprSymbol> {
-    private static DivTile tile = new DivTile();
+public class RemTile extends NumericHelperTile<ArmInstruction, Size, RemainderExprSymbol> {
+    private static RemTile tile = new RemTile();
 
-    public static DivTile getTile() {
+    public static RemTile getTile() {
         if (tile == null) {
-            tile = new DivTile();
+            tile = new RemTile();
         }
         return tile;
     }
 
-    private DivTile() {}
+    private RemTile() {}
 
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(DivideExprSymbol div, Platform<ArmInstruction, Size> platform) {
+    public InstructionsAndTiming<ArmInstruction> generate(RemainderExprSymbol rem, Platform<ArmInstruction, Size> platform) {
         final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
-        final Typeable t1 = (Typeable) div.children.get(0);
-        final Typeable t2 = (Typeable) div.children.get(1);
+        final Typeable t1 = (Typeable) rem.children.get(0);
+        final Typeable t2 = (Typeable) rem.children.get(1);
 
         final TypeSymbol ts1 = t1.getType();
         final TypeSymbol ts2 = t2.getType();
@@ -61,7 +62,10 @@ public class DivTile extends NumericHelperTile<ArmInstruction, Size, DivideExprS
 
         instructions.add(new Pop(Register.R1));
 
-        instructions.add(new Sdiv(Register.R0, Register.R1, Register.R0, platform.getSizeHelper()));
+        instructions.add(new Sdiv(Register.R2, Register.R1, Register.R0, platform.getSizeHelper()));
+
+        instructions.add(new Muls(Register.R0, Register.R1, Register.R2, Register.R0, sizeHelper));
+
         return instructions;
     }
 }

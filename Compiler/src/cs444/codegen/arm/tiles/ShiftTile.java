@@ -1,38 +1,55 @@
-package cs444.codegen.arm.tiles.helpers;
+package cs444.codegen.arm.tiles;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
+import cs444.codegen.arm.Operand2.Shift;
 import cs444.codegen.arm.Register;
+import cs444.codegen.arm.RegisterShift;
 import cs444.codegen.arm.Size;
+import cs444.codegen.arm.instructions.Mov;
 import cs444.codegen.arm.instructions.Pop;
 import cs444.codegen.arm.instructions.Push;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
-import cs444.codegen.arm.instructions.factories.BinOpRegMaker;
-import cs444.codegen.tiles.ITile;
+import cs444.codegen.generic.tiles.helpers.NumericHelperTile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
-public abstract class BinOpTile<T extends BinOpExpr> implements ITile<ArmInstruction, Size, T> {
-    private final BinOpRegMaker maker;
+@SuppressWarnings("rawtypes")
+public class ShiftTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstruction, Size, T> {
+    private static final Map<Shift, ShiftTile> tiles = new EnumMap<>(Shift.class);
 
-    protected BinOpTile(final BinOpRegMaker maker) {
-        this.maker = maker;
+    @SuppressWarnings("unchecked")
+    public static <T extends BinOpExpr> ShiftTile<T> getTile(final Shift type) {
+        ShiftTile tile = tiles.get(type);
+        if (tiles == null) {
+            tile = new ShiftTile(type);
+            tiles.put(type, tile);
+        }
+        return tile;
+    }
+
+    private final Shift type;
+
+    private ShiftTile(final Shift type) {
+        this.type = type;
     }
 
     @Override
     public InstructionsAndTiming<ArmInstruction> generate(T bin, Platform<ArmInstruction, Size> platform) {
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
+        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
 
         final Typeable t1 = (Typeable) bin.children.get(0);
         final Typeable t2 = (Typeable) bin.children.get(1);
 
         final TypeSymbol ts1 = t1.getType();
         final TypeSymbol ts2 = t2.getType();
-
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
 
         final boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
                 || ts2.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
@@ -43,11 +60,11 @@ public abstract class BinOpTile<T extends BinOpExpr> implements ITile<ArmInstruc
 
         instructions.addAll(platform.getBest(t2));
         if (hasLong) platform.getTileHelper().makeLong(t2, instructions, sizeHelper);
-
         instructions.add(new Pop(Register.R1));
 
-        instructions.add(maker.make(Register.R0, Register.R1, Register.R0, platform.getSizeHelper()));
+        instructions.add(new Mov(Register.R1, new RegisterShift(Register.R1, Register.R0, type), sizeHelper));
 
         return instructions;
     }
+
 }

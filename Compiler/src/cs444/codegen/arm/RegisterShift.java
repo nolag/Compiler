@@ -4,12 +4,12 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.instructions.InstructionArg;
 
-public class ConstantShift extends InstructionArg<ArmInstruction, Size> implements Operand2 {
+public class RegisterShift extends InstructionArg<ArmInstruction, Size> implements Operand2 {
     public final Register reg;
-    public final byte shift;
+    public final Register shift;
     public final Shift type;
 
-    public ConstantShift(final Register reg, final byte shift, final Shift type) {
+    public RegisterShift(final Register reg, final Register shift, final Shift type) {
         this.reg = reg;
         this.shift = shift;
         this.type = type;
@@ -22,6 +22,6 @@ public class ConstantShift extends InstructionArg<ArmInstruction, Size> implemen
 
     @Override
     public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return reg.toString() + ", " + type.toString() + " #" + shift;
+        return reg.toString() + ", " + type.toString() + " #" + shift.getValue(sizeHelper);
     }
 }

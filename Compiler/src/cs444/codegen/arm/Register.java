@@ -38,9 +38,4 @@ public class Register extends SimpleInstructionArg implements Operand2 {
     public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
         return "R" + number;
     }
-
-    @Override
-    public ShiftType getShiftType() {
-        return ShiftType.NO_SHIFT;
-    }
 }

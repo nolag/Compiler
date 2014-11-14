@@ -4,7 +4,6 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.NumericHelperTile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-
 import cs444.codegen.x86.AddMemoryFormat;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Memory;
@@ -35,7 +34,7 @@ public final class NameValueTile extends NumericHelperTile<X86Instruction, Size,
     public InstructionsAndTiming<X86Instruction> generate(final SimpleNameSymbol name, final Platform<X86Instruction, Size> platform) {
 
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<>();
         final DclSymbol dcl = name.dcl;
         final Size size = sizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
