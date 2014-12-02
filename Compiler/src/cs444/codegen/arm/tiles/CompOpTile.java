@@ -5,7 +5,6 @@ import java.util.Map;
 
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.arm.Immediate16;
 import cs444.codegen.arm.Immediate8;
 import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
@@ -70,8 +69,8 @@ public class CompOpTile<T extends BinOpExpr> implements ITile<ArmInstruction, Si
         instructions.add(new Pop(Register.R1));
 
         instructions.add(new Cmp(Register.R1, Register.R0, sizeHelper));
-        instructions.add(new Mov(tcond, Register.R0, (Immediate16) Immediate8.TRUE, sizeHelper));
-        instructions.add(new Mov(tcond.getOpposite(), Register.R0, (Immediate16) Immediate8.FALSE, sizeHelper));
+        instructions.add(new Mov(tcond, Register.R0, Immediate8.TRUE, sizeHelper));
+        instructions.add(new Mov(tcond.getOpposite(), Register.R0, Immediate8.FALSE, sizeHelper));
 
         return instructions;
     }

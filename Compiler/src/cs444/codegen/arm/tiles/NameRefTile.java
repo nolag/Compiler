@@ -48,7 +48,7 @@ public class NameRefTile implements ITile<ArmInstruction, Size, SimpleNameSymbol
         } else if (dcl.isLocal) {
             instructions.add(new Comment("mov frame to r0 because it is local"));
             final Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, (int) dcl.getOffset(platform), instructions, sizeHelper);
-            instructions.add(new Add(Register.R0, Register.LINK, op2, sizeHelper));
+            instructions.add(new Add(Register.R0, Register.INTRA_PROCEDURE, op2, sizeHelper));
         } else {
             final Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, (int) dcl.getOffset(platform), instructions, sizeHelper);
             instructions.add(new Add(Register.R0, Register.R0, op2, sizeHelper));

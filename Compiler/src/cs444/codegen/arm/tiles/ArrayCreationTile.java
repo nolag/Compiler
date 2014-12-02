@@ -5,7 +5,6 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.ArmSizeHelper;
 import cs444.codegen.arm.ConstantShift;
-import cs444.codegen.arm.ImmediateStr;
 import cs444.codegen.arm.Operand2;
 import cs444.codegen.arm.Operand2.Shift;
 import cs444.codegen.arm.Register;
@@ -58,7 +57,7 @@ public class ArrayCreationTile implements ITile<ArmInstruction, Size, CreationEx
         instructions.add(new Eor(Register.R1, Register.R1, Register.R1, sizeHelper));
         instructions.add(new Cmp(Register.R0, Register.R1, sizeHelper));
 
-        instructions.add(new B(Condition.GE, new ImmediateStr(ok)));
+        instructions.add(new B(Condition.GE, ok));
         platform.getRunime().throwException(instructions, "Invalid array creation");
         instructions.add(platform.makeLabel(ok));
 

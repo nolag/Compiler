@@ -13,7 +13,6 @@ import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.generic.tiles.helpers.NumericHelperTile;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
-
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
@@ -51,7 +50,7 @@ public class AssignmentTile extends NumericHelperTile<ArmInstruction, Size, Assi
             tileHelper.makeLong(rightHandSide, instructions, sizeHelper);
         }
 
-        instructions.add(new Str(size, Register.R1, Register.R0, sizeHelper));
+        instructions.add(new Str(size, Register.R0, Register.R1, sizeHelper));
         instructions.add(new Comment("End Assignment"));
         return instructions;
     }

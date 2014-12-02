@@ -1,6 +1,5 @@
 package cs444.codegen.arm.instructions.bases;
 
-import cs444.codegen.arm.ImmediateStr;
 import cs444.codegen.instructions.InstructionArg;
 
 public abstract class Branch extends ArmInstruction {
@@ -55,11 +54,11 @@ public abstract class Branch extends ArmInstruction {
     }
 
     public final String instruction;
-    public final ImmediateStr where;
+    public final String where;
     public final Condition c;
 
-    protected Branch(String instruction, Condition c, ImmediateStr where) {
-        super(0);
+    protected Branch(String instruction, Condition c, String where) {
+        super(3);
         this.instruction = instruction;
         this.where = where;
         this.c = c;

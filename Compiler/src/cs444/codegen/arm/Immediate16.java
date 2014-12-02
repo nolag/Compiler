@@ -19,6 +19,11 @@ public class Immediate16 extends InstructionArg<ArmInstruction, Size> {
 
     @Override
     public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return Integer.toString(value);
+        return toString();
+    }
+
+    @Override
+    public String toString() {
+        return "#" + Integer.toString(value);
     }
 }

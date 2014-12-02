@@ -14,6 +14,7 @@ public abstract class ArmOperatingSystem<T extends ArmPlatform> extends Operatin
     //TODO see if there is a way to say file format (like elf) and platform (like a32 or whatever version I support)
     @Override
     public String[] getAssembleCmd(File file) {
-        return new String[] { "gcc", "-c", file.getAbsolutePath(), "-o", getOutputDir() + name.substring(0, name.length() - 2) + objEnding };
+        final String name = file.getName();
+        return new String[] { "as", "-g", file.getAbsolutePath(), "-o", getOutputDir() + name.substring(0, name.length() - 2) + objEnding };
     }
 }

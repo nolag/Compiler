@@ -23,6 +23,7 @@ import cs444.codegen.arm.instructions.Pop;
 import cs444.codegen.arm.instructions.Push;
 import cs444.codegen.arm.instructions.Str;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
+import cs444.codegen.arm.tiles.helpers.ArmTileHelper;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ISymbol;
@@ -46,7 +47,7 @@ public class Arm32Platform extends ArmPlatform {
     }
 
     protected Arm32Platform(Set<String> options) {
-        super(options, "a32", Runtime.instance, Arm32TileInit.instance, ArmSizeHelper.sizeHelper32);
+        super(options, "arm", Runtime.instance, Arm32TileInit.instance, ArmSizeHelper.sizeHelper32);
     }
 
     @Override
@@ -92,7 +93,7 @@ public class Arm32Platform extends ArmPlatform {
         }
 
         instructions.add(new Pop(Register.R11));
-        instructions.add(new Pop(Register.INTRA_PROCEDURE, Register.PC));
+        instructions.add(ArmTileHelper.LEAVE);
     }
 
     @Override

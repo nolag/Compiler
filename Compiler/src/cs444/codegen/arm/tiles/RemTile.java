@@ -4,7 +4,6 @@ import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.Immediate8;
-import cs444.codegen.arm.ImmediateStr;
 import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
 import cs444.codegen.arm.instructions.B;
@@ -56,7 +55,7 @@ public class RemTile extends NumericHelperTile<ArmInstruction, Size, RemainderEx
 
         instructions.add(new Cmp(Register.R0, Immediate8.ZERO, sizeHelper));
         final String safeDiv = "safeDiv" + CodeGenVisitor.getNewLblNum();
-        instructions.add(new B(new ImmediateStr(safeDiv)));
+        instructions.add(new B(safeDiv));
         platform.getRunime().throwException(instructions, JoosNonTerminal.DIV_ZERO);
         instructions.add(platform.makeLabel(safeDiv));
 

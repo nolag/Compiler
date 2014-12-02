@@ -60,7 +60,7 @@ public class SuperCallTile implements ITile<ArmInstruction, Size, SimpleMethodIn
             instructions.add(new Extern(arg));
         }
 
-        instructions.add(new Bl(arg));
+        instructions.add(new Bl(name));
         instructions.add(new Pop(Register.R8));
         platform.getTileHelper().callEndHelper(call, instructions, platform);
         return instructions;

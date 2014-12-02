@@ -2,18 +2,19 @@ package cs444.codegen.arm;
 
 public enum Size {
     B, SB, H, SH, W, D;
-    public static String getSizeStr(Size size) {
-        switch (size) {
+    @Override
+    public String toString() {
+        switch (this) {
         case B:
-            return "B";
+            return "b";
         case H:
-            return "H";
+            return "h";
         case SB:
-            return "SB";
+            return "sb";
         case SH:
-            return "SH";
+            return "sh";
         case D:
-            return "D";
+            return "d";
         case W:
             return "";
         }

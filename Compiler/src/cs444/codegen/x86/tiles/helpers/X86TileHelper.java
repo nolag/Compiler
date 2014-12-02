@@ -108,7 +108,7 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
     }
 
     @Override
-    public void methEpilogue(final Addable<X86Instruction> instructions) {
+    public void methEpilogue(final SizeHelper<X86Instruction, Size> sizeHelper, final Addable<X86Instruction> instructions) {
         instructions.add(Leave.LEAVE);
         instructions.add(Ret.RET);
     }
@@ -324,5 +324,15 @@ public abstract class X86TileHelper extends TileHelper<X86Instruction, Size> {
     public void makeCall(final String to, final Addable<X86Instruction> instructions, final SizeHelper<X86Instruction, Size> sizeHelper) {
         final Immediate arg = new Immediate(to);
         instructions.add(new Call(arg, sizeHelper));
+    }
+
+    @Override
+    public void setupStaticHeader(Addable<X86Instruction> instructions, SizeHelper<X86Instruction, Size> sizeHelper) {
+        // Nothing to do
+    }
+
+    @Override
+    public void setupStaticFooter(Addable<X86Instruction> instructions, SizeHelper<X86Instruction, Size> sizeHelper) {
+        // Nothing to do
     }
 }

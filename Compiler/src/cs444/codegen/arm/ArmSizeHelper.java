@@ -7,10 +7,10 @@ import cs444.codegen.arm.instructions.Label;
 import cs444.codegen.arm.instructions.Ldr;
 import cs444.codegen.arm.instructions.Movt;
 import cs444.codegen.arm.instructions.Movw;
-import cs444.codegen.arm.instructions.Pop;
 import cs444.codegen.arm.instructions.Str;
 import cs444.codegen.arm.instructions.Word;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
+import cs444.codegen.arm.tiles.helpers.ArmTileHelper;
 
 public class ArmSizeHelper extends SizeHelper<ArmInstruction, Size> {
     public static ArmSizeHelper sizeHelper32 = new ArmSizeHelper();
@@ -114,11 +114,11 @@ public class ArmSizeHelper extends SizeHelper<ArmInstruction, Size> {
     }
 
     public ArmInstruction makeCall(String what) {
-        return new Bl(new ImmediateStr(what));
+        return new Bl(what);
     }
 
     public ArmInstruction makeRet() {
-        return new Pop(Register.INTRA_PROCEDURE, Register.PC);
+        return ArmTileHelper.LEAVE;
     }
 
     public static ArmInstruction[] putInReg(final Register reg, final String loc, final SizeHelper<ArmInstruction, Size> sizeHelper) {
@@ -129,7 +129,7 @@ public class ArmSizeHelper extends SizeHelper<ArmInstruction, Size> {
 
     public static ArmInstruction[] putInReg(final Register reg, final int val, final SizeHelper<ArmInstruction, Size> sizeHelper) {
         return new ArmInstruction[] { new Comment("Moving " + val + "  ref into " + reg.getValue(sizeHelper)),
-                new Movw(reg, new Immediate16(val), sizeHelper), new Movt(reg, new Immediate16(val >> 16), sizeHelper) };
+                new Movw(reg, new Immediate16(val), sizeHelper), new Movt(reg, new Immediate16(val >>> 16), sizeHelper) };
     }
 
     public static ArmInstruction[] loadStatic(final Register dest, final Register ref, final String loc,
