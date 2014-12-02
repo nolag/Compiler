@@ -47,8 +47,8 @@ public abstract class DataProcessingWithDestination extends ArmInstruction {
 
     @Override
     public String generate() {
-        return instruction + (s ? "S" : "") + when.getValue(sizeHelper) + " " + dest.getValue(sizeHelper) + " " + rhs.getValue(sizeHelper)
-                + " " + lhs.getValue(sizeHelper);
+        return instruction + (s ? "S" : "") + when.getValue(sizeHelper) + " " + dest.getValue(sizeHelper) + ", " + rhs.getValue(sizeHelper)
+                + ", " + lhs.getValue(sizeHelper);
     }
 
     @Override

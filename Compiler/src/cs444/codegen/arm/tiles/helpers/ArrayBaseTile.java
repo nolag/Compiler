@@ -9,7 +9,6 @@ import cs444.codegen.arm.ArmSizeHelper;
 import cs444.codegen.arm.ConstantShift;
 import cs444.codegen.arm.Immediate12;
 import cs444.codegen.arm.Immediate8;
-import cs444.codegen.arm.ImmediateStr;
 import cs444.codegen.arm.Operand2.Shift;
 import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
@@ -52,7 +51,7 @@ public abstract class ArrayBaseTile implements ITile<ArmInstruction, Size, Array
         String ok = "arrayAccessP1Ok" + myVal;
         instructions.add(new Eor(Register.R1, Register.R1, Register.R1, sizeHelper));
         instructions.add(new Cmp(Register.R0, Register.R1, sizeHelper));
-        instructions.add(new B(Condition.GE, new ImmediateStr(ok)));
+        instructions.add(new B(Condition.GE, ok));
         runtime.throwException(instructions, "Invalid array access");
         instructions.add(new Label(ok));
 
@@ -60,7 +59,7 @@ public abstract class ArrayBaseTile implements ITile<ArmInstruction, Size, Array
         instructions.add(new Ldr(Register.R8, Register.R8, new Immediate12((short) platform.getObjectLayout().objSize()), sizeHelper));
         instructions.add(new Cmp(Register.R8, Register.R0, sizeHelper));
 
-        instructions.add(new B(Condition.GT, new ImmediateStr(ok)));
+        instructions.add(new B(Condition.GT, ok));
         runtime.throwException(instructions, "Invalid array access");
         instructions.add(new Label(ok));
 

@@ -36,6 +36,11 @@ public class Register extends SimpleInstructionArg implements Operand2 {
 
     @Override
     public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return "R" + number;
+        return toString();
+    }
+
+    @Override
+    public String toString() {
+        return "%r" + number;
     }
 }

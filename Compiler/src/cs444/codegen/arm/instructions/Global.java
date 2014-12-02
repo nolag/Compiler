@@ -5,12 +5,12 @@ import cs444.codegen.instructions.InstructionArg;
 
 public class Global extends ArmInstruction {
     private final String val;
-    
+
     public Global(final String val) {
         super(0, 0);
         this.val = val;
     }
-    
+
     @Override
     public boolean uses(InstructionArg<ArmInstruction, ?> what) {
         return false;
@@ -18,7 +18,7 @@ public class Global extends ArmInstruction {
 
     @Override
     public String generate() {
-        return ".glob " + val;
+        return ".global " + val;
     }
 
 }

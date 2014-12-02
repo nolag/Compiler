@@ -33,8 +33,8 @@ import cs444.types.APkgClassResolver;
 import cs444.types.exceptions.UndeclaredException;
 
 public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
-    private static final Push ENTER = new Push(Register.INTRA_PROCEDURE, Register.LINK);
-    private static final Pop LEAVE = new Pop(Register.INTRA_PROCEDURE, Register.PC);
+    public static final Push ENTER = new Push(Register.INTRA_PROCEDURE, Register.LINK);
+    public static final Pop LEAVE = new Pop(Register.INTRA_PROCEDURE, Register.PC);
 
     private static final Push NATIVE_ENTER = new Push(Register.R8, Register.R9, Register.R10, Register.R11);
     private static final Pop NATIVE_LEAVE = new Pop(Register.R8, Register.R9, Register.R10, Register.R11);
@@ -48,7 +48,7 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
             Addable<ArmInstruction> instructions) {
         instructions.add(new Comment("check if null"));
         instructions.add(new Cmp(reg, Immediate8.NULL, sizeHelper));
-        instructions.add(new B(Condition.EQ, new ImmediateStr(ifNullLbl)));
+        instructions.add(new B(Condition.EQ, ifNullLbl));
     }
 
     @Override
@@ -57,10 +57,12 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
         if (method.getProtectionLevel() != ProtectionLevel.PRIVATE) instructions.add(new Global(methodName));
         instructions.add(new Label(methodName));
         instructions.add(ENTER);
+        instructions.add(new Mov(Register.INTRA_PROCEDURE, Register.STACK, sizeHelper));
     }
 
     @Override
-    public void methEpilogue(Addable<ArmInstruction> instructions) {
+    public void methEpilogue(final SizeHelper<ArmInstruction, Size> sizeHelper, Addable<ArmInstruction> instructions) {
+        instructions.add(new Mov(Register.STACK, Register.INTRA_PROCEDURE, sizeHelper));
         instructions.add(LEAVE);
     }
 
@@ -77,7 +79,7 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
     public static void setupJumpNe(final Register reg, final Immediate8 when, final String lblTo,
             final SizeHelper<ArmInstruction, Size> sizeHelper, final Addable<ArmInstruction> instructions) {
         instructions.add(new Cmn(reg, when, sizeHelper));
-        instructions.add(new B(Condition.NE, new ImmediateStr(lblTo)));
+        instructions.add(new B(Condition.NE, lblTo));
     }
 
     @Override
@@ -110,8 +112,9 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
             return;
         }
 
-        final ImmediateStr arg = new ImmediateStr(APkgClassResolver.generateFullId(cs));
-        if (resolver != CodeGenVisitor.<ArmInstruction, Size> getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(arg));
+        final String arg = APkgClassResolver.generateFullId(cs);
+        if (resolver != CodeGenVisitor.<ArmInstruction, Size> getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(
+                new ImmediateStr(arg)));
 
         instructions.add(new Bl(arg));
         //return value is the new object
@@ -141,10 +144,10 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
 
         instructions.add(new Push(Register.R0));
 
-        final ImmediateStr arg = new ImmediateStr(APkgClassResolver.generateFullId(ms));
+        final String arg = APkgClassResolver.generateFullId(ms);
 
         if (ms.dclInResolver != CodeGenVisitor.<ArmInstruction, Size> getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(
-                arg));
+                new ImmediateStr(arg)));
         instructions.add(new Bl(arg));
 
         final Operand2 op2 = setupOp2(Register.R0, pop, instructions, sizeHelper);
@@ -193,7 +196,7 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
 
     @Override
     public void setupJump(String lblTo, SizeHelper<ArmInstruction, Size> sizeHelper, Addable<ArmInstruction> instructions) {
-        instructions.add(new B(new ImmediateStr(lblTo)));
+        instructions.add(new B(lblTo));
     }
 
     @Override
@@ -213,7 +216,7 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
 
     @Override
     public void loadBool(boolean bool, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        instructions.add(new Mov(Register.R0, (Immediate16) (bool ? Immediate8.TRUE : Immediate8.FALSE), sizeHelper));
+        instructions.add(new Movw(Register.R0, (Immediate16) (bool ? Immediate8.TRUE : Immediate8.FALSE), sizeHelper));
     }
 
     public static Operand2 setupOp2(Register pref, int n, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
@@ -223,8 +226,8 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
         }
 
         int ival = (int) n;
-        instructions.add(new Mov(pref, new Immediate16(ival & 0xFFFF), sizeHelper));
-        instructions.add(new Movt(pref, new Immediate16(ival & 0xFFFF0000 >> 16), sizeHelper));
+        instructions.add(new Movw(pref, new Immediate16(ival & 0xFFFF), sizeHelper));
+        instructions.add(new Movt(pref, new Immediate16(ival >>> 16), sizeHelper));
         return pref;
     }
 
@@ -242,15 +245,15 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
             final SizeHelper<ArmInstruction, Size> sizeHelper) {
         if (n >= 0) {
             if (n <= 65535) {
-                instructions.add(new Mov(dest, new Immediate16((char) n), sizeHelper));
+                instructions.add(new Movw(dest, new Immediate16((char) n), sizeHelper));
                 return;
             }
             //TODO other number optimizations that are shifts
         }
 
         int ival = (int) n;
-        instructions.add(new Mov(dest, new Immediate16(ival & 0xFFFF), sizeHelper));
-        instructions.add(new Movt(dest, new Immediate16(ival & 0xFFFF0000 >> 16), sizeHelper));
+        instructions.add(new Movw(dest, new Immediate16(ival & 0xFFFF), sizeHelper));
+        instructions.add(new Movt(dest, new Immediate16(ival >>> 16), sizeHelper));
     }
 
     @Override
@@ -276,12 +279,22 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
     @Override
     public void loadThisToDefault(Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
         instructions.add(new Comment("This (or super) pointer"));
-        instructions.add(new Ldr(Register.R0, Register.STACK, new Immediate12((short) (sizeHelper.getDefaultStackSize() * 2)), sizeHelper));
+        instructions.add(new Ldr(Register.R0, Register.INTRA_PROCEDURE, new Immediate12((short) (sizeHelper.getDefaultStackSize() * 2)),
+                sizeHelper));
     }
 
     @Override
     public void makeCall(String to, Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        final ImmediateStr arg = new ImmediateStr(to);
-        instructions.add(new Bl(arg));
+        instructions.add(new Bl(to));
+    }
+
+    @Override
+    public void setupStaticHeader(Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
+        instructions.add(new Push(Register.LINK));
+    }
+
+    @Override
+    public void setupStaticFooter(Addable<ArmInstruction> instructions, SizeHelper<ArmInstruction, Size> sizeHelper) {
+        instructions.add(new Pop(Register.LINK));
     }
 }

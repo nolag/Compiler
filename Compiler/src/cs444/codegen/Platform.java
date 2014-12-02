@@ -113,10 +113,13 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
 
     // Functions for file headers
     public final void genStartInstructions(final String methodName, final Addable<T> instructions) {
+        TileHelper<T, E> helper = this.getTileHelper();
         instructions.add(makeGlobal(ENTRY));
         instructions.add(makeLabel(ENTRY));
         instructions.add(makeExtern(StaticFieldInit.STATIC_FIELD_INIT_LBL));
+        helper.setupStaticHeader(instructions, sizeHelper);
         instructions.add(makeCall(StaticFieldInit.STATIC_FIELD_INIT_LBL));
+        helper.setupStaticFooter(instructions, sizeHelper);
     }
 
     public abstract void genInstructorInvoke(final APkgClassResolver resolver, final Addable<T> instructions);

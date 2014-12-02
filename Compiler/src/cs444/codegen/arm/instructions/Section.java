@@ -17,7 +17,7 @@ public class Section extends ArmInstruction {
 
     @Override
     public String generate() {
-        return "section ." + type;
+        return ".section ." + type;
     }
 
     @Override

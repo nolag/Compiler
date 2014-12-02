@@ -36,7 +36,7 @@ public class NameValueTile extends NumericHelperTile<ArmInstruction, Size, Simpl
         final DclSymbol dcl = name.dcl;
         final Size size = sizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
-        Register base = dcl.isLocal ? Register.R0 : Register.LINK;
+        Register base = dcl.isLocal ? Register.INTRA_PROCEDURE : Register.R0;
         final Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, (int) dcl.getOffset(platform), instructions, sizeHelper);
         instructions.add(new Add(Register.R0, base, op2, sizeHelper));
         instructions.add(new Ldr(size, Register.R0, Register.R0, sizeHelper));

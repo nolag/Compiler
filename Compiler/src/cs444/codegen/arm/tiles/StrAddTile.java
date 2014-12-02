@@ -72,7 +72,7 @@ public class StrAddTile implements ITile<ArmInstruction, Size, AddExprSymbol> {
 
         //The two arguments for string concat
         final Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, sizeHelper.getDefaultStackSize() * 2, instructions, sizeHelper);
-        instructions.add(new Add(Register.STACK, Register.STACK, op2, sizeHelper));
+        instructions.add(new Add(Register.INTRA_PROCEDURE, Register.INTRA_PROCEDURE, op2, sizeHelper));
         instructions.add(new Pop(Register.R8));
         instructions.add(new Comment("end of string add"));
         return instructions;

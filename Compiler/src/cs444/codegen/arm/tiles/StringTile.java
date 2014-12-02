@@ -12,6 +12,7 @@ import cs444.codegen.arm.Size;
 import cs444.codegen.arm.instructions.Add;
 import cs444.codegen.arm.instructions.Comment;
 import cs444.codegen.arm.instructions.Mov;
+import cs444.codegen.arm.instructions.Movw;
 import cs444.codegen.arm.instructions.Str;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.arm.tiles.helpers.ArmTileHelper;
@@ -53,7 +54,7 @@ public class StringTile implements ITile<ArmInstruction, Size, StringLiteralSymb
         final long charsLen = stringSymbol.strValue.length() * 2 + defaultStack + objlen;
         final long length = charsLen + defaultStack + objlen;
 
-        instructions.add(new Mov(Register.R0, new Immediate16((int) length), sizeHelper));
+        instructions.add(new Movw(Register.R0, new Immediate16((int) length), sizeHelper));
         //no need to zero out, it will be set for sure so the second last arg does not matter
         platform.getRunime().mallocNoClear(instructions);
         final String charArray = ArrayPkgClassResolver.getArrayName(JoosNonTerminal.CHAR);

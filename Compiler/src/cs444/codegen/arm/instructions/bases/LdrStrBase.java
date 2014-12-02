@@ -111,7 +111,7 @@ public abstract class LdrStrBase extends ArmInstruction {
 
         sb.append("[").append(from.getValue(sizeHelper));
 
-        if (offset != null) sb.append(offset.getValue(sizeHelper));
+        if (offset != null) sb.append(", ").append(offset.getValue(sizeHelper));
 
         return sb.append("]").toString();
     }

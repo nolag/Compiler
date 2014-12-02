@@ -27,7 +27,7 @@ public class ShiftTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstruc
     @SuppressWarnings("unchecked")
     public static <T extends BinOpExpr> ShiftTile<T> getTile(final Shift type) {
         ShiftTile tile = tiles.get(type);
-        if (tiles == null) {
+        if (tile == null) {
             tile = new ShiftTile(type);
             tiles.put(type, tile);
         }

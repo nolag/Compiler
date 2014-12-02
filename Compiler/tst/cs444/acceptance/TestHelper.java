@@ -54,9 +54,11 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            // if (!fileName.equals("LongShifts")) continue;
+            if (!fileName.equals("ArithProgram")) continue;
             // Use this line to stop when there are infinite loops
-            // if (totalTests == 20) break;
+            // if (totalTests == 1) break;
+            // Use to not run tests with longs
+            if (fileName.contains("long") || fileName.contains("Long") || fileName.contains("CmpWithSideEffects")) continue;
 
             if (ignoreList.contains(fileName)) {
                 System.out.print("*"); // skip file

@@ -40,7 +40,7 @@ public abstract class TileHelper<T extends Instruction<T>, E extends Enum<E>> {
     public abstract void methProlog(final MethodOrConstructorSymbol method, final String methodName, final SizeHelper<T, E> sizeHelper,
             final Addable<T> instructions);
 
-    public abstract void methEpilogue(final Addable<T> instructions);
+    public abstract void methEpilogue(final SizeHelper<T, E> sizeHelper, final Addable<T> instructions);
 
     public abstract void setupJumpNe(String lblTo, SizeHelper<T, E> sizeHelper, Addable<T> instructions);
 
@@ -138,4 +138,8 @@ public abstract class TileHelper<T extends Instruction<T>, E extends Enum<E>> {
         return sizeHelper.getDefaultStackSize() >= sizeHelper.getByteSizeOfType(ts1.getType().getTypeDclNode().fullName)
                 && sizeHelper.getDefaultStackSize() >= sizeHelper.getByteSizeOfType(ts2.getType().getTypeDclNode().fullName);
     }
+
+    public abstract void setupStaticHeader(final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
+
+    public abstract void setupStaticFooter(final Addable<T> instructions, final SizeHelper<T, E> sizeHelper);
 }
