@@ -39,17 +39,17 @@ public abstract class ArmPlatform extends Platform<ArmInstruction, Size> {
 
     @Override
     public String getNullStr() {
-        return Immediate8.NULL.toString();
+        return String.valueOf(Immediate8.NULL.value);
     }
 
     @Override
     public String getFalseStr() {
-        return Immediate8.FALSE.toString();
+        return String.valueOf(Immediate8.FALSE.value);
     }
 
     @Override
     public String getTrueStr() {
-        return Immediate8.TRUE.toString();
+        return String.valueOf(Immediate8.TRUE.value);
     }
 
     @Override
@@ -99,6 +99,7 @@ public abstract class ArmPlatform extends Platform<ArmInstruction, Size> {
 
     @Override
     public ArmInstruction[] makeSpace(String name, Size size) {
-        return new ArmInstruction[] { new Label(name), new Word(0) };
+        if (size == Size.D) { return new ArmInstruction[] { new Label(name), Word.zeroWord, Word.zeroWord }; }
+        return new ArmInstruction[] { new Label(name), Word.zeroWord };
     }
 }

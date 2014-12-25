@@ -3,7 +3,6 @@ package cs444.codegen.arm;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.instructions.Bl;
 import cs444.codegen.arm.instructions.Comment;
-import cs444.codegen.arm.instructions.Label;
 import cs444.codegen.arm.instructions.Ldr;
 import cs444.codegen.arm.instructions.Movt;
 import cs444.codegen.arm.instructions.Movw;
@@ -103,14 +102,15 @@ public class ArmSizeHelper extends SizeHelper<ArmInstruction, Size> {
         return Size.W;
     }
 
+    //TODO this and below was the bug, need align or something
     @Override
     public ArmInstruction[] alloceMinCellSpace(String s) {
-        return new ArmInstruction[] { new Label(s), new Word(0) };
+        return new ArmInstruction[] { new Word(s) };
     }
 
     @Override
     public ArmInstruction[] alloceDefaultCellSpace(String s) {
-        return new ArmInstruction[] { new Label(s), new Word(0) };
+        return new ArmInstruction[] { Word.zeroWord };
     }
 
     public ArmInstruction makeCall(String what) {

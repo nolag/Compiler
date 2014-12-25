@@ -3,12 +3,10 @@ package cs444.codegen.arm.instructions;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.instructions.InstructionArg;
 
-public class Word extends ArmInstruction {
+public class Byte extends ArmInstruction {
     public final String val;
 
-    public static final Word zeroWord = new Word("0");
-
-    public Word(final String val) {
+    protected Byte(final String val) {
         super(0, 0);
         this.val = val;
     }
@@ -20,6 +18,6 @@ public class Word extends ArmInstruction {
 
     @Override
     public String generate() {
-        return ".word " + val;
+        return ".byte " + val;
     }
 }

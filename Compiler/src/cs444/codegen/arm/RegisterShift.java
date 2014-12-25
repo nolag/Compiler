@@ -22,6 +22,6 @@ public class RegisterShift extends InstructionArg<ArmInstruction, Size> implemen
 
     @Override
     public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return reg.toString() + ", " + type.toString() + " #" + shift.getValue(sizeHelper);
+        return reg.toString() + ", " + type.toString() + " " + shift.getValue(sizeHelper);
     }
 }
