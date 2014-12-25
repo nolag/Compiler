@@ -1,7 +1,6 @@
 package cs444.acceptance;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,17 +13,17 @@ import org.junit.runners.MethodSorters;
 public class A5 {
 
     @Test
-    public void testCompileProgramsNoStdLib() throws IOException, InterruptedException{
+    public void testCompileProgramsNoStdLib() throws IOException, InterruptedException {
         final List<String> ignoreList = new LinkedList<String>();
 
-        TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "A5/NoStdLibPrograms/", 0, true, false,
-                true, ignoreList, new AsmAndLinkCallback());
+        TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "A5/NoStdLibPrograms/", 0, true, false, true, ignoreList,
+                new AsmAndLinkCallback());
     }
 
-    @Test
+    /*@Test
     public void testCompileProgramsWithStdLib() throws IOException, InterruptedException{
         final List<String> ignoreList = new LinkedList<String>();
-
+        
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "A5/WithStdLib/", 0, true, true,
                                             true, ignoreList, new AsmAndLinkCallback());
     }
@@ -69,6 +68,5 @@ public class A5 {
 
         TestHelper.assertReturnCodeForFiles(TestHelper.TEST_LOCATION + "MarmosetPrograms/a1/valid/", 0, true, true,
                 true, failingList, new AsmAndLinkCallback());
-    }
+    }*/
 }
-

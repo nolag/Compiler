@@ -54,7 +54,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            if (!fileName.equals("ArithProgram")) continue;
+            //if (!fileName.equals("NonStaticCall2")) continue;
             // Use this line to stop when there are infinite loops
             // if (totalTests == 1) break;
             // Use to not run tests with longs
@@ -89,7 +89,6 @@ public class TestHelper {
 
         if (!(callbacks.beforeCompile(file) && compileAndTest(sourceFiles, printErrors, includeStdLib) == expectedReturnCode && callbacks
                 .afterCompile(file, platforms))) {
-
             failFiles.add(path + fileName);
         }
     }

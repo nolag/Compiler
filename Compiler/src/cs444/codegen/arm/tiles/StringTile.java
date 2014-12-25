@@ -60,8 +60,8 @@ public class StringTile implements ITile<ArmInstruction, Size, StringLiteralSymb
         final String charArray = ArrayPkgClassResolver.getArrayName(JoosNonTerminal.CHAR);
         platform.getObjectLayout().initialize(PkgClassInfo.instance.getSymbol(charArray), instructions);
 
-        instructions.addAll(ArmSizeHelper.putInReg(Register.R1, stringSymbol.strValue.length(), sizeHelper));
-        instructions.add(new Str(Register.R1, Register.R0, new Immediate12((short) (2 * defaultStack)), sizeHelper));
+        instructions.addAll(ArmSizeHelper.putInReg(Register.R2, stringSymbol.strValue.length(), sizeHelper));
+        instructions.add(new Str(Register.R2, Register.R0, new Immediate12((short) (2 * defaultStack)), sizeHelper));
 
         final char[] cs = stringSymbol.strValue.toCharArray();
         final int charSize = sizeHelper.getBytePushSizeOfType(JoosNonTerminal.CHAR);
@@ -81,21 +81,21 @@ public class StringTile implements ITile<ArmInstruction, Size, StringLiteralSymb
 
                 instructions.add(new Comment(sb.toString()));
 
-                instructions.addAll(ArmSizeHelper.putInReg(Register.R1, togetherVal, sizeHelper));
+                instructions.addAll(ArmSizeHelper.putInReg(Register.R2, togetherVal, sizeHelper));
 
                 final Immediate12 place = new Immediate12((short) (2 * i + platform.getObjectLayout().objSize() + defaultStack));
-                instructions.add(new Str(sizeHelper.getSize(numTogether * charSize), Register.R1, Register.R0, place, sizeHelper));
+                instructions.add(new Str(sizeHelper.getSize(numTogether * charSize), Register.R2, Register.R0, place, sizeHelper));
             }
         }
 
         instructions.add(new Comment("Array for new String"));
-        instructions.add(new Mov(Register.R1, Register.R0, sizeHelper));
+        instructions.add(new Mov(Register.R2, Register.R0, sizeHelper));
         instructions.add(new Comment("This pointer to new string"));
-        final Operand2 op2 = ArmTileHelper.setupOp2(Register.R2, (int) charsLen, instructions, sizeHelper);
+        final Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, (int) charsLen, instructions, sizeHelper);
         instructions.add(new Add(Register.R0, Register.R0, op2, sizeHelper));
         platform.getObjectLayout().initialize(stringSymbol.getType().getTypeDclNode(), instructions);
 
-        instructions.add(new Str(Register.R1, Register.R0, new Immediate12((short) objectLayout.objSize()), sizeHelper));
+        instructions.add(new Str(Register.R2, Register.R0, new Immediate12((short) objectLayout.objSize()), sizeHelper));
 
         instructions.add(new Comment("End of New String!"));
         return instructions;

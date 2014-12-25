@@ -130,10 +130,9 @@ public class AsmAndLinkCallback implements ITestCallbacks {
             if (execAndWait(command, null, null) != 0) { return false; }
         }
 
-        final String[] command = os.getAssembleCmd(os.getRuntimeFile());
-        if (execAndWait(command, null, null) != 0) { return false; }
-
-        return true;
+        final File runtime = os.getRuntimeFile();
+        final String[] command = os.getAssembleCmd(runtime);
+        return execAndWait(command, null, null) == 0;
     }
 
     private static boolean isAlive(final Process p) {
@@ -147,6 +146,10 @@ public class AsmAndLinkCallback implements ITestCallbacks {
 
     private int execAndWait(final String[] command, final String out, final String err) throws InterruptedException, IOException {
         final Process proc = Runtime.getRuntime().exec(command);
+        final StringBuilder commandStr = new StringBuilder();
+        for (final String part : command) {
+            commandStr.append(part).append(" ");
+        }
 
         // any error message?
         final StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream());
@@ -176,17 +179,18 @@ public class AsmAndLinkCallback implements ITestCallbacks {
         outputGobbler.join();
 
         if (null != out && !out.equals(outputGobbler.getMessage().replace("\r", ""))) {
-            System.out.println("Expected:\n" + out + "\n Got:\n" + outputGobbler.getMessage());
+            System.out.println(commandStr.toString() + "\nExpected:\n" + out + "\n Got:\n" + outputGobbler.getMessage());
             return -2;
         }
 
         if (null != err && !err.equals(errorGobbler.getMessage().replace("\r", ""))) {
-            System.out.println("Expected:\n" + err + "\n Got:\n" + errorGobbler.getMessage());
+            System.out.println(commandStr.toString() + "\nExpected:\n" + err + "\n Got:\n" + errorGobbler.getMessage());
             return -3;
         }
 
         int retVal = proc.exitValue();
         if (retVal != 0 && err == null && out == null) {
+            System.out.println(commandStr.toString());
             System.out.println(outputGobbler.getMessage().replace("\r", ""));
             System.out.println(errorGobbler.getMessage().replace("\r", ""));
         }

@@ -8,7 +8,7 @@ import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
 import cs444.codegen.arm.instructions.B;
 import cs444.codegen.arm.instructions.Cmp;
-import cs444.codegen.arm.instructions.Muls;
+import cs444.codegen.arm.instructions.Mls;
 import cs444.codegen.arm.instructions.Pop;
 import cs444.codegen.arm.instructions.Push;
 import cs444.codegen.arm.instructions.Sdiv;
@@ -63,7 +63,7 @@ public class RemTile extends NumericHelperTile<ArmInstruction, Size, RemainderEx
 
         instructions.add(new Sdiv(Register.R2, Register.R1, Register.R0, platform.getSizeHelper()));
 
-        instructions.add(new Muls(Register.R0, Register.R1, Register.R2, Register.R0, sizeHelper));
+        instructions.add(new Mls(Register.R0, Register.R1, Register.R2, Register.R0, sizeHelper));
 
         return instructions;
     }

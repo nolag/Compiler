@@ -71,6 +71,6 @@ public abstract class Branch extends ArmInstruction {
 
     @Override
     public String generate() {
-        return instruction + " " + c.toString() + " " + where;
+        return instruction + c.toString() + " " + where;
     }
 }
