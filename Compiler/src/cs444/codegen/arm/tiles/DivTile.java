@@ -12,6 +12,7 @@ import cs444.codegen.arm.instructions.Pop;
 import cs444.codegen.arm.instructions.Push;
 import cs444.codegen.arm.instructions.Sdiv;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
+import cs444.codegen.arm.instructions.bases.Branch.Condition;
 import cs444.codegen.generic.tiles.helpers.NumericHelperTile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -54,7 +55,7 @@ public class DivTile extends NumericHelperTile<ArmInstruction, Size, DivideExprS
 
         instructions.add(new Cmp(Register.R0, Immediate8.ZERO, sizeHelper));
         final String safeDiv = "safeDiv" + CodeGenVisitor.getNewLblNum();
-        instructions.add(new B(safeDiv));
+        instructions.add(new B(Condition.NE, safeDiv));
         platform.getRunime().throwException(instructions, JoosNonTerminal.DIV_ZERO);
         instructions.add(platform.makeLabel(safeDiv));
 
