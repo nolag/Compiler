@@ -54,7 +54,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            // if (!fileName.equals("ArrayOutOfBounds")) continue;
+            // if (!fileName.equals("PrimCasts")) continue;
             // Use this line to stop when there are infinite loops
             // if (totalTests == 1) break;
             // Use to not run tests with longs

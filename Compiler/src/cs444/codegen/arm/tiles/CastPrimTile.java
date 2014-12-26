@@ -2,6 +2,7 @@ package cs444.codegen.arm.tiles;
 
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
+import cs444.codegen.arm.ArmSizeHelper;
 import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
 import cs444.codegen.arm.instructions.Sxtb;
@@ -12,7 +13,7 @@ import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.generic.tiles.helpers.NumericHelperTile;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
-
+import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
@@ -41,9 +42,13 @@ public class CastPrimTile extends NumericHelperTile<ArmInstruction, Size, CastEx
         final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
         final TypeSymbol type = symbol.getType();
         final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
-        final Size curSize = sizeHelper.getSize(type.getTypeDclNode().getRealSize(sizeHelper));
+        Size curSize = sizeHelper.getSize(type.getTypeDclNode().getRealSize(sizeHelper));
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));
+
+        if (!JoosNonTerminal.unsigned.contains(type.getTypeDclNode().fullName)) {
+            curSize = ArmSizeHelper.getSignedSize(curSize);
+        }
 
         switch (curSize) {
         case B:
