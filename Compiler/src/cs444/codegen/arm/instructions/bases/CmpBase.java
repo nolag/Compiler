@@ -35,6 +35,6 @@ public abstract class CmpBase extends ArmInstruction {
 
     @Override
     public String generate() {
-        return name + cond.toString() + " " + reg.getValue(sizeHelper) + ", " + op2.getValue(sizeHelper);
+        return name + cond + " " + reg.getValue(sizeHelper) + ", " + op2.getValue(sizeHelper);
     }
 }

@@ -63,6 +63,6 @@ public abstract class MovBase extends ArmInstruction {
 
     @Override
     public String generate() {
-        return what + " " + dest.getValue(sizeHelper) + ", " + src.getValue(sizeHelper);
+        return what + cond + " " + dest.getValue(sizeHelper) + ", " + src.getValue(sizeHelper);
     }
 }
