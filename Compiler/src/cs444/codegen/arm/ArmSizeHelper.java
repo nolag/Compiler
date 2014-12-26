@@ -42,6 +42,17 @@ public class ArmSizeHelper extends SizeHelper<ArmInstruction, Size> {
         throw new IllegalArgumentException("Nothing is of size " + stackSize);
     }
 
+    public static Size getSignedSize(Size size) {
+        switch (size) {
+        case B:
+            return Size.SB;
+        case H:
+            return Size.SH;
+        default:
+            return size;
+        }
+    }
+
     @Override
     public Size getSizeOfType(String typeName) {
         return getSize(getByteSizeOfType(typeName));
