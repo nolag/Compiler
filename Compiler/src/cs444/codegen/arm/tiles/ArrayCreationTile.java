@@ -54,8 +54,8 @@ public class ArrayCreationTile implements ITile<ArmInstruction, Size, CreationEx
 
         instructions.add(platform.makeComment("Checking array size >= 0"));
         final String ok = "arrayCreateOk" + CodeGenVisitor.getNewLblNum();
-        instructions.add(new Eor(Register.R1, Register.R1, Register.R1, sizeHelper));
-        instructions.add(new Cmp(Register.R0, Register.R1, sizeHelper));
+        instructions.add(new Eor(Register.R2, Register.R2, Register.R2, sizeHelper));
+        instructions.add(new Cmp(Register.R0, Register.R2, sizeHelper));
 
         instructions.add(new B(Condition.GE, ok));
         platform.getRunime().throwException(instructions, "Invalid array creation");
@@ -67,20 +67,20 @@ public class ArrayCreationTile implements ITile<ArmInstruction, Size, CreationEx
             //TODO something seems to go wrong in X86 so try this fist then remove when working
             if (elementSize == Size.H || elementSize == Size.SH) elementSize = sizeHelper.getDefaultSize();
             final byte shiftAmount = ArmSizeHelper.getPowerSizeImd(elementSize);
-            instructions.add(new Mov(Register.R1, new ConstantShift(Register.R1, shiftAmount, Shift.LSL), sizeHelper));
+            instructions.add(new Mov(Register.R0, new ConstantShift(Register.R0, shiftAmount, Shift.LSL), sizeHelper));
         }
 
         instructions.add(platform.makeComment("Adding space for SIT, cast info, and length " + typeDclNode.fullName));
         //Int + object's size
         final int baseSize = (int) (platform.getObjectLayout().objSize() + sizeHelper.getIntSize(sizeHelper.getPushSize(Size.H)));
-        final Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, baseSize, instructions, sizeHelper);
+        final Operand2 op2 = ArmTileHelper.setupOp2(Register.R2, baseSize, instructions, sizeHelper);
         instructions.add(new Add(Register.R0, Register.R0, op2, sizeHelper));
         instructions.add(platform.makeComment("Allocate for array" + typeDclNode.fullName));
         platform.getRunime().mallocClear(instructions);
         instructions.add(platform.makeComment("Pop the size"));
-        instructions.add(new Pop(Register.R1));
+        instructions.add(new Pop(Register.R2));
 
-        ArmTileHelper.makeInstruction(Register.R0, Register.R1, Register.R2, (int) platform.getObjectLayout().objSize(), StrMaker.instance,
+        ArmTileHelper.makeInstruction(Register.R2, Register.R0, Register.R1, (int) platform.getObjectLayout().objSize(), StrMaker.instance,
                 instructions, sizeHelper);
 
         platform.getObjectLayout().initialize(typeDclNode, instructions);
