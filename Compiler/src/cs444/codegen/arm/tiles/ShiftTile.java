@@ -62,7 +62,7 @@ public class ShiftTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstruc
         if (hasLong) platform.getTileHelper().makeLong(t2, instructions, sizeHelper);
         instructions.add(new Pop(Register.R1));
 
-        instructions.add(new Mov(Register.R1, new RegisterShift(Register.R1, Register.R0, type), sizeHelper));
+        instructions.add(new Mov(Register.R0, new RegisterShift(Register.R1, Register.R0, type), sizeHelper));
 
         return instructions;
     }

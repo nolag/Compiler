@@ -78,7 +78,7 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
 
     public static void setupJumpNe(final Register reg, final Immediate8 when, final String lblTo,
             final SizeHelper<ArmInstruction, Size> sizeHelper, final Addable<ArmInstruction> instructions) {
-        instructions.add(new Cmn(reg, when, sizeHelper));
+        instructions.add(new Cmp(reg, when, sizeHelper));
         instructions.add(new B(Condition.NE, lblTo));
     }
 
