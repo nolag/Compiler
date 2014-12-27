@@ -6,7 +6,7 @@ import cs444.codegen.arm.Operand2.Shift;
 import cs444.codegen.arm.Size;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.arm.instructions.bases.Branch.Condition;
-import cs444.codegen.arm.instructions.factories.AddOpMaker;
+import cs444.codegen.arm.instructions.factories.AndOpMaker;
 import cs444.codegen.arm.instructions.factories.MulOpMaker;
 import cs444.codegen.arm.instructions.factories.OrrOpMaker;
 import cs444.codegen.arm.instructions.factories.SubOpMaker;
@@ -33,8 +33,8 @@ public abstract class ArmTileInit extends TileInit<ArmInstruction, Size> {
         set.casts.add(CastNonPrimTile.getTile());
         set.casts.add(CastPrimTile.getTile());
         set.dcls.add(DclTile.getTile());
-        set.divs.add(DivTile.getTile());
-        set.eands.add(EBooleanTile.<EAndExprSymbol> getTile(AddOpMaker.maker));
+        set.divs.add(DivTile.<DivideExprSymbol> getTile(true, true));
+        set.eands.add(EBooleanTile.<EAndExprSymbol> getTile(AndOpMaker.maker));
         set.eors.add(EBooleanTile.<EOrExprSymbol> getTile(OrrOpMaker.maker));
         set.eqs.add(CompOpTile.<EqExprSymbol> getTile(Condition.EQ));
         set.ges.add(CompOpTile.<GeExprSymbol> getTile(Condition.GE));
@@ -51,7 +51,7 @@ public abstract class ArmTileInit extends TileInit<ArmInstruction, Size> {
         set.nes.add(CompOpTile.<NeExprSymbol> getTile(Condition.NE));
         set.nots.add(NotTile.getTile());
         set.invokes.add(RegularCallTile.getTile());
-        set.rems.add(RemTile.getTile());
+        set.rems.add(DivTile.<RemainderExprSymbol> getTile(false, false));
         set.adds.add(StrAddTile.getTile());
         set.strs.add(StringTile.getTile());
         set.subs.add(SizedBinOpTile.<SubtractExprSymbol> getTile(SubOpMaker.maker));

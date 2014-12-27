@@ -5,6 +5,7 @@ import java.util.Map;
 
 import cs444.codegen.instructions.Instruction;
 import cs444.parser.symbols.JoosNonTerminal;
+import cs444.parser.symbols.ast.Typeable;
 
 public abstract class SizeHelper<T extends Instruction<T>, U extends Enum<U>> {
     public static final Map<String, Integer> stackSizes = new HashMap<String, Integer>();
@@ -28,6 +29,10 @@ public abstract class SizeHelper<T extends Instruction<T>, U extends Enum<U>> {
 
     public boolean hasSetSize(final String type) {
         return stackSizes.containsKey(type);
+    }
+
+    public int getByteSizeOfType(final Typeable type) {
+        return getByteSizeOfType(type.getType().getTypeDclNode().fullName);
     }
 
     public abstract int getByteSizeOfType(final String typeName);

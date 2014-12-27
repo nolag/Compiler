@@ -44,7 +44,7 @@ public abstract class ArmTileHelper extends TileHelper<ArmInstruction, Size> {
         setupJmpNull(Register.R0, ifNullLbl, sizeHelper, instructions);
     }
 
-    static void setupJmpNull(Register reg, String ifNullLbl, SizeHelper<ArmInstruction, Size> sizeHelper,
+    public static void setupJmpNull(Register reg, String ifNullLbl, SizeHelper<ArmInstruction, Size> sizeHelper,
             Addable<ArmInstruction> instructions) {
         instructions.add(new Comment("check if null"));
         instructions.add(new Cmp(reg, Immediate8.NULL, sizeHelper));
