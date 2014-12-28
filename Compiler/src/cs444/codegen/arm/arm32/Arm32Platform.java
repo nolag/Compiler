@@ -113,13 +113,13 @@ public class Arm32Platform extends ArmPlatform {
 
     @Override
     public void moveStatic(String staticLbl, Size size, Addable<ArmInstruction> instructions) {
-        instructions.addAll(ArmSizeHelper.storeStatic(Register.R0, staticLbl, sizeHelper));
+        instructions.addAll(ArmSizeHelper.storeStatic(Register.R0, Register.R1, staticLbl, sizeHelper));
     }
 
     @Override
     public void zeroStatic(String staticLbl, Size size, Addable<ArmInstruction> instructions) {
         instructions.add(new Eor(Register.R0, Register.R0, Register.R0, sizeHelper));
-        instructions.addAll(ArmSizeHelper.storeStatic(Register.R0, staticLbl, sizeHelper));
+        instructions.addAll(ArmSizeHelper.storeStatic(Register.R0, Register.R1, staticLbl, sizeHelper));
     }
 
     @Override
