@@ -9,7 +9,6 @@ import cs444.codegen.arm.instructions.Pop;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.arm.tiles.helpers.ArrayBaseTile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
 public class ArrayRefTile extends ArrayBaseTile {
@@ -28,7 +27,7 @@ public class ArrayRefTile extends ArrayBaseTile {
 
         final InstructionsAndTiming<ArmInstruction> instructions = super.generate(arrayAccess, platform);
         final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
-        instructions.add(new Add(Register.R0, Register.R8, Register.R8, sizeHelper));
+        instructions.add(new Add(Register.R0, Register.R0, Register.R8, sizeHelper));
         instructions.add(new Pop(Register.R8));
         return instructions;
     }

@@ -56,8 +56,8 @@ public abstract class ArrayBaseTile implements ITile<ArmInstruction, Size, Array
         instructions.add(new Label(ok));
 
         ok = "arrayAccessOk" + myVal;
-        instructions.add(new Ldr(Register.R8, Register.R8, new Immediate12((short) platform.getObjectLayout().objSize()), sizeHelper));
-        instructions.add(new Cmp(Register.R8, Register.R0, sizeHelper));
+        instructions.add(new Ldr(Register.R3, Register.R8, new Immediate12((short) platform.getObjectLayout().objSize()), sizeHelper));
+        instructions.add(new Cmp(Register.R3, Register.R0, sizeHelper));
 
         instructions.add(new B(Condition.GT, ok));
         runtime.throwException(instructions, "Invalid array access");

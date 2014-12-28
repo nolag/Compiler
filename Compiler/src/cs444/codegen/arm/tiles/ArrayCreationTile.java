@@ -72,7 +72,7 @@ public class ArrayCreationTile implements ITile<ArmInstruction, Size, CreationEx
 
         instructions.add(platform.makeComment("Adding space for SIT, cast info, and length " + typeDclNode.fullName));
         //Int + object's size
-        final int baseSize = (int) (platform.getObjectLayout().objSize() + sizeHelper.getIntSize(sizeHelper.getPushSize(Size.H)));
+        final int baseSize = (int) (platform.getObjectLayout().objSize() + sizeHelper.getIntSize(sizeHelper.getPushSize(Size.W)));
         final Operand2 op2 = ArmTileHelper.setupOp2(Register.R2, baseSize, instructions, sizeHelper);
         instructions.add(new Add(Register.R0, Register.R0, op2, sizeHelper));
         instructions.add(platform.makeComment("Allocate for array" + typeDclNode.fullName));

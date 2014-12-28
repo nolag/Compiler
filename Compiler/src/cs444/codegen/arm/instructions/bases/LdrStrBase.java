@@ -45,12 +45,12 @@ public abstract class LdrStrBase extends ArmInstruction {
 
     protected LdrStrBase(final String name, final Condition condition, final Register dest, final Register from, Register offset,
             final SizeHelper<ArmInstruction, Size> sizeHelper, final Register dest2) {
-        this(name, Size.D, condition, dest, from, offset, sizeHelper, dest2);
+        this(name, sizeHelper.getDefaultSize(), condition, dest, from, offset, sizeHelper, dest2);
     }
 
     protected LdrStrBase(final String name, final Condition condition, final Register dest, final Register from, Immediate12 offset,
             final SizeHelper<ArmInstruction, Size> sizeHelper, final Register dest2) {
-        this(name, Size.D, condition, dest, from, offset, sizeHelper, dest2);
+        this(name, sizeHelper.getDefaultSize(), condition, dest, from, offset, sizeHelper, dest2);
     }
 
     protected LdrStrBase(final String name, final Size size, final Register dest, final Register from, final Register offset,
@@ -65,12 +65,12 @@ public abstract class LdrStrBase extends ArmInstruction {
 
     protected LdrStrBase(final String name, final Register dest, final Register from, Register offset,
             final SizeHelper<ArmInstruction, Size> sizeHelper, final Register dest2) {
-        this(name, Size.D, Condition.AL, dest, from, offset, sizeHelper, dest2);
+        this(name, sizeHelper.getDefaultSize(), Condition.AL, dest, from, offset, sizeHelper, dest2);
     }
 
     protected LdrStrBase(final String name, final Register dest, final Register from, Immediate12 offset,
             final SizeHelper<ArmInstruction, Size> sizeHelper, final Register dest2) {
-        this(name, Size.D, Condition.AL, dest, from, offset, sizeHelper, dest2);
+        this(name, sizeHelper.getDefaultSize(), Condition.AL, dest, from, offset, sizeHelper, dest2);
     }
 
     protected LdrStrBase(final String name, final Register dest, final Register from, final Register offset,
@@ -89,7 +89,7 @@ public abstract class LdrStrBase extends ArmInstruction {
 
     protected LdrStrBase(final String name, final Register dest, final Register from, final SizeHelper<ArmInstruction, Size> sizeHelper,
             final Register dest2) {
-        this(name, Size.D, Condition.AL, dest, from, null, sizeHelper, dest2);
+        this(name, sizeHelper.getDefaultSize(), Condition.AL, dest, from, null, sizeHelper, dest2);
     }
 
     protected LdrStrBase(final String name, final Size size, final Register dest, final Register from,
