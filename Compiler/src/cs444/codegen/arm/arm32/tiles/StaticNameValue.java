@@ -31,7 +31,7 @@ public class StaticNameValue extends NumericHelperTile<ArmInstruction, Size, Sim
         final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
         final DclSymbol dcl = name.dcl;
         final String staticFieldLbl = PkgClassResolver.getUniqueNameFor(dcl);
-        ArmSizeHelper.loadStatic(Register.R0, staticFieldLbl, sizeHelper);
+        instructions.addAll(ArmSizeHelper.loadStatic(Register.R0, staticFieldLbl, sizeHelper));
         return instructions;
     }
 }

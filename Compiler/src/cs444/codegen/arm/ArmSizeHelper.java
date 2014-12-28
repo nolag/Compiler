@@ -160,8 +160,4 @@ public class ArmSizeHelper extends SizeHelper<ArmInstruction, Size> {
                 new Movw(ref, new ImmediateStr(":lower16:" + loc), sizeHelper),
                 new Movt(ref, new ImmediateStr(":upper16:" + loc), sizeHelper), new Str(src, ref, sizeHelper) };
     }
-
-    public static ArmInstruction[] storeStatic(final Register src, final String loc, final SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return storeStatic(src, src, loc, sizeHelper);
-    }
 }
