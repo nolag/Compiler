@@ -50,6 +50,7 @@ public class RegularCallTile implements ITile<ArmInstruction, Size, SimpleMethod
 
         instructions.add(new Push(Register.R8));
         instructions.add(new Comment("get SIT column of " + call.dclName));
+        instructions.add(new Ldr(Register.R8, Register.R8, sizeHelper));
 
         try {
             final long by = platform.getSelectorIndex().getOffset(PkgClassResolver.generateUniqueName(call, call.dclName));
@@ -58,7 +59,7 @@ public class RegularCallTile implements ITile<ArmInstruction, Size, SimpleMethod
             // shouldn't get here
             e.printStackTrace();
         }
-        instructions.add(new Mov(Register.INTRA_PROCEDURE, Register.PC, sizeHelper));
+        instructions.add(new Mov(Register.LINK, Register.PC, sizeHelper));
         instructions.add(new Mov(Register.PC, Register.R8, sizeHelper));
 
         platform.getTileHelper().callEndHelper(call, instructions, platform);
