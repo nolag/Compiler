@@ -121,7 +121,7 @@ public class ArmSizeHelper extends SizeHelper<ArmInstruction, Size> {
 
     @Override
     public ArmInstruction[] alloceDefaultCellSpace(String s) {
-        return new ArmInstruction[] { Word.zeroWord };
+        return new ArmInstruction[] { new Word(s) };
     }
 
     public ArmInstruction makeCall(String what) {

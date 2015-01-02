@@ -75,8 +75,9 @@ public class DivTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstructi
 
         instructions.add(platform.makeComment("Check for -ve value and save in R2"));
         instructions.add(new Cmp(Register.R1, Immediate8.ZERO, sizeHelper));
-        new Rsb(Condition.LT, Register.R1, Register.R1, Immediate8.ZERO, sizeHelper);
+        instructions.add(new Rsb(Condition.LT, Register.R1, Register.R1, Immediate8.ZERO, sizeHelper));
         instructions.add(new Mov(Condition.LT, Register.R4, Immediate8.TRUE, sizeHelper));
+        instructions.add(new Mov(Condition.GE, Register.R4, Immediate8.FALSE, sizeHelper));
 
         instructions.add(new Cmp(Register.R0, Immediate8.ZERO, sizeHelper));
         instructions.add(new Rsb(Condition.LT, Register.R0, Register.R0, Immediate8.ZERO, sizeHelper));
@@ -114,8 +115,7 @@ public class DivTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstructi
         tileHelper.setupJump(loopStart, sizeHelper, instructions);
         tileHelper.setupLbl(loopEnd, instructions);
         tileHelper.setupComment("Long division end " + mynum, instructions);
-        if (divide) instructions.add(new Mov(Register.R0, Register.R5, sizeHelper));
-        else instructions.add(new Mov(Register.R0, Register.R3, sizeHelper));
+        instructions.add(divide ? new Mov(Register.R0, Register.R5, sizeHelper) : new Mov(Register.R0, Register.R3, sizeHelper));
 
         instructions.add(platform.makeComment("deal with -ve values"));
         instructions.add(new Cmp(Register.R4, Immediate8.TRUE, sizeHelper));
