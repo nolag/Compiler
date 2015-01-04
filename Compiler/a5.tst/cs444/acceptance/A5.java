@@ -20,7 +20,7 @@ public class A5 {
                 new AsmAndLinkCallback());
     }
 
-    /*@Test
+    @Test
     public void testCompileProgramsWithStdLib() throws IOException, InterruptedException {
         final List<String> ignoreList = new LinkedList<String>();
 
@@ -28,7 +28,7 @@ public class A5 {
                 new AsmAndLinkCallback());
     }
 
-    @Test
+    /*@Test
     public void testMarmosetA5Programs() throws IOException, InterruptedException {
 
         final List<String> failingList = new LinkedList<String>();
