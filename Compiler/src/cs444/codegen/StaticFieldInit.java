@@ -34,10 +34,8 @@ public class StaticFieldInit<E> {
             Platform<T, E> platform) {
 
         final InstructionHolder<T> instructions = platform.getInstructionHolder();
-        instructions.add(platform.getTextSection());
-        instructions.add(platform.makeGlobal(STATIC_FIELD_INIT_LBL));
-        platform.runtime.externAll(instructions);
-        instructions.add(platform.makeLabel(STATIC_FIELD_INIT_LBL));
+        platform.getEnterStaticField(instructions);
+
         final SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
 
         for (final APkgClassResolver aPkgClassResolver : resolvers) {
@@ -84,6 +82,6 @@ public class StaticFieldInit<E> {
             }
         }
 
-        instructions.add(platform.getRet());
+        instructions.add(platform.getRetStaticField());
     }
 }

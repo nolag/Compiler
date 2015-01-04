@@ -124,7 +124,14 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
 
     public abstract void genInstructorInvoke(final APkgClassResolver resolver, final Addable<T> instructions);
 
-    public final void genHeaderStart(final Addable<T> instructions) {
+    public void getEnterStaticField(final Addable<T> instructions) {
+        instructions.add(getTextSection());
+        instructions.add(makeGlobal(StaticFieldInit.STATIC_FIELD_INIT_LBL));
+        instructions.add(makeLabel(StaticFieldInit.STATIC_FIELD_INIT_LBL));
+        runtime.externAll(instructions);
+    }
+
+    public void genHeaderStart(final Addable<T> instructions) {
         runtime.externAll(instructions);
         instructions.add(getTextSection());
         instructions.add(makeComment(CodeGenVisitor.INIT_OBJECT_FUNC + ": call super default constructor and initialize obj fields."));
@@ -185,7 +192,7 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
 
     public abstract T makeCall(String what);
 
-    public abstract T getRet();
+    public abstract T getRetStaticField();
 
     public abstract T[] makeSpace(String name, E size);
 
