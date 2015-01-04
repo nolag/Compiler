@@ -8,7 +8,7 @@ public class Comment extends ArmInstruction {
 
     public Comment(final String comment) {
         super(0, 0);
-        this.comment = "/*" + comment + "*/";
+        this.comment = "/* " + comment + " */";
     }
 
     @Override

@@ -20,6 +20,6 @@ public class Extern extends ArmInstruction {
     @Override
     public String generate() {
         //Note that extern may be good if another assembler is uesd
-        return "/* extern " + what + "*/";
+        return "/* extern " + what + " */";
     }
 }

@@ -44,7 +44,7 @@ public class NameRefTile implements ITile<ArmInstruction, Size, SimpleNameSymbol
             if (dcl.dclInResolver != CodeGenVisitor.<ArmInstruction, Size> getCurrentCodeGen(platform).currentFile) {
                 platform.makeExtern(staticFieldLbl);
             }
-            ArmSizeHelper.putInReg(Register.R0, staticFieldLbl, sizeHelper);
+            instructions.addAll(ArmSizeHelper.putInReg(Register.R0, staticFieldLbl, sizeHelper));
         } else if (dcl.isLocal) {
             instructions.add(new Comment("mov frame to r0 because it is local"));
             final Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, (int) dcl.getOffset(platform), instructions, sizeHelper);

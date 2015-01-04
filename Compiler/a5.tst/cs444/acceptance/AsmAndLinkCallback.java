@@ -12,7 +12,7 @@ import cs444.codegen.OperatingSystem;
 import cs444.codegen.Platform;
 
 public class AsmAndLinkCallback implements ITestCallbacks {
-    //NOTE: change this if you are testing on another os or if you cahnge the exec/link to work multi os
+    //NOTE: change this if you are testing on another os or if you change the exec/link to work multi os
     private static final String osToTest = "linux";
 
     private static final String EXEC = "main";

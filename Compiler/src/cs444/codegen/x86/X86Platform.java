@@ -108,7 +108,7 @@ public abstract class X86Platform extends Platform<X86Instruction, Size> {
     }
 
     @Override
-    public Ret getRet() {
+    public Ret getRetStaticField() {
         return Ret.RET;
     }
 
