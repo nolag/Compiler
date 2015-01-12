@@ -2,6 +2,8 @@ package cs444.codegen.arm.arm32.tiles.helpers;
 
 import cs444.codegen.arm.Size;
 import cs444.codegen.arm.arm32.Arm32Platform;
+import cs444.codegen.arm.arm32.tiles.LongAssignmentTile;
+import cs444.codegen.arm.arm32.tiles.LongDclTile;
 import cs444.codegen.arm.arm32.tiles.StaticNameValue;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.arm.tiles.helpers.ArmTileInit;
@@ -20,10 +22,10 @@ public class Arm32TileInit extends ArmTileInit {
         final TileSet<ArmInstruction, Size> set = TileSet.getOrMake(Arm32Platform.class);
         /*set.casts.add(CastFromLongTile.getTile());
         set.adds.add(LongBinTile.<AddExprSymbol> getTile(AddOpMaker.maker, AdcOpMaker.maker, false, AddExprSymbol.class));
-        set.arrayValues.add(LongArrayValueTile.getTile());
+        set.arrayValues.add(LongArrayValueTile.getTile());*/
         set.assigns.add(LongAssignmentTile.getTile());
         set.dcls.add(LongDclTile.getTile());
-        set.divs.add(LongDivTile.getTile());
+        /*set.divs.add(LongDivTile.getTile());
         set.eqs.add(LongJxxTile.<EqExprSymbol> getTile(null, JneMaker.maker, JeMaker.maker, EqExprSymbol.class));
         set.ges.add(LongJxxTile.<GeExprSymbol> getTile(JlMaker.maker, JgMaker.maker, JleMaker.maker, GeExprSymbol.class));
         set.gts.add(LongJxxTile.<GtExprSymbol> getTile(JlMaker.maker, JgMaker.maker, JaMaker.maker, GtExprSymbol.class));

@@ -3,6 +3,7 @@ package cs444.codegen.arm.tiles;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
+import cs444.codegen.arm.ArmSizeHelper;
 import cs444.codegen.arm.ConstantShift;
 import cs444.codegen.arm.Immediate8;
 import cs444.codegen.arm.Operand2.Shift;
@@ -63,7 +64,8 @@ public class DivTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstructi
         if (hasLong) tileHelper.makeLong(t2, instructions, sizeHelper);
 
         instructions.add(new Cmp(Register.R0, Immediate8.ZERO, sizeHelper));
-        final String safeDiv = "safeDiv" + CodeGenVisitor.getNewLblNum();
+        long mynum = CodeGenVisitor.getNewLblNum();
+        final String safeDiv = "safeDiv" + mynum;
         instructions.add(new B(Condition.NE, safeDiv));
         platform.getRunime().throwException(instructions, JoosNonTerminal.DIV_ZERO);
         instructions.add(platform.makeLabel(safeDiv));
@@ -72,6 +74,16 @@ public class DivTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstructi
 
         instructions.add(platform.makeComment("Sdiv is not on most Arm processors :(, use long division"));
         // instructions.add(new Sdiv(Register.R0, Register.R1, Register.R0, platform.getSizeHelper()));
+
+        instructions.add(platform.makeComment("we need to check for -max int on both numbers, so may as well do the = check first"));
+        final String doneDiv = "doneDiv" + mynum;
+        instructions.add(new Cmp(Register.R0, Register.R1, sizeHelper));
+        instructions.add(new Mov(Condition.EQ, Register.R0, divide ? Immediate8.ONE : Immediate8.ZERO, sizeHelper));
+        instructions.add(new B(Condition.EQ, doneDiv));
+        instructions.addAll(ArmSizeHelper.putInReg(Register.R4, Integer.MIN_VALUE, sizeHelper));
+        instructions.add(new Cmp(Register.R0, Register.R4, sizeHelper));
+        instructions.add(new Mov(Condition.EQ, Register.R0, divide ? Immediate8.ZERO : Register.R1, sizeHelper));
+        instructions.add(new B(Condition.EQ, doneDiv));
 
         instructions.add(platform.makeComment("Check for -ve value and save in R2"));
         instructions.add(new Cmp(Register.R1, Immediate8.ZERO, sizeHelper));
@@ -94,7 +106,6 @@ public class DivTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstructi
         instructions.add(new Eor(Register.R5, Register.R5, Register.R5, sizeHelper));
 
         instructions.add(platform.makeComment("Time for long division"));
-        final long mynum = CodeGenVisitor.getNewLblNum();
         final String loopStart = "divideStart" + mynum;
         final String loopEnd = "divideEnd" + mynum;
         tileHelper.setupLbl(loopStart, instructions);
@@ -120,6 +131,7 @@ public class DivTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstructi
         instructions.add(platform.makeComment("deal with -ve values"));
         instructions.add(new Cmp(Register.R4, Immediate8.TRUE, sizeHelper));
         instructions.add(new Rsb(Condition.EQ, Register.R0, Register.R0, Immediate8.ZERO, sizeHelper));
+        instructions.add(platform.makeLabel(doneDiv));
 
         return instructions;
     }
