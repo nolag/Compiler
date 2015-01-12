@@ -140,7 +140,7 @@ public class ArmSizeHelper extends SizeHelper<ArmInstruction, Size> {
 
     public static ArmInstruction[] putInReg(final Register reg, final int val, final SizeHelper<ArmInstruction, Size> sizeHelper) {
         return new ArmInstruction[] { new Comment("Moving " + val + "  ref into " + reg.getValue(sizeHelper)),
-                new Movw(reg, new Immediate16(val), sizeHelper), new Movt(reg, new Immediate16(val >>> 16), sizeHelper) };
+                new Movw(reg, new Immediate16(val & 0x0000FFFF), sizeHelper), new Movt(reg, new Immediate16(val >>> 16), sizeHelper) };
     }
 
     public static ArmInstruction[] loadStatic(final Register dest, final Register ref, final String loc,
