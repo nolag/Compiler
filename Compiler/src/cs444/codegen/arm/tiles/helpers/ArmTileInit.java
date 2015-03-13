@@ -23,7 +23,6 @@ public abstract class ArmTileInit extends TileInit<ArmInstruction, Size> {
     @Override
     public void initBase() {
         super.initBase();
-        //TODO tiles
         final TileSet<ArmInstruction, Size> set = TileSet.<ArmInstruction, Size> getOrMake(klass);
         set.adds.add(AddTile.getTile());
         set.creation.add(ArrayCreationTile.getTile());

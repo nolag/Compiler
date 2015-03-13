@@ -39,7 +39,7 @@ public abstract class APkgClassResolver {
     protected APkgClassResolver superClass;
     protected final List<PkgClassResolver> implInterfs = new LinkedList<PkgClassResolver>();
 
-    public static final String DEFAULT_PKG = "$..$";
+    public static final String DEFAULT_PKG = "default..$";
 
     private static final ASTSymbolFactory[] CLEANERS = { new LookupLinkCleanFacory(), new FieldFlattener(), new FieldCleaner() };
 

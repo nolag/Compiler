@@ -8,6 +8,10 @@ public class Immediate8 extends Immediate12 implements Operand2 {
     public static final Immediate8 TWO = new Immediate8((char) 2);
     public static final Immediate8 THREE = new Immediate8((char) 2);
     public static final Immediate8 FOUR = new Immediate8((char) 4);
+    public static final Immediate8 THIRTY_ONE = new Immediate8((char) 31);
+    public static final Immediate8 THIRTY_TWO = new Immediate8((char) 32);
+    public static final Immediate8 THIRTY_THREE = new Immediate8((char) 32);
+    public static final Immediate8 SIXTY_FOUR = new Immediate8((char) 64);
 
     public static final Immediate8 NULL = new Immediate8(TileHelper.NULL);
 

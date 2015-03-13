@@ -46,7 +46,7 @@ public abstract class BinOpTile<T extends BinOpExpr> implements ITile<ArmInstruc
 
         instructions.add(new Pop(Register.R1));
 
-        instructions.add(maker.make(Register.R0, Register.R1, Register.R0, platform.getSizeHelper()));
+        instructions.add(maker.make(true, Register.R0, Register.R1, Register.R0, platform.getSizeHelper()));
 
         return instructions;
     }

@@ -12,7 +12,7 @@ public class AddOpMaker implements BinOpRegMaker {
     private AddOpMaker() {}
 
     @Override
-    public Add make(Register dest, Register lhs, Register rhs, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return new Add(dest, lhs, rhs, sizeHelper);
+    public Add make(boolean s, Register dest, Register lhs, Register rhs, SizeHelper<ArmInstruction, Size> sizeHelper) {
+        return new Add(s, dest, lhs, rhs, sizeHelper);
     }
 }

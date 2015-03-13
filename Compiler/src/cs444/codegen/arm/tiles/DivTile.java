@@ -85,7 +85,7 @@ public class DivTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstructi
         instructions.add(new Mov(Condition.EQ, Register.R0, divide ? Immediate8.ZERO : Register.R1, sizeHelper));
         instructions.add(new B(Condition.EQ, doneDiv));
 
-        instructions.add(platform.makeComment("Check for -ve value and save in R2"));
+        instructions.add(platform.makeComment("Check for -ve value and save in R4"));
         instructions.add(new Cmp(Register.R1, Immediate8.ZERO, sizeHelper));
         instructions.add(new Rsb(Condition.LT, Register.R1, Register.R1, Immediate8.ZERO, sizeHelper));
         instructions.add(new Mov(Condition.LT, Register.R4, Immediate8.TRUE, sizeHelper));
