@@ -12,7 +12,7 @@ public class SubOpMaker implements BinOpRegMaker {
     private SubOpMaker() {}
 
     @Override
-    public Sub make(Register dest, Register lhs, Register rhs, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return new Sub(dest, lhs, rhs, sizeHelper);
+    public Sub make(boolean s, Register dest, Register lhs, Register rhs, SizeHelper<ArmInstruction, Size> sizeHelper) {
+        return new Sub(s, dest, lhs, rhs, sizeHelper);
     }
 }

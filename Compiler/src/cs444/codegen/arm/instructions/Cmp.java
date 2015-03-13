@@ -14,7 +14,7 @@ public class Cmp extends CmpBase {
         super("cmp", reg, op2, sizeHelper);
     }
 
-    protected Cmp(final Register reg, final Operand2 op2, final SizeHelper<ArmInstruction, Size> sizeHelper, final Condition cond) {
+    public Cmp(final Register reg, final Operand2 op2, final SizeHelper<ArmInstruction, Size> sizeHelper, final Condition cond) {
         super("cmp", reg, op2, sizeHelper, cond);
     }
 }

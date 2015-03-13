@@ -12,7 +12,7 @@ public class AndOpMaker implements BinOpRegMaker {
     private AndOpMaker() {}
 
     @Override
-    public And make(Register dest, Register lhs, Register rhs, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return new And(dest, lhs, rhs, sizeHelper);
+    public And make(boolean s, Register dest, Register lhs, Register rhs, SizeHelper<ArmInstruction, Size> sizeHelper) {
+        return new And(s, dest, lhs, rhs, sizeHelper);
     }
 }

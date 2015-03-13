@@ -54,11 +54,11 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            // if (!fileName.equals("J1_divdiv")) continue;
+            //if (!fileName.equals("LongAddEqNeq")) continue;
             // Use this line to stop when there are infinite loops
             // if (totalTests == 1) break;
             // Use to not run tests with longs
-            if (fileName.contains("long") || fileName.contains("Long") || fileName.contains("CmpWithSideEffects")) continue;
+            if (!(fileName.contains("long") || fileName.contains("Long") || fileName.contains("CmpWithSideEffects"))) continue;
 
             if (ignoreList.contains(fileName)) {
                 System.out.print("*"); // skip file

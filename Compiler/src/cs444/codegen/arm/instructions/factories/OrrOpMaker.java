@@ -12,7 +12,7 @@ public class OrrOpMaker implements BinOpRegMaker {
     private OrrOpMaker() {}
 
     @Override
-    public Orr make(Register dest, Register lhs, Register rhs, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return new Orr(dest, lhs, rhs, sizeHelper);
+    public Orr make(boolean s, Register dest, Register lhs, Register rhs, SizeHelper<ArmInstruction, Size> sizeHelper) {
+        return new Orr(s, dest, lhs, rhs, sizeHelper);
     }
 }

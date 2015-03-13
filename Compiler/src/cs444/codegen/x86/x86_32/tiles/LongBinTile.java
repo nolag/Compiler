@@ -77,7 +77,7 @@ public class LongBinTile<T extends BinOpExpr> extends LongOnlyTile<X86Instructio
             instructions.add(second.make(Register.DATA, Register.COUNTER, sizeHelper));
         }
 
-        instructions.add(new Comment("End long add or sub"));
+        instructions.add(new Comment("End long bin op"));
         return instructions;
     }
 }
