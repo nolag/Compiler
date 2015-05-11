@@ -49,17 +49,14 @@ public class ShiftTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstruc
         final Typeable t2 = (Typeable) bin.children.get(1);
 
         final TypeSymbol ts1 = t1.getType();
-        final TypeSymbol ts2 = t2.getType();
 
-        final boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
-                || ts2.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
+        final boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
 
         instructions.addAll(platform.getBest(t1));
         if (hasLong) platform.getTileHelper().makeLong(t1, instructions, sizeHelper);
         instructions.add(new Push(Register.R0));
 
         instructions.addAll(platform.getBest(t2));
-        if (hasLong) platform.getTileHelper().makeLong(t2, instructions, sizeHelper);
         instructions.add(new Pop(Register.R1));
 
         instructions.add(new Mov(Register.R0, new RegisterShift(Register.R1, Register.R0, type), sizeHelper));

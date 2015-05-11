@@ -32,7 +32,8 @@ public class Arm32TileHelper extends ArmTileHelper {
     @Override
     public void pushLong(final Typeable item, final Addable<ArmInstruction> instructions, final SizeHelper<ArmInstruction, Size> sizeHelper) {
         makeLong(item, instructions, sizeHelper);
-        instructions.add(new Push(Register.R2, Register.R0));
+        instructions.add(new Push(Register.R2));
+        instructions.add(new Push(Register.R0));
     }
 
     @Override
