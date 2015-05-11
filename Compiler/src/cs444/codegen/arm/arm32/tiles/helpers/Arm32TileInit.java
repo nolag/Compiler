@@ -27,25 +27,25 @@ public class Arm32TileInit extends ArmTileInit {
         super.initBase();
         final TileSet<ArmInstruction, Size> set = TileSet.getOrMake(Arm32Platform.class);
         set.casts.add(CastFromLongTile.getTile());
-        set.adds.add(LongBinTile.<AddExprSymbol> getTile(AddOpMaker.maker, AdcOpMaker.maker, AddExprSymbol.class));
+        set.adds.add(LongBinTile.getTile(AddOpMaker.maker, AdcOpMaker.maker, AddExprSymbol.class));
         set.arrayValues.add(LongArrayValueTile.getTile());
         set.assigns.add(LongAssignmentTile.getTile());
         set.dcls.add(LongDclTile.getTile());
         set.divs.add(LongDivTile.<DivideExprSymbol> getTile(true, true));
-        set.eqs.add(LongCompOpTile.<EqExprSymbol> getTile(null, Condition.NE, Condition.EQ, EqExprSymbol.class));
-        set.ges.add(LongCompOpTile.<GeExprSymbol> getTile(Condition.GT, Condition.LT, Condition.GE, GeExprSymbol.class));
-        set.gts.add(LongCompOpTile.<GtExprSymbol> getTile(Condition.GT, Condition.LT, Condition.GT, GtExprSymbol.class));
-        set.lss.add(LongLogialShifts.getTile(Shift.LSL, Shift.LSR, false, LSExprSymbol.class));
-        set.les.add(LongCompOpTile.<LeExprSymbol> getTile(Condition.LT, Condition.GT, Condition.LE, LeExprSymbol.class));
-        set.lts.add(LongCompOpTile.<LtExprSymbol> getTile(Condition.LT, Condition.GT, Condition.LT, LtExprSymbol.class));
+        set.eqs.add(LongCompOpTile.getTile(null, Condition.NE, Condition.EQ, EqExprSymbol.class));
+        set.ges.add(LongCompOpTile.getTile(Condition.GT, Condition.LT, Condition.GE, GeExprSymbol.class));
+        set.gts.add(LongCompOpTile.getTile(Condition.GT, Condition.LT, Condition.GT, GtExprSymbol.class));
+        set.lss.add(LongShiftsTile.getTile(Shift.LSL, Shift.LSR, Shift.LSL, false, LSExprSymbol.class));
+        set.les.add(LongCompOpTile.getTile(Condition.LT, Condition.GT, Condition.LE, LeExprSymbol.class));
+        set.lts.add(LongCompOpTile.getTile(Condition.LT, Condition.GT, Condition.LT, LtExprSymbol.class));
         set.mults.add(LongMultTile.getTile());
         set.nameValues.add(LongNameValueTile.getTile());
         set.negs.add(LongNegTile.getTile());
         set.nes.add(LongCompOpTile.<NeExprSymbol> getTile(Condition.NE, null, Condition.NE, NeExprSymbol.class));
         set.rems.add(LongDivTile.<RemainderExprSymbol> getTile(false, false));
-        set.rss.add(LongRightShiftTile.getTile());
-        set.subs.add(LongBinTile.<SubtractExprSymbol> getTile(SubOpMaker.maker, SbcOpMaker.maker, SubtractExprSymbol.class));
-        set.urss.add(LongLogialShifts.getTile(Shift.LSR, Shift.LSL, true, URSExprSymbol.class));
+        set.rss.add(LongShiftsTile.getTile(Shift.LSR, Shift.LSL, Shift.ASR, true, RSExprSymbol.class));
+        set.subs.add(LongBinTile.getTile(SubOpMaker.maker, SbcOpMaker.maker, SubtractExprSymbol.class));
+        set.urss.add(LongShiftsTile.getTile(Shift.LSR, Shift.LSL, Shift.LSR, true, URSExprSymbol.class));
         set.nameValues.add(StaticNameValue.getTile());
     }
     //TODO optomizations
