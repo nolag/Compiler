@@ -44,7 +44,7 @@ public class X86_32TileInit extends X86TileInit {
         set.negs.add(LongNegTile.getTile());
         set.nes.add(LongJxxTile.<NeExprSymbol> getTile(JneMaker.maker, null, JneMaker.maker, NeExprSymbol.class));
         set.rems.add(LongRemTile.getTile());
-        set.rss.add(LongRigthShiftTile.getTile());
+        set.rss.add(LongRightShiftTile.getTile());
         set.subs.add(LongBinTile.<SubtractExprSymbol> getTile(SubOpMaker.maker, SbbOpMaker.maker, true, SubtractExprSymbol.class));
         set.urss.add(LongUnsignedRightShift.getTile());
         set.nameValues.add(StaticNameValue.getTile());

@@ -43,7 +43,7 @@ public class Arm32TileInit extends ArmTileInit {
         set.negs.add(LongNegTile.getTile());
         set.nes.add(LongCompOpTile.<NeExprSymbol> getTile(Condition.NE, null, Condition.NE, NeExprSymbol.class));
         set.rems.add(LongDivTile.<RemainderExprSymbol> getTile(false, false));
-        set.rss.add(LongShiftsTile.getTile(Shift.LSR, Shift.LSL, Shift.ASR, true, RSExprSymbol.class));
+        set.rss.add(LongSignedRightShift.getTile());
         set.subs.add(LongBinTile.getTile(SubOpMaker.maker, SbcOpMaker.maker, SubtractExprSymbol.class));
         set.urss.add(LongShiftsTile.getTile(Shift.LSR, Shift.LSL, Shift.LSR, true, URSExprSymbol.class));
         set.nameValues.add(StaticNameValue.getTile());

@@ -9,15 +9,15 @@ import cs444.codegen.x86.instructions.factories.ShrdMaker;
 import cs444.codegen.x86.x86_32.tiles.helpers.LongShiftTile;
 import cs444.parser.symbols.ast.expressions.RSExprSymbol;
 
-public class LongRigthShiftTile extends LongShiftTile<RSExprSymbol> {
-    private static LongRigthShiftTile tile;
+public class LongRightShiftTile extends LongShiftTile<RSExprSymbol> {
+    private static LongRightShiftTile tile;
 
-    public static LongRigthShiftTile getTile() {
-        if (tile == null) tile = new LongRigthShiftTile();
+    public static LongRightShiftTile getTile() {
+        if (tile == null) tile = new LongRightShiftTile();
         return tile;
     }
 
-    private LongRigthShiftTile() {
+    private LongRightShiftTile() {
         super(RSOpMaker.maker, ShrdMaker.maker, true);
     }
 

@@ -47,7 +47,7 @@ public class LongShiftsTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstruc
         return tile;
     }
 
-    private LongShiftsTile(final Shift firstShift, final Shift secondShift, final Shift thirdShift, final boolean zeroFirst) {
+    protected LongShiftsTile(final Shift firstShift, final Shift secondShift, final Shift thirdShift, final boolean zeroFirst) {
         this.firstShift = firstShift;
         this.secondShift = secondShift;
         this.thirdShift = thirdShift;
@@ -96,7 +96,8 @@ public class LongShiftsTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstruc
         // >= 32
         instructions.add(new Sub(Condition.MI, Register.R3, Register.R1, Immediate8.THIRTY_TWO, sizeHelper));
         instructions.add(new Mov(Condition.MI, first, new RegisterShift(second, Register.R3, thirdShift), sizeHelper));
-        instructions.add(new Eor(Condition.MI, second, second, second, sizeHelper));
+        instructions.add(getLargeEnd(instructions, second, sizeHelper));
+
         // < 32
         instructions.add(new Mov(Condition.PL, first, new RegisterShift(first, Register.R1, firstShift), sizeHelper));
         instructions.add(new Orr(Condition.PL, first, first, new RegisterShift(second, Register.R3, secondShift), sizeHelper));
@@ -105,5 +106,10 @@ public class LongShiftsTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstruc
         instructions.add(platform.makeLabel(shiftEnd));
         instructions.add(platform.makeComment("End long shift"));
         return instructions;
+    }
+
+    protected ArmInstruction getLargeEnd(final InstructionsAndTiming<ArmInstruction> instructions, final Register second,
+            final SizeHelper<ArmInstruction, Size> sizeHelper) {
+        return new Eor(Condition.MI, second, second, second, sizeHelper);
     }
 }
