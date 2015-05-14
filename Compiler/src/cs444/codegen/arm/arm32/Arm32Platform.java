@@ -12,6 +12,8 @@ import cs444.codegen.Platform;
 import cs444.codegen.arm.ArmPlatform;
 import cs444.codegen.arm.ArmSizeHelper;
 import cs444.codegen.arm.Immediate12;
+import cs444.codegen.arm.Immediate8;
+import cs444.codegen.arm.ImmediateStr;
 import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
 import cs444.codegen.arm.arm32.tiles.helpers.Arm32TileHelper;
@@ -19,6 +21,8 @@ import cs444.codegen.arm.arm32.tiles.helpers.Arm32TileInit;
 import cs444.codegen.arm.instructions.Comment;
 import cs444.codegen.arm.instructions.Eor;
 import cs444.codegen.arm.instructions.Mov;
+import cs444.codegen.arm.instructions.Movt;
+import cs444.codegen.arm.instructions.Movw;
 import cs444.codegen.arm.instructions.Pop;
 import cs444.codegen.arm.instructions.Push;
 import cs444.codegen.arm.instructions.Str;
@@ -85,7 +89,8 @@ public class Arm32Platform extends ArmPlatform {
                 instructions.addAll(getBest(field));
 
                 if (fieldDcl.getType().value.equals(JoosNonTerminal.LONG)) {
-                    //TODO long
+                    instructions.add(new Str(Register.R2, Register.R11, new Immediate12((short) (offset + 4)), sizeHelper));
+                    instructions.add(new Str(Register.R0, Register.R11, new Immediate12((short) offset), sizeHelper));
                 } else {
                     instructions.add(new Str(Register.R0, Register.R11, new Immediate12((short) offset), sizeHelper));
                 }
@@ -124,13 +129,20 @@ public class Arm32Platform extends ArmPlatform {
 
     @Override
     public void moveStaticLong(String staticLbl, Addable<ArmInstruction> instructions) {
-        // TODO static long move
-
+        instructions.add(new Comment("Moving long value into " + staticLbl));
+        instructions.add(new Movw(Register.R4, new ImmediateStr(":lower16:" + staticLbl), sizeHelper));
+        instructions.add(new Movt(Register.R4, new ImmediateStr(":upper16:" + staticLbl), sizeHelper));
+        instructions.add(new Str(Register.R2, Register.R4, Immediate8.FOUR, sizeHelper));
+        instructions.add(new Str(Register.R0, Register.R4, sizeHelper));
     }
 
     @Override
     public void zeroStaticLong(String staticLbl, Addable<ArmInstruction> instructions) {
-        // TODO zero static long
-
+        instructions.add(new Comment("Moving long value 0 into " + staticLbl));
+        instructions.add(new Movw(Register.R0, new ImmediateStr(":lower16:" + staticLbl), sizeHelper));
+        instructions.add(new Movt(Register.R0, new ImmediateStr(":upper16:" + staticLbl), sizeHelper));
+        instructions.add(new Eor(Register.R1, Register.R1, Register.R1, sizeHelper));
+        instructions.add(new Eor(Register.R1, Register.R0, Immediate8.FOUR, sizeHelper));
+        instructions.add(new Str(Register.R1, Register.R0, sizeHelper));
     }
 }
