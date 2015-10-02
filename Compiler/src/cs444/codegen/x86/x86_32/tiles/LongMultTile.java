@@ -15,7 +15,6 @@ import cs444.codegen.x86.instructions.Mul;
 import cs444.codegen.x86.instructions.Pop;
 import cs444.codegen.x86.instructions.Push;
 import cs444.codegen.x86.instructions.Xchg;
-import cs444.codegen.x86.instructions.Xor;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
@@ -37,9 +36,6 @@ public class LongMultTile extends LongOnlyTile<X86Instruction, Size, MultiplyExp
         final TileHelper<X86Instruction, Size> tileHelper = platform.getTileHelper();
 
         instructions.add(new Comment("Start long mult"));
-
-        instructions.add(new Comment("store if it is negative in dest, -ve mult did not work with 2s compliment"));
-        instructions.add(new Xor(Register.DESTINATION, Register.DESTINATION, sizeHelper));
 
         instructions.add(new Push(Register.BASE, sizeHelper));
 

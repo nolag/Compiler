@@ -33,11 +33,11 @@ public class Arm32TileInit extends ArmTileInit {
         set.dcls.add(LongDclTile.getTile());
         set.divs.add(LongDivTile.<DivideExprSymbol> getTile(true, true));
         set.eqs.add(LongCompOpTile.getTile(null, Condition.NE, Condition.EQ, EqExprSymbol.class));
-        set.ges.add(LongCompOpTile.getTile(Condition.GT, Condition.LT, Condition.GE, GeExprSymbol.class));
-        set.gts.add(LongCompOpTile.getTile(Condition.GT, Condition.LT, Condition.GT, GtExprSymbol.class));
+        set.ges.add(LongCompOpTile.getTile(Condition.GT, Condition.LT, Condition.HS, GeExprSymbol.class));
+        set.gts.add(LongCompOpTile.getTile(Condition.GT, Condition.LT, Condition.HI, GtExprSymbol.class));
         set.lss.add(LongShiftsTile.getTile(Shift.LSL, Shift.LSR, Shift.LSL, false, LSExprSymbol.class));
-        set.les.add(LongCompOpTile.getTile(Condition.LT, Condition.GT, Condition.LE, LeExprSymbol.class));
-        set.lts.add(LongCompOpTile.getTile(Condition.LT, Condition.GT, Condition.LT, LtExprSymbol.class));
+        set.les.add(LongCompOpTile.getTile(Condition.LT, Condition.GT, Condition.LS, LeExprSymbol.class));
+        set.lts.add(LongCompOpTile.getTile(Condition.LT, Condition.GT, Condition.LO, LtExprSymbol.class));
         set.mults.add(LongMultTile.getTile());
         set.nameValues.add(LongNameValueTile.getTile());
         set.negs.add(LongNegTile.getTile());

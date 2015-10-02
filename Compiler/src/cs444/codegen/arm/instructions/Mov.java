@@ -10,6 +10,11 @@ import cs444.codegen.arm.instructions.bases.Branch.Condition;
 import cs444.codegen.arm.instructions.bases.MovBase;
 
 public class Mov extends MovBase {
+    public Mov(final boolean s, final Condition cond, final Register dest, final Operand2 src,
+            final SizeHelper<ArmInstruction, Size> sizeHelper) {
+        super(s, "mov", cond, dest, src, sizeHelper);
+    }
+
     public Mov(final Condition cond, final Register dest, final Operand2 src, final SizeHelper<ArmInstruction, Size> sizeHelper) {
         super("mov", cond, dest, src, sizeHelper);
     }
