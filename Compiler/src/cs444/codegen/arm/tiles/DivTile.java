@@ -101,7 +101,7 @@ public class DivTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstructi
         instructions.add(new Mov(Register.R2, Immediate8.ONE, sizeHelper));
         instructions.add(new Mov(Register.R2, new RegisterShift(Register.R2, Register.R3, Shift.LSL), sizeHelper));
 
-        instructions.add(platform.makeComment("Zero out quotient and remainder"));
+        instructions.add(platform.makeComment("Zero out divide and remainder"));
         instructions.add(new Eor(Register.R3, Register.R3, Register.R3, sizeHelper));
         instructions.add(new Eor(Register.R5, Register.R5, Register.R5, sizeHelper));
 
@@ -125,8 +125,8 @@ public class DivTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstructi
         instructions.add(new Mov(Register.R2, new ConstantShift(Register.R2, (byte) 1, Shift.LSR), sizeHelper));
         tileHelper.setupJump(loopStart, sizeHelper, instructions);
         tileHelper.setupLbl(loopEnd, instructions);
-        tileHelper.setupComment("Long division end " + mynum, instructions);
-        instructions.add(divide ? new Mov(Register.R0, Register.R5, sizeHelper) : new Mov(Register.R0, Register.R3, sizeHelper));
+        tileHelper.setupComment("Long division (algorithm, not long type) end " + mynum, instructions);
+        instructions.add(new Mov(Register.R0, divide ? Register.R5 : Register.R3, sizeHelper));
 
         instructions.add(platform.makeComment("deal with -ve values"));
         instructions.add(new Cmp(Register.R4, Immediate8.TRUE, sizeHelper));

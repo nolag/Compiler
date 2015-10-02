@@ -4,11 +4,12 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
+import cs444.codegen.arm.instructions.Add;
 import cs444.codegen.arm.instructions.Comment;
-import cs444.codegen.arm.instructions.Mal;
+import cs444.codegen.arm.instructions.Mov;
 import cs444.codegen.arm.instructions.Pop;
 import cs444.codegen.arm.instructions.Push;
-import cs444.codegen.arm.instructions.Smlal;
+import cs444.codegen.arm.instructions.Umull;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.generic.tiles.helpers.LongOnlyTile;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
@@ -35,17 +36,20 @@ public class LongMultTile extends LongOnlyTile<ArmInstruction, Size, MultiplyExp
         instructions.addAll(platform.getBest(lhs));
         tileHelper.makeLong(lhs, instructions, sizeHelper);
 
-        instructions.add(new Push(Register.R2, Register.R0));
+        instructions.add(new Push(Register.R0, Register.R2));
 
         final Typeable rhs = (Typeable) mul.children.get(1);
         instructions.addAll(platform.getBest(rhs));
         tileHelper.makeLong(rhs, instructions, sizeHelper);
 
         instructions.add(new Pop(Register.R1));
-        instructions.add(new Smlal(Register.R3, Register.R0, Register.R1, Register.R0));
-        instructions.add(new Mal(Register.R3, Register.R2, Register.R1, Register.R3));
+        instructions.add(new Umull(Register.R3, Register.R4, Register.R1, Register.R0));
+        instructions.add(new Umull(Register.R5, Register.R6, Register.R1, Register.R2));
         instructions.add(new Pop(Register.R1));
-        instructions.add(new Mal(Register.R3, Register.R1, Register.R0, Register.R3));
+        instructions.add(new Umull(Register.R6, Register.R7, Register.R0, Register.R1));
+        instructions.add(new Add(Register.R2, Register.R5, Register.R6, sizeHelper));
+        instructions.add(new Add(Register.R2, Register.R2, Register.R4, sizeHelper));
+        instructions.add(new Mov(Register.R0, Register.R3, sizeHelper));
 
         instructions.add(new Comment("End long multiply"));
         return instructions;

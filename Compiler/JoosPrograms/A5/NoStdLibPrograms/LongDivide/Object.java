@@ -17,7 +17,7 @@ public class Object{
         if(l1 / l2 != 2) i = i + 16;
         l1 = 100;
         l2 = 10;
-        if(l1 / l2 != 10) i = i + 64;
+        if(l1 / l2 != 10) i = i + 32;
         return i;
     }
 }

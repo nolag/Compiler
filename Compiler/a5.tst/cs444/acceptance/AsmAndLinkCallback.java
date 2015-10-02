@@ -37,11 +37,13 @@ public class AsmAndLinkCallback implements ITestCallbacks {
     @Override
     public boolean beforeCompile(final File _) throws IOException {
         final File outputDir = new File(Compiler.OUTPUT_DIRECTORY);
+
         for (final File platformFolder : outputDir.listFiles()) {
             //some computers (my mac) make files like .DS_Store...
             if (platformFolder.isFile()) continue;
             deleteNonRuntime(platformFolder);
         }
+
         return true;
     }
 
