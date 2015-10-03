@@ -183,7 +183,7 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
         tileHelper.setupJump(loopStart, sizeHelper, instructions);
         tileHelper.setupLbl(loopEnd, instructions);
 
-        instructions.add(new Mov(Register.R0, divide ? Register.R5 : Register.R3, sizeHelper));
+        instructions.add(new Mov(Register.R0, divide ? Register.R5 : Register.R11, sizeHelper));
         instructions.add(new Mov(Register.R2, divide ? Register.R8 : Register.R7, sizeHelper));
 
         instructions.add(platform.makeComment("deal with -ve values"));
