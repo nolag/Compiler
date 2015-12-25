@@ -77,7 +77,7 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
         instructions.add(new B(Condition.EQ, doneDiv));
 
         instructions.addAll(ArmSizeHelper.putInReg(Register.R5, Integer.MIN_VALUE, sizeHelper));
-        instructions.addAll(ArmSizeHelper.putInReg(Register.R4, -1, sizeHelper));
+        instructions.addAll(ArmSizeHelper.putInReg(Register.R4, 0, sizeHelper));
 
         instructions.add(new Cmp(Register.R0, Register.R4, sizeHelper));
         instructions.add(new Cmp(Register.R2, Register.R5, sizeHelper, Condition.EQ));
@@ -103,18 +103,20 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
         if (bothForNeg) instructions.add(new Eor(Register.R4, Register.R4, Immediate8.TRUE, sizeHelper));
         instructions.add(platform.makeLabel(endNegation));
 
-        // Looking at the Div tile, R2 => R9
-
-        instructions.add(new Clz(Register.R10, Register.R1, sizeHelper));
-        instructions.add(new Rsb(Register.R10, Register.R10, Immediate8.THIRTY_TWO, sizeHelper));
-        instructions.add(new Mov(Register.R9, Immediate8.ONE, sizeHelper));
-        instructions.add(new Mov(Register.R9, new RegisterShift(Register.R9, Register.R10, Shift.LSL), sizeHelper));
-
         instructions.add(platform.makeComment("Zero out divide and remainder (11,7) (5,8)"));
         instructions.add(new Eor(Register.R11, Register.R11, Register.R11, sizeHelper));
         instructions.add(new Eor(Register.R7, Register.R7, Register.R7, sizeHelper));
         instructions.add(new Eor(Register.R5, Register.R5, Register.R5, sizeHelper));
         instructions.add(new Eor(Register.R8, Register.R8, Register.R8, sizeHelper));
+
+        // Looking at the Div tile, R2 => R9
+        String noFirst = "noFirstNumber" + mynum;
+        instructions.add(new Clz(Register.R10, Register.R3, sizeHelper));
+        instructions.add(new Cmp(Register.R10, Immediate8.THIRTY_TWO, sizeHelper));
+        instructions.add(new B(Condition.EQ, noFirst));
+        instructions.add(new Rsb(Register.R10, Register.R10, Immediate8.THIRTY_ONE, sizeHelper));
+        instructions.add(new Mov(Register.R9, Immediate8.ONE, sizeHelper));
+        instructions.add(new Mov(Register.R9, new RegisterShift(Register.R9, Register.R10, Shift.LSL), sizeHelper));
 
         instructions.add(platform.makeComment("Time for long division, first part"));
         String loopStart = "divideStartFirst" + mynum;
@@ -148,6 +150,7 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
         tileHelper.setupLbl(loopEnd, instructions);
         tileHelper.setupComment("Long division (algorithm, not long type) end " + mynum, instructions);
 
+        instructions.add(platform.makeLabel(noFirst));
         instructions.add(platform.makeComment("Time for long division, second part"));
 
         instructions.add(new Mov(Register.R10, Immediate8.THIRTY_ONE, sizeHelper));
@@ -160,7 +163,7 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
         instructions.add(new B(Condition.EQ, loopEnd));
         instructions.add(new Mov(true, Condition.AL, Register.R11, new ConstantShift(Register.R11, (byte) 1, Shift.LSL), sizeHelper));
         instructions.add(new Mov(Register.R7, new ConstantShift(Register.R7, (byte) 1, Shift.LSL), sizeHelper));
-        instructions.add(new Orr(Condition.VS, Register.R7, Register.R7, Immediate8.ONE, sizeHelper));
+        instructions.add(new Orr(Condition.HS, Register.R7, Register.R7, Immediate8.ONE, sizeHelper));
         instructions.add(platform.makeComment("This is the actual long division part for a bit"));
         instructions.add(new And(Register.R6, Register.R9, Register.R1, sizeHelper));
         instructions.add(new Cmp(Register.R6, Immediate8.ZERO, sizeHelper));
