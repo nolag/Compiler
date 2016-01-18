@@ -1,6 +1,5 @@
 package cs444.codegen.x86.tiles;
 
-import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
@@ -24,11 +23,11 @@ public class AssignmentTile extends NumericHelperTile<AssignmentExprSymbol> {
     private static AssignmentTile tile;
 
     public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
-        if(tile == null) tile = new AssignmentTile();
-        TileSet.<X86Instruction, Size>getOrMake(klass).assigns.add(tile);
+        if (tile == null) tile = new AssignmentTile();
+        TileSet.<X86Instruction, Size> getOrMake(klass).assigns.add(tile);
     }
 
-    private AssignmentTile() { }
+    private AssignmentTile() {}
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final AssignmentExprSymbol op, final Platform<X86Instruction, Size> platform) {
@@ -36,7 +35,6 @@ public class AssignmentTile extends NumericHelperTile<AssignmentExprSymbol> {
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         final TileHelper<X86Instruction, Size> tileHelper = platform.getTileHelper();
-
 
         final Typeable leftHandSide = (Typeable) op.children.get(0);
         final Typeable rightHandSide = (Typeable) op.children.get(1);
@@ -49,9 +47,9 @@ public class AssignmentTile extends NumericHelperTile<AssignmentExprSymbol> {
         instructions.add(new Pop(Register.DATA, sizeHelper));
         final Memory to = new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.DATA));
 
-        final Size size = CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).lhsSize;
+        final Size size = sizeHelper.getSizeOfType(op.getType().getTypeDclNode().fullName);
 
-        if(leftHandSide.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)) {
+        if (leftHandSide.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)) {
             tileHelper.makeLong(rightHandSide, instructions, sizeHelper);
         }
 

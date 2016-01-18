@@ -9,14 +9,20 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.instructions.*;
+import cs444.codegen.x86.instructions.Cmp;
+import cs444.codegen.x86.instructions.Comment;
+import cs444.codegen.x86.instructions.Label;
+import cs444.codegen.x86.instructions.Mov;
+import cs444.codegen.x86.instructions.Pop;
+import cs444.codegen.x86.instructions.Push;
+import cs444.codegen.x86.instructions.Xor;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.instructions.factories.JxxMaker;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
-public abstract class LongJxxTile<T extends BinOpExpr> implements ITile<X86Instruction, Size, T>{
+public abstract class LongJxxTile<T extends BinOpExpr> implements ITile<X86Instruction, Size, T> {
 
     private final JxxMaker finishEarlyT;
     private final JxxMaker finishEarlyF;
@@ -44,23 +50,23 @@ public abstract class LongJxxTile<T extends BinOpExpr> implements ITile<X86Instr
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Mov(Register.BASE, Immediate.TRUE, sizeHelper));
 
-        final Typeable lhs = (Typeable)bin.children.get(0);
+        final Typeable lhs = (Typeable) bin.children.get(0);
         instructions.addAll(platform.getBest(lhs));
         tileHelper.makeLong(lhs, instructions, sizeHelper);
 
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Push(Register.DATA, sizeHelper));
 
-        final Typeable rhs = (Typeable)bin.children.get(1);
+        final Typeable rhs = (Typeable) bin.children.get(1);
         instructions.addAll(platform.getBest(rhs));
         tileHelper.makeLong(rhs, instructions, sizeHelper);
 
         instructions.add(new Pop(Register.COUNTER, sizeHelper));
         instructions.add(new Cmp(Register.DATA, Register.COUNTER, sizeHelper));
         instructions.add(new Pop(Register.COUNTER, sizeHelper));
-        
-        if(finishEarlyT != null) instructions.add(finishEarlyT.make(end, sizeHelper));
-        if(finishEarlyF != null) instructions.add(finishEarlyF.make(endFalse, sizeHelper));
+
+        if (finishEarlyT != null) instructions.add(finishEarlyT.make(end, sizeHelper));
+        if (finishEarlyF != null) instructions.add(finishEarlyF.make(endFalse, sizeHelper));
 
         instructions.add(new Cmp(Register.ACCUMULATOR, Register.COUNTER, sizeHelper));
         instructions.add(finishRegular.make(end, sizeHelper));
@@ -80,8 +86,8 @@ public abstract class LongJxxTile<T extends BinOpExpr> implements ITile<X86Instr
         boolean isOk;
         final Typeable ts1 = (Typeable) op.children.get(0);
         final Typeable ts2 = (Typeable) op.children.get(1);
-        isOk = ts1.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG) ||
-                ts2.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
+        isOk = ts1.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
+                || ts2.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
 
         return isOk;
     }

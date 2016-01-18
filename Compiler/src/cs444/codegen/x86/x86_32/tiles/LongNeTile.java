@@ -12,8 +12,8 @@ public class LongNeTile extends LongJxxTile<NeExprSymbol> {
     private static LongNeTile tile;
 
     public static void init() {
-        if(tile == null) tile = new LongNeTile();
-        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).nes.add(tile);
+        if (tile == null) tile = new LongNeTile();
+        TileSet.<X86Instruction, Size> getOrMake(X86_32Platform.class).nes.add(tile);
     }
 
     private LongNeTile() {

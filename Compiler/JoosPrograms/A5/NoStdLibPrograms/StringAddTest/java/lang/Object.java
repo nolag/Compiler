@@ -49,7 +49,9 @@ public class Object{
         cs2[4] = 'l';
         s4 = new String(cs2);
         
-        s3 = 7 + "rofl";
+        String rofl = "rofl";
+        
+        s3 = 7 + rofl;
         if(!s3.equals((Object)s4)) i = i + 4;
         
         cs2 = new char[8];
@@ -63,7 +65,8 @@ public class Object{
         cs2[7] = 'l';
         s4 = new String(cs2);
         
-        s3 = "lol" + 7 + "rofl";
+        // Allow one literal to make sure the tree does lol + 7 correclty, why not?
+        s3 = "lol" + 7 + rofl;
         if(!s3.equals((Object)"lol7rofl")) i = i + 8;
         
         return i;

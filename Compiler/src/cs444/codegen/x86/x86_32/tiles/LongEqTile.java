@@ -13,8 +13,8 @@ public class LongEqTile extends LongJxxTile<EqExprSymbol> {
     private static LongEqTile tile;
 
     public static void init() {
-        if(tile == null) tile = new LongEqTile();
-        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).eqs.add(tile);
+        if (tile == null) tile = new LongEqTile();
+        TileSet.<X86Instruction, Size> getOrMake(X86_32Platform.class).eqs.add(tile);
     }
 
     private LongEqTile() {

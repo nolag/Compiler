@@ -1,6 +1,12 @@
 package cs444;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.Reader;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -22,9 +28,9 @@ import cs444.types.PkgClassInfo;
 
 public class Compiler {
     //NOTE, if I want to allow the output directory to change, I need to copy each OS's runtime for each platform.
-    public static final String BASE_DIRECTORY = "/Volumes/RAM/";
+    public static final String BASE_DIRECTORY = "";
     //default to all supported platforms
-    public static final String [] defaultPlatforms = {"-x86", "-x64"};
+    public static final String[] defaultPlatforms = { "-x86", "-x64" };
 
     public static final String OUTPUT_DIRECTORY = BASE_DIRECTORY + "output";
     public static final int COMPILER_ERROR_CODE = 42;
@@ -34,15 +40,15 @@ public class Compiler {
      * @throws URISyntaxException
      * @throws Exception
      */
-    public static void main(final String[] args){
+    public static void main(final String[] args) {
         final CompilerSettings cs = new CompilerSettings(args);
         System.exit(compile(cs.files, true, true, cs.platforms));
     }
 
-    public static int compile(final List<String> files, final boolean printErrors,
-            final boolean outputFiles, final Collection<Platform<?, ?>> platforms) {
+    public static int compile(final List<String> files, final boolean printErrors, final boolean outputFiles,
+            final Collection<Platform<?, ?>> platforms) {
 
-        if (files.size() == 0){
+        if (files.size() == 0) {
             System.err.println("ERROR: At least a file should be passed.");
             printUsage();
             return COMPILER_ERROR_CODE;
@@ -52,15 +58,15 @@ public class Compiler {
         ANonTerminal parseTree = null;
 
         try {
-            for(final String fileName : files){
+            for (final String fileName : files) {
 
                 reader = new FileReader(fileName);
                 parseTree = parse(reader);
 
                 final IASTBuilder builder = new JoosASTBuilder(new File(fileName).getName());
-                parseTree = (ANonTerminal)builder.build(parseTree);
+                parseTree = (ANonTerminal) builder.build(parseTree);
 
-                PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol)parseTree);
+                PkgClassInfo.instance.addClassOrInterface((AInterfaceOrClassSymbol) parseTree);
             }
 
             //Make a copy, the symbols can add more for arrays.
@@ -70,19 +76,22 @@ public class Compiler {
             resolvers = new LinkedList<APkgClassResolver>(PkgClassInfo.instance.getSymbols());
 
             analyzeReachability(resolvers);
-            for(final APkgClassResolver resolver : resolvers) resolver.linkLocalNamesToDcl(platforms);
-            for(final APkgClassResolver resolver : resolvers) resolver.checkFields(platforms);
-            for(final APkgClassResolver resolver : resolvers) resolver.clean();
+            for (final APkgClassResolver resolver : resolvers)
+                resolver.linkLocalNamesToDcl(platforms);
+            for (final APkgClassResolver resolver : resolvers)
+                resolver.checkFields(platforms);
+            for (final APkgClassResolver resolver : resolvers)
+                resolver.clean();
 
-            for(final Platform<?, ?> platform : platforms){
+            for (final Platform<?, ?> platform : platforms) {
                 generateCode(resolvers, outputFiles, platform);
             }
 
-        }catch(final Exception e){
+        } catch (final Exception e) {
             if (printErrors) e.printStackTrace();
             return COMPILER_ERROR_CODE;
-        }finally{
-            if(reader != null){
+        } finally {
+            if (reader != null) {
                 try {
                     reader.close();
                 } catch (final IOException e) {
@@ -94,8 +103,7 @@ public class Compiler {
         return 0;
     }
 
-    private static void analyzeReachability(final List<APkgClassResolver> resolvers)
-            throws CompilerException {
+    private static void analyzeReachability(final List<APkgClassResolver> resolvers) throws CompilerException {
 
         for (final APkgClassResolver resolver : resolvers) {
             resolver.reduceToConstantExprs();
@@ -104,35 +112,37 @@ public class Compiler {
     }
 
     private static void buildAllResolvers(final List<APkgClassResolver> resolvers) throws CompilerException {
-        for(final APkgClassResolver resolver : resolvers) resolver.build();
+        for (final APkgClassResolver resolver : resolvers)
+            resolver.build();
     }
 
-    private static void generateCode(final List<APkgClassResolver> resolvers,
-            final boolean outputFile, final Platform<?, ?> platform) throws IOException{
+    private static void generateCode(final List<APkgClassResolver> resolvers, final boolean outputFile, final Platform<?, ?> platform)
+            throws IOException {
 
         PrintStream printer;
-        final String outputDir = platform.getOutputDir() ;
+        final String outputDir = platform.getOutputDir();
 
         platform.generateSIT(resolvers, outputFile);
         platform.makeSubtypeTable(resolvers, outputFile, outputDir);
 
-        for (final APkgClassResolver resolver : resolvers) resolver.computeFieldOffsets(platform);
+        for (final APkgClassResolver resolver : resolvers)
+            resolver.computeFieldOffsets(platform);
 
         platform.generateStaticCode(resolvers, outputFile, outputDir);
 
         final CodeGenVisitor<?, ?> codeGen = platform.makeNewCodeGen();
-        for(final APkgClassResolver resolver : resolvers){
-            if(!resolver.shouldGenCode()) continue;
+        for (final APkgClassResolver resolver : resolvers) {
+            if (!resolver.shouldGenCode()) continue;
             codeGen.genLayoutForStaticFields(resolver.getUninheritedStaticFields());
             codeGen.genHeader(resolver);
             resolver.generateCode(codeGen);
-            if (outputFile){
+            if (outputFile) {
                 File file;
-                if(resolver.pkg == APkgClassResolver.DEFAULT_PKG) file = new File(outputDir, resolver.name + ".s");
+                if (resolver.pkg == APkgClassResolver.DEFAULT_PKG) file = new File(outputDir, resolver.name + ".s");
                 else file = new File(outputDir, resolver.fullName + ".s");
                 file.createNewFile();
                 printer = new PrintStream(file);
-            }else{
+            } else {
                 final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 printer = new PrintStream(baos);
             }
@@ -146,8 +156,7 @@ public class Compiler {
         System.err.println("Usage: ./joosc file1 [file2 [file3 ...]]");
     }
 
-    private static ANonTerminal parse(final Reader reader)
-            throws FileNotFoundException, IOException, LexerException,
+    private static ANonTerminal parse(final Reader reader) throws FileNotFoundException, IOException, LexerException,
             UnexpectedTokenException, URISyntaxException {
         ANonTerminal parseTree;
 

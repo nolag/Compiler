@@ -4,8 +4,15 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.Stack;
 
 import cs444.Compiler;
 import cs444.CompilerSettings;
@@ -25,15 +32,15 @@ public class TestHelper {
 
     public static final String TEST_LOCATION = Compiler.BASE_DIRECTORY + "JoosPrograms/";
 
-
     //Holds stdlib so that it can be reused
     private static boolean hasStdlib = false;
     private static Map<String, Map<String, PkgClassResolver>> nameSpaces;
     private static Map<String, APkgClassResolver> symbolMap;
     private static List<APkgClassResolver> pkgs;
 
-    public static void assertReturnCodeForFiles(final String path, final int expectedReturnCode, final boolean printErrors, final boolean includeStdLib,
-            final boolean outputAsmFiles, final List<String> ignoreList, final ITestCallbacks testCallbacks) throws IOException, InterruptedException {
+    public static void assertReturnCodeForFiles(final String path, final int expectedReturnCode, final boolean printErrors,
+            final boolean includeStdLib, final boolean outputAsmFiles, final List<String> ignoreList, final ITestCallbacks testCallbacks)
+            throws IOException, InterruptedException {
 
         TestHelper.callbacks = testCallbacks;
         TestHelper.outputAsmFiles = outputAsmFiles;
@@ -47,7 +54,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            //if (!fileName.equals("Literals2")) continue;
+            // if (!fileName.equals("EagerBooleanConditionalsNoLoops")) continue;
             //Use this line to stop when there are infinite loops
             //if (totalTests == 20) break;
 
@@ -57,8 +64,8 @@ public class TestHelper {
                 continue;
             }
 
-            if (file.isFile() && fileName.toLowerCase().endsWith(".java") ||
-                    (file.isDirectory() && !fileName.toLowerCase().endsWith(".skip"))) {
+            if (file.isFile() && fileName.toLowerCase().endsWith(".java")
+                    || (file.isDirectory() && !fileName.toLowerCase().endsWith(".skip"))) {
                 runTestCase(path, expectedReturnCode, printErrors, includeStdLib, failFiles, file, fileName);
                 totalTests++;
             } else {
@@ -69,38 +76,39 @@ public class TestHelper {
 
         printSummary(totalTests, filesSkipped, failFiles);
         final int failures = failFiles.size();
-        assertEquals("Unexpected return code compiling or running " + failures + " files. Expected return code was: " + expectedReturnCode, 0, failures);
+        assertEquals("Unexpected return code compiling or running " + failures + " files. Expected return code was: " + expectedReturnCode,
+                0, failures);
     }
 
-    private static void runTestCase(final String path, final int expectedReturnCode,
-            final boolean printErrors, final boolean includeStdLib, final List<String> failFiles,
-            final File file, final String fileName) throws IOException, InterruptedException {
+    private static void runTestCase(final String path, final int expectedReturnCode, final boolean printErrors,
+            final boolean includeStdLib, final List<String> failFiles, final File file, final String fileName) throws IOException,
+            InterruptedException {
         final List<String> sourceFiles = getAllFiles(file);
 
-        if (!(callbacks.beforeCompile(file)
-                && compileAndTest(sourceFiles, printErrors, includeStdLib) == expectedReturnCode
-                && callbacks.afterCompile(file, platforms))) {
+        if (!(callbacks.beforeCompile(file) && compileAndTest(sourceFiles, printErrors, includeStdLib) == expectedReturnCode && callbacks
+                .afterCompile(file, platforms))) {
 
             failFiles.add(path + fileName);
         }
     }
 
-    public static void assertReturnCodeForFiles(final String path, final int expectedReturnCode, final boolean printErrors, final boolean includeStdLib,
-            final List<String> ignoreList) throws IOException, InterruptedException {
+    public static void assertReturnCodeForFiles(final String path, final int expectedReturnCode, final boolean printErrors,
+            final boolean includeStdLib, final List<String> ignoreList) throws IOException, InterruptedException {
         assertReturnCodeForFiles(path, expectedReturnCode, printErrors, includeStdLib, false, ignoreList, new EmptyCallbacks());
     }
 
-    public static void assertReturnCodeForFiles(final String path, final int expectedReturnCode, final boolean printErrors) throws IOException, InterruptedException {
+    public static void assertReturnCodeForFiles(final String path, final int expectedReturnCode, final boolean printErrors)
+            throws IOException, InterruptedException {
         assertReturnCodeForFiles(path, expectedReturnCode, printErrors, true);
     }
 
-    public static void assertReturnCodeForFiles(final String path, final int expectedReturnCode, final boolean printErrors, final boolean includeStdLib)
-            throws IOException, InterruptedException {
-        assertReturnCodeForFiles(path, expectedReturnCode, printErrors, includeStdLib, Collections.<String>emptyList());
+    public static void assertReturnCodeForFiles(final String path, final int expectedReturnCode, final boolean printErrors,
+            final boolean includeStdLib) throws IOException, InterruptedException {
+        assertReturnCodeForFiles(path, expectedReturnCode, printErrors, includeStdLib, Collections.<String> emptyList());
     }
 
-    public static void assertReturnCodeForFiles(final String path,
-            final int expectedReturnCode, final boolean printErrors, final List<String> ignoreList) throws IOException, InterruptedException {
+    public static void assertReturnCodeForFiles(final String path, final int expectedReturnCode, final boolean printErrors,
+            final List<String> ignoreList) throws IOException, InterruptedException {
         assertReturnCodeForFiles(path, expectedReturnCode, printErrors, true, ignoreList);
     }
 
@@ -115,9 +123,8 @@ public class TestHelper {
             final File currentFile = toVisit.pop();
             if (currentFile.isFile()) {
                 final String fileName = currentFile.getAbsolutePath();
-                if (fileName.endsWith(".java"))
-                    if (fileName.endsWith("Main.java"))result.add(0, fileName);
-                    else result.add(fileName);
+                if (fileName.endsWith(".java")) if (fileName.endsWith("Main.java")) result.add(0, fileName);
+                else result.add(fileName);
             } else if (currentFile.isDirectory()) {
                 for (final File sourceFile : currentFile.listFiles())
                     toVisit.push(sourceFile);
@@ -132,7 +139,7 @@ public class TestHelper {
         if (filesSkipped > 0) System.out.println("Number of files skipped: " + filesSkipped);
         if (failFiles.size() != 0) {
             System.out.println("Failed " + failFiles.size());
-            for (final String fileName: failFiles) {
+            for (final String fileName : failFiles) {
                 System.out.println("\t" + fileName);
             }
         }
@@ -144,14 +151,14 @@ public class TestHelper {
             final List<String> files = getAllFiles(new File(TEST_LOCATION + "StdLib"));
             platforms = new HashSet<>();
             final Set<String> opts = Collections.emptySet();
-            for(final String platformStr : Compiler.defaultPlatforms) {
+            for (final String platformStr : Compiler.defaultPlatforms) {
                 platforms.add(CompilerSettings.platformMap.get(platformStr).getPlatform(opts));
             }
             Compiler.compile(files, true, false, platforms);
             final PkgClassInfo info = PkgClassInfo.instance;
             nameSpaces = new HashMap<>();
             //because each entry is a map, we need to clone the maps or they will have entries put into them.
-            for(final Entry<String, Map<String, PkgClassResolver>> entry : info.nameSpaces.entrySet()) {
+            for (final Entry<String, Map<String, PkgClassResolver>> entry : info.nameSpaces.entrySet()) {
                 final Map<String, PkgClassResolver> resolverClone = new HashMap<>(entry.getValue());
                 nameSpaces.put(entry.getKey(), resolverClone);
             }
@@ -162,8 +169,8 @@ public class TestHelper {
         }
     }
 
-    private static int compileAndTest(final List<String> files, final boolean printErrors, final boolean includeStdlib)
-            throws IOException, InterruptedException {
+    private static int compileAndTest(final List<String> files, final boolean printErrors, final boolean includeStdlib) throws IOException,
+            InterruptedException {
 
         PkgClassResolver.reset();
         TileSet.reset();
@@ -178,7 +185,7 @@ public class TestHelper {
 
         final Set<String> opts = Collections.emptySet();
         platforms = new HashSet<>();
-        for(final String platformStr : Compiler.defaultPlatforms) {
+        for (final String platformStr : Compiler.defaultPlatforms) {
             platforms.add(CompilerSettings.platformMap.get(platformStr).getPlatform(opts));
         }
 
