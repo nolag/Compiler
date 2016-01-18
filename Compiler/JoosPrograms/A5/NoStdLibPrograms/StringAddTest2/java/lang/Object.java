@@ -17,13 +17,17 @@ public class Object{
         //using binary bits so it's easy to see what is wrong.
         if(!s3.equals((Object)"lollol")) i = i + 1;
         
-        s3 = "lol" + 7;
+        String lol = "lol";
+        
+        s3 = lol + 7;
         if(!s3.equals((Object)"lol7")) i = i + 2;
         
-        s3 = 7 + "rofl";
+        String rofl = "rofl";
+        
+        s3 = 7 + rofl;
         if(!s3.equals((Object)"7rofl")) i = i + 4;
         
-        s3 = "lol" + 7 + "rofl";
+        s3 =  lol + 7 + rofl;
         if(!s3.equals((Object)"lol7rofl")) i = i + 8;
         
         return i;

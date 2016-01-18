@@ -6,7 +6,6 @@ import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.bases.UniInstruction;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
-
 public interface JxxMaker {
     public UniInstruction make(final Immediate where, final SizeHelper<X86Instruction, Size> sizeHelper);
 }
