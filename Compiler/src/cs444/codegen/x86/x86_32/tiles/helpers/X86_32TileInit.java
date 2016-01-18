@@ -34,10 +34,10 @@ public class X86_32TileInit extends X86TileInit {
         set.dcls.add(LongDclTile.getTile());
         set.divs.add(LongDivTile.getTile());
         set.eqs.add(LongJxxTile.<EqExprSymbol> getTile(null, JneMaker.maker, JeMaker.maker, EqExprSymbol.class));
-        set.ges.add(LongJxxTile.<GeExprSymbol> getTile(JlMaker.maker, JgMaker.maker, JleMaker.maker, GeExprSymbol.class));
-        set.gts.add(LongJxxTile.<GtExprSymbol> getTile(JlMaker.maker, JgMaker.maker, JaMaker.maker, GtExprSymbol.class));
+        set.ges.add(LongJxxTile.<GeExprSymbol> getTile(JlMaker.maker, JgMaker.maker, JbeMaker.maker, GeExprSymbol.class));
+        set.gts.add(LongJxxTile.<GtExprSymbol> getTile(JlMaker.maker, JgMaker.maker, JbMaker.maker, GtExprSymbol.class));
         set.lss.add(LongLeftShift.getTile());
-        set.les.add(LongJxxTile.<LeExprSymbol> getTile(JgMaker.maker, JlMaker.maker, JgeMaker.maker, LeExprSymbol.class));
+        set.les.add(LongJxxTile.<LeExprSymbol> getTile(JgMaker.maker, JlMaker.maker, JaeMaker.maker, LeExprSymbol.class));
         set.lts.add(LongJxxTile.<LtExprSymbol> getTile(JgMaker.maker, JlMaker.maker, JaMaker.maker, LtExprSymbol.class));
         set.mults.add(LongMultTile.getTile());
         set.nameValues.add(LongNameValueTile.getTile());

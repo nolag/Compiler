@@ -32,6 +32,9 @@ public class TestHelper {
 
     public static final String TEST_LOCATION = Compiler.BASE_DIRECTORY + "JoosPrograms/";
 
+    // NOTE: this needs to change pending on the platform you are running/testing on.
+    public static final String[] testPlatforms = { "-x86", "-x64" };
+
     // Holds stdlib so that it can be reused
     private static boolean hasStdlib = false;
     private static Map<String, Map<String, PkgClassResolver>> nameSpaces;
@@ -54,7 +57,7 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            if (!(fileName.equals("LongDivideLongest"))) continue;
+            // if (!(fileName.equals("LongDivideLongest"))) continue;
             // Use this line to stop when there are infinite loops
             // if (totalTests == 1) break;
             // Use to not run tests with longs
@@ -152,7 +155,7 @@ public class TestHelper {
             final List<String> files = getAllFiles(new File(TEST_LOCATION + "StdLib"));
             platforms = new HashSet<>();
             final Set<String> opts = Collections.emptySet();
-            for (final String platformStr : Compiler.defaultPlatforms) {
+            for (final String platformStr : testPlatforms) {
                 platforms.add(CompilerSettings.platformMap.get(platformStr).getPlatform(opts));
             }
             Compiler.compile(files, true, false, platforms);
@@ -187,7 +190,7 @@ public class TestHelper {
 
         final Set<String> opts = Collections.emptySet();
         platforms = new HashSet<>();
-        for (final String platformStr : Compiler.defaultPlatforms) {
+        for (final String platformStr : testPlatforms) {
             platforms.add(CompilerSettings.platformMap.get(platformStr).getPlatform(opts));
         }
 
