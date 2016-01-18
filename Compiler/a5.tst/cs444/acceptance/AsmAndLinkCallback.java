@@ -13,8 +13,8 @@ import cs444.codegen.Platform;
 
 public class AsmAndLinkCallback implements ITestCallbacks {
     //NOTE: change this if you are testing on another os or if you change the exec/link to work multi os
-    private static final String osToTest = "linux";
-    //private static final String osToTest = "osx";
+    // private static final String osToTest = "linux";
+    private static final String osToTest = "osx";
 
     private static final String EXEC = "main";
     private static final int EXPECTED_DEFAULT_RTN_CODE = 123;
@@ -122,7 +122,7 @@ public class AsmAndLinkCallback implements ITestCallbacks {
     private boolean assembleOutput(final File folder, final OperatingSystem<?> os) throws IOException, InterruptedException {
 
         if (os == null) {
-            System.out.println("No operating, skipping os!");
+            System.out.println("No operating system, skipping os!");
             return true;
         }
 
