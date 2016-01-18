@@ -1,6 +1,5 @@
 package cs444.codegen.x86.tiles;
 
-import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.NumericHelperTile;
@@ -47,7 +46,7 @@ public class AssignmentTile extends NumericHelperTile<X86Instruction, Size, Assi
         instructions.add(new Pop(Register.DATA, sizeHelper));
         final Memory to = new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.DATA));
 
-        final Size size = CodeGenVisitor.<X86Instruction, Size> getCurrentCodeGen(platform).lhsSize;
+        final Size size = sizeHelper.getSizeOfType(op.getType().getTypeDclNode().fullName);
 
         if (leftHandSide.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)) {
             tileHelper.makeLong(rightHandSide, instructions, sizeHelper);
