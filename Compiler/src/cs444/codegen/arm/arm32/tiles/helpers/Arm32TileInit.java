@@ -47,6 +47,7 @@ public class Arm32TileInit extends ArmTileInit {
         set.subs.add(LongBinTile.getTile(SubOpMaker.maker, SbcOpMaker.maker, SubtractExprSymbol.class));
         set.urss.add(LongShiftsTile.getTile(Shift.LSR, Shift.LSL, Shift.LSR, true, URSExprSymbol.class));
         set.nameValues.add(StaticNameValue.getTile());
+        set.nameValues.add(LongStaticNameValue.getTile());
     }
     //TODO optomizations
 }

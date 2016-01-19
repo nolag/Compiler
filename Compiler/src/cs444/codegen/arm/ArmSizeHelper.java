@@ -3,7 +3,6 @@ package cs444.codegen.arm;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.instructions.Bl;
 import cs444.codegen.arm.instructions.Comment;
-import cs444.codegen.arm.instructions.Ldr;
 import cs444.codegen.arm.instructions.Movt;
 import cs444.codegen.arm.instructions.Movw;
 import cs444.codegen.arm.instructions.Str;
@@ -143,21 +142,18 @@ public class ArmSizeHelper extends SizeHelper<ArmInstruction, Size> {
                 new Movw(reg, new Immediate16(val & 0x0000FFFF), sizeHelper), new Movt(reg, new Immediate16(val >>> 16), sizeHelper) };
     }
 
-    public static ArmInstruction[] loadStatic(final Register dest, final Register ref, final String loc,
-            final SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return new ArmInstruction[] { new Comment("Moving " + loc + " into " + ref.getValue(sizeHelper)),
-                new Movw(ref, new ImmediateStr(":lower16:" + loc), sizeHelper),
-                new Movt(ref, new ImmediateStr(":upper16:" + loc), sizeHelper), new Ldr(dest, ref, sizeHelper) };
-    }
-
-    public static ArmInstruction[] loadStatic(final Register dest, final String loc, final SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return loadStatic(dest, dest, loc, sizeHelper);
-    }
-
     public static ArmInstruction[] storeStatic(final Register src, final Register ref, final String loc,
             final SizeHelper<ArmInstruction, Size> sizeHelper) {
         return new ArmInstruction[] { new Comment("Moving " + ref.getValue(sizeHelper) + " into " + loc),
                 new Movw(ref, new ImmediateStr(":lower16:" + loc), sizeHelper),
                 new Movt(ref, new ImmediateStr(":upper16:" + loc), sizeHelper), new Str(src, ref, sizeHelper) };
+    }
+
+    public static ArmInstruction[] storeStaticLong(final Register src1, final Register src2, final Register ref, final String loc,
+            final SizeHelper<ArmInstruction, Size> sizeHelper) {
+        return new ArmInstruction[] { new Comment("Moving long value into " + loc),
+                new Movw(ref, new ImmediateStr(":lower16:" + loc), sizeHelper),
+                new Movt(ref, new ImmediateStr(":upper16:" + loc), sizeHelper), new Str(src2, Register.R4, Immediate8.FOUR, sizeHelper),
+                new Str(src1, Register.R4, sizeHelper) };
     }
 }
