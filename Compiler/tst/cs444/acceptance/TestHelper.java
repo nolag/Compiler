@@ -33,7 +33,7 @@ public class TestHelper {
     public static final String TEST_LOCATION = Compiler.BASE_DIRECTORY + "JoosPrograms/";
 
     // NOTE: this needs to change pending on the platform you are running/testing on.
-    public static final String[] testPlatforms = { "-x86", "-x64" };
+    public static final String[] testPlatforms = { "-a32" };
 
     // Holds stdlib so that it can be reused
     private static boolean hasStdlib = false;
