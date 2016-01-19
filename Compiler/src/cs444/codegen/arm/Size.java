@@ -18,6 +18,7 @@ public enum Size {
         case W:
             return "";
         }
-        return null;
+        // Can't get here make find bugs shut up about it
+        return "<INVALID>";
     }
 }

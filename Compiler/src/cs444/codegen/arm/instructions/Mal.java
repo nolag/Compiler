@@ -27,7 +27,7 @@ public class Mal extends ArmInstruction {
 
     @Override
     public boolean uses(InstructionArg<ArmInstruction, ?> what) {
-        return dest.uses(what) || lhs.uses(what) || rhs.uses(what) || lhs.uses(what) | add.uses(what);
+        return dest.uses(what) || lhs.uses(what) || rhs.uses(what) || lhs.uses(what) || add.uses(what);
     }
 
     @Override
