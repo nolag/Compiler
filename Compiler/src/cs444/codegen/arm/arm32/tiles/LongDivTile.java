@@ -10,6 +10,7 @@ import cs444.codegen.arm.Operand2.Shift;
 import cs444.codegen.arm.Register;
 import cs444.codegen.arm.RegisterShift;
 import cs444.codegen.arm.Size;
+import cs444.codegen.arm.arm32.tiles.helpers.Arm32TileHelper;
 import cs444.codegen.arm.instructions.*;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.arm.instructions.bases.Branch.Condition;
@@ -90,16 +91,14 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
         instructions.add(new Cmp(Register.R3, Immediate8.ZERO, sizeHelper));
         instructions.add(new Mov(Condition.GE, Register.R4, Immediate8.FALSE, sizeHelper));
         instructions.add(new B(Condition.GE, endNegation));
-        instructions.add(new Rsb(true, Register.R1, Register.R1, Immediate8.ZERO, sizeHelper));
-        instructions.add(new Rsc(Register.R3, Register.R3, Immediate8.ZERO, sizeHelper));
+        Arm32TileHelper.negLog(Register.R1, Register.R3, instructions, sizeHelper);
         instructions.add(new Mov(Register.R4, Immediate8.TRUE, sizeHelper));
         instructions.add(platform.makeLabel(endNegation));
 
         endNegation = "secondNegationEnd" + mynum;
         instructions.add(new Cmp(Register.R2, Immediate8.ZERO, sizeHelper));
         instructions.add(new B(Condition.GE, endNegation));
-        instructions.add(new Rsb(true, Register.R0, Register.R0, Immediate8.ZERO, sizeHelper));
-        instructions.add(new Rsc(Register.R2, Register.R2, Immediate8.ZERO, sizeHelper));
+        Arm32TileHelper.negLog(Register.R0, Register.R2, instructions, sizeHelper);
         if (bothForNeg) instructions.add(new Eor(Register.R4, Register.R4, Immediate8.TRUE, sizeHelper));
         instructions.add(platform.makeLabel(endNegation));
 
