@@ -2,12 +2,12 @@ package cs444.codegen.x86.x86_32;
 
 import cs444.codegen.Addable;
 import cs444.codegen.x86.BasicMemoryFormat;
+import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.Immediate;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.X86ObjectLayout;
 import cs444.codegen.x86.X86SizeHelper;
-import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.instructions.Extern;
 import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.bases.X86Instruction;

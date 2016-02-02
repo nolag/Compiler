@@ -1,11 +1,13 @@
 package cs444.codegen.x86;
 
 import cs444.codegen.SizeHelper;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.instructions.InstructionArg;
+import cs444.codegen.instructions.InstructionPart;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public class AddMemoryFormat extends MemoryFormat {
-    public final InstructionPart lhs;
+    public final InstructionPart<X86Instruction, Size> lhs;
     public final  NotMemory rhs;
 
     public AddMemoryFormat(final NotMemory lhs, final NotMemory rhs) {
@@ -26,7 +28,7 @@ public class AddMemoryFormat extends MemoryFormat {
     }
 
     @Override
-    public boolean uses(final InstructionArg what) {
+    public boolean uses(final InstructionArg<X86Instruction, ?> what) {
         return what == lhs || rhs.uses(what);
     }
 }

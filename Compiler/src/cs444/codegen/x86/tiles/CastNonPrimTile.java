@@ -1,31 +1,29 @@
 package cs444.codegen.x86.tiles;
 
 import cs444.codegen.CodeGenVisitor;
+import cs444.codegen.IRuntime;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.instructions.Label;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.Pop;
 import cs444.codegen.x86.instructions.Push;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
-import cs444.codegen.x86.x86_32.Runtime;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 
 public class CastNonPrimTile implements ITile<X86Instruction, Size, CastExpressionSymbol> {
     private static CastNonPrimTile tile;
 
-    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
-        if(tile == null) tile = new CastNonPrimTile();
-        TileSet.<X86Instruction, Size>getOrMake(klass).casts.add(tile);
+    public static CastNonPrimTile getTile() {
+        if (tile == null) tile = new CastNonPrimTile();
+        return tile;
     }
 
-    private CastNonPrimTile() { }
+    private CastNonPrimTile() {}
 
     @Override
     public boolean fits(final CastExpressionSymbol symbol, final Platform<X86Instruction, Size> platform) {
@@ -33,8 +31,7 @@ public class CastNonPrimTile implements ITile<X86Instruction, Size, CastExpressi
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final CastExpressionSymbol symbol,
-            final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final CastExpressionSymbol symbol, final Platform<X86Instruction, Size> platform) {
 
         final TypeSymbol type = symbol.getType();
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
@@ -42,12 +39,12 @@ public class CastNonPrimTile implements ITile<X86Instruction, Size, CastExpressi
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));
-        platform.getTileHelper().ifNullJmpCode(castExprEnd, sizeHelper, instructions);
+        platform.getTileHelper().setupJmpNull(castExprEnd, sizeHelper, instructions);
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
         instructions.addAll(platform.getObjectLayout().subtypeCheckCode(type, platform));
-        platform.getTileHelper().setupJumpNe(Runtime.EXCEPTION_LBL, sizeHelper, instructions);
+        platform.getTileHelper().setupJumpNe(IRuntime.EXCEPTION_LBL, sizeHelper, instructions);
         instructions.add(new Pop(Register.ACCUMULATOR, sizeHelper));
-        instructions.add(new Label(castExprEnd));
+        instructions.add(platform.makeLabel(castExprEnd));
 
         return instructions;
     }

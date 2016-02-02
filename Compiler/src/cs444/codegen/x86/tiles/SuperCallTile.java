@@ -5,9 +5,10 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
+import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
@@ -20,9 +21,9 @@ public class SuperCallTile implements ITile<X86Instruction, Size, SimpleMethodIn
     public static final String NATIVE_NAME = "NATIVE";
     private static SuperCallTile tile;
 
-    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+    public static SuperCallTile getTile() {
         if(tile == null) tile = new SuperCallTile();
-        TileSet.<X86Instruction, Size>getOrMake(klass).invokes.add(tile);
+        return tile;
     }
 
     private SuperCallTile() { }

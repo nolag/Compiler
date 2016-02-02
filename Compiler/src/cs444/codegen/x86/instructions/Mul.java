@@ -1,25 +1,25 @@
 package cs444.codegen.x86.instructions;
 
 import cs444.codegen.SizeHelper;
-import cs444.codegen.x86.InstructionArg;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.instructions.InstructionArg;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 
 public class Mul extends X86Instruction {
-    private final InstructionArg arg1;
-    private final InstructionArg arg2;
+    private final InstructionArg<X86Instruction, Size>  arg1;
+    private final InstructionArg<X86Instruction, Size>  arg2;
     private final SizeHelper<X86Instruction, Size> sizeHelper;
 
-    public Mul(final InstructionArg arg1, final SizeHelper<X86Instruction, Size> sizeHelper){
+    public Mul(final InstructionArg<X86Instruction, Size>  arg1, final SizeHelper<X86Instruction, Size> sizeHelper){
         super(42, 4);
         this.arg1 = arg1;
         this.arg2 = null;
         this.sizeHelper = sizeHelper;
     }
 
-    public Mul(final Register arg1, final InstructionArg arg2, final SizeHelper<X86Instruction, Size> sizeHelper){
+    public Mul(final Register arg1, final InstructionArg<X86Instruction, Size>  arg2, final SizeHelper<X86Instruction, Size> sizeHelper){
         super(42, 4);
         this.arg1 = arg1;
         this.arg2 = arg2;
@@ -33,7 +33,7 @@ public class Mul extends X86Instruction {
     }
 
     @Override
-    public boolean uses(final InstructionArg what) {
+    public boolean uses(final InstructionArg<X86Instruction, ?> what) {
         return arg1.uses(what) || what == Register.DATA;
     }
 }

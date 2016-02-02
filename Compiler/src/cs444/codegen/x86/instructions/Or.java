@@ -2,7 +2,7 @@ package cs444.codegen.x86.instructions;
 
 import cs444.codegen.SizeHelper;
 import cs444.codegen.x86.*;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.bases.BinInstruction;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 

@@ -1,17 +1,17 @@
 package cs444.codegen.x86.instructions.bases;
 
 import cs444.codegen.SizeHelper;
-import cs444.codegen.x86.InstructionArg;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.instructions.InstructionArg;
+import cs444.codegen.x86.Size;
 
 public abstract class ShXd extends X86Instruction{
     public final String what;
-    public final InstructionArg arg1;
-    public final InstructionArg arg2;
-    public final InstructionArg arg3;
+    public final InstructionArg<X86Instruction, Size>  arg1;
+    public final InstructionArg<X86Instruction, Size> arg2;
+    public final InstructionArg<X86Instruction, Size> arg3;
     public final SizeHelper<X86Instruction, Size> sizeHelper;
 
-    protected ShXd(final String what, final InstructionArg arg1, final InstructionArg arg2, final InstructionArg arg3,
+    protected ShXd(final String what, final InstructionArg<X86Instruction, Size> arg1, final InstructionArg<X86Instruction, Size> arg2, final InstructionArg<X86Instruction, Size> arg3,
             final SizeHelper<X86Instruction, Size> sizeHelper, final int time, final int size){
         super(time, size);
         this.what = what;
@@ -29,7 +29,7 @@ public abstract class ShXd extends X86Instruction{
     }
 
     @Override
-    public final boolean uses(final InstructionArg what) {
+    public final boolean uses(final InstructionArg<X86Instruction, ?> what) {
         return arg1.uses(what);
     }
 }

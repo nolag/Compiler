@@ -1,22 +1,25 @@
 package cs444.codegen.generic.tiles;
 
+import cs444.codegen.IRuntime;
 import cs444.codegen.Platform;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.x86_32.Runtime;
+
 import cs444.parser.symbols.ast.FieldAccessSymbol;
 
-public class FieldAccessTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, FieldAccessSymbol>{
+@SuppressWarnings("rawtypes")
+public class FieldAccessTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, FieldAccessSymbol> {
+        private static FieldAccessTile tile;
 
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
-        new FieldAccessTile<T, E>(klass);
+    
+@SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> FieldAccessTile<T, E> getTile() {
+        if (tile == null) tile = new FieldAccessTile();
+        return tile;
     }
 
-    private FieldAccessTile(final Class<? extends Platform<T, E>> klass){
-        TileSet.<T, E>getOrMake(klass).fieldAccess.add(this);
-    }
+    private FieldAccessTile() {}
 
     @Override
     public boolean fits(final FieldAccessSymbol symbol, final Platform<T, E> platform) {
@@ -24,12 +27,11 @@ public class FieldAccessTile<T extends Instruction, E extends Enum<E>> implement
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final FieldAccessSymbol field,
-            final Platform<T, E> platform) {
+    public InstructionsAndTiming<T> generate(final FieldAccessSymbol field, final Platform<T, E> platform) {
 
         final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
         instructions.addAll(platform.getBest(field.children.get(0)));
-        platform.getTileHelper().ifNullJmpCode(Runtime.EXCEPTION_LBL, platform.getSizeHelper(), instructions);
+        platform.getTileHelper().setupJmpNull(IRuntime.EXCEPTION_LBL, platform.getSizeHelper(), instructions);
         instructions.addAll(platform.getBest(field.children.get(1)));
         return instructions;
     }

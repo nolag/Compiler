@@ -76,8 +76,6 @@ __exception:
     mov rcx, 13
     call ExitProcess
 
-;TODO
-
 ; Implementation of java.io.OutputStream.nativeWrite method.
 ; Outputs the low-order byte of eax to standard output.
 global NATIVEjava.io.OutputStream.nativeWrite

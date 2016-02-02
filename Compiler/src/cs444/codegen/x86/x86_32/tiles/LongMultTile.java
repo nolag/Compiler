@@ -2,27 +2,32 @@ package cs444.codegen.x86.x86_32.tiles;
 
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
+import cs444.codegen.generic.tiles.helpers.LongOnlyTile;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
-import cs444.codegen.x86.instructions.*;
+import cs444.codegen.x86.Size;
+import cs444.codegen.x86.instructions.Add;
+import cs444.codegen.x86.instructions.Comment;
+import cs444.codegen.x86.instructions.IMul;
+import cs444.codegen.x86.instructions.Mov;
+import cs444.codegen.x86.instructions.Mul;
+import cs444.codegen.x86.instructions.Pop;
+import cs444.codegen.x86.instructions.Push;
+import cs444.codegen.x86.instructions.Xchg;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.x86_32.X86_32Platform;
-import cs444.codegen.x86.x86_32.tiles.helpers.LongOnlyTile;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
 
-public class LongMultTile extends LongOnlyTile<MultiplyExprSymbol> {
+public class LongMultTile extends LongOnlyTile<X86Instruction, Size, MultiplyExprSymbol> {
     private static LongMultTile tile;
 
-    public static void init() {
-        if(tile == null) tile = new LongMultTile();
-        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).mults.add(tile);
+    public static LongMultTile getTile() {
+        if (tile == null) tile = new LongMultTile();
+        return tile;
     }
 
-    private LongMultTile() { }
+    private LongMultTile() {}
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final MultiplyExprSymbol mult, final Platform<X86Instruction, Size> platform) {
@@ -31,9 +36,6 @@ public class LongMultTile extends LongOnlyTile<MultiplyExprSymbol> {
         final TileHelper<X86Instruction, Size> tileHelper = platform.getTileHelper();
 
         instructions.add(new Comment("Start long mult"));
-
-        instructions.add(new Comment("store if it is negative in dest, -ve mult did not work with 2s compliment"));
-        instructions.add(new Xor(Register.DESTINATION, Register.DESTINATION, sizeHelper));
 
         instructions.add(new Push(Register.BASE, sizeHelper));
 
@@ -61,7 +63,6 @@ public class LongMultTile extends LongOnlyTile<MultiplyExprSymbol> {
         instructions.add(new Mul(Register.COUNTER, sizeHelper));
         instructions.add(new Add(Register.DATA, Register.BASE, sizeHelper));
         instructions.add(new Add(Register.DATA, Register.SOURCE, sizeHelper));
-
 
         instructions.add(new Pop(Register.BASE, sizeHelper));
         instructions.add(new Comment("End long mult"));

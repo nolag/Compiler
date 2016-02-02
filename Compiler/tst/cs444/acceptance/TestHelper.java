@@ -32,7 +32,10 @@ public class TestHelper {
 
     public static final String TEST_LOCATION = Compiler.BASE_DIRECTORY + "JoosPrograms/";
 
-    //Holds stdlib so that it can be reused
+    // NOTE: this needs to change pending on the platform you are running/testing on.
+    public static final String[] testPlatforms = { "-a32" };
+
+    // Holds stdlib so that it can be reused
     private static boolean hasStdlib = false;
     private static Map<String, Map<String, PkgClassResolver>> nameSpaces;
     private static Map<String, APkgClassResolver> symbolMap;
@@ -54,9 +57,11 @@ public class TestHelper {
             final String fileName = file.getName();
 
             // Use this line to test a single file
-            // if (!fileName.equals("EagerBooleanConditionalsNoLoops")) continue;
-            //Use this line to stop when there are infinite loops
-            //if (totalTests == 20) break;
+            // if (!(fileName.equals("LongDivRemTopEqual"))) continue;
+            // Use this line to stop when there are infinite loops
+            // if (totalTests == 1) break;
+            // Use to not run tests with longs
+            // if ((fileName.contains("long") || fileName.contains("Long") || fileName.contains("CmpWithSideEffects"))) continue;
 
             if (ignoreList.contains(fileName)) {
                 System.out.print("*"); // skip file
@@ -87,7 +92,6 @@ public class TestHelper {
 
         if (!(callbacks.beforeCompile(file) && compileAndTest(sourceFiles, printErrors, includeStdLib) == expectedReturnCode && callbacks
                 .afterCompile(file, platforms))) {
-
             failFiles.add(path + fileName);
         }
     }
@@ -151,13 +155,14 @@ public class TestHelper {
             final List<String> files = getAllFiles(new File(TEST_LOCATION + "StdLib"));
             platforms = new HashSet<>();
             final Set<String> opts = Collections.emptySet();
-            for (final String platformStr : Compiler.defaultPlatforms) {
+            for (final String platformStr : testPlatforms) {
                 platforms.add(CompilerSettings.platformMap.get(platformStr).getPlatform(opts));
             }
             Compiler.compile(files, true, false, platforms);
             final PkgClassInfo info = PkgClassInfo.instance;
             nameSpaces = new HashMap<>();
-            //because each entry is a map, we need to clone the maps or they will have entries put into them.
+            // because each entry is a map, we need to clone the maps or they
+            // will have entries put into them.
             for (final Entry<String, Map<String, PkgClassResolver>> entry : info.nameSpaces.entrySet()) {
                 final Map<String, PkgClassResolver> resolverClone = new HashMap<>(entry.getValue());
                 nameSpaces.put(entry.getKey(), resolverClone);
@@ -185,7 +190,7 @@ public class TestHelper {
 
         final Set<String> opts = Collections.emptySet();
         platforms = new HashSet<>();
-        for (final String platformStr : Compiler.defaultPlatforms) {
+        for (final String platformStr : testPlatforms) {
             platforms.add(CompilerSettings.platformMap.get(platformStr).getPlatform(opts));
         }
 

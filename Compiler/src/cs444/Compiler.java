@@ -14,6 +14,7 @@ import java.util.List;
 
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
+import cs444.codegen.StaticFieldInit;
 import cs444.lexer.Lexer;
 import cs444.lexer.LexerException;
 import cs444.parser.IASTBuilder;
@@ -28,9 +29,9 @@ import cs444.types.PkgClassInfo;
 
 public class Compiler {
     //NOTE, if I want to allow the output directory to change, I need to copy each OS's runtime for each platform.
-    public static final String BASE_DIRECTORY = "";
-    //default to all supported platforms
-    public static final String[] defaultPlatforms = { "-x86", "-x64" };
+    public static final String BASE_DIRECTORY = "/Volumes/RAM/";
+    //default to all supported platforms;
+    public static final String[] defaultPlatforms = { "-x86", "-x64", "-a32" };
 
     public static final String OUTPUT_DIRECTORY = BASE_DIRECTORY + "output";
     public static final int COMPILER_ERROR_CODE = 42;
@@ -59,7 +60,6 @@ public class Compiler {
 
         try {
             for (final String fileName : files) {
-
                 reader = new FileReader(fileName);
                 parseTree = parse(reader);
 
@@ -122,13 +122,13 @@ public class Compiler {
         PrintStream printer;
         final String outputDir = platform.getOutputDir();
 
-        platform.generateSIT(resolvers, outputFile);
+        platform.getSelectorIndex().generateSIT(resolvers, outputFile);
         platform.makeSubtypeTable(resolvers, outputFile, outputDir);
 
         for (final APkgClassResolver resolver : resolvers)
             resolver.computeFieldOffsets(platform);
 
-        platform.generateStaticCode(resolvers, outputFile, outputDir);
+        StaticFieldInit.generateCode(resolvers, platform, outputFile, outputDir);
 
         final CodeGenVisitor<?, ?> codeGen = platform.makeNewCodeGen();
         for (final APkgClassResolver resolver : resolvers) {

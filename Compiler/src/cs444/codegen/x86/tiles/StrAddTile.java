@@ -7,9 +7,10 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
+import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
@@ -23,9 +24,9 @@ import cs444.types.PkgClassInfo;
 public class StrAddTile implements ITile<X86Instruction, Size, AddExprSymbol>{
     private static StrAddTile tile;
 
-    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+    public static StrAddTile getTile() {
         if(tile == null) tile = new StrAddTile();
-        TileSet.<X86Instruction, Size>getOrMake(klass).adds.add(tile);
+        return tile;
     }
 
     private StrAddTile() { }

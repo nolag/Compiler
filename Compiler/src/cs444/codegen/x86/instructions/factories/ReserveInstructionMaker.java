@@ -1,6 +1,6 @@
 package cs444.codegen.x86.instructions.factories;
 
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.Resb;
 import cs444.codegen.x86.instructions.Resd;
 import cs444.codegen.x86.instructions.Resq;
