@@ -3,6 +3,7 @@ package cs444.codegen.arm.arm32.tiles.helpers;
 import cs444.codegen.Addable;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.ConstantShift;
+import cs444.codegen.arm.Immediate8;
 import cs444.codegen.arm.Operand2.Shift;
 import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
@@ -10,6 +11,8 @@ import cs444.codegen.arm.instructions.Comment;
 import cs444.codegen.arm.instructions.Eor;
 import cs444.codegen.arm.instructions.Mov;
 import cs444.codegen.arm.instructions.Push;
+import cs444.codegen.arm.instructions.Rsb;
+import cs444.codegen.arm.instructions.Rsc;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.arm.tiles.helpers.ArmTileHelper;
 import cs444.parser.symbols.JoosNonTerminal;
@@ -45,5 +48,12 @@ public class Arm32TileHelper extends ArmTileHelper {
             if (value > 0 && value < Integer.MAX_VALUE) instructions.add(new Eor(Register.R2, Register.R2, Register.R2, sizeHelper));
             else setupNumberLoad(Register.R2, (int) (value >> 32), instructions, sizeHelper);
         }
+    }
+
+    public static void negLog(final Register low, final Register high, Addable<ArmInstruction> instructions,
+            SizeHelper<ArmInstruction, Size> sizeHelper) {
+
+        instructions.add(new Rsb(true, low, low, Immediate8.ZERO, sizeHelper));
+        instructions.add(new Rsc(high, high, Immediate8.ZERO, sizeHelper));
     }
 }
