@@ -1,6 +1,6 @@
 package cs444.codegen.x86.instructions;
 
-import cs444.codegen.x86.InstructionArg;
+import cs444.codegen.instructions.InstructionArg;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
@@ -21,7 +21,7 @@ public class Loop extends X86Instruction {
     }
 
     @Override
-    public boolean uses(final InstructionArg what) {
+    public boolean uses(final InstructionArg<X86Instruction, ?>  what) {
         return what == Register.COUNTER;
     }
 }

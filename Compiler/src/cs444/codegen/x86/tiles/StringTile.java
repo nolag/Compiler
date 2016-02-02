@@ -5,14 +5,15 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.*;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.AddMemoryFormat;
+import cs444.codegen.x86.Immediate;
+import cs444.codegen.x86.Memory;
+import cs444.codegen.x86.Register;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.Add;
 import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.x86_32.Runtime;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.StringLiteralSymbol;
 import cs444.types.ArrayPkgClassResolver;
@@ -21,12 +22,12 @@ import cs444.types.PkgClassInfo;
 public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymbol> {
     private static StringTile tile;
 
-    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
-        if(tile == null) tile = new StringTile();
-        TileSet.<X86Instruction, Size>getOrMake(klass).strs.add(tile);
+    public static StringTile getTile() {
+        if (tile == null) tile = new StringTile();
+        return tile;
     }
 
-    private StringTile() { }
+    private StringTile() {}
 
     @Override
     public boolean fits(final StringLiteralSymbol op, final Platform<X86Instruction, Size> platform) {
@@ -39,7 +40,7 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final ObjectLayout<X86Instruction> objectLayout = platform.getObjectLayout();
+        final ObjectLayout<X86Instruction, Size> objectLayout = platform.getObjectLayout();
 
         instructions.add(new Comment("allocate the string at the same time (why not)"));
 
@@ -47,30 +48,30 @@ public class StringTile implements ITile<X86Instruction, Size, StringLiteralSymb
         final int defaultStack = sizeHelper.getDefaultStackSize();
         final long objlen = platform.getObjectLayout().objSize();
         final long charsLen = stringSymbol.strValue.length() * 2 + defaultStack + objlen;
-        final long length =  charsLen + defaultStack + objlen;
+        final long length = charsLen + defaultStack + objlen;
 
         instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(length), sizeHelper));
         //no need to zero out, it will be set for sure so the second last arg does not matter
-        Runtime.instance.mallocNoClear(instructions);
+        platform.getRunime().mallocNoClear(instructions);
         final String charArray = ArrayPkgClassResolver.getArrayName(JoosNonTerminal.CHAR);
         platform.getObjectLayout().initialize(PkgClassInfo.instance.getSymbol(charArray), instructions);
 
         final Memory where = new Memory(new AddMemoryFormat(Register.ACCUMULATOR, new Immediate(2 * defaultStack)));
         instructions.add(new Mov(where, new Immediate(stringSymbol.strValue.length()), sizeHelper));
 
-        final char [] cs = stringSymbol.strValue.toCharArray();
+        final char[] cs = stringSymbol.strValue.toCharArray();
         final int charSize = sizeHelper.getBytePushSizeOfType(JoosNonTerminal.CHAR);
         final int charSizeBits = charSize * 8;
 
         int i = 0;
 
         //can't move 64 bit immediate value, so numTogether can't be more than 2.
-        for(int numTogether =  2; numTogether > 0; numTogether /= 2) {
-            for(; i + numTogether <= cs.length; i += numTogether) {
+        for (int numTogether = 2; numTogether > 0; numTogether /= 2) {
+            for (; i + numTogether <= cs.length; i += numTogether) {
                 final StringBuilder sb = new StringBuilder("moving chars:");
                 long togetherVal = 0;
 
-                for(int j = 0; j < numTogether; j ++) {
+                for (int j = 0; j < numTogether; j++) {
                     final long c = cs[i + j];
                     togetherVal += c << (j * charSizeBits);
                     sb.append(" ").append(c);

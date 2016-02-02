@@ -5,19 +5,21 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 
-public class RemZeroTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, RemainderExprSymbol>{
+@SuppressWarnings("rawtypes")
+public class RemZeroTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, RemainderExprSymbol> {
 
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass) {
-        new RemZeroTile<T, E>(klass);
+    private static RemZeroTile tile;
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> RemZeroTile<T, E> getTile() {
+        if (tile == null) tile = new RemZeroTile();
+        return tile;
     }
 
-    private RemZeroTile(final Class<? extends Platform<T, E>> klass) {
-        TileSet.<T, E>getOrMake(klass).rems.add(this);
-    }
+    private RemZeroTile() {}
 
     @Override
     public boolean fits(final RemainderExprSymbol symbol, final Platform<T, E> platform) {

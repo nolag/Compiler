@@ -7,17 +7,20 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
-public class WhileTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, WhileExprSymbol>{
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
-        new WhileTile<T, E>(klass);
+
+@SuppressWarnings("rawtypes")
+public class WhileTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, WhileExprSymbol> {
+    private static WhileTile tile;
+
+@SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> WhileTile<T, E> getTile() {
+        if (tile == null) tile = new WhileTile();
+        return tile;
     }
 
-    private WhileTile(final Class<? extends Platform<T, E>> klass){
-        TileSet.<T, E>getOrMake(klass).whiles.add(this);
-    }
+    private WhileTile() {}
 
     @Override
     public boolean fits(final WhileExprSymbol symbol, final Platform<T, E> platform) {

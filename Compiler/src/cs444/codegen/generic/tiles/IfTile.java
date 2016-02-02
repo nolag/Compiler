@@ -7,18 +7,22 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.IfExprSymbol;
 
-public class IfTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, IfExprSymbol>{
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
-        new IfTile<T, E>(klass);
+@SuppressWarnings("rawtypes")
+public class IfTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, IfExprSymbol> {
+        private static IfTile tile;
+
+    
+@SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> IfTile<T, E> getTile() {
+        if (tile == null) tile = new IfTile();
+        return tile;
     }
 
-    private IfTile(final Class<? extends Platform<T, E>> klass){
-        TileSet.<T, E>getOrMake(klass).ifs.add(this);
-    }
+    private IfTile() {}
 
     @Override
     public boolean fits(final IfExprSymbol symbol, final Platform<T, E> platform) {
@@ -47,7 +51,7 @@ public class IfTile<T extends Instruction, E extends Enum<E>> implements ITile<T
 
         final ISymbol elseSymbol = ifExprSymbol.getElseBody();
 
-        if(elseSymbol != null) instructions.addAll(platform.getBest(elseSymbol));
+        if (elseSymbol != null) instructions.addAll(platform.getBest(elseSymbol));
 
         tileHelper.setupLbl(trueLbl, instructions);
         tileHelper.setupComment("if end" + myid, instructions);

@@ -10,7 +10,7 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.peepholes.BasicInstrucitonHolder;
 import cs444.codegen.peepholes.InstructionHolder;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.Pop;
@@ -28,10 +28,10 @@ public class PushPopRemover extends BasicInstrucitonHolder<X86Instruction> {
     }
 
     private void reduceIfPosible(final Pop pop) {
-        final Register to = (Register) pop.data[0];
+        final Register to = (Register) pop.data.get(0);
         final List<X86Instruction> latest = instructions.removeLast();
         final Push push = (Push) latest.remove(0);
-        final Register pushReg = (Register) push.data[0];
+        final Register pushReg = (Register) push.data.get(0);
 
         boolean usedReg = false;
         for (final X86Instruction instruction : latest) {

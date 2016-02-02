@@ -5,19 +5,20 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
 
-public class ZeroMultTile<T extends Instruction, E extends Enum<E>> implements ITile<T, E, MultiplyExprSymbol>{
+@SuppressWarnings("rawtypes")
+public class ZeroMultTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, MultiplyExprSymbol> {
+    private static ZeroMultTile tile;
 
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
-        new ZeroMultTile<T, E>(klass);
+    @SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> ZeroMultTile<T, E> getTile() {
+        if (tile == null) tile = new ZeroMultTile();
+        return tile;
     }
 
-    private ZeroMultTile(final Class<? extends Platform<T, E>> klass){
-        TileSet.<T, E>getOrMake(klass).mults.add(this);
-    }
+    private ZeroMultTile() {}
 
     @Override
     public boolean fits(final MultiplyExprSymbol symbol, final Platform<T, E> platform) {
@@ -29,9 +30,9 @@ public class ZeroMultTile<T extends Instruction, E extends Enum<E>> implements I
     @Override
     public InstructionsAndTiming<T> generate(final MultiplyExprSymbol op, final Platform<T, E> platform) {
         final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
-        if(TileHelper.isZero(op.children.get(0))){
+        if (TileHelper.isZero(op.children.get(0))) {
             instructions.addAll(platform.getBest(op.children.get(1)));
-        }else{
+        } else {
             instructions.addAll(platform.getBest(op.children.get(0)));
         }
         platform.zeroDefaultLocation(instructions);

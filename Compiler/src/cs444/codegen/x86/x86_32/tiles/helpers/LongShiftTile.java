@@ -3,9 +3,11 @@ package cs444.codegen.x86.x86_32.tiles.helpers;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
+import cs444.codegen.generic.tiles.helpers.LongOnlyTile;
 import cs444.codegen.tiles.InstructionsAndTiming;
+import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
@@ -14,7 +16,7 @@ import cs444.codegen.x86.instructions.factories.ShXdMaker;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
-public abstract class LongShiftTile<T extends BinOpExpr> extends LongOnlyTile<T>{
+public abstract class LongShiftTile<T extends BinOpExpr> extends LongOnlyTile<X86Instruction, Size, T>{
     private final BinOpMaker shift;
     private final ShXdMaker shiftCpy;
     private final boolean aFirst;

@@ -2,29 +2,28 @@ package cs444.codegen.x86.tiles;
 
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
+import cs444.codegen.generic.tiles.helpers.NumericHelperTile;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.BasicMemoryFormat;
-import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Memory;
 import cs444.codegen.x86.Register;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.Pop;
 import cs444.codegen.x86.instructions.Push;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.tiles.helpers.NumericHelperTile;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 
-public class AssignmentTile extends NumericHelperTile<AssignmentExprSymbol> {
+public class AssignmentTile extends NumericHelperTile<X86Instruction, Size, AssignmentExprSymbol> {
     private static AssignmentTile tile;
 
-    public static void init(final Class<? extends Platform<X86Instruction, Size>> klass) {
+    public static AssignmentTile getTile() {
         if (tile == null) tile = new AssignmentTile();
-        TileSet.<X86Instruction, Size> getOrMake(klass).assigns.add(tile);
+        return tile;
     }
 
     private AssignmentTile() {}

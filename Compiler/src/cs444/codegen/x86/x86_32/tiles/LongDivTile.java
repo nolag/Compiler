@@ -4,30 +4,28 @@ import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.IRuntime;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
+import cs444.codegen.generic.tiles.helpers.LongOnlyTile;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
 import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
-import cs444.codegen.x86.x86_32.X86_32Platform;
-import cs444.codegen.x86.x86_32.tiles.helpers.LongOnlyTile;
 import cs444.codegen.x86.x86_32.tiles.helpers.X86_32TileHelper;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 
-public class LongDivTile extends LongOnlyTile<DivideExprSymbol> {
+public class LongDivTile extends LongOnlyTile<X86Instruction, Size, DivideExprSymbol> {
     private static LongDivTile tile;
 
-    public static void init(){
-        if(tile == null) tile = new LongDivTile();
-        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).divs.add(tile);
+    public static LongDivTile getTile() {
+        if (tile == null) tile = new LongDivTile();
+        return tile;
     }
 
-    private LongDivTile() { }
+    private LongDivTile() {}
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(final DivideExprSymbol div, final Platform<X86Instruction, Size> platform) {
@@ -51,7 +49,7 @@ public class LongDivTile extends LongOnlyTile<DivideExprSymbol> {
         final Immediate subLoopImm = new Immediate(subing);
         final Immediate subCheckImm = new Immediate(subCheck);
 
-        final Typeable numerator = (Typeable)div.children.get(0);
+        final Typeable numerator = (Typeable) div.children.get(0);
         final Typeable denominator = (Typeable) div.children.get(1);
 
         instructions.add(new Comment("Start long divide"));
@@ -75,7 +73,6 @@ public class LongDivTile extends LongOnlyTile<DivideExprSymbol> {
         instructions.add(new Mov(Register.BASE, Register.DATA, sizeHelper));
         instructions.add(new And(Register.BASE, Immediate.BIT_32, sizeHelper));
 
-
         instructions.add(new Comment("Moving first long to EDI:ESI"));
         instructions.add(new Pop(Register.SOURCE, sizeHelper));
         instructions.add(new Pop(Register.DESTINATION, sizeHelper));
@@ -89,7 +86,6 @@ public class LongDivTile extends LongOnlyTile<DivideExprSymbol> {
         instructions.add(new Comment("using ECX:EBX to hold the div result"));
         instructions.add(new Xor(Register.BASE, Register.BASE, sizeHelper));
         instructions.add(new Xor(Register.COUNTER, Register.COUNTER, sizeHelper));
-
 
         instructions.add(new Cmp(Register.DESTINATION, Immediate.BIT_32, sizeHelper));
         final Jne notSmallestJmp = new Jne(new Immediate(notSmallest), sizeHelper);

@@ -1,6 +1,7 @@
 package cs444.codegen.x86;
 
 import cs444.codegen.SizeHelper;
+import cs444.codegen.instructions.InstructionArg;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
 public class Register extends NotMemory {
@@ -54,7 +55,7 @@ public class Register extends NotMemory {
     }
 
     @Override
-    public boolean uses(final InstructionArg what) {
+    public boolean uses(final InstructionArg<X86Instruction, ?> what) {
         return this == what;
     }
 }

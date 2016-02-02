@@ -4,12 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cs444.codegen.SizeHelper;
+import cs444.codegen.generic.tiles.helpers.TileHelper;
+import cs444.codegen.instructions.InstructionArg;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
-
-
-
-public class Immediate extends NotMemory{
+public class Immediate extends NotMemory {
     private final String value;
 
     public static Map<SizeHelper<X86Instruction, ?>, Immediate> stackPowers = new HashMap<SizeHelper<X86Instruction, ?>, Immediate>();
@@ -27,14 +26,13 @@ public class Immediate extends NotMemory{
 
     public static final Immediate NOTHING = new Immediate(";this should never actually be used, palce holder arg");
 
+    public static final Immediate NULL = new Immediate(Integer.toString(TileHelper.NULL));
+
     //Same value as ONE
     public static final Immediate TRUE = ONE;
     public static final Immediate BYTE_I = ONE;
     public static final Immediate WORD_S = ONE;
 
-
-    //same value as ZERO
-    public static final Immediate NULL = ZERO;
     public static final Immediate FALSE = ZERO;
     public static final Immediate BYTE_S = ZERO;
 
@@ -45,29 +43,37 @@ public class Immediate extends NotMemory{
     //same value as FOUR
     public static final Immediate DWORD_I = FOUR;
 
-    public Immediate(final String value){
+    public Immediate(final String value) {
         this.value = value;
     }
 
-    public Immediate(final long value){
+    public Immediate(final long value) {
         this(String.valueOf(value));
     }
 
-    public static Immediate getImediate(final Size size){
-        switch(size){
-        case QWORD: return QWORD_I;
-        case DWORD: return DWORD_I;
-        case WORD: return WORD_I;
-        default: return BYTE_I;
+    public static Immediate getImediate(final Size size) {
+        switch (size) {
+        case QWORD:
+            return QWORD_I;
+        case DWORD:
+            return DWORD_I;
+        case WORD:
+            return WORD_I;
+        default:
+            return BYTE_I;
         }
     }
 
-    public static Immediate getImediateShift(final Size size){
-        switch(size){
-        case QWORD: return QWORD_S;
-        case DWORD: return DWORD_S;
-        case WORD: return WORD_S;
-        default: return BYTE_S;
+    public static Immediate getImediateShift(final Size size) {
+        switch (size) {
+        case QWORD:
+            return QWORD_S;
+        case DWORD:
+            return DWORD_S;
+        case WORD:
+            return WORD_S;
+        default:
+            return BYTE_S;
         }
     }
 
@@ -76,9 +82,9 @@ public class Immediate extends NotMemory{
         return value;
     }
 
-    public final Immediate getStackSizePower(final SizeHelper<X86Instruction, ?> sizeHelper){
+    public final Immediate getStackSizePower(final SizeHelper<X86Instruction, ?> sizeHelper) {
         Immediate immediate = stackPowers.get(sizeHelper);
-        if(immediate == null){
+        if (immediate == null) {
             immediate = new Immediate(sizeHelper.getDefaultStackPower());
             stackPowers.put(sizeHelper, immediate);
         }
@@ -86,12 +92,12 @@ public class Immediate extends NotMemory{
     }
 
     @Override
-    public final String toString(){
+    public final String toString() {
         return value;
     }
 
     @Override
-    public boolean uses(final InstructionArg what) {
+    public boolean uses(final InstructionArg<X86Instruction, ?> what) {
         return false;
     }
 

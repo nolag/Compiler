@@ -6,15 +6,27 @@ import java.util.List;
 import java.util.Map;
 
 import cs444.codegen.instructions.Instruction;
+import cs444.codegen.peepholes.InstructionHolder;
 import cs444.types.APkgClassResolver;
 
-public abstract class SubtypeIndexedTable <T extends Instruction, E extends Enum<E>> {
+public class SubtypeIndexedTable<T extends Instruction<T>, E extends Enum<E>> {
     private final IndexedTableData<T, E> table;
+    private final Platform<T, E> platform;
+    private final SizeHelper<T, E> sizeHelper;
 
-    protected SubtypeIndexedTable(final Platform<T,E> platform, final IndexedTableData<T, E> table, final List<APkgClassResolver> resolvers,
-            final boolean outputFile, final String directory, final SizeHelper<T, E> sizeHelper) throws IOException{
-        this.table = table;
-        generateTable(platform, resolvers, outputFile, directory, sizeHelper);
+    public SubtypeIndexedTable(final Platform<T, E> platform, final List<APkgClassResolver> resolvers, final boolean outputFile,
+            final String directory) throws IOException {
+        this.platform = platform;
+        sizeHelper = platform.getSizeHelper();
+        this.table = new IndexedTableData<T, E>(platform, new SubtypeCellGen());
+        for (final APkgClassResolver resolver : resolvers) {
+            if (resolver.shouldGenCode())
+                resolver.addToSubtypeIndexedTable(this);
+        }
+
+        table.genCode();
+        if (outputFile)
+            table.printCodeToFile(platform, directory + File.separator + "_joos.subtypeIT.s");
     }
 
     public Map<String, String> addSubtype(final String fullName) {
@@ -33,15 +45,25 @@ public abstract class SubtypeIndexedTable <T extends Instruction, E extends Enum
         return table.getOffset(superType);
     }
 
-    public void generateTable(final Platform<T, E> platform, final List<APkgClassResolver> resolvers,
-            final boolean outputFile, final String directory, final SizeHelper<T, E> sizeHelper) throws IOException {
+    private class SubtypeCellGen implements ICellGen<T, E> {
+        @Override
+        public void genEmptyCelCode(final String colHeaderLabel, final String rowName, final InstructionHolder<T> instructions) {
 
-
-        for(final APkgClassResolver resolver : resolvers){
-            if(resolver.shouldGenCode()) resolver.addToSubtypeIndexedTable(this);
+            instructions.add(platform.makeComment(colHeaderLabel + " is not subtype of " + rowName));
+            instructions.addAll(sizeHelper.alloceMinCellSpace(platform.getFalseStr()));
         }
 
-        table.genCode(sizeHelper);
-        if(outputFile) table.printCodeToFile(platform, directory + File.separator + "_joos.subtypeIT.s");
+        @Override
+        public void genCellCode(final String colHeaderLabel, final String rowName, final String data,
+                final InstructionHolder<T> instructions) {
+
+            instructions.add(platform.makeComment(colHeaderLabel + " is subtype of " + rowName));
+            instructions.addAll(sizeHelper.alloceMinCellSpace(platform.getTrueStr()));
+        }
+
+        @Override
+        public long getCellSize() {
+            return sizeHelper.getMinSize();
+        }
     }
 }

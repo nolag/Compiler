@@ -4,26 +4,24 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
-import cs444.codegen.x86.InstructionArg.Size;
 import cs444.codegen.x86.Register;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
-import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 
-public class CastFromLongTile implements ITile<X86Instruction, Size,CastExpressionSymbol> {
+public class CastFromLongTile implements ITile<X86Instruction, Size, CastExpressionSymbol> {
     private static CastFromLongTile tile;
 
-    public static void init() {
-        if(tile == null) tile = new CastFromLongTile();
-        TileSet.<X86Instruction, Size>getOrMake(X86_32Platform.class).casts.add(tile);
+    public static CastFromLongTile getTile() {
+        if (tile == null) tile = new CastFromLongTile();
+        return tile;
     }
 
-    private CastFromLongTile() { }
+    private CastFromLongTile() {}
 
     @Override
     public boolean fits(final CastExpressionSymbol symbol, final Platform<X86Instruction, Size> platform) {
@@ -32,8 +30,7 @@ public class CastFromLongTile implements ITile<X86Instruction, Size,CastExpressi
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final CastExpressionSymbol symbol,
-            final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(final CastExpressionSymbol symbol, final Platform<X86Instruction, Size> platform) {
 
         final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
         final TypeSymbol type = symbol.getType();

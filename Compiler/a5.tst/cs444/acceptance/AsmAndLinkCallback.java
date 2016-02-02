@@ -12,8 +12,9 @@ import cs444.codegen.OperatingSystem;
 import cs444.codegen.Platform;
 
 public class AsmAndLinkCallback implements ITestCallbacks {
-    //NOTE: change this if you are testing on another os or if you cahnge the exec/link to work multi os
-    private static final String osToTest = "osx";
+    //NOTE: change this if you are testing on another os or if you change the exec/link to work multi os
+    private static final String osToTest = "linux";
+    // private static final String osToTest = "osx";
 
     private static final String EXEC = "main";
     private static final int EXPECTED_DEFAULT_RTN_CODE = 123;
@@ -36,11 +37,13 @@ public class AsmAndLinkCallback implements ITestCallbacks {
     @Override
     public boolean beforeCompile(final File _) throws IOException {
         final File outputDir = new File(Compiler.OUTPUT_DIRECTORY);
+
         for (final File platformFolder : outputDir.listFiles()) {
             //some computers (my mac) make files like .DS_Store...
             if (platformFolder.isFile()) continue;
             deleteNonRuntime(platformFolder);
         }
+
         return true;
     }
 
@@ -51,8 +54,6 @@ public class AsmAndLinkCallback implements ITestCallbacks {
         final String stdErr = getExpectedOutput(file, false);
 
         final int expectedReturnCode = getExpectedReturnCode(file);
-
-        boolean pass = true;
 
         for (final Platform<?, ?> platform : platforms) {
             OperatingSystem<?> os = null;
@@ -85,10 +86,10 @@ public class AsmAndLinkCallback implements ITestCallbacks {
                 System.out.println("\nWrong return code " + returnCode + " expected: " + expectedReturnCode + " on platform "
                         + platform.getClass().toString());
                 System.out.println("In: " + file);
-                pass = false;
+                return false;
             }
         }
-        return pass;
+        return true;
     }
 
     private int getExpectedReturnCode(final File file) {
@@ -121,7 +122,7 @@ public class AsmAndLinkCallback implements ITestCallbacks {
     private boolean assembleOutput(final File folder, final OperatingSystem<?> os) throws IOException, InterruptedException {
 
         if (os == null) {
-            System.out.println("No operating, skipping os!");
+            System.out.println("No operating system, skipping os!");
             return true;
         }
 
@@ -132,10 +133,9 @@ public class AsmAndLinkCallback implements ITestCallbacks {
             if (execAndWait(command, null, null) != 0) { return false; }
         }
 
-        final String[] command = os.getAssembleCmd(os.getRuntimeFile());
-        if (execAndWait(command, null, null) != 0) { return false; }
-
-        return true;
+        final File runtime = os.getRuntimeFile();
+        final String[] command = os.getAssembleCmd(runtime);
+        return execAndWait(command, null, null) == 0;
     }
 
     private static boolean isAlive(final Process p) {
@@ -149,6 +149,10 @@ public class AsmAndLinkCallback implements ITestCallbacks {
 
     private int execAndWait(final String[] command, final String out, final String err) throws InterruptedException, IOException {
         final Process proc = Runtime.getRuntime().exec(command);
+        final StringBuilder commandStr = new StringBuilder();
+        for (final String part : command) {
+            commandStr.append(part).append(" ");
+        }
 
         // any error message?
         final StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream());
@@ -178,15 +182,23 @@ public class AsmAndLinkCallback implements ITestCallbacks {
         outputGobbler.join();
 
         if (null != out && !out.equals(outputGobbler.getMessage().replace("\r", ""))) {
-            System.out.println("Expected:\n" + out + "\n Got:\n" + outputGobbler.getMessage());
+            System.out.println(commandStr.toString() + "\nExpected:\n" + out + "\n Got:\n" + outputGobbler.getMessage());
             return -2;
         }
+
         if (null != err && !err.equals(errorGobbler.getMessage().replace("\r", ""))) {
-            System.out.println("Expected:\n" + err + "\n Got:\n" + errorGobbler.getMessage());
+            System.out.println(commandStr.toString() + "\nExpected:\n" + err + "\n Got:\n" + errorGobbler.getMessage());
             return -3;
         }
 
-        return proc.exitValue();
+        int retVal = proc.exitValue();
+        if (retVal != 0 && err == null && out == null) {
+            System.out.println(commandStr.toString());
+            System.out.println(outputGobbler.getMessage().replace("\r", ""));
+            System.out.println(errorGobbler.getMessage().replace("\r", ""));
+        }
+
+        return retVal;
     }
 
     class StreamGobbler extends Thread {

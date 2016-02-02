@@ -16,7 +16,7 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.peepholes.InstructionHolder;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.x86.*;
-import cs444.codegen.x86.InstructionArg.Size;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.Mov;
 import cs444.codegen.x86.instructions.Pop;
 import cs444.codegen.x86.instructions.Push;

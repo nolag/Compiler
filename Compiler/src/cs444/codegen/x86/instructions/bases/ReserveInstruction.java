@@ -1,6 +1,6 @@
 package cs444.codegen.x86.instructions.bases;
 
-import cs444.codegen.x86.InstructionArg;
+import cs444.codegen.instructions.InstructionArg;
 
 
 
@@ -22,7 +22,7 @@ public abstract class ReserveInstruction extends X86Instruction {
     }
 
     @Override
-    public final boolean uses(final InstructionArg what) {
+    public final boolean uses(final InstructionArg<X86Instruction, ?> what) {
         return false;
     }
 }

@@ -7,18 +7,22 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.tiles.TileSet;
+
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
 
-public class InstanceOfTile <T extends Instruction, E extends Enum<E>> implements ITile<T, E, InstanceOfExprSymbol>{
-    public static <T extends Instruction, E extends Enum<E>> void init(final Class<? extends Platform<T, E>> klass){
-        new InstanceOfTile<T, E>(klass);
+@SuppressWarnings("rawtypes")
+public class InstanceOfTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, InstanceOfExprSymbol> {
+        private static InstanceOfTile tile;
+
+    
+@SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> InstanceOfTile<T, E> getTile() {
+        if (tile == null) tile = new InstanceOfTile();
+        return tile;
     }
 
-    private InstanceOfTile(final Class<? extends Platform<T, E>> klass){
-        TileSet.<T, E>getOrMake(klass).insts.add(this);
-    }
+    private InstanceOfTile() {}
 
     @Override
     public boolean fits(final InstanceOfExprSymbol symbol, final Platform<T, E> platform) {
@@ -35,7 +39,7 @@ public class InstanceOfTile <T extends Instruction, E extends Enum<E>> implement
         instructions.addAll(platform.getBest(op.getLeftOperand()));
         // eax should have reference to object
         final String nullObjectLbl = "nullObject" + CodeGenVisitor.getNewLblNum();
-        tileHelper.ifNullJmpCode(nullObjectLbl, sizeHelper, instructions);
+        tileHelper.setupJmpNull(nullObjectLbl, sizeHelper, instructions);
 
         instructions.addAll(platform.getObjectLayout().subtypeCheckCode((TypeSymbol) op.getRightOperand(), platform));
 
