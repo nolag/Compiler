@@ -1,3 +1,5 @@
+*.iml
+.idea
 .metadata
 *.class
 *.s
@@ -39,12 +41,9 @@ local.properties
 TEST*Test.xml
 
 #Auto generated file
-Compiler/src/cs444/lexer/JoosDFA.java
-Compiler/src/cs444/lexer/Token.java
-Compiler/JoosRules.txt
+Compiler/src/main/java/cs444/lexer/JoosDFA.java
+Compiler/src/main/java/cs444/lexer/Token.java
+Compiler/src/main/resources/JoosRules.txt
 
 # file to submit
 *.zip
-
-# Compiler output final executable
-main

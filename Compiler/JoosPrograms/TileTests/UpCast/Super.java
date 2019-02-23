@@ -7,6 +7,6 @@ public class Super extends Base{
         Super s = new Super();
         Base b = s;
         b = (Base) s;
-        return 0;
+        return 123;
     }
 }
