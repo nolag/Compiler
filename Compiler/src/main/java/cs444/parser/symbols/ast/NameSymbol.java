@@ -6,10 +6,9 @@ import cs444.codegen.CodeGenVisitor;
 import cs444.parser.symbols.ATerminal;
 import cs444.types.LookupLink;
 
-public class NameSymbol extends ATerminal implements Typeable{
-    public static enum Type { ID_SYMBOL, PACKAGE, IMPORT, STAR_IMPORT };
-
+public class NameSymbol extends ATerminal implements Typeable {
     public final Type type;
+
     private LookupLink dclNode = null;
 
     public NameSymbol(String value, Type type) {
@@ -27,25 +26,25 @@ public class NameSymbol extends ATerminal implements Typeable{
         visitor.visit(this);
     }
 
-    public void setDclNode(LookupLink node){
-        this.dclNode = node;
-    }
-
-    public LookupLink getDclNode(){
+    public LookupLink getDclNode() {
         return dclNode;
     }
 
-    public Iterable<Typeable> getLookupPath(){
-        return this.dclNode.dcls;
+    public void setDclNode(LookupLink node) {
+        dclNode = node;
     }
 
-    public DclSymbol getLastLookupDcl(){
-        return (DclSymbol) this.dclNode.lastDcl;
+    public Iterable<Typeable> getLookupPath() {
+        return dclNode.dcls;
+    }
+
+    public DclSymbol getLastLookupDcl() {
+        return (DclSymbol) dclNode.lastDcl;
     }
 
     @Override
-    public TypeSymbol getType(){
-        return this.dclNode.lastDcl.getType();
+    public TypeSymbol getType() {
+        return dclNode.lastDcl.getType();
     }
 
     @Override
@@ -55,4 +54,6 @@ public class NameSymbol extends ATerminal implements Typeable{
     public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
+
+    public enum Type {ID_SYMBOL, PACKAGE, IMPORT, STAR_IMPORT}
 }

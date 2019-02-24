@@ -9,14 +9,18 @@ import cs444.parser.symbols.exceptions.OutOfRangeException;
 
 public class StringLiteralFactory extends ASTSymbolFactory {
 
-	@Override
-	protected ISymbol convert(ISymbol from) throws OutOfRangeException {
-		String name = from.getName();
+    @Override
+    protected ISymbol convert(ISymbol from) throws OutOfRangeException {
+        String name = from.getName();
 
-		if (name.equals(Token.Type.CHAR_LITERAL.toString())) return new CharacterLiteralSymbol((Terminal)from);
+        if (name.equals(Token.Type.CHAR_LITERAL.toString())) {
+            return new CharacterLiteralSymbol((Terminal) from);
+        }
 
-		if (name.equals(Token.Type.STR_LITERAL.toString())) return new StringLiteralSymbol((Terminal)from);
+        if (name.equals(Token.Type.STR_LITERAL.toString())) {
+            return new StringLiteralSymbol((Terminal) from);
+        }
 
-		return from;
-	}
+        return from;
+    }
 }

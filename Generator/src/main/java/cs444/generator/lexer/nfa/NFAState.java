@@ -1,22 +1,20 @@
 package cs444.generator.lexer.nfa;
 
-import java.util.ArrayList;
-
 import cs444.generator.lexer.grammar.TokenMetadata;
 import cs444.generator.lexer.nfa.transition.NFATransition;
 
+import java.util.ArrayList;
+
 public class NFAState {
 
-    private boolean accepting;
     private final ArrayList<NFATransition> transitions;
+    private boolean accepting;
     private TokenMetadata data;
     private NFA parent;
 
     public NFAState(boolean accepting) {
-
         this.accepting = accepting;
-
-        transitions = new ArrayList<NFATransition>();
+        transitions = new ArrayList<>();
     }
 
     public NFAState() {
@@ -27,16 +25,15 @@ public class NFAState {
         return parent.getId(this);
     }
 
-    public void setTokenMetadata(TokenMetadata data) {
-        this.data = data;
-    }
-
     public TokenMetadata getTokenMetadata() {
         return data;
     }
 
-    public int getPriority() {
+    public void setTokenMetadata(TokenMetadata data) {
+        this.data = data;
+    }
 
+    public int getPriority() {
         TokenMetadata data = getTokenMetadata();
         return null != data ? data.priority : -1;
     }
@@ -48,9 +45,9 @@ public class NFAState {
     public boolean isAccepting() {
         return accepting;
     }
-    
+
     public void setAccepting(boolean accepting) {
-    	this.accepting = accepting;
+        this.accepting = accepting;
     }
 
     public void addTransition(NFATransition transition) {
@@ -62,7 +59,6 @@ public class NFAState {
     }
 
     public NFAStateSet getClosure() {
-
         NFAStateSet result = new NFAStateSet();
         result.addState(this);
 

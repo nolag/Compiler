@@ -21,21 +21,24 @@ public class LongStaticNameValue extends LongOnlyTile<ArmInstruction, Size, Simp
     private static LongStaticNameValue tile;
 
     public static LongStaticNameValue getTile() {
-        if (tile == null) tile = new LongStaticNameValue();
+        if (tile == null) {
+            tile = new LongStaticNameValue();
+        }
         return tile;
     }
 
     @Override
-    public boolean fits(final SimpleNameSymbol name, final Platform<ArmInstruction, Size> platform) {
+    public boolean fits(SimpleNameSymbol name, Platform<ArmInstruction, Size> platform) {
         return super.fits(name, platform) && name.dcl.isStatic();
     }
 
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(SimpleNameSymbol name, Platform<ArmInstruction, Size> platform) {
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
-        final DclSymbol dcl = name.dcl;
-        final String staticFieldLbl = PkgClassResolver.getUniqueNameFor(dcl);
+    public InstructionsAndTiming<ArmInstruction> generate(SimpleNameSymbol name,
+                                                          Platform<ArmInstruction, Size> platform) {
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
+        DclSymbol dcl = name.dcl;
+        String staticFieldLbl = PkgClassResolver.getUniqueNameFor(dcl);
 
         instructions.add(new Comment("Moving " + staticFieldLbl + " into R0, R2"));
         instructions.add(new Movw(Register.R0, new ImmediateStr(":lower16:" + staticFieldLbl), sizeHelper));

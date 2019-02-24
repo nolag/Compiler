@@ -4,38 +4,39 @@ import cs444.CompilerException;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 
-public abstract class ASTSymbolFactory{
+public abstract class ASTSymbolFactory {
 
     /**
-     * 
      * @param start the start symbol to convet with all its children
      * @return the AST
      * @throws CompilerException
      */
-    public ISymbol convertAll(final ISymbol start) throws CompilerException{
-        final ISymbol retVal  = convert(start);
-        if(!ANonTerminal.class.isInstance(retVal)) return retVal;
+    public ISymbol convertAll(ISymbol start) throws CompilerException {
+        ISymbol retVal = convert(start);
+        if (!(retVal instanceof ANonTerminal)) {
+            return retVal;
+        }
 
-        final ANonTerminal nonTerm = (ANonTerminal) retVal;
+        ANonTerminal nonTerm = (ANonTerminal) retVal;
 
-        final int numChildren = nonTerm.children.size();
-        for(int i = 0; i < numChildren; i++){
-            final ISymbol child = nonTerm.children.remove(i);
+        int numChildren = nonTerm.children.size();
+        for (int i = 0; i < numChildren; i++) {
+            ISymbol child = nonTerm.children.remove(i);
             nonTerm.children.add(i, convertAll(child));
         }
 
         return retVal;
     }
 
-    public ISymbol convertBottomUp(final ISymbol start) throws CompilerException{
-        if(!ANonTerminal.class.isInstance(start)){
+    public ISymbol convertBottomUp(ISymbol start) throws CompilerException {
+        if (!(start instanceof ANonTerminal)) {
             return convert(start);
         }
 
-        final ANonTerminal nonTerm = (ANonTerminal) start;
-        final int numChildren = nonTerm.children.size();
-        for(int i = 0; i < numChildren; i++){
-            final ISymbol child = nonTerm.children.remove(i);
+        ANonTerminal nonTerm = (ANonTerminal) start;
+        int numChildren = nonTerm.children.size();
+        for (int i = 0; i < numChildren; i++) {
+            ISymbol child = nonTerm.children.remove(i);
             nonTerm.children.add(i, convertBottomUp(child));
         }
 
@@ -43,7 +44,6 @@ public abstract class ASTSymbolFactory{
     }
 
     /**
-     * 
      * @param from the symbol to convert to the ast symbol
      * @return the ast symbol representing the symbol, or from if it is not valid for conversion
      * @throws CompilerException

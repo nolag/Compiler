@@ -2,7 +2,7 @@ package utils;
 
 public class GenericMaker {
     @SafeVarargs
-    public static <T> T[] makeArray(final T ... ts) {
+    public static <T> T[] makeArray(T... ts) {
         return ts;
     }
 }

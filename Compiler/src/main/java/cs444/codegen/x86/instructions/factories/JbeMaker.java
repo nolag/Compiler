@@ -13,7 +13,7 @@ public class JbeMaker implements JxxMaker {
     private JbeMaker() { }
 
     @Override
-    public Jbe make(final Immediate where, final SizeHelper<X86Instruction, Size> sizeHelper) {
+    public Jbe make(Immediate where, SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Jbe(where, sizeHelper);
     }
 }

@@ -17,7 +17,7 @@ public class X86_64TileInit extends X86TileInit {
     @Override
     public void initBase() {
         super.initBase();
-        final TileSet<X86Instruction, Size> set = TileSet.getOrMake(X86_64Platform.class);
+        TileSet<X86Instruction, Size> set = TileSet.getOrMake(X86_64Platform.class);
         set.nameValues.add(StaticNameValue.getTile());
     }
 }

@@ -6,12 +6,7 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.ImmediateStr;
 import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
-import cs444.codegen.arm.instructions.Bl;
-import cs444.codegen.arm.instructions.Comment;
-import cs444.codegen.arm.instructions.Extern;
-import cs444.codegen.arm.instructions.Mov;
-import cs444.codegen.arm.instructions.Pop;
-import cs444.codegen.arm.instructions.Push;
+import cs444.codegen.arm.instructions.*;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
@@ -24,26 +19,29 @@ public class SuperCallTile implements ITile<ArmInstruction, Size, SimpleMethodIn
     public static final String NATIVE_NAME = "NATIVE";
     private static SuperCallTile tile;
 
+    private SuperCallTile() {}
+
     public static SuperCallTile getTile() {
-        if (tile == null) tile = new SuperCallTile();
+        if (tile == null) {
+            tile = new SuperCallTile();
+        }
         return tile;
     }
 
-    private SuperCallTile() {}
-
     @Override
-    public boolean fits(final SimpleMethodInvoke invoke, final Platform<ArmInstruction, Size> platform) {
-        final MethodOrConstructorSymbol call = invoke.call;
+    public boolean fits(SimpleMethodInvoke invoke, Platform<ArmInstruction, Size> platform) {
+        MethodOrConstructorSymbol call = invoke.call;
         return call.getImplementationLevel() == ImplementationLevel.FINAL
-                || CodeGenVisitor.<ArmInstruction, Size> getCurrentCodeGen(platform).isSuper;
+                || CodeGenVisitor.getCurrentCodeGen(platform).isSuper;
     }
 
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(final SimpleMethodInvoke invoke, final Platform<ArmInstruction, Size> platform) {
+    public InstructionsAndTiming<ArmInstruction> generate(SimpleMethodInvoke invoke,
+                                                          Platform<ArmInstruction, Size> platform) {
 
-        final MethodOrConstructorSymbol call = invoke.call;
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        MethodOrConstructorSymbol call = invoke.call;
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.add(new Comment("Backing up R8 because having this in R1 is bad"));
         instructions.add(new Push(Register.R8));
@@ -52,11 +50,13 @@ public class SuperCallTile implements ITile<ArmInstruction, Size, SimpleMethodIn
         platform.getTileHelper().callStartHelper(invoke, instructions, platform);
 
         String name = APkgClassResolver.generateFullId(call);
-        if (call.isNative()) name = NATIVE_NAME + name;
-        final ImmediateStr arg = new ImmediateStr(name);
+        if (call.isNative()) {
+            name = NATIVE_NAME + name;
+        }
+        ImmediateStr arg = new ImmediateStr(name);
         instructions.add(new Push(Register.R8));
 
-        if (call.dclInResolver != CodeGenVisitor.<ArmInstruction, Size> getCurrentCodeGen(platform).currentFile || call.isNative()) {
+        if (call.dclInResolver != CodeGenVisitor.getCurrentCodeGen(platform).currentFile || call.isNative()) {
             instructions.add(new Extern(arg));
         }
 

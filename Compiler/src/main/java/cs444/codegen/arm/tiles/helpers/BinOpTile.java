@@ -18,31 +18,35 @@ import cs444.parser.symbols.ast.expressions.BinOpExpr;
 public abstract class BinOpTile<T extends BinOpExpr> implements ITile<ArmInstruction, Size, T> {
     private final BinOpRegMaker maker;
 
-    protected BinOpTile(final BinOpRegMaker maker) {
+    protected BinOpTile(BinOpRegMaker maker) {
         this.maker = maker;
     }
 
     @Override
     public InstructionsAndTiming<ArmInstruction> generate(T bin, Platform<ArmInstruction, Size> platform) {
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
 
-        final Typeable t1 = (Typeable) bin.children.get(0);
-        final Typeable t2 = (Typeable) bin.children.get(1);
+        Typeable t1 = (Typeable) bin.children.get(0);
+        Typeable t2 = (Typeable) bin.children.get(1);
 
-        final TypeSymbol ts1 = t1.getType();
-        final TypeSymbol ts2 = t2.getType();
+        TypeSymbol ts1 = t1.getType();
+        TypeSymbol ts2 = t2.getType();
 
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
 
-        final boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
+        boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
                 || ts2.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
 
         instructions.addAll(platform.getBest(t1));
-        if (hasLong) platform.getTileHelper().makeLong(t1, instructions, sizeHelper);
+        if (hasLong) {
+            platform.getTileHelper().makeLong(t1, instructions, sizeHelper);
+        }
         instructions.add(new Push(Register.R0));
 
         instructions.addAll(platform.getBest(t2));
-        if (hasLong) platform.getTileHelper().makeLong(t2, instructions, sizeHelper);
+        if (hasLong) {
+            platform.getTileHelper().makeLong(t2, instructions, sizeHelper);
+        }
 
         instructions.add(new Pop(Register.R1));
 

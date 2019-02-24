@@ -25,13 +25,13 @@ public class Arm32TileInit extends ArmTileInit {
     @Override
     public void initBase() {
         super.initBase();
-        final TileSet<ArmInstruction, Size> set = TileSet.getOrMake(Arm32Platform.class);
+        TileSet<ArmInstruction, Size> set = TileSet.getOrMake(Arm32Platform.class);
         set.casts.add(CastFromLongTile.getTile());
         set.adds.add(LongBinTile.getTile(AddOpMaker.maker, AdcOpMaker.maker, AddExprSymbol.class));
         set.arrayValues.add(LongArrayValueTile.getTile());
         set.assigns.add(LongAssignmentTile.getTile());
         set.dcls.add(LongDclTile.getTile());
-        set.divs.add(LongDivTile.<DivideExprSymbol> getTile(true, true));
+        set.divs.add(LongDivTile.getTile(true, true));
         set.eqs.add(LongCompOpTile.getTile(null, Condition.NE, Condition.EQ, EqExprSymbol.class));
         set.ges.add(LongCompOpTile.getTile(Condition.GT, Condition.LT, Condition.HS, GeExprSymbol.class));
         set.gts.add(LongCompOpTile.getTile(Condition.GT, Condition.LT, Condition.HI, GtExprSymbol.class));
@@ -41,8 +41,8 @@ public class Arm32TileInit extends ArmTileInit {
         set.mults.add(LongMultTile.getTile());
         set.nameValues.add(LongNameValueTile.getTile());
         set.negs.add(LongNegTile.getTile());
-        set.nes.add(LongCompOpTile.<NeExprSymbol> getTile(Condition.NE, null, Condition.NE, NeExprSymbol.class));
-        set.rems.add(LongDivTile.<RemainderExprSymbol> getTile(false, false));
+        set.nes.add(LongCompOpTile.getTile(Condition.NE, null, Condition.NE, NeExprSymbol.class));
+        set.rems.add(LongDivTile.getTile(false, false));
         set.rss.add(LongSignedRightShift.getTile());
         set.subs.add(LongBinTile.getTile(SubOpMaker.maker, SbcOpMaker.maker, SubtractExprSymbol.class));
         set.urss.add(LongShiftsTile.getTile(Shift.LSR, Shift.LSL, Shift.LSR, true, URSExprSymbol.class));

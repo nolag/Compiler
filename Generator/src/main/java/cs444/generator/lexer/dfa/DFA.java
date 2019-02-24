@@ -1,138 +1,121 @@
 package cs444.generator.lexer.dfa;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-
 import cs444.generator.lexer.nfa.NFA;
 import cs444.generator.lexer.nfa.NFAState;
 import cs444.generator.lexer.nfa.NFAStateSet;
 import cs444.generator.lexer.nfa.transition.NFATransition;
 
-public class DFA {
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
+public class DFA {
     private final ArrayList<DFAState> states;
     private final Queue<DFAState> statesToResolve;
-    
+
     public DFA(NFA source) {
-        
-        // System.out.println("Building DFA");
-        
-        states = new ArrayList<DFAState>();
-        statesToResolve = new LinkedList<DFAState>();
-        
+        states = new ArrayList<>();
+        statesToResolve = new LinkedList<>();
         createState(source.getStartState().getClosure());
-        
-        while (!statesToResolve.isEmpty())
+        while (!statesToResolve.isEmpty()) {
             resolveState(statesToResolve.poll());
+        }
     }
-    
+
     public int getSize() {
         return states.size();
     }
-    
+
     public DFAState getState(int id) {
         return states.get(id);
     }
-    
+
     private DFAState createState(NFAStateSet nfaStates) {
         DFAState state = new DFAState(nfaStates, states.size());
         states.add(state);
         statesToResolve.add(state);
-        
-        // System.out.println("Creating DFA state " + state.toString());
         return state;
     }
-    
-    private void resolveState(DFAState state) {
-        
-        // System.out.println("Resolving state " + state.toString());
 
+    private void resolveState(DFAState state) {
         // for all ascii characters from 0-127 inclusive        
         NFAStateSet[] transitions = new NFAStateSet[128];
         for (int ch = 0; ch < transitions.length; ch++) {
-            
+
             // find all NFA transitions that include the current character
             for (NFAState nfaState : state.getNFAStates()) {
                 for (NFATransition transition : nfaState.getTransitions()) {
                     if (!transition.isEpsilon() && transition.shouldFollow(ch)) {
-                        
+
                         // add the destination state to the list of states this character takes us to
-                        if (null == transitions[ch])
+                        if (null == transitions[ch]) {
                             transitions[ch] = new NFAStateSet();
-                        
+                        }
+
                         transitions[ch].addState(transition.getNextState());
                     }
                 }
             }
-            
+
             // if this character takes us anywhere, compute the closure
             // find or make a DFAState corresponding to the computed set of NFA states
             // tell the current state to transition to this new state when character ch is encountered
             if (null != transitions[ch]) {
-                
                 transitions[ch] = transitions[ch].getClosure();
                 DFAState stateToConnect = findOrCreateState(transitions[ch]);
                 state.addTransition(ch, stateToConnect);
-                
-                // System.out.println("This state has outgoing edges to " + stateToConnect.toString());
             }
         }
     }
-    
+
     private DFAState findOrCreateState(NFAStateSet nfaStates) {
-        
         for (DFAState state : states) {
-            if (state.matches(nfaStates))
+            if (state.matches(nfaStates)) {
                 return state;
+            }
         }
-        
+
         return createState(nfaStates);
     }
-    
+
     @Override
     public String toString() {
-        
-        String result = "";
-        
+        StringBuilder result = new StringBuilder();
+
         // accept table
-        
-        result += "{ ";
-        
+        result.append("{ ");
+
         for (DFAState state : states) {
-            result += state.isAccepting();
-            
-            if (state.getId() != states.size() - 1)
-                result += ", ";
+            result.append(state.isAccepting());
+
+            if (state.getId() != states.size() - 1) {
+                result.append(", ");
+            }
         }
-        
-        result += " };\n\n";
-        
+
+        result.append(" };\n\n\"{ \"");
+
         // state table
-        
-        result += "{ ";
-        
         for (int i = 0; i < states.size(); i++) {
-            
-            result += "  { ";
-            
+
+            result.append("  { ");
+
             int[] row = states.get(i).getTransitionRow();
             for (int j = 0; j < row.length; j++) {
-                
-                result += row[j];
-                
-                if (j < row.length - 1)
-                    result += ", ";
+                result.append(row[j]);
+                if (j < row.length - 1) {
+                    result.append(", ");
+                }
             }
-            
-            result += " }";
-            
-            if (i < states.size() - 1)
-                result += ",\n";
+
+            result.append(" }");
+
+            if (i < states.size() - 1) {
+                result.append(",\n");
+            }
         }
-        
-        result += " };\n";
-        
-        return result;
+
+        result.append(" };\n");
+        return result.toString();
     }
 }

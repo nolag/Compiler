@@ -1,59 +1,49 @@
 package cs444.codegen.x86;
 
-import java.util.Set;
-
 import cs444.codegen.Addable;
 import cs444.codegen.IRuntime;
 import cs444.codegen.Platform;
 import cs444.codegen.TileInit;
 import cs444.codegen.peepholes.InstructionHolder;
 import cs444.codegen.peepholes.InstructionPrinter;
-import cs444.codegen.x86.instructions.Call;
-import cs444.codegen.x86.instructions.Comment;
-import cs444.codegen.x86.instructions.Extern;
-import cs444.codegen.x86.instructions.Global;
-import cs444.codegen.x86.instructions.Label;
-import cs444.codegen.x86.instructions.Ret;
-import cs444.codegen.x86.instructions.Section;
-import cs444.codegen.x86.instructions.Xor;
+import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.ReserveInstruction;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.instructions.factories.ReserveInstructionMaker;
 import cs444.codegen.x86.peepholes.MovZeroRegRemover;
 import cs444.codegen.x86.peepholes.PushPopRemover;
 
-public abstract class X86Platform extends Platform<X86Instruction, Size> {
+import java.util.Set;
 
-    public interface X86PlatformFactory<P extends X86Platform> extends PlatformFactory<X86Instruction, Size, P> {
-        @Override
-        P getPlatform(Set<String> opts);
-    }
+public abstract class X86Platform extends Platform<X86Instruction, Size> {
 
     protected final X86SizeHelper sizeHelper;
 
-    private static InstructionHolder<X86Instruction> genInstructionHolder(final Set<String> options, final X86SizeHelper sizeHelper) {
-        final InstructionHolder<X86Instruction> printer = new InstructionPrinter<>();
-        if (options.contains(NO_PEEPHOLE)) {
-            return printer;
-        } else {
-            final InstructionHolder<X86Instruction> pushPop = new PushPopRemover(printer, sizeHelper);
-            return new MovZeroRegRemover(pushPop);
-        }
-    }
-
-    protected X86Platform(final Set<String> options, final TileInit<X86Instruction, Size> tiles, final IRuntime<X86Instruction> runtime,
-            final X86SizeHelper sizeHelper, final String name) {
+    protected X86Platform(Set<String> options, TileInit<X86Instruction, Size> tiles,
+                          IRuntime<X86Instruction> runtime,
+                          X86SizeHelper sizeHelper, String name) {
         super(options, name, runtime, tiles, genInstructionHolder(options, sizeHelper), sizeHelper);
         this.sizeHelper = sizeHelper;
     }
 
+    private static InstructionHolder<X86Instruction> genInstructionHolder(Set<String> options,
+                                                                          X86SizeHelper sizeHelper) {
+        InstructionHolder<X86Instruction> printer = new InstructionPrinter<>();
+        if (options.contains(NO_PEEPHOLE)) {
+            return printer;
+        } else {
+            InstructionHolder<X86Instruction> pushPop = new PushPopRemover(printer, sizeHelper);
+            return new MovZeroRegRemover(pushPop);
+        }
+    }
+
     @Override
-    public final void zeroDefaultLocation(final Addable<X86Instruction> instructions) {
+    public final void zeroDefaultLocation(Addable<X86Instruction> instructions) {
         instructions.add(new Xor(Register.ACCUMULATOR, Register.ACCUMULATOR, sizeHelper));
     }
 
     @Override
-    public X86Instruction makeComment(final String value) {
+    public X86Instruction makeComment(String value) {
         return new Comment(value);
     }
 
@@ -73,17 +63,17 @@ public abstract class X86Platform extends Platform<X86Instruction, Size> {
     }
 
     @Override
-    public Extern makeExtern(final String what) {
+    public Extern makeExtern(String what) {
         return new Extern(what);
     }
 
     @Override
-    public Label makeLabel(final String what) {
+    public Label makeLabel(String what) {
         return new Label(what);
     }
 
     @Override
-    public Global makeGlobal(final String what) {
+    public Global makeGlobal(String what) {
         return new Global(what);
     }
 
@@ -114,6 +104,11 @@ public abstract class X86Platform extends Platform<X86Instruction, Size> {
 
     @Override
     public ReserveInstruction[] makeSpace(String name, Size size) {
-        return new ReserveInstruction[] { ReserveInstructionMaker.make(name, size) };
+        return new ReserveInstruction[]{ReserveInstructionMaker.make(name, size)};
+    }
+
+    public interface X86PlatformFactory<P extends X86Platform> extends PlatformFactory<X86Instruction, Size, P> {
+        @Override
+        P getPlatform(Set<String> opts);
     }
 }

@@ -15,37 +15,42 @@ public class StaticCallTile<T extends Instruction<T>, E extends Enum<E>> impleme
 
     private static StaticCallTile tile;
 
+    private StaticCallTile() {}
+
     @SuppressWarnings("unchecked")
     public static <T extends Instruction<T>, E extends Enum<E>> StaticCallTile<T, E> getTile() {
-        if (tile == null) tile = new StaticCallTile();
+        if (tile == null) {
+            tile = new StaticCallTile();
+        }
         return tile;
     }
 
-    private StaticCallTile() {}
-
     @Override
-    public boolean fits(final SimpleMethodInvoke invoke, final Platform<T, E> platform) {
-        final MethodOrConstructorSymbol call = invoke.call;
+    public boolean fits(SimpleMethodInvoke invoke, Platform<T, E> platform) {
+        MethodOrConstructorSymbol call = invoke.call;
         return call.isStatic();
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final SimpleMethodInvoke invoke, final Platform<T, E> platform) {
+    public InstructionsAndTiming<T> generate(SimpleMethodInvoke invoke, Platform<T, E> platform) {
 
-        final MethodOrConstructorSymbol call = invoke.call;
-        final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
+        MethodOrConstructorSymbol call = invoke.call;
+        InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
 
         platform.getTileHelper().callStartHelper(invoke, instructions, platform);
         String name = APkgClassResolver.generateFullId(call);
-        if (call.isNative()) name = NATIVE_NAME + name;
+        if (call.isNative()) {
+            name = NATIVE_NAME + name;
+        }
 
-        if (call.dclInResolver != CodeGenVisitor.<T, E> getCurrentCodeGen(platform).currentFile || call.isNative()) instructions
-                .add(platform.makeExtern(name));
+        if (call.dclInResolver != CodeGenVisitor.getCurrentCodeGen(platform).currentFile || call.isNative()) {
+            instructions
+                    .add(platform.makeExtern(name));
+        }
 
         instructions.add(platform.makeCall(name));
         platform.getTileHelper().callEndHelper(call, instructions, platform);
 
         return instructions;
     }
-
 }

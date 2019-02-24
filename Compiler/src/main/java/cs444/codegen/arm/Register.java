@@ -1,11 +1,11 @@
 package cs444.codegen.arm;
 
+import cs444.codegen.SizeHelper;
+import cs444.codegen.arm.instructions.bases.ArmInstruction;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import cs444.codegen.SizeHelper;
-import cs444.codegen.arm.instructions.bases.ArmInstruction;
 
 public class Register extends SimpleInstructionArg implements Operand2 {
     public static final Register R0 = new Register(0);
@@ -26,7 +26,8 @@ public class Register extends SimpleInstructionArg implements Operand2 {
     public static final Register LINK = new Register(14);
     public static final Register PC = new Register(15);
 
-    public static final List<Register> specialRegisters = Collections.unmodifiableList(Arrays.asList(INTRA_PROCEDURE, STACK, LINK, PC));
+    public static final List<Register> specialRegisters = Collections.unmodifiableList(Arrays.asList(INTRA_PROCEDURE,
+            STACK, LINK, PC));
 
     public final int number;
 

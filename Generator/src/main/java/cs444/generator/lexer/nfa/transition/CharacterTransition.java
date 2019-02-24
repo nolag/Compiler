@@ -3,12 +3,10 @@ package cs444.generator.lexer.nfa.transition;
 import cs444.generator.lexer.nfa.NFAState;
 
 public class CharacterTransition extends NFATransition {
-
     private final int ch;
-    
+
     public CharacterTransition(int ch, NFAState nextState) {
         super(nextState);
-        
         this.ch = ch;
     }
 
@@ -24,6 +22,6 @@ public class CharacterTransition extends NFATransition {
 
     @Override
     public String toString() {
-        return "'" + (char)ch + "'->" + getNextState().getId();
+        return "'" + (char) ch + "'->" + getNextState().getId();
     }
 }

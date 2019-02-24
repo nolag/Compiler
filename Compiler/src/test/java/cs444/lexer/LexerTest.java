@@ -1,8 +1,7 @@
 package cs444.lexer;
 
-import org.junit.Test;
-
 import cs444.TestHelper;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -10,22 +9,22 @@ import org.junit.runners.JUnit4;
 public class LexerTest {
     @Test
     public void testValidTraditionalComment() throws Exception {
-       TestHelper.assertTokenFor("/* some comment */", Token.Type.COMMENT);
+        TestHelper.assertTokenFor("/* some comment */", Token.Type.COMMENT);
     }
 
     @Test
     public void testDetectTraditionalCommentWithStars() throws Exception {
-       TestHelper.assertTokenFor("/* some * comment with /* */", Token.Type.COMMENT);
+        TestHelper.assertTokenFor("/* some * comment with /* */", Token.Type.COMMENT);
     }
 
     @Test
     public void testDetectTraditionalCommentEndingStars() throws Exception {
-       TestHelper.assertTokenFor("/* some comment ***/", Token.Type.COMMENT);
+        TestHelper.assertTokenFor("/* some comment ***/", Token.Type.COMMENT);
     }
 
     @Test(expected = LexerException.class)
     public void testTraditionalCommentsWithoutClosing() throws Exception {
-    	TestHelper.scanString("/* some comment that never ends");
+        TestHelper.scanString("/* some comment that never ends");
     }
 
     @Test
@@ -48,52 +47,52 @@ public class LexerTest {
 
     @Test
     public void testIlegalIdentifier() throws Exception {
-		Lexer scanner = TestHelper.getScannerFor("1a"); // id must not start with number
+        Lexer scanner = TestHelper.getScannerFor("1a"); // id must not start with number
 
-		TestHelper.assertToken(Token.Type.DECIMAL_INTEGER_LITERAL, "1", scanner.getNextToken());
-		TestHelper.assertToken(Token.Type.ID, "a", scanner.getNextToken());
+        TestHelper.assertToken(Token.Type.DECIMAL_INTEGER_LITERAL, "1", scanner.getNextToken());
+        TestHelper.assertToken(Token.Type.ID, "a", scanner.getNextToken());
     }
 
     @Test
     public void testValidIntLiterals() throws Exception {
-    	TestHelper.assertTokenFor("0", Token.Type.DECIMAL_INTEGER_LITERAL);
-    	TestHelper.assertTokenFor("8", Token.Type.DECIMAL_INTEGER_LITERAL);
-    	TestHelper.assertTokenFor("999990", Token.Type.DECIMAL_INTEGER_LITERAL);
-    	TestHelper.assertTokenFor("1234567890", Token.Type.DECIMAL_INTEGER_LITERAL);
+        TestHelper.assertTokenFor("0", Token.Type.DECIMAL_INTEGER_LITERAL);
+        TestHelper.assertTokenFor("8", Token.Type.DECIMAL_INTEGER_LITERAL);
+        TestHelper.assertTokenFor("999990", Token.Type.DECIMAL_INTEGER_LITERAL);
+        TestHelper.assertTokenFor("1234567890", Token.Type.DECIMAL_INTEGER_LITERAL);
     }
 
     @Test
     public void testIlegalIntLiterals() throws Exception {
-    	Lexer scanner = TestHelper.getScannerFor("01"); // literal must not start with 0
+        Lexer scanner = TestHelper.getScannerFor("01"); // literal must not start with 0
 
-		TestHelper.assertToken(Token.Type.DECIMAL_INTEGER_LITERAL, "0", scanner.getNextToken());
-		TestHelper.assertToken(Token.Type.DECIMAL_INTEGER_LITERAL, "1", scanner.getNextToken());
+        TestHelper.assertToken(Token.Type.DECIMAL_INTEGER_LITERAL, "0", scanner.getNextToken());
+        TestHelper.assertToken(Token.Type.DECIMAL_INTEGER_LITERAL, "1", scanner.getNextToken());
     }
 
     @Test
     public void testValidBooleanLiterals() throws Exception {
-    	TestHelper.assertTokenFor("true", Token.Type.TRUE);
-    	TestHelper.assertTokenFor("false", Token.Type.FALSE);
+        TestHelper.assertTokenFor("true", Token.Type.TRUE);
+        TestHelper.assertTokenFor("false", Token.Type.FALSE);
     }
 
     @Test
     public void testValidCharLiterals() throws Exception {
-    	TestHelper.assertTokenFor("'a'", Token.Type.CHAR_LITERAL);
-    	TestHelper.assertTokenFor("'%'", Token.Type.CHAR_LITERAL);
-    	TestHelper.assertTokenFor("'\\t'", Token.Type.CHAR_LITERAL);
-    	TestHelper.assertTokenFor("'\\\\'", Token.Type.CHAR_LITERAL);
-    	TestHelper.assertTokenFor("'\\''", Token.Type.CHAR_LITERAL);
-    	TestHelper.assertTokenFor("'\\177'", Token.Type.CHAR_LITERAL);
+        TestHelper.assertTokenFor("'a'", Token.Type.CHAR_LITERAL);
+        TestHelper.assertTokenFor("'%'", Token.Type.CHAR_LITERAL);
+        TestHelper.assertTokenFor("'\\t'", Token.Type.CHAR_LITERAL);
+        TestHelper.assertTokenFor("'\\\\'", Token.Type.CHAR_LITERAL);
+        TestHelper.assertTokenFor("'\\''", Token.Type.CHAR_LITERAL);
+        TestHelper.assertTokenFor("'\\177'", Token.Type.CHAR_LITERAL);
     }
 
     @Test(expected = LexerException.class)
     public void testIlegalEmptyCharLiteral() throws Exception {
-    	TestHelper.scanString("\'\'");
+        TestHelper.scanString("\'\'");
     }
 
     @Test(expected = LexerException.class)
     public void testCharLiteralWithoutClosingQuote() throws Exception {
-    	TestHelper.scanString("\'");
+        TestHelper.scanString("\'");
     }
 
     @Test
@@ -106,16 +105,16 @@ public class LexerTest {
 
     @Test(expected = LexerException.class)
     public void testStringLiteralWithoutClosingQuote() throws Exception {
-    	TestHelper.scanString("\"");
+        TestHelper.scanString("\"");
     }
 
     @Test
-    public void testNullLiteral() throws Exception{
+    public void testNullLiteral() throws Exception {
         TestHelper.assertTokenFor("null", Token.Type.NULL);
     }
 
     @Test
-    public void testSeparators() throws Exception{
+    public void testSeparators() throws Exception {
         TestHelper.assertTokenFor("(", Token.Type.LPAREN);
         TestHelper.assertTokenFor(")", Token.Type.RPAREN);
         TestHelper.assertTokenFor("{", Token.Type.LBRACE);
@@ -128,7 +127,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testOperators() throws Exception{
+    public void testOperators() throws Exception {
         //Operators
         TestHelper.assertTokenFor("=", Token.Type.BECOMES);
         //arithmetic operators
@@ -207,9 +206,9 @@ public class LexerTest {
         TestHelper.assertTokenFor("volatile", Token.Type.VOLATILE);
         TestHelper.assertTokenFor("while", Token.Type.WHILE);
     }
-    
+
     @Test(expected = InvalidCharacterException.class)
     public void testInvalidCharacter() throws Exception {
-    	TestHelper.scanString("some ASCII characters and \u0080");
+        TestHelper.scanString("some ASCII characters and \u0080");
     }
 }

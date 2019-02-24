@@ -1,22 +1,24 @@
 package cs444.generator.lexer.nfa;
 
-import java.util.ArrayList;
+import cs444.generator.lexer.nfa.transition.*;
 
-import cs444.generator.lexer.nfa.transition.CharacterTransition;
-import cs444.generator.lexer.nfa.transition.EpsilonTransition;
-import cs444.generator.lexer.nfa.transition.MultiRangeTransition;
-import cs444.generator.lexer.nfa.transition.NFATransition;
-import cs444.generator.lexer.nfa.transition.Range;
-import cs444.generator.lexer.nfa.transition.RangeTransition;
+import java.util.ArrayList;
 
 public class NFA {
 
-	public static NFA union(NFA... nfas) {
-		return union(true, nfas);
-	}
-	
-    public static NFA union(boolean mergeAccepts, NFA... nfas) {
+    private final ArrayList<NFAState> states;
 
+    private NFA() {
+        states = new ArrayList<>();
+        createState();
+        createAcceptingState();
+    }
+
+    public static NFA union(NFA... nfas) {
+        return union(true, nfas);
+    }
+
+    public static NFA union(boolean mergeAccepts, NFA... nfas) {
         NFA result = new NFA();
 
         NFAState start = result.getStartState();
@@ -32,18 +34,15 @@ public class NFA {
     }
 
     public static NFA concatenate(NFA... nfas) {
-
         NFA result = new NFA();
 
         if (nfas.length > 0) {
-
             result.addAllStates(nfas[0], true);
             NFAState start = result.getStartState();
             start.addTransition(new EpsilonTransition(nfas[0].getStartState()));
 
             NFA previousNFA = nfas[0];
             for (int i = 1; i < nfas.length; i++) {
-
                 NFA currentNFA = nfas[i];
                 result.addAllStates(currentNFA, true);
 
@@ -76,7 +75,6 @@ public class NFA {
     }
 
     public static NFA zeroOrMore(NFA nfa) {
-
         NFA result = new NFA();
         result.addAllStates(nfa, true);
 
@@ -92,15 +90,15 @@ public class NFA {
     }
 
     public static NFA anyCharacter() {
-        return NFA.acceptRange((char)0, (char)127);
+        return acceptRange((char) 0, (char) 127);
     }
 
     public static NFA digit() {
-        return NFA.acceptRange('0', '9');
+        return acceptRange('0', '9');
     }
 
-    public static NFA nonZeroDigit(){
-        return NFA.acceptRange('1', '9');
+    public static NFA nonZeroDigit() {
+        return acceptRange('1', '9');
     }
 
     public static NFA acceptRange(char first, char last) {
@@ -108,7 +106,6 @@ public class NFA {
         NFAState start = result.getStartState();
         NFAState accepting = result.getAcceptingState();
         start.addTransition(new RangeTransition(first, last, accepting));
-
         return result;
     }
 
@@ -117,8 +114,7 @@ public class NFA {
         NFA result = new NFA();
         NFAState start = result.getStartState();
         NFAState accepting = result.getAcceptingState();
-        start.addTransition(new MultiRangeTransition(accepting,
-                new Range('A', 'Z'), new Range('a', 'z')));
+        start.addTransition(new MultiRangeTransition(accepting, new Range('A', 'Z'), new Range('a', 'z')));
 
         // '_' and '$' are also considered letters in Java
         // (http://docs.oracle.com/javase/specs/jls/se5.0/html/lexical.html#3.8)
@@ -129,20 +125,18 @@ public class NFA {
     }
 
     public static NFA capitalLetter() {
-        return NFA.acceptRange('A', 'Z');
+        return acceptRange('A', 'Z');
     }
 
     public static NFA smallLetter() {
-        return NFA.acceptRange('a', 'z');
+        return acceptRange('a', 'z');
     }
 
     public static NFA literal(String literal) {
-
         NFA result = new NFA();
 
         NFAState currentState = result.getStartState();
         for (int i = 0; i < literal.length(); i++) {
-
             NFAState nextState = result.createState();
             currentState.addTransition(new CharacterTransition(literal.charAt(i), nextState));
             currentState = nextState;
@@ -162,7 +156,8 @@ public class NFA {
 
         // everything, but:
         // \n -> 10; \r -> 13; ' -> 39; \ -> 92;
-        start.addTransition(new MultiRangeTransition(accepting,
+        start.addTransition(new MultiRangeTransition(
+                accepting,
                 new Range((char) 0, (char) 9),
                 new Range((char) 11, (char) 12),
                 new Range((char) 14, (char) 38),
@@ -180,7 +175,8 @@ public class NFA {
 
         // everything, but:
         // \n -> 10; \r -> 13; " -> 34; \ -> 92;
-        start.addTransition(new MultiRangeTransition(accepting,
+        start.addTransition(new MultiRangeTransition(
+                accepting,
                 new Range((char) 0, (char) 9),
                 new Range((char) 11, (char) 12),
                 new Range((char) 14, (char) 33),
@@ -188,14 +184,6 @@ public class NFA {
                 new Range((char) 93, (char) 127)));
 
         return result;
-    }
-
-    private final ArrayList<NFAState> states;
-
-    private NFA() {
-        states = new ArrayList<NFAState>();
-        createState();
-        createAcceptingState();
     }
 
     private void createAcceptingState() {
@@ -232,7 +220,10 @@ public class NFA {
 
     private void addAllStates(NFA nfa, boolean clearAccepts) {
         for (NFAState state : nfa.getStates()) {
-        	if (clearAccepts) state.setAccepting(false);
+            if (clearAccepts) {
+                state.setAccepting(false);
+            }
+
             addState(state);
         }
     }
@@ -243,18 +234,14 @@ public class NFA {
 
     @Override
     public String toString() {
-
-        String result = "";
-
+        StringBuilder result = new StringBuilder();
         for (NFAState state : states) {
-
-            result += state.toString() + "\n";
-
+            result.append(state).append("\n");
             for (NFATransition transition : state.getTransitions()) {
-                result += "\t" + transition.toString() + "\n";
+                result.append("\t").append(transition).append("\n");
             }
         }
 
-        return result;
+        return result.toString();
     }
 }

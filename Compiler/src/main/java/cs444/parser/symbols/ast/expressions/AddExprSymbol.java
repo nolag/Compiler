@@ -1,4 +1,3 @@
-
 package cs444.parser.symbols.ast.expressions;
 
 import cs444.CompilerException;
@@ -10,7 +9,7 @@ import cs444.parser.symbols.ast.*;
 public class AddExprSymbol extends BinOpExpr {
     public final static String myName = "Add";
 
-    public AddExprSymbol(final ISymbol left, final ISymbol right) {
+    public AddExprSymbol(ISymbol left, ISymbol right) {
         super(myName, left, right);
     }
 
@@ -20,7 +19,7 @@ public class AddExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         children.get(0).accept(visitor);
         children.get(1).accept(visitor);
         visitor.visit(this);
@@ -32,37 +31,37 @@ public class AddExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 
     @Override
     public Typeable reduce() {
-        final Typeable rightOperand = (Typeable)getRightOperand();
-        final Typeable leftOperand = (Typeable)getLeftOperand();
+        Typeable rightOperand = (Typeable) getRightOperand();
+        Typeable leftOperand = (Typeable) getLeftOperand();
 
         if (rightOperand instanceof INumericLiteral &&
-                leftOperand instanceof INumericLiteral){
-            final long val1 = ((INumericLiteral)leftOperand).getAsLongValue();
-            final long val2 = ((INumericLiteral)rightOperand).getAsLongValue();
-            if(rightOperand instanceof LongLiteralSymbol || leftOperand instanceof LongLiteralSymbol){
+                leftOperand instanceof INumericLiteral) {
+            long val1 = ((INumericLiteral) leftOperand).getAsLongValue();
+            long val2 = ((INumericLiteral) rightOperand).getAsLongValue();
+            if (rightOperand instanceof LongLiteralSymbol || leftOperand instanceof LongLiteralSymbol) {
                 return new LongLiteralSymbol(val1 + val2);
             }
-            return new IntegerLiteralSymbol((int)(val1 + val2));
+            return new IntegerLiteralSymbol((int) (val1 + val2));
         } else if (rightOperand instanceof StringLiteralSymbol &&
-                leftOperand instanceof INumericLiteral){
-            final String val1 = getValFrom(leftOperand);
-            final String val2 = ((StringLiteralSymbol)rightOperand).strValue;
+                leftOperand instanceof INumericLiteral) {
+            String val1 = getValFrom(leftOperand);
+            String val2 = ((StringLiteralSymbol) rightOperand).strValue;
             return new StringLiteralSymbol(val1 + val2);
         } else if (rightOperand instanceof INumericLiteral &&
-                leftOperand instanceof StringLiteralSymbol){
-            final String val1 = ((StringLiteralSymbol)leftOperand).strValue;
-            final String val2 = getValFrom(rightOperand);
+                leftOperand instanceof StringLiteralSymbol) {
+            String val1 = ((StringLiteralSymbol) leftOperand).strValue;
+            String val2 = getValFrom(rightOperand);
             return new StringLiteralSymbol(val1 + val2);
         } else if (rightOperand instanceof StringLiteralSymbol &&
-                leftOperand instanceof StringLiteralSymbol){
-            final String val1 = ((StringLiteralSymbol) leftOperand).strValue;
-            final String val2 = ((StringLiteralSymbol) rightOperand).strValue;
+                leftOperand instanceof StringLiteralSymbol) {
+            String val1 = ((StringLiteralSymbol) leftOperand).strValue;
+            String val2 = ((StringLiteralSymbol) rightOperand).strValue;
             return new StringLiteralSymbol(val1 + val2);
         } else if (rightOperand instanceof INumericLiteral) {
             return zeroReducer((INumericLiteral) rightOperand, leftOperand);
@@ -73,11 +72,11 @@ public class AddExprSymbol extends BinOpExpr {
         return null;
     }
 
-    private String getValFrom(final ISymbol leftOperand) {
-        final long val1 = ((INumericLiteral)leftOperand).getAsLongValue();
+    private String getValFrom(ISymbol leftOperand) {
+        long val1 = ((INumericLiteral) leftOperand).getAsLongValue();
         String strVal = String.valueOf(val1);
-        if (leftOperand instanceof CharacterLiteralSymbol){
-            strVal = String.valueOf((char)val1);
+        if (leftOperand instanceof CharacterLiteralSymbol) {
+            strVal = String.valueOf((char) val1);
         }
         return strVal;
     }

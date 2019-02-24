@@ -13,15 +13,18 @@ import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
 public class NegTile extends NumericHelperTile<ArmInstruction, Size, NegOpExprSymbol> {
     private static NegTile tile;
 
+    private NegTile() {}
+
     public static NegTile getTile() {
-        if (tile == null) tile = new NegTile();
+        if (tile == null) {
+            tile = new NegTile();
+        }
         return tile;
     }
 
-    private NegTile() {}
-
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(NegOpExprSymbol neg, Platform<ArmInstruction, Size> platform) {
+    public InstructionsAndTiming<ArmInstruction> generate(NegOpExprSymbol neg,
+                                                          Platform<ArmInstruction, Size> platform) {
         InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
         instructions.addAll(platform.getBest(neg.children.get(0)));
         instructions.add(new Rsb(Register.R0, Register.R0, Immediate8.ZERO, platform.getSizeHelper()));

@@ -20,37 +20,40 @@ import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 public class LongDivTile extends LongOnlyTile<X86Instruction, Size, DivideExprSymbol> {
     private static LongDivTile tile;
 
+    private LongDivTile() {}
+
     public static LongDivTile getTile() {
-        if (tile == null) tile = new LongDivTile();
+        if (tile == null) {
+            tile = new LongDivTile();
+        }
         return tile;
     }
 
-    private LongDivTile() {}
-
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final DivideExprSymbol div, final Platform<X86Instruction, Size> platform) {
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final TileHelper<X86Instruction, Size> helper = platform.getTileHelper();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final IRuntime<X86Instruction> runtime = platform.getRunime();
+    public InstructionsAndTiming<X86Instruction> generate(DivideExprSymbol div, Platform<X86Instruction,
+            Size> platform) {
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        TileHelper<X86Instruction, Size> helper = platform.getTileHelper();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        IRuntime<X86Instruction> runtime = platform.getRunime();
 
-        final long myNum = CodeGenVisitor.getNewLblNum();
-        final String safeDiv = "safeDiv" + myNum;
-        final String notSmallest = "notSmallest" + myNum;
-        final String notSmallest2 = "divNotSmallest" + myNum;
-        final String allDone = "doneDiv" + myNum;
-        final String notNeg = "notNeg" + myNum;
-        final String subing = "subLoop" + myNum;
-        final String mainDone = "doneSub" + myNum;
-        final String subCheck = "subCheck" + myNum;
+        long myNum = CodeGenVisitor.getNewLblNum();
+        String safeDiv = "safeDiv" + myNum;
+        String notSmallest = "notSmallest" + myNum;
+        String notSmallest2 = "divNotSmallest" + myNum;
+        String allDone = "doneDiv" + myNum;
+        String notNeg = "notNeg" + myNum;
+        String subing = "subLoop" + myNum;
+        String mainDone = "doneSub" + myNum;
+        String subCheck = "subCheck" + myNum;
 
-        final Immediate allDoneImm = new Immediate(allDone);
-        final Immediate mainDoneImm = new Immediate(mainDone);
-        final Immediate subLoopImm = new Immediate(subing);
-        final Immediate subCheckImm = new Immediate(subCheck);
+        Immediate allDoneImm = new Immediate(allDone);
+        Immediate mainDoneImm = new Immediate(mainDone);
+        Immediate subLoopImm = new Immediate(subing);
+        Immediate subCheckImm = new Immediate(subCheck);
 
-        final Typeable numerator = (Typeable) div.children.get(0);
-        final Typeable denominator = (Typeable) div.children.get(1);
+        Typeable numerator = (Typeable) div.children.get(0);
+        Typeable denominator = (Typeable) div.children.get(1);
 
         instructions.add(new Comment("Start long divide"));
         instructions.add(new Comment("Store the value of if it -ve in ebx"));
@@ -88,7 +91,7 @@ public class LongDivTile extends LongOnlyTile<X86Instruction, Size, DivideExprSy
         instructions.add(new Xor(Register.COUNTER, Register.COUNTER, sizeHelper));
 
         instructions.add(new Cmp(Register.DESTINATION, Immediate.BIT_32, sizeHelper));
-        final Jne notSmallestJmp = new Jne(new Immediate(notSmallest), sizeHelper);
+        Jne notSmallestJmp = new Jne(new Immediate(notSmallest), sizeHelper);
         instructions.add(notSmallestJmp);
         instructions.add(new Cmp(Register.SOURCE, Immediate.ZERO, sizeHelper));
         instructions.add(notSmallestJmp);

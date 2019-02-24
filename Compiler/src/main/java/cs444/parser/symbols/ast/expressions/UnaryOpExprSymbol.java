@@ -2,9 +2,9 @@ package cs444.parser.symbols.ast.expressions;
 
 import cs444.parser.symbols.ISymbol;
 
-public abstract class UnaryOpExprSymbol extends BaseExprSymbol{
+public abstract class UnaryOpExprSymbol extends BaseExprSymbol {
 
-    protected UnaryOpExprSymbol(String name, ISymbol on){
+    protected UnaryOpExprSymbol(String name, ISymbol on) {
         super(name);
         children.add(on);
     }
@@ -18,8 +18,8 @@ public abstract class UnaryOpExprSymbol extends BaseExprSymbol{
     public boolean isCollapsable() {
         return false;
     }
-    
-    public ISymbol getOperand(){
-        return this.children.get(0);
+
+    public ISymbol getOperand() {
+        return children.get(0);
     }
 }

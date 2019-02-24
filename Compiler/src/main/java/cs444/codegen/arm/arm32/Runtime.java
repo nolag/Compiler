@@ -8,15 +8,13 @@ import cs444.codegen.arm.instructions.Extern;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 
 public class Runtime implements IRuntime<ArmInstruction> {
+    public static final Runtime instance = new Runtime();
     private static final String MALLOC = "__malloc";
     private static final String MALLOC_CLEAR = "__malloc_clear";
     private static final String EXCEPTION = "__exception";
-
     private static final ImmediateStr MALLOC_IMM = new ImmediateStr(MALLOC);
     private static final ImmediateStr MALLOC_CLEAR_IMM = new ImmediateStr(MALLOC_CLEAR);
     private static final ImmediateStr EXCEPTION_IMM = new ImmediateStr(EXCEPTION);
-
-    public static final Runtime instance = new Runtime();
 
     private Runtime() {}
 

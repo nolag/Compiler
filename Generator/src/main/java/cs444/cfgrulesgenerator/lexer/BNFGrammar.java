@@ -5,36 +5,31 @@ import cs444.generator.lexer.grammar.TokenMetadata.Type;
 import cs444.generator.lexer.nfa.NFA;
 
 public class BNFGrammar extends LexicalGrammar {
-
     public BNFGrammar() {
-
         addPattern("EPSILON", NFA.literal(""), Type.IGNORE); // This type is used for CFG rules, not for scanning
-
         addPattern("WHITESPACE", NFA.union(NFA.literal(" "), NFA.literal("\t")), Type.IGNORE);
-
         addPattern("NEWLINE", NFA.union(NFA.literal("\n"), NFA.literal("\r")), Type.VALID);
-
-
-        addPattern("END_LINE_COMMENT", NFA.concatenate(NFA.literal("//"),
-                                                       NFA.zeroOrMore(anythingButEndOfLine()),
-                                                       NFA.union(NFA.literal("\r"),
-                                                                 NFA.literal("\n"))),
-                   Type.IGNORE);
-
-        addPattern("LHS", NFA.concatenate(NFA.capitalLetter(),
-                                          NFA.zeroOrMore(NFA.union(NFA.letter(), NFA.digit())),
-                                          NFA.literal(":")), Type.VALID);
+        addPattern(
+                "END_LINE_COMMENT",
+                NFA.concatenate(
+                        NFA.literal("//"),
+                        NFA.zeroOrMore(anythingButEndOfLine()),
+                        NFA.union(NFA.literal("\r"),
+                                NFA.literal("\n"))),
+                Type.IGNORE);
+        addPattern("LHS",
+                NFA.concatenate(
+                        NFA.capitalLetter(), NFA.zeroOrMore(NFA.union(NFA.letter(), NFA.digit())), NFA.literal(":")),
+                Type.VALID);
 
         // this covers all keywords, and also lparen, rparen, lbrace, rbrace, lbracket,
         // rbracket, pipe, literals
-        addPattern("TERMINAL", NFA.oneOrMore(NFA.union(NFA.literal("_"),
-                                                       NFA.smallLetter())), Type.VALID);
-
-        addPattern("NON_TERMINAL", NFA.concatenate(NFA.capitalLetter(),
-                                                   NFA.zeroOrMore(NFA.union(NFA.literal("_"),
-                                                                            NFA.letter(),
-                                                                            NFA.digit()))),
-                   Type.VALID);
+        addPattern("TERMINAL", NFA.oneOrMore(NFA.union(NFA.literal("_"), NFA.smallLetter())), Type.VALID);
+        addPattern(
+                "NON_TERMINAL",
+                NFA.concatenate(
+                        NFA.capitalLetter(), NFA.zeroOrMore(NFA.union(NFA.literal("_"), NFA.letter(), NFA.digit()))),
+                Type.VALID);
 
         // Special characters. This are chars that have meaning in BNF, so for the actual symbols in
         // the Joos grammar, we will be using TERMINAL token
@@ -78,8 +73,9 @@ public class BNFGrammar extends LexicalGrammar {
     }
 
     private NFA anythingButEndOfLine() {
-        return NFA.union(NFA.acceptRange((char)0, (char)9),
-                         NFA.acceptRange((char)11, (char)12),
-                         NFA.acceptRange((char)14, (char)127));
+        return NFA.union(
+                NFA.acceptRange((char) 0, (char) 9),
+                NFA.acceptRange((char) 11, (char) 12),
+                NFA.acceptRange((char) 14, (char) 127));
     }
 }

@@ -6,7 +6,7 @@ import cs444.codegen.instructions.InstructionArg;
 public class Comment extends ArmInstruction {
     public final String comment;
 
-    public Comment(final String comment) {
+    public Comment(String comment) {
         super(0, 0);
         this.comment = "/* " + comment + " */";
     }
@@ -17,7 +17,7 @@ public class Comment extends ArmInstruction {
     }
 
     @Override
-    public final boolean uses(final InstructionArg<ArmInstruction, ?> what) {
+    public final boolean uses(InstructionArg<ArmInstruction, ?> what) {
         return false;
     }
 }

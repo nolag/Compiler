@@ -3,13 +3,8 @@ package cs444.codegen.arm.arm32.tiles;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.arm.ArmSizeHelper;
-import cs444.codegen.arm.ConstantShift;
-import cs444.codegen.arm.Immediate8;
+import cs444.codegen.arm.*;
 import cs444.codegen.arm.Operand2.Shift;
-import cs444.codegen.arm.Register;
-import cs444.codegen.arm.RegisterShift;
-import cs444.codegen.arm.Size;
 import cs444.codegen.arm.arm32.tiles.helpers.Arm32TileHelper;
 import cs444.codegen.arm.instructions.*;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
@@ -24,31 +19,35 @@ import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 
 public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstruction, Size, T> {
-    public final boolean divide;
-    public final boolean bothForNeg;
     private static LongDivTile<DivideExprSymbol> div = new LongDivTile<DivideExprSymbol>(true, true);
     private static LongDivTile<RemainderExprSymbol> rem = new LongDivTile<RemainderExprSymbol>(false, false);
+    public final boolean divide;
+    public final boolean bothForNeg;
 
-    @SuppressWarnings("unchecked")
-    public static <T extends BinOpExpr> LongDivTile<T> getTile(boolean divide, boolean bothForNeg) {
-        if (divide & bothForNeg) return (LongDivTile<T>) div;
-        if (!(divide | bothForNeg)) return (LongDivTile<T>) rem;
-        throw new IllegalArgumentException("This combination does not seem legal!");
-    }
-
-    private LongDivTile(final boolean divide, final boolean bothForNeg) {
+    private LongDivTile(boolean divide, boolean bothForNeg) {
         this.divide = divide;
         this.bothForNeg = bothForNeg;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T extends BinOpExpr> LongDivTile<T> getTile(boolean divide, boolean bothForNeg) {
+        if (divide & bothForNeg) {
+            return (LongDivTile<T>) div;
+        }
+        if (!(divide | bothForNeg)) {
+            return (LongDivTile<T>) rem;
+        }
+        throw new IllegalArgumentException("This combination does not seem legal!");
+    }
+
     @Override
     public InstructionsAndTiming<ArmInstruction> generate(T div, Platform<ArmInstruction, Size> platform) {
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
-        final Typeable t1 = (Typeable) div.children.get(0);
-        final Typeable t2 = (Typeable) div.children.get(1);
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
+        Typeable t1 = (Typeable) div.children.get(0);
+        Typeable t2 = (Typeable) div.children.get(1);
 
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
-        final TileHelper<ArmInstruction, Size> tileHelper = platform.getTileHelper();
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        TileHelper<ArmInstruction, Size> tileHelper = platform.getTileHelper();
 
         instructions.add(new Push(Register.R8, Register.R9, Register.R10, Register.R11));
 
@@ -62,15 +61,16 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
         instructions.add(new Cmp(Register.R2, Immediate8.ZERO, sizeHelper));
         instructions.add(new Cmp(Register.R0, Immediate8.ZERO, sizeHelper, Condition.EQ));
         long mynum = CodeGenVisitor.getNewLblNum();
-        final String safeDiv = "safeDiv" + mynum;
+        String safeDiv = "safeDiv" + mynum;
         instructions.add(new B(Condition.NE, safeDiv));
         platform.getRunime().throwException(instructions, JoosNonTerminal.DIV_ZERO);
         instructions.add(platform.makeLabel(safeDiv));
 
         instructions.add(new Pop(Register.R1, Register.R3));
 
-        instructions.add(platform.makeComment("we need to check for -max int on both numbers, so may as well do the = check first"));
-        final String doneDiv = "doneDiv" + mynum;
+        instructions.add(platform.makeComment("we need to check for -max int on both numbers, so may as well do the =" +
+                " check first"));
+        String doneDiv = "doneDiv" + mynum;
         instructions.add(new Cmp(Register.R0, Register.R1, sizeHelper));
         instructions.add(new Cmp(Register.R2, Register.R3, sizeHelper, Condition.EQ));
         instructions.add(new Mov(Condition.EQ, Register.R0, divide ? Immediate8.ONE : Immediate8.ZERO, sizeHelper));
@@ -99,7 +99,9 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
         instructions.add(new Cmp(Register.R2, Immediate8.ZERO, sizeHelper));
         instructions.add(new B(Condition.GE, endNegation));
         Arm32TileHelper.negLog(Register.R0, Register.R2, instructions, sizeHelper);
-        if (bothForNeg) instructions.add(new Eor(Register.R4, Register.R4, Immediate8.TRUE, sizeHelper));
+        if (bothForNeg) {
+            instructions.add(new Eor(Register.R4, Register.R4, Immediate8.TRUE, sizeHelper));
+        }
         instructions.add(platform.makeLabel(endNegation));
 
         instructions.add(platform.makeComment("Zero out divide and remainder (11,7) (5,8)"));
@@ -160,7 +162,8 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
         tileHelper.setupLbl(loopStart, instructions);
         instructions.add(new Cmp(Register.R9, Immediate8.ZERO, sizeHelper));
         instructions.add(new B(Condition.EQ, loopEnd));
-        instructions.add(new Mov(true, Condition.AL, Register.R11, new ConstantShift(Register.R11, (byte) 1, Shift.LSL), sizeHelper));
+        instructions.add(new Mov(true, Condition.AL, Register.R11, new ConstantShift(Register.R11, (byte) 1,
+                Shift.LSL), sizeHelper));
         instructions.add(new Mov(Register.R7, new ConstantShift(Register.R7, (byte) 1, Shift.LSL), sizeHelper));
         instructions.add(new Orr(Condition.HS, Register.R7, Register.R7, Immediate8.ONE, sizeHelper));
         instructions.add(platform.makeComment("This is the actual long division part for a bit"));

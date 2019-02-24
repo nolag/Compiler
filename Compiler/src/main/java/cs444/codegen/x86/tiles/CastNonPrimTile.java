@@ -18,25 +18,28 @@ import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 public class CastNonPrimTile implements ITile<X86Instruction, Size, CastExpressionSymbol> {
     private static CastNonPrimTile tile;
 
+    private CastNonPrimTile() {}
+
     public static CastNonPrimTile getTile() {
-        if (tile == null) tile = new CastNonPrimTile();
+        if (tile == null) {
+            tile = new CastNonPrimTile();
+        }
         return tile;
     }
 
-    private CastNonPrimTile() {}
-
     @Override
-    public boolean fits(final CastExpressionSymbol symbol, final Platform<X86Instruction, Size> platform) {
+    public boolean fits(CastExpressionSymbol symbol, Platform<X86Instruction, Size> platform) {
         return X86TileHelper.isReferenceType(symbol);
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final CastExpressionSymbol symbol, final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(CastExpressionSymbol symbol,
+                                                          Platform<X86Instruction, Size> platform) {
 
-        final TypeSymbol type = symbol.getType();
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final String castExprEnd = "CastExprEnd" + CodeGenVisitor.getNewLblNum();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        TypeSymbol type = symbol.getType();
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        String castExprEnd = "CastExprEnd" + CodeGenVisitor.getNewLblNum();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));
         platform.getTileHelper().setupJmpNull(castExprEnd, sizeHelper, instructions);

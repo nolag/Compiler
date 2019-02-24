@@ -11,7 +11,7 @@ public class ForExprSymbol extends BaseExprSymbol {
     private int offsetSize = 0;
 
     public ForExprSymbol(ISymbol forInit, ISymbol forCondition,
-            ISymbol forUpdate, ISymbol body) {
+                         ISymbol forUpdate, ISymbol body) {
         super("For");
         children.add(forInit);
         children.add(forCondition);
@@ -19,23 +19,23 @@ public class ForExprSymbol extends BaseExprSymbol {
         children.add(body);
     }
 
-    public Typeable getCondition(){
+    public Typeable getCondition() {
         return (Typeable) getConditionExpr();
     }
 
-    public ISymbol getForInit(){
+    public ISymbol getForInit() {
         return children.get(0);
     }
 
-    public ISymbol getConditionExpr(){
+    public ISymbol getConditionExpr() {
         return children.get(1);
     }
 
-    public ISymbol getForUpdate(){
+    public ISymbol getForUpdate() {
         return children.get(2);
     }
 
-    public ISymbol getBody(){
+    public ISymbol getBody() {
         return children.get(3);
     }
 
@@ -50,17 +50,19 @@ public class ForExprSymbol extends BaseExprSymbol {
         visitor.afterClause(this);
         getForUpdate().accept(visitor);
         visitor.afterClause(this);
-        final ISymbol body = getBody();
-        if(body != null) body.accept(visitor);
+        ISymbol body = getBody();
+        if (body != null) {
+            body.accept(visitor);
+        }
         visitor.close(this);
     }
 
-    public void setOffsetSize(int offsetSize){
-        this.offsetSize = offsetSize;
+    public int getOffsetSize() {
+        return offsetSize;
     }
 
-    public int getOffsetSize(){
-        return offsetSize;
+    public void setOffsetSize(int offsetSize) {
+        this.offsetSize = offsetSize;
     }
 
     @Override
@@ -68,9 +70,8 @@ public class ForExprSymbol extends BaseExprSymbol {
         visitor.visit(this);
     }
 
-
     @Override
     public TypeableTerminal reduce() {
-         return null;
+        return null;
     }
 }

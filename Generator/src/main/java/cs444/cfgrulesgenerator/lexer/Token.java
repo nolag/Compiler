@@ -5,7 +5,56 @@ package cs444.cfgrulesgenerator.lexer;
 
 import java.util.HashMap;
 import java.util.Map;
+
 public final class Token {
+    public static final Map<Type, Parse> typeToParse = new HashMap<>() {{
+        put(Type.COMMA, Parse.VALID);
+        put(Type.LHS, Parse.VALID);
+        put(Type.RPAREN, Parse.SYNTAX_ONLY);
+        put(Type.EQ, Parse.VALID);
+        put(Type.DAMPERSAND, Parse.VALID);
+        put(Type.STAR, Parse.VALID);
+        put(Type.LPAREN, Parse.SYNTAX_ONLY);
+        put(Type.DPIPE, Parse.VALID);
+        put(Type.END_LINE_COMMENT, Parse.IGNORE);
+        put(Type.BECOMES, Parse.VALID);
+        put(Type.WHITESPACE, Parse.IGNORE);
+        put(Type.PIPE, Parse.SYNTAX_ONLY);
+        put(Type.LE, Parse.VALID);
+        put(Type.EPSILON, Parse.IGNORE);
+        put(Type.SEMI, Parse.VALID);
+        put(Type.MINUS, Parse.VALID);
+        put(Type.LT, Parse.VALID);
+        put(Type.LBRACE, Parse.SYNTAX_ONLY);
+        put(Type.RBRACKET, Parse.SYNTAX_ONLY);
+        put(Type.GT, Parse.VALID);
+        put(Type.NE, Parse.VALID);
+        put(Type.SLASH, Parse.VALID);
+        put(Type.PLUS, Parse.VALID);
+        put(Type.GE, Parse.VALID);
+        put(Type.NEWLINE, Parse.VALID);
+        put(Type.DOT, Parse.VALID);
+        put(Type.RBRACE, Parse.SYNTAX_ONLY);
+        put(Type.AMPERSAND, Parse.VALID);
+        put(Type.EXCLAMATION, Parse.VALID);
+        put(Type.NON_TERMINAL, Parse.VALID);
+        put(Type.TERMINAL, Parse.VALID);
+        put(Type.PCT, Parse.VALID);
+        put(Type.LBRACKET, Parse.SYNTAX_ONLY);
+    }};
+    public final Type type;
+    public final String lexeme;
+
+    public Token(Type type, String lexeme) {
+        this.type = type;
+        this.lexeme = lexeme;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + type + ", " + lexeme.trim() + ">";
+    }
+
     public enum Type {
         COMMA,
         LHS,
@@ -42,16 +91,6 @@ public final class Token {
         LBRACKET,
         EOF
     }
-    public static enum Parse {VALID, SYNTAX_ONLY, IGNORE}
-    public static final Map<Type, Parse> typeToParse = new HashMap<Type, Parse>(){{put(Type.COMMA, Parse.VALID); put(Type.LHS, Parse.VALID); put(Type.RPAREN, Parse.SYNTAX_ONLY); put(Type.EQ, Parse.VALID); put(Type.DAMPERSAND, Parse.VALID); put(Type.STAR, Parse.VALID); put(Type.LPAREN, Parse.SYNTAX_ONLY); put(Type.DPIPE, Parse.VALID); put(Type.END_LINE_COMMENT, Parse.IGNORE); put(Type.BECOMES, Parse.VALID); put(Type.WHITESPACE, Parse.IGNORE); put(Type.PIPE, Parse.SYNTAX_ONLY); put(Type.LE, Parse.VALID); put(Type.EPSILON, Parse.IGNORE); put(Type.SEMI, Parse.VALID); put(Type.MINUS, Parse.VALID); put(Type.LT, Parse.VALID); put(Type.LBRACE, Parse.SYNTAX_ONLY); put(Type.RBRACKET, Parse.SYNTAX_ONLY); put(Type.GT, Parse.VALID); put(Type.NE, Parse.VALID); put(Type.SLASH, Parse.VALID); put(Type.PLUS, Parse.VALID); put(Type.GE, Parse.VALID); put(Type.NEWLINE, Parse.VALID); put(Type.DOT, Parse.VALID); put(Type.RBRACE, Parse.SYNTAX_ONLY); put(Type.AMPERSAND, Parse.VALID); put(Type.EXCLAMATION, Parse.VALID); put(Type.NON_TERMINAL, Parse.VALID); put(Type.TERMINAL, Parse.VALID); put(Type.PCT, Parse.VALID); put(Type.LBRACKET, Parse.SYNTAX_ONLY); }};
-    public final Type type;
-    public final String lexeme;
-    public Token(Type type, String lexeme) {
-        this.type = type;
-        this.lexeme = lexeme;
-    }
-    @Override
-    public String toString() {
-        return "<" + type.toString() + ", " + lexeme.trim() + ">";
-    }
+
+    public enum Parse {VALID, SYNTAX_ONLY, IGNORE}
 }

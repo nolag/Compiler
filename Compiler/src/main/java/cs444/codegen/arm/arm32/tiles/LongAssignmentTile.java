@@ -19,21 +19,24 @@ import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 public class LongAssignmentTile extends LongOnlyTile<ArmInstruction, Size, AssignmentExprSymbol> {
     private static LongAssignmentTile tile;
 
+    private LongAssignmentTile() {}
+
     public static LongAssignmentTile getTile() {
-        if (tile == null) tile = new LongAssignmentTile();
+        if (tile == null) {
+            tile = new LongAssignmentTile();
+        }
         return tile;
     }
 
-    private LongAssignmentTile() {}
-
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(final AssignmentExprSymbol op, final Platform<ArmInstruction, Size> platform) {
+    public InstructionsAndTiming<ArmInstruction> generate(AssignmentExprSymbol op,
+                                                          Platform<ArmInstruction, Size> platform) {
 
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
 
-        final ISymbol leftHandSide = op.children.get(0);
-        final Typeable rightHandSide = (Typeable) op.children.get(1);
+        ISymbol leftHandSide = op.children.get(0);
+        Typeable rightHandSide = (Typeable) op.children.get(1);
 
         instructions.add(new Comment("Start Long Assignment " + leftHandSide.getName() + "=" + rightHandSide.getName()));
         instructions.addAll(platform.getBest(leftHandSide));
@@ -47,5 +50,4 @@ public class LongAssignmentTile extends LongOnlyTile<ArmInstruction, Size, Assig
         instructions.add(new Comment("End Long Assignment"));
         return instructions;
     }
-
 }

@@ -8,7 +8,7 @@ import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 
-public class SimpleNameSymbol extends ATerminal implements Typeable{
+public class SimpleNameSymbol extends ATerminal implements Typeable {
     public final DclSymbol dcl;
 
     public SimpleNameSymbol(DclSymbol dcl) {
@@ -40,5 +40,4 @@ public class SimpleNameSymbol extends ATerminal implements Typeable{
     public void setType(TypeSymbol type) {
         dcl.setType(type);
     }
-
 }

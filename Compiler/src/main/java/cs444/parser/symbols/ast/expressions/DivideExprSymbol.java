@@ -12,7 +12,7 @@ import cs444.parser.symbols.ast.TypeableTerminal;
 public class DivideExprSymbol extends BinOpExpr {
     public final static String myName = "Divide";
 
-    public DivideExprSymbol(final ISymbol left, final ISymbol right) {
+    public DivideExprSymbol(ISymbol left, ISymbol right) {
         super(myName, left, right);
     }
 
@@ -22,7 +22,7 @@ public class DivideExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         children.get(0).accept(visitor);
         children.get(1).accept(visitor);
         visitor.visit(this);
@@ -34,25 +34,27 @@ public class DivideExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 
     @Override
     public TypeableTerminal reduce() {
-        final ISymbol rightOperand = getRightOperand();
-        final ISymbol leftOperand = getLeftOperand();
+        ISymbol rightOperand = getRightOperand();
+        ISymbol leftOperand = getLeftOperand();
 
         if (rightOperand instanceof INumericLiteral &&
-                leftOperand instanceof INumericLiteral){
-            final long val1 = ((INumericLiteral)leftOperand).getAsLongValue();
-            final long val2 = ((INumericLiteral)rightOperand).getAsLongValue();
-            if(val2 == 0) return null;
-            if (rightOperand instanceof LongLiteralSymbol || leftOperand instanceof LongLiteralSymbol) {
-                return new LongLiteralSymbol(val1/val2);
+                leftOperand instanceof INumericLiteral) {
+            long val1 = ((INumericLiteral) leftOperand).getAsLongValue();
+            long val2 = ((INumericLiteral) rightOperand).getAsLongValue();
+            if (val2 == 0) {
+                return null;
             }
-            return new IntegerLiteralSymbol((int)(val1 / val2));
-        }else{
+            if (rightOperand instanceof LongLiteralSymbol || leftOperand instanceof LongLiteralSymbol) {
+                return new LongLiteralSymbol(val1 / val2);
+            }
+            return new IntegerLiteralSymbol((int) (val1 / val2));
+        } else {
             return null;
         }
     }

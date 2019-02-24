@@ -9,7 +9,6 @@ import cs444.codegen.arm.instructions.Push;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.generic.tiles.helpers.NumericHelperTile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.parser.symbols.ast.Typeable;
@@ -17,25 +16,30 @@ import cs444.parser.symbols.ast.Typeable;
 public class DclTile extends NumericHelperTile<ArmInstruction, Size, DclSymbol> {
     private static DclTile tile;
 
+    private DclTile() {}
+
     public static DclTile getTile() {
-        if (tile == null) tile = new DclTile();
+        if (tile == null) {
+            tile = new DclTile();
+        }
         return tile;
     }
 
-    private DclTile() {}
-
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(final DclSymbol dclSymbol, final Platform<ArmInstruction, Size> platform) {
+    public InstructionsAndTiming<ArmInstruction> generate(DclSymbol dclSymbol, Platform<ArmInstruction,
+            Size> platform) {
 
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
 
         if (dclSymbol.children.isEmpty()) {
             instructions.add(new Eor(Register.R0, Register.R0, Register.R0, sizeHelper));
         } else {
-            final Typeable child = (Typeable) dclSymbol.children.get(0);
+            Typeable child = (Typeable) dclSymbol.children.get(0);
             instructions.addAll(platform.getBest(child));
-            if (dclSymbol.getType().value.equals(JoosNonTerminal.LONG)) platform.getTileHelper().makeLong(child, instructions, sizeHelper);
+            if (dclSymbol.getType().value.equals(JoosNonTerminal.LONG)) {
+                platform.getTileHelper().makeLong(child, instructions, sizeHelper);
+            }
         }
 
         instructions.add(new Push(Register.R0));

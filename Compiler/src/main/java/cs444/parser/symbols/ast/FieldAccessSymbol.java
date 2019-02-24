@@ -8,11 +8,11 @@ import cs444.parser.symbols.ISymbol;
 
 public class FieldAccessSymbol extends ANonTerminal implements Typeable {
 
-    public FieldAccessSymbol(final ISymbol iSymbol, final ISymbol me) {
+    public FieldAccessSymbol(ISymbol iSymbol, ISymbol me) {
         this(iSymbol, me, null);
     }
 
-    public FieldAccessSymbol(final ISymbol iSymbol, final ISymbol me, final TypeSymbol type) {
+    public FieldAccessSymbol(ISymbol iSymbol, ISymbol me, TypeSymbol type) {
         super("FieldAccess");
         children.add(iSymbol);
         children.add(me);
@@ -24,7 +24,7 @@ public class FieldAccessSymbol extends ANonTerminal implements Typeable {
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.prepare(this);
         children.get(0).accept(visitor);
         visitor.open(this);
@@ -38,7 +38,7 @@ public class FieldAccessSymbol extends ANonTerminal implements Typeable {
     }
 
     @Override
-    public void setType(final TypeSymbol type) { }
+    public void setType(TypeSymbol type) { }
 
     @Override
     public boolean isCollapsable() {
@@ -46,7 +46,7 @@ public class FieldAccessSymbol extends ANonTerminal implements Typeable {
     }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 }

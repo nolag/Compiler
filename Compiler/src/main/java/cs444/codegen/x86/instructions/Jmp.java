@@ -6,9 +6,8 @@ import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.bases.UniInstruction;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
-
-public class Jmp extends UniInstruction{
-    public Jmp(final Immediate arg1, final SizeHelper<X86Instruction, Size> sizeHelper){
+public class Jmp extends UniInstruction {
+    public Jmp(Immediate arg1, SizeHelper<X86Instruction, Size> sizeHelper) {
         super("jmp", arg1, sizeHelper, 3, 4);
     }
 }

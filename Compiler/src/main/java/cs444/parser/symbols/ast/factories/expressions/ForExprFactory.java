@@ -11,14 +11,16 @@ import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
-public class ForExprFactory extends ASTSymbolFactory{
+public class ForExprFactory extends ASTSymbolFactory {
     private ISymbol forInit;
     private ISymbol forCondition;
     private ISymbol forUpdate;
 
     @Override
     protected ISymbol convert(ISymbol from) throws OutOfRangeException, UnsupportedException, IllegalModifierException {
-        if(!JoosNonTerminal.fors.contains(from.getName())) return from;
+        if (!JoosNonTerminal.fors.contains(from.getName())) {
+            return from;
+        }
 
         ANonTerminal nonTerms = (ANonTerminal) from;
         nonTerms.children.remove(0);  // remove word "for"
@@ -32,19 +34,25 @@ public class ForExprFactory extends ASTSymbolFactory{
             extractChild(child);
         }
 
-        if (forInit == null) forInit = new EmptyStatementSymbol();
-        if (forUpdate == null) forUpdate = new EmptyStatementSymbol();
-        if (forCondition == null) forCondition = new BooleanLiteralSymbol(JoosNonTerminal.TRUE_VALUE);
+        if (forInit == null) {
+            forInit = new EmptyStatementSymbol();
+        }
+        if (forUpdate == null) {
+            forUpdate = new EmptyStatementSymbol();
+        }
+        if (forCondition == null) {
+            forCondition = new BooleanLiteralSymbol(JoosNonTerminal.TRUE_VALUE);
+        }
 
         return new ForExprSymbol(forInit, forCondition, forUpdate, body);
     }
 
     private void extractChild(ISymbol child) {
-        if (child.getName().equals(JoosNonTerminal.FOR_INIT)){
-            forInit = ((JoosNonTerminal)child).children.get(0);
-        }else if(child.getName().equals(JoosNonTerminal.FOR_UPDATE)){
-            forUpdate = ((JoosNonTerminal)child).children.get(0);
-        }else{
+        if (child.getName().equals(JoosNonTerminal.FOR_INIT)) {
+            forInit = ((JoosNonTerminal) child).children.get(0);
+        } else if (child.getName().equals(JoosNonTerminal.FOR_UPDATE)) {
+            forUpdate = ((JoosNonTerminal) child).children.get(0);
+        } else {
             forCondition = child;
         }
     }

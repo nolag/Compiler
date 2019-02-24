@@ -1,7 +1,5 @@
 package cs444.types;
 
-import java.util.*;
-
 import cs444.CompilerException;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
@@ -13,68 +11,77 @@ import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.exceptions.UndeclaredException;
 
+import java.util.*;
+
 public class ArrayPkgClassResolver extends APkgClassResolver {
     public final APkgClassResolver resolver;
 
-    public static String getArrayName(final String name){
-        return name + "__array";
-    }
-
-    public ArrayPkgClassResolver(final APkgClassResolver resolver) {
+    public ArrayPkgClassResolver(APkgClassResolver resolver) {
         super(getArrayName(resolver.name), resolver.pkg, true);
         this.resolver = resolver;
         build(null, false, false);
-        for(final String s : resolver.assignableTo){
-        	//Array of primative is not assignable to array of object.
-        	if(!((JoosNonTerminal.primativeNumbers.contains(resolver.name) ||
-        			JoosNonTerminal.otherPrimatives.contains(resolver.name)) &&
-        			JoosNonTerminal.OBJECT.equals(s)))
-        		assignableTo.add(getArrayName(s));
+        for (String s : resolver.assignableTo) {
+            //Array of primative is not assignable to array of object.
+            if (!((JoosNonTerminal.primativeNumbers.contains(resolver.name) ||
+                    JoosNonTerminal.otherPrimatives.contains(resolver.name)) &&
+                    JoosNonTerminal.OBJECT.equals(s))) {
+                assignableTo.add(getArrayName(s));
+            }
         }
 
         PkgClassInfo.instance.symbolMap.put(fullName, this);
 
-        try{
-            final TypeSymbol ts = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
-            final NameSymbol name = new NameSymbol(JoosNonTerminal.THIS, Type.ID_SYMBOL);
-            final String [] indexTypes = { JoosNonTerminal.INTEGER, JoosNonTerminal.CHAR, JoosNonTerminal.BYTE, JoosNonTerminal.SHORT };
+        try {
+            TypeSymbol ts = TypeSymbol.getPrimative(JoosNonTerminal.VOID);
+            NameSymbol name = new NameSymbol(JoosNonTerminal.THIS, Type.ID_SYMBOL);
+            String[] indexTypes = {JoosNonTerminal.INTEGER, JoosNonTerminal.CHAR, JoosNonTerminal.BYTE,
+                    JoosNonTerminal.SHORT};
 
-            for (final String indexType : indexTypes) addArrayConstructorFor(indexType, ts, name, null);
-        }catch (final Exception e){
+            for (String indexType : indexTypes) {
+                addArrayConstructorFor(indexType, ts, name, null);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        for(final String s : JoosNonTerminal.arraysExtend){
+        for (String s : JoosNonTerminal.arraysExtend) {
             assignableTo.add(s);
-            final APkgClassResolver implInterf = PkgClassInfo.instance.getSymbol(s);
+            APkgClassResolver implInterf = PkgClassInfo.instance.getSymbol(s);
             // check for null for the tests that doesn't include StdLib and use arrays
-            if (implInterf != null) implInterfs.add((PkgClassResolver) implInterf);
+            if (implInterf != null) {
+                implInterfs.add((PkgClassResolver) implInterf);
+            }
         }
         superClass = PkgClassInfo.instance.getSymbol(JoosNonTerminal.OBJECT);
     }
 
-    private void addArrayConstructorFor(final String indType, final TypeSymbol ts, final NameSymbol name, final Platform<?, ?> platform)
+    public static String getArrayName(String name) {
+        return name + "__array";
+    }
+
+    private void addArrayConstructorFor(String indType, TypeSymbol ts, NameSymbol name,
+                                        Platform<?, ?> platform)
             throws IllegalModifierException, UnsupportedException, UndeclaredException {
 
         List<DclSymbol> dcls = new LinkedList<DclSymbol>();
-        final TypeSymbol t = TypeSymbol.getPrimative(indType);
-        final DclSymbol dcl = new DclSymbol("i", null, t, true);
+        TypeSymbol t = TypeSymbol.getPrimative(indType);
+        DclSymbol dcl = new DclSymbol("i", null, t, true);
         dcl.dclInResolver = this;
         dcls = new LinkedList<DclSymbol>();
         dcls.add(dcl);
-        final MethodHeader header = new MethodHeader(name, ts, dcls);
+        MethodHeader header = new MethodHeader(name, ts, dcls);
 
         //ANonTerminal from, ANonTerminal body
-        final ConstructorSymbol cs = new ConstructorSymbol(header, null, null);
+        ConstructorSymbol cs = new ConstructorSymbol(header, null, null);
         cs.forcePublic();
         cs.resolver = this;
         cs.dclInResolver = this;
-        final String uniqueName = generateUniqueName(cs, JoosNonTerminal.THIS);
+        String uniqueName = generateUniqueName(cs, JoosNonTerminal.THIS);
         constructors.put(uniqueName, cs);
     }
 
     @Override
-    public APkgClassResolver getClass(final String name, final boolean die) throws UndeclaredException {
+    public APkgClassResolver getClass(String name, boolean die) throws UndeclaredException {
         return resolver.getClass(name, die);
     }
 
@@ -84,44 +91,51 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    protected void build(final Set<PkgClassResolver> visited, final boolean mustBeInterface, final boolean mustBeClass){
-        if(!isBuilt){
+    protected void build(Set<PkgClassResolver> visited, boolean mustBeInterface,
+                         boolean mustBeClass) {
+        if (!isBuilt) {
             isBuilt = true;
-            final APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.OBJECT);
+            APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.OBJECT);
             smethodMap.putAll(resolver.smethodMap);
             methodMap.putAll(resolver.methodMap);
             sfieldMap.putAll(resolver.sfieldMap);
             fieldMap.putAll(resolver.fieldMap);
-            final TypeSymbol intType = TypeSymbol.getPrimative(JoosNonTerminal.INTEGER);
+            TypeSymbol intType = TypeSymbol.getPrimative(JoosNonTerminal.INTEGER);
 
-            try{
-                final DclSymbol length = new DclSymbol("length", null, intType, null, false);
+            try {
+                DclSymbol length = new DclSymbol("length", null, intType, null, false);
                 length.forcePublic();
                 length.forceFinal();
                 fieldMap.put("length", length);
-            }catch (final CompilerException ce){
+            } catch (CompilerException ce) {
                 ce.printStackTrace();
             }
-            try{
-                final PkgClassResolver obj = (PkgClassResolver) getClass(JoosNonTerminal.OBJECT, true);
-                if(!obj.isBuilt) obj.build();
-                for(final AMethodSymbol m : obj.start.getMethods()){
-                    final String uniqueName = generateUniqueName(m, m.dclName);
-                    if(m.isStatic()) smethodMap.put(uniqueName, m);
-                    else methodMap.put(uniqueName, m);
+            try {
+                PkgClassResolver obj = (PkgClassResolver) getClass(JoosNonTerminal.OBJECT, true);
+                if (!obj.isBuilt) {
+                    obj.build();
                 }
-            }catch(final Exception e){ }
+                for (AMethodSymbol m : obj.start.getMethods()) {
+                    String uniqueName = generateUniqueName(m, m.dclName);
+                    if (m.isStatic()) {
+                        smethodMap.put(uniqueName, m);
+                    } else {
+                        methodMap.put(uniqueName, m);
+                    }
+                }
+            } catch (Exception e) {
+            }
         }
     }
 
     @Override
-    public APkgClassResolver findClass(final String name) throws UndeclaredException {
+    public APkgClassResolver findClass(String name) throws UndeclaredException {
         return resolver.findClass(name);
     }
 
     @Override
-    public void linkLocalNamesToDcl(final Collection<Platform<?, ?>> platforms) throws CompilerException {
-        for(final ConstructorSymbol cs : constructors.values()){
+    public void linkLocalNamesToDcl(Collection<Platform<?, ?>> platforms) throws CompilerException {
+        for (ConstructorSymbol cs : constructors.values()) {
             cs.resolveLocalVars(fullName, platforms);
         }
     }
@@ -148,8 +162,10 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void generateCode(final CodeGenVisitor<?, ?> visitor) {
-        for(final ConstructorSymbol cs : constructors.values()) cs.accept(visitor);
+    public void generateCode(CodeGenVisitor<?, ?> visitor) {
+        for (ConstructorSymbol cs : constructors.values()) {
+            cs.accept(visitor);
+        }
     }
 
     @Override
@@ -158,22 +174,22 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void computeFieldOffsets(final Platform<?, ?> platform){
+    public void computeFieldOffsets(Platform<?, ?> platform) {
         fieldMap.get(JoosNonTerminal.LENGTH).setOffset(platform.getObjectLayout().objSize(), platform);
     }
 
     @Override
-    public long getStackSize(final Platform<?, ?> platform) {
+    public long getStackSize(Platform<?, ?> platform) {
         return platform.getSizeHelper().getBytePushSizeOfType("int");
     }
 
     @Override
-    public long getRefStackSize(final SizeHelper<?, ?> sizeHelper) {
+    public long getRefStackSize(SizeHelper<?, ?> sizeHelper) {
         return sizeHelper.getDefaultStackSize();
     }
 
     @Override
-    public long getRealSize(final SizeHelper<?, ?> sizeHelper) {
+    public long getRealSize(SizeHelper<?, ?> sizeHelper) {
         return sizeHelper.getDefaultStackSize();
     }
 
@@ -188,9 +204,9 @@ public class ArrayPkgClassResolver extends APkgClassResolver {
     }
 
     @Override
-    public void checkFields(final Collection<Platform<?, ?>> platforms) throws CompilerException{
-        final LocalDclLinker linker = new LocalDclLinker(fullName, true, platforms);
-        for(final DclSymbol dcl : getDcls()){
+    public void checkFields(Collection<Platform<?, ?>> platforms) throws CompilerException {
+        LocalDclLinker linker = new LocalDclLinker(fullName, true, platforms);
+        for (DclSymbol dcl : getDcls()) {
             dcl.accept(linker);
         }
     }

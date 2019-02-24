@@ -19,27 +19,31 @@ import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 public class NameValueTile extends NumericHelperTile<ArmInstruction, Size, SimpleNameSymbol> {
     private static NameValueTile tile;
 
+    private NameValueTile() {}
+
     public static NameValueTile getTile() {
-        if (tile == null) tile = new NameValueTile();
+        if (tile == null) {
+            tile = new NameValueTile();
+        }
         return tile;
     }
 
-    private NameValueTile() {}
-
     @Override
-    public boolean fits(final SimpleNameSymbol name, final Platform<ArmInstruction, Size> platform) {
+    public boolean fits(SimpleNameSymbol name, Platform<ArmInstruction, Size> platform) {
         return super.fits(name, platform) && !name.dcl.isStatic();
     }
 
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(SimpleNameSymbol name, Platform<ArmInstruction, Size> platform) {
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
-        final DclSymbol dcl = name.dcl;
+    public InstructionsAndTiming<ArmInstruction> generate(SimpleNameSymbol name,
+                                                          Platform<ArmInstruction, Size> platform) {
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
+        DclSymbol dcl = name.dcl;
         Size size = sizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
 
         Register base = dcl.isLocal ? Register.INTRA_PROCEDURE : Register.R0;
-        final Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, (int) dcl.getOffset(platform), instructions, sizeHelper);
+        Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, (int) dcl.getOffset(platform), instructions,
+                sizeHelper);
         instructions.add(new Add(Register.R0, base, op2, sizeHelper));
         if (!JoosNonTerminal.unsigned.contains(name.getType().getTypeDclNode().fullName)) {
             size = ArmSizeHelper.getSignedSize(size);

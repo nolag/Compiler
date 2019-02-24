@@ -1,16 +1,11 @@
 package cs444.cfgrulesgenerator;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-
 import cs444.cfgrulesgenerator.exceptions.BNFParseException;
 import cs444.cfgrulesgenerator.exceptions.UnexpectedTokenException;
 import cs444.cfgrulesgenerator.lexer.Lexer;
 import cs444.cfgrulesgenerator.lexer.LexerException;
+
+import java.io.*;
 
 public class RulesGenerator {
 
@@ -18,52 +13,33 @@ public class RulesGenerator {
      * @param args
      * @throws IOException
      */
-    public static void main(String[] args) throws IOException {
-        BufferedReader reader = null;
-
-        try {
-            reader = new BufferedReader(new FileReader("JoosSyntax.txt"));
+    public static void main(String[] args) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("JoosSyntax.txt"))) {
             IRulesFactory rulesFactory = new RulesFactory(new Lexer(reader));
 
-//            generateSyntacticGrammarClass(rulesFactory);
+            // generateSyntacticGrammarClass(rulesFactory);
 
             // for debugging
             generateSimpleOutput(rulesFactory);
-        } catch (Exception e) {
+        } catch (IOException | BNFParseException | UnexpectedTokenException | LexerException e) {
             e.printStackTrace();
-        } finally {
-            if (null != reader)
-                reader.close();
+            System.exit(1);
         }
     }
 
     @SuppressWarnings("unused")
-	private static void generateSyntacticGrammarClass(IRulesFactory rulesFactory)
-        throws IOException{
-
-        Writer writer = null;
-
-        try{
-            String filePath = "JoosSyntacticGrammar.java";
-            writer = new FileWriter(new File(filePath));
-            SyntacticGrammarClassGenerator generator = new SyntacticGrammarClassGenerator(writer, rulesFactory, "JoosSyntacticGrammar");
-
-            generator.generate();
-        }catch (IOException e){
-            e.printStackTrace();
-        } finally {
-            if (null != writer)
-                writer.close();
+    private static void generateSyntacticGrammarClass(IRulesFactory rulesFactory) throws IOException {
+        String filePath = "JoosSyntacticGrammar.java";
+        try (Writer writer = new FileWriter(new File(filePath))) {
+            new SyntacticGrammarClassGenerator(writer, rulesFactory, "JoosSyntacticGrammar").generate();
         }
     }
 
-    
     // for testing and debugging
-	private static void generateSimpleOutput(IRulesFactory rulesFactory)
-        throws UnexpectedTokenException, LexerException, IOException,
-               BNFParseException{
+    private static void generateSimpleOutput(IRulesFactory rulesFactory)
+            throws UnexpectedTokenException, LexerException, IOException, BNFParseException {
         Rule rule;
-        while((rule = rulesFactory.getNextRule()) != null){
+        while ((rule = rulesFactory.getNextRule()) != null) {
             System.out.println(rule);
         }
     }

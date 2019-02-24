@@ -12,7 +12,7 @@ public class Smull extends ArmInstruction {
     public final Register lhs;
     public final Register rhs;
 
-    public Smull(Condition c, final Register destHi, final Register destLo, final Register lhs, final Register rhs) {
+    public Smull(Condition c, Register destHi, Register destLo, Register lhs, Register rhs) {
         super(3);
         this.c = c;
         this.destHi = destHi;
@@ -21,7 +21,7 @@ public class Smull extends ArmInstruction {
         this.rhs = rhs;
     }
 
-    public Smull(final Register destHi, final Register destLo, final Register lhs, final Register rhs) {
+    public Smull(Register destHi, Register destLo, Register lhs, Register rhs) {
         this(Condition.AL, destHi, destLo, lhs, rhs);
     }
 

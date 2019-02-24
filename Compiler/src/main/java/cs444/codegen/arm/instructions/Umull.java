@@ -12,7 +12,7 @@ public class Umull extends ArmInstruction {
     public final Register lhs;
     public final Register rhs;
 
-    public Umull(Condition c, final Register destHi, final Register destLo, final Register lhs, final Register rhs) {
+    public Umull(Condition c, Register destHi, Register destLo, Register lhs, Register rhs) {
         super(3);
         this.c = c;
         this.destHi = destHi;
@@ -21,7 +21,7 @@ public class Umull extends ArmInstruction {
         this.rhs = rhs;
     }
 
-    public Umull(final Register destHi, final Register destLo, final Register lhs, final Register rhs) {
+    public Umull(Register destHi, Register destLo, Register lhs, Register rhs) {
         this(Condition.AL, destHi, destLo, lhs, rhs);
     }
 

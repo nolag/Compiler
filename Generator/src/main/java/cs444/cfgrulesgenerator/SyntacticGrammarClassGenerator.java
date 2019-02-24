@@ -1,17 +1,15 @@
 package cs444.cfgrulesgenerator;
 
+import cs444.generator.Generator;
+
 import java.io.IOException;
 import java.io.Writer;
 
-import cs444.generator.Generator;
-
-public class SyntacticGrammarClassGenerator  extends Generator  {
+public class SyntacticGrammarClassGenerator extends Generator {
     private final IRulesFactory rules;
     private final String className;
 
-    public SyntacticGrammarClassGenerator(Writer writer,
-                                          IRulesFactory rules,
-                                          String className) {
+    public SyntacticGrammarClassGenerator(Writer writer, IRulesFactory rules, String className) {
         super(writer);
         this.rules = rules;
         this.className = className;
@@ -31,7 +29,7 @@ public class SyntacticGrammarClassGenerator  extends Generator  {
 
         writeLine("import cs444.generator.lexer.grammar.JoosGrammar;\n");
 
-        writeLine("public class " + this.className + "extends Language {\n");
+        writeLine("public class " + className + "extends Language {\n");
 
         indent();
         writeLine("private static final JoosGrammar tokenGrammar = new JoosGrammar();");
@@ -43,13 +41,13 @@ public class SyntacticGrammarClassGenerator  extends Generator  {
 
         Rule rule;
         try {
-            while((rule = rules.getNextRule()) != null){
+            while ((rule = rules.getNextRule()) != null) {
                 writeLine("rules.add(\"" + rule + "\");");
             }
         } catch (Exception e) {
             String eMessage = "Error generating Syntactic Grammar because an " +
-                "exception was thrown: " + e.getClass() + ". Message: " +
-                e.getMessage();
+                    "exception was thrown: " + e.getClass() + ". Message: " +
+                    e.getMessage();
 
             writeLine(eMessage);
             throw new IOException(eMessage); // propagate

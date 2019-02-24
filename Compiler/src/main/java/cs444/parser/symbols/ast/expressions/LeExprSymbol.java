@@ -1,4 +1,3 @@
-
 package cs444.parser.symbols.ast.expressions;
 
 import cs444.CompilerException;
@@ -12,7 +11,7 @@ import cs444.parser.symbols.ast.TypeableTerminal;
 public class LeExprSymbol extends BinOpExpr {
     public final static String myName = "Le";
 
-    public LeExprSymbol(final ISymbol left, final ISymbol right) {
+    public LeExprSymbol(ISymbol left, ISymbol right) {
         super(myName, left, right);
     }
 
@@ -22,7 +21,7 @@ public class LeExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         children.get(0).accept(visitor);
         children.get(1).accept(visitor);
         visitor.visit(this);
@@ -34,21 +33,21 @@ public class LeExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 
     @Override
     public TypeableTerminal reduce() {
-        final ISymbol rightOperand = getRightOperand();
-        final ISymbol leftOperand = getLeftOperand();
+        ISymbol rightOperand = getRightOperand();
+        ISymbol leftOperand = getLeftOperand();
 
         if (rightOperand instanceof INumericLiteral &&
-                leftOperand instanceof INumericLiteral){
-            final long val1 = ((INumericLiteral)leftOperand).getAsLongValue();
-            final long val2 = ((INumericLiteral)rightOperand).getAsLongValue();
+                leftOperand instanceof INumericLiteral) {
+            long val1 = ((INumericLiteral) leftOperand).getAsLongValue();
+            long val2 = ((INumericLiteral) rightOperand).getAsLongValue();
             return new BooleanLiteralSymbol(val1 <= val2);
-        }else{
+        } else {
             return null;
         }
     }

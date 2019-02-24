@@ -12,7 +12,7 @@ public class JgMaker implements JxxMaker {
     private JgMaker() { }
 
     @Override
-    public Jg make(final Immediate where, final SizeHelper<X86Instruction, Size> sizeHelper) {
+    public Jg make(Immediate where, SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Jg(where, sizeHelper);
     }
 }

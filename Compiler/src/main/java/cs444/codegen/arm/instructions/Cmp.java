@@ -10,11 +10,12 @@ import cs444.codegen.arm.instructions.bases.CmpBase;
 
 public class Cmp extends CmpBase {
 
-    public Cmp(final Register reg, final Operand2 op2, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    public Cmp(Register reg, Operand2 op2, SizeHelper<ArmInstruction, Size> sizeHelper) {
         super("cmp", reg, op2, sizeHelper);
     }
 
-    public Cmp(final Register reg, final Operand2 op2, final SizeHelper<ArmInstruction, Size> sizeHelper, final Condition cond) {
+    public Cmp(Register reg, Operand2 op2, SizeHelper<ArmInstruction, Size> sizeHelper,
+               Condition cond) {
         super("cmp", reg, op2, sizeHelper, cond);
     }
 }

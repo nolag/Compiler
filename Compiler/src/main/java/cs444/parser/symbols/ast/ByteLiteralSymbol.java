@@ -9,18 +9,18 @@ public class ByteLiteralSymbol extends TypeableTerminal implements INumericLiter
 
     public final byte byteVal;
 
-    public ByteLiteralSymbol(final byte byteVal){
+    public ByteLiteralSymbol(byte byteVal) {
         super(myName, Integer.toString(byteVal));
         this.byteVal = byteVal;
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.visit(this);
     }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 

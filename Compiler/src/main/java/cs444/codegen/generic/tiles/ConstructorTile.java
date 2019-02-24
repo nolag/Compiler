@@ -16,37 +16,39 @@ public class ConstructorTile<T extends Instruction<T>, E extends Enum<E>> implem
 
     private static ConstructorTile tile;
 
+    private ConstructorTile() {}
+
     @SuppressWarnings("unchecked")
     public static <T extends Instruction<T>, E extends Enum<E>> ConstructorTile<T, E> getTile() {
-        if (tile == null) tile = new ConstructorTile();
+        if (tile == null) {
+            tile = new ConstructorTile();
+        }
         return tile;
     }
 
-    private ConstructorTile() {}
-
     @Override
-    public boolean fits(final ConstructorSymbol symbol, final Platform<T, E> platform) {
+    public boolean fits(ConstructorSymbol symbol, Platform<T, E> platform) {
         return true;
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final ConstructorSymbol constructor, final Platform<T, E> platform) {
+    public InstructionsAndTiming<T> generate(ConstructorSymbol constructor, Platform<T, E> platform) {
 
-        final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
+        InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
 
-        final String constrName = APkgClassResolver.generateFullId(constructor);
-        final SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
-        final TileHelper<T, E> tileHelper = platform.getTileHelper();
+        String constrName = APkgClassResolver.generateFullId(constructor);
+        SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
+        TileHelper<T, E> tileHelper = platform.getTileHelper();
 
         tileHelper.methProlog(constructor, constrName, sizeHelper, instructions);
         tileHelper.loadThisToDefault(instructions, sizeHelper);
         tileHelper.makeCall(CodeGenVisitor.INIT_OBJECT_FUNC, instructions, sizeHelper);
 
-        for (final ISymbol child : constructor.children)
+        for (ISymbol child : constructor.children) {
             instructions.addAll(platform.getBest(child));
+        }
 
         tileHelper.methEpilogue(sizeHelper, instructions);
         return instructions;
     }
-
 }

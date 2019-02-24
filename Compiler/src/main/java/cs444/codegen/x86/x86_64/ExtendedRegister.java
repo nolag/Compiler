@@ -12,7 +12,7 @@ public class ExtendedRegister extends Register {
     public static final ExtendedRegister R14 = new ExtendedRegister("r14");
     public static final ExtendedRegister R15 = new ExtendedRegister("r15");
 
-    protected ExtendedRegister(final String name) {
+    protected ExtendedRegister(String name) {
         super(name, '\0');
     }
 

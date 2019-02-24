@@ -8,5 +8,4 @@ public class ClashException extends CompilerException {
     public ClashException(String clasher1, String clasher2) {
         super(clasher1 + " clashes with " + clasher2);
     }
-
 }

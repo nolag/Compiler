@@ -13,22 +13,24 @@ public class RemZeroTile<T extends Instruction<T>, E extends Enum<E>> implements
 
     private static RemZeroTile tile;
 
+    private RemZeroTile() {}
+
     @SuppressWarnings("unchecked")
     public static <T extends Instruction<T>, E extends Enum<E>> RemZeroTile<T, E> getTile() {
-        if (tile == null) tile = new RemZeroTile();
+        if (tile == null) {
+            tile = new RemZeroTile();
+        }
         return tile;
     }
 
-    private RemZeroTile() {}
-
     @Override
-    public boolean fits(final RemainderExprSymbol symbol, final Platform<T, E> platform) {
+    public boolean fits(RemainderExprSymbol symbol, Platform<T, E> platform) {
         return TileHelper.isZero(symbol.children.get(1));
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final RemainderExprSymbol op, final Platform<T, E> platform) {
-        final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
+    public InstructionsAndTiming<T> generate(RemainderExprSymbol op, Platform<T, E> platform) {
+        InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
         instructions.addAll(platform.getBest(op.children.get(0)));
         platform.getRunime().throwException(instructions, JoosNonTerminal.DIV_ZERO);
         return instructions;

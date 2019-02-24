@@ -8,8 +8,8 @@ public class Linux extends ArmOperatingSystem<Arm32Platform> {
     }
 
     @Override
-    public String[] getLinkCmd(final String execName) {
-        final String outputDir = getOutputDir();
-        return new String[] { "bash", "-c", "ld -marmelf_linux_eabi  -o " + outputDir + execName + " " + getAllObects() };
+    public String[] getLinkCmd(String execName) {
+        String outputDir = getOutputDir();
+        return new String[]{"bash", "-c", "ld -marmelf_linux_eabi  -o " + outputDir + execName + " " + getAllObects()};
     }
 }

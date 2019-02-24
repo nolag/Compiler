@@ -1,26 +1,18 @@
 package cs444.codegen.tiles;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import cs444.codegen.Platform;
 import cs444.codegen.instructions.Instruction;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
-import cs444.parser.symbols.ast.BooleanLiteralSymbol;
-import cs444.parser.symbols.ast.ConstructorSymbol;
-import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.FieldAccessSymbol;
-import cs444.parser.symbols.ast.INumericLiteral;
-import cs444.parser.symbols.ast.MethodSymbol;
-import cs444.parser.symbols.ast.NullSymbol;
-import cs444.parser.symbols.ast.StringLiteralSymbol;
-import cs444.parser.symbols.ast.Thisable;
+import cs444.parser.symbols.ast.*;
 import cs444.parser.symbols.ast.cleanup.SimpleMethodInvoke;
 import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.expressions.*;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class TileSet<T extends Instruction<T>, E extends Enum<E>> {
     private static Map<Class<? extends Platform<?, ?>>, TileSet<?, ?>> classMap = new HashMap<>();
@@ -64,8 +56,10 @@ public class TileSet<T extends Instruction<T>, E extends Enum<E>> {
     public final List<ITile<T, E, BooleanLiteralSymbol>> bools = new LinkedList<ITile<T, E, BooleanLiteralSymbol>>();
     public final List<ITile<T, E, Thisable>> thisables = new LinkedList<ITile<T, E, Thisable>>();
     public final List<ITile<T, E, StringLiteralSymbol>> strs = new LinkedList<ITile<T, E, StringLiteralSymbol>>();
-    public final List<ITile<T, E, ArrayAccessExprSymbol>> arrayValues = new LinkedList<ITile<T, E, ArrayAccessExprSymbol>>();
-    public final List<ITile<T, E, ArrayAccessExprSymbol>> arrayRefs = new LinkedList<ITile<T, E, ArrayAccessExprSymbol>>();
+    public final List<ITile<T, E, ArrayAccessExprSymbol>> arrayValues = new LinkedList<ITile<T, E,
+            ArrayAccessExprSymbol>>();
+    public final List<ITile<T, E, ArrayAccessExprSymbol>> arrayRefs = new LinkedList<ITile<T, E,
+            ArrayAccessExprSymbol>>();
     public final List<ITile<T, E, DclSymbol>> dcls = new LinkedList<ITile<T, E, DclSymbol>>();
     public final List<ITile<T, E, SimpleMethodInvoke>> invokes = new LinkedList<ITile<T, E, SimpleMethodInvoke>>();
 
@@ -74,7 +68,8 @@ public class TileSet<T extends Instruction<T>, E extends Enum<E>> {
         classMap = new HashMap<>();
     }
 
-    public static <T extends Instruction<T>, E extends Enum<E>> TileSet<T, E> getOrMake(final Class<? extends Platform<T, E>> klass) {
+    public static <T extends Instruction<T>, E extends Enum<E>> TileSet<T, E> getOrMake(Class<?
+            extends Platform<T, E>> klass) {
         @SuppressWarnings("unchecked")
         TileSet<T, E> tileSet = (TileSet<T, E>) classMap.get(klass);
 
@@ -86,21 +81,24 @@ public class TileSet<T extends Instruction<T>, E extends Enum<E>> {
         return tileSet;
     }
 
-    public final <S extends ISymbol> void addBest(final List<ITile<T, E, S>> tiles, final S symbol, final Platform<T, E> platform) {
+    public final <S extends ISymbol> void addBest(List<ITile<T, E, S>> tiles, S symbol, Platform<T,
+            E> platform) {
 
         InstructionsAndTiming<T> best = null;
 
-        for (final ITile<T, E, S> tile : tiles) {
+        for (ITile<T, E, S> tile : tiles) {
             if (tile.fits(symbol, platform)) {
-                final InstructionsAndTiming<T> on = tile.generate(symbol, platform);
-                if (on.isBetterThan(best)) best = on;
+                InstructionsAndTiming<T> on = tile.generate(symbol, platform);
+                if (on.isBetterThan(best)) {
+                    best = on;
+                }
             }
         }
 
         platform.addBest(symbol, best);
     }
 
-    public final <S extends ISymbol> void addEmpty(final S symbol, final Platform<T, E> platform) {
+    public final <S extends ISymbol> void addEmpty(S symbol, Platform<T, E> platform) {
         platform.addBest(symbol, new InstructionsAndTiming<T>());
     }
 }

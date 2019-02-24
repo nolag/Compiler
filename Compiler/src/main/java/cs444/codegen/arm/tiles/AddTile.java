@@ -10,17 +10,19 @@ import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 public class AddTile extends SizedBinOpTile<AddExprSymbol> {
     private static AddTile tile;
 
-    public static AddTile getTile() {
-        if (tile == null) tile = new AddTile();
-        return tile;
-    }
-
     public AddTile() {
         super(AddOpMaker.maker);
     }
 
+    public static AddTile getTile() {
+        if (tile == null) {
+            tile = new AddTile();
+        }
+        return tile;
+    }
+
     @Override
-    public boolean fits(final AddExprSymbol op, final Platform<ArmInstruction, Size> platform) {
+    public boolean fits(AddExprSymbol op, Platform<ArmInstruction, Size> platform) {
         return super.fits(op, platform) && !op.getType().value.equals(JoosNonTerminal.STRING);
     }
 }

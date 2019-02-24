@@ -9,9 +9,9 @@ import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 public class ConstantExprBuilder implements IASTBuilder {
 
     @Override
-    public ISymbol build(final ANonTerminal start) throws CompilerException{
+    public ISymbol build(ANonTerminal start) throws CompilerException {
 
-        final ASTSymbolFactory astReducer = new ConstantExprReducer();
+        ASTSymbolFactory astReducer = new ConstantExprReducer();
 
         return astReducer.convertBottomUp(start);
     }

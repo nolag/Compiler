@@ -1,4 +1,3 @@
-
 package cs444.parser.symbols.ast.expressions;
 
 import cs444.CompilerException;
@@ -30,7 +29,7 @@ public class AssignmentExprSymbol extends BinOpExpr {
     public boolean isCollapsable() {
         return false;
     }
-    
+
     @Override
     public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
@@ -38,7 +37,6 @@ public class AssignmentExprSymbol extends BinOpExpr {
 
     @Override
     public TypeableTerminal reduce() {
-         return null;
+        return null;
     }
-
 }

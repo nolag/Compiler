@@ -6,9 +6,8 @@ import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.bases.UniInstruction;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 
-
-public class Jbe extends UniInstruction{
-    public Jbe(final Immediate arg1, final SizeHelper<X86Instruction, Size> sizeHelper){
+public class Jbe extends UniInstruction {
+    public Jbe(Immediate arg1, SizeHelper<X86Instruction, Size> sizeHelper) {
         //1 w/o jump 3 with ~= 2
         //2 short 4 long
         super("jbe", arg1, sizeHelper, 2, 4);

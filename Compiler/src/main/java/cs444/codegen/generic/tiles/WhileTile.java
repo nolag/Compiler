@@ -9,39 +9,40 @@ import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
 
-
 @SuppressWarnings("rawtypes")
 public class WhileTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, WhileExprSymbol> {
     private static WhileTile tile;
 
-@SuppressWarnings("unchecked")
+    private WhileTile() {}
+
+    @SuppressWarnings("unchecked")
     public static <T extends Instruction<T>, E extends Enum<E>> WhileTile<T, E> getTile() {
-        if (tile == null) tile = new WhileTile();
+        if (tile == null) {
+            tile = new WhileTile();
+        }
         return tile;
     }
 
-    private WhileTile() {}
-
     @Override
-    public boolean fits(final WhileExprSymbol symbol, final Platform<T, E> platform) {
+    public boolean fits(WhileExprSymbol symbol, Platform<T, E> platform) {
         return true;
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final WhileExprSymbol whileExprSymbol, final Platform<T, E> platform) {
+    public InstructionsAndTiming<T> generate(WhileExprSymbol whileExprSymbol, Platform<T, E> platform) {
 
-        final TileHelper<T, E> tileHelper = platform.getTileHelper();
+        TileHelper<T, E> tileHelper = platform.getTileHelper();
 
-        final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
-        final long mynum = CodeGenVisitor.getNewLblNum();
+        InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
+        long mynum = CodeGenVisitor.getNewLblNum();
         tileHelper.setupComment("while start " + mynum, instructions);
-        final String loopStart = "loopStart" + mynum;
-        final String loopEnd = "loopEnd" + mynum;
+        String loopStart = "loopStart" + mynum;
+        String loopEnd = "loopEnd" + mynum;
 
         tileHelper.setupLbl(loopStart, instructions);
         instructions.addAll(platform.getBest(whileExprSymbol.getConditionSymbol()));
 
-        final SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
+        SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
         platform.getTileHelper().setupJumpNe(loopEnd, sizeHelper, instructions);
 
         instructions.addAll(platform.getBest((whileExprSymbol.getBody())));

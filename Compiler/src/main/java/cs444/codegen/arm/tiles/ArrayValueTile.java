@@ -10,7 +10,6 @@ import cs444.codegen.arm.instructions.Pop;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.arm.tiles.helpers.NumericArrayTile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
 public final class ArrayValueTile extends NumericArrayTile {
@@ -18,24 +17,29 @@ public final class ArrayValueTile extends NumericArrayTile {
 
     //private static MemoryFormat format = new AddMemoryFormat(Register.ACCUMULATOR, Register.BASE);
 
+    private ArrayValueTile() {}
+
     public static ArrayValueTile getTile() {
-        if (tile == null) tile = new ArrayValueTile();
+        if (tile == null) {
+            tile = new ArrayValueTile();
+        }
         return tile;
     }
 
-    private ArrayValueTile() {}
-
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(final ArrayAccessExprSymbol arrayAccess,
-            final Platform<ArmInstruction, Size> platform) {
+    public InstructionsAndTiming<ArmInstruction> generate(ArrayAccessExprSymbol arrayAccess,
+                                                          Platform<ArmInstruction, Size> platform) {
 
-        final InstructionsAndTiming<ArmInstruction> instructions = super.generate(arrayAccess, platform);
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<ArmInstruction> instructions = super.generate(arrayAccess, platform);
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
 
-        final long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
+        long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
         Size elementSize;
-        if (stackSize >= sizeHelper.getDefaultStackSize()) elementSize = sizeHelper.getDefaultSize();
-        else elementSize = sizeHelper.getSize(stackSize);
+        if (stackSize >= sizeHelper.getDefaultStackSize()) {
+            elementSize = sizeHelper.getDefaultSize();
+        } else {
+            elementSize = sizeHelper.getSize(stackSize);
+        }
 
         instructions.add(new Add(Register.R0, Register.R0, Register.R8, sizeHelper));
         instructions.add(new Ldr(elementSize, Register.R0, Register.R0, sizeHelper));

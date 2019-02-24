@@ -1,22 +1,20 @@
 package cs444.parser.symbols.ast;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.codegen.CodeGenVisitor;
 import cs444.parser.symbols.ATerminal;
 import cs444.types.APkgClassResolver;
 
-public class TypeSymbol extends ATerminal implements Typeable{
-    public boolean isArray;
+import java.util.HashMap;
+import java.util.Map;
+
+public class TypeSymbol extends ATerminal implements Typeable {
+    private static final Map<String, TypeSymbol> builtIn = new HashMap<String, TypeSymbol>();
     public final boolean isClass;
+    public boolean isArray;
     public boolean isFinal;
     private APkgClassResolver typeResolver;
-
-
-    private static final Map<String, TypeSymbol> builtIn = new HashMap<String, TypeSymbol>();
 
     public TypeSymbol(String value, boolean isArray, boolean isClass) {
         super("Type", value);
@@ -24,12 +22,21 @@ public class TypeSymbol extends ATerminal implements Typeable{
         this.isClass = isClass;
     }
 
+    public static TypeSymbol getPrimative(String name) {
+        TypeSymbol retVal = builtIn.get(name);
+        if (null == retVal) {
+            retVal = new TypeSymbol(name, false, false);
+            builtIn.put(name, retVal);
+        }
+        return retVal;
+    }
+
     public APkgClassResolver getTypeDclNode() {
         return typeResolver;
     }
 
     public void setTypeDclNode(APkgClassResolver typeDclNode) {
-        this.typeResolver = typeDclNode;
+        typeResolver = typeDclNode;
     }
 
     @Override
@@ -50,16 +57,7 @@ public class TypeSymbol extends ATerminal implements Typeable{
     @Override
     public void setType(TypeSymbol type) { }
 
-    public static TypeSymbol getPrimative(String name){
-        TypeSymbol retVal = builtIn.get(name);
-        if(null == retVal){
-            retVal = new TypeSymbol(name, false, false);
-            builtIn.put(name, retVal);
-        }
-        return retVal;
-    }
-
-    public TypeSymbol getNonClassVersion(){
+    public TypeSymbol getNonClassVersion() {
         TypeSymbol newType = new TypeSymbol(value, isArray, false);
         newType.typeResolver = typeResolver;
         return newType;

@@ -16,7 +16,7 @@ public class BooleanLiteralSymbol extends TypeableTerminal implements ILiteralSy
 
     public BooleanLiteralSymbol(boolean value) {
         super(SYM_NAME, String.valueOf(value));
-        this.boolValue = value;
+        boolValue = value;
     }
 
     @Override

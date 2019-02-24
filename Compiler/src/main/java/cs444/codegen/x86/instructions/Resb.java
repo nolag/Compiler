@@ -2,10 +2,9 @@ package cs444.codegen.x86.instructions;
 
 import cs444.codegen.x86.instructions.bases.ReserveInstruction;
 
-
 public class Resb extends ReserveInstruction {
 
-    public Resb(final String name, final long quantity) {
+    public Resb(String name, long quantity) {
         super(name, quantity, 0, 0);
     }
 
@@ -13,5 +12,4 @@ public class Resb extends ReserveInstruction {
     protected String getResName() {
         return "resb";
     }
-
 }

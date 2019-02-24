@@ -15,33 +15,36 @@ public class MethodTile<T extends Instruction<T>, E extends Enum<E>> implements 
 
     private static MethodTile tile;
 
+    private MethodTile() {}
+
     @SuppressWarnings("unchecked")
     public static <T extends Instruction<T>, E extends Enum<E>> MethodTile<T, E> getTile() {
-        if (tile == null) tile = new MethodTile();
+        if (tile == null) {
+            tile = new MethodTile();
+        }
         return tile;
     }
 
-    private MethodTile() {}
-
     @Override
-    public boolean fits(final MethodSymbol method, final Platform<T, E> platform) {
+    public boolean fits(MethodSymbol method, Platform<T, E> platform) {
         return true;
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final MethodSymbol method, final Platform<T, E> platform) {
-        final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
+    public InstructionsAndTiming<T> generate(MethodSymbol method, Platform<T, E> platform) {
+        InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
 
         if (!method.isNative()) {
 
-            final TileHelper<T, E> tileHelper = platform.getTileHelper();
+            TileHelper<T, E> tileHelper = platform.getTileHelper();
 
-            final SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
-            final String methodName = APkgClassResolver.generateFullId(method);
+            SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
+            String methodName = APkgClassResolver.generateFullId(method);
 
             tileHelper.methProlog(method, methodName, sizeHelper, instructions);
-            for (final ISymbol child : method.children)
+            for (ISymbol child : method.children) {
                 instructions.addAll(platform.getBest(child));
+            }
             tileHelper.methEpilogue(platform.getSizeHelper(), instructions);
         }
 

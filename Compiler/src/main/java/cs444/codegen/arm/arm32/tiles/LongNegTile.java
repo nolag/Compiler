@@ -13,17 +13,20 @@ import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
 public class LongNegTile extends LongOnlyTile<ArmInstruction, Size, NegOpExprSymbol> {
     private static LongNegTile tile;
 
+    private LongNegTile() {}
+
     public static LongNegTile getTile() {
-        if (tile == null) tile = new LongNegTile();
+        if (tile == null) {
+            tile = new LongNegTile();
+        }
         return tile;
     }
 
-    private LongNegTile() {}
-
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(NegOpExprSymbol neg, Platform<ArmInstruction, Size> platform) {
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+    public InstructionsAndTiming<ArmInstruction> generate(NegOpExprSymbol neg,
+                                                          Platform<ArmInstruction, Size> platform) {
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
         instructions.addAll(platform.getBest(neg.children.get(0)));
         Arm32TileHelper.negLog(Register.R0, Register.R2, instructions, sizeHelper);
         return instructions;

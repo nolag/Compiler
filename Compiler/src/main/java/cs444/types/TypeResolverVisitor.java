@@ -9,12 +9,12 @@ public class TypeResolverVisitor extends EmptyVisitor {
     private final PkgClassResolver classResolver;
 
     public TypeResolverVisitor(PkgClassResolver pkgClassResolver) {
-        this.classResolver = pkgClassResolver;
+        classResolver = pkgClassResolver;
     }
 
     @Override
     public void visit(TypeSymbol typeSymbol) throws CompilerException {
-        if (typeSymbol.getTypeDclNode() == null && typeSymbol.value != "void"){
+        if (typeSymbol.getTypeDclNode() == null && typeSymbol.value != "void") {
             APkgClassResolver resolver = classResolver.findClass(typeSymbol.value);
             typeSymbol.setTypeDclNode(typeSymbol.isArray ? resolver.getArrayVersion() : resolver);
         }

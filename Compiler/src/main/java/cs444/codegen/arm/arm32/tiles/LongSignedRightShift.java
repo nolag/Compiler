@@ -14,18 +14,21 @@ import cs444.parser.symbols.ast.expressions.RSExprSymbol;
 public class LongSignedRightShift extends LongShiftsTile<RSExprSymbol> {
     private static LongSignedRightShift tile;
 
-    public static LongSignedRightShift getTile() {
-        if (tile == null) tile = new LongSignedRightShift();
-        return tile;
-    }
-
     private LongSignedRightShift() {
         super(Shift.LSR, Shift.LSL, Shift.ASR, true);
     }
 
+    public static LongSignedRightShift getTile() {
+        if (tile == null) {
+            tile = new LongSignedRightShift();
+        }
+        return tile;
+    }
+
     @Override
-    protected ArmInstruction getLargeEnd(final InstructionsAndTiming<ArmInstruction> instructions, final Register second,
-            final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    protected ArmInstruction getLargeEnd(InstructionsAndTiming<ArmInstruction> instructions,
+                                         Register second,
+                                         SizeHelper<ArmInstruction, Size> sizeHelper) {
         return new Sbfx(Condition.MI, second, second, Immediate8.THIRTY_ONE, Immediate8.ONE);
     }
 }

@@ -21,7 +21,7 @@ public class Immediate8 extends Immediate12 implements Operand2 {
     // same as one
     public static final Immediate8 TRUE = ONE;
 
-    public Immediate8(final char value) {
+    public Immediate8(char value) {
         super((short) value);
     }
 }

@@ -13,7 +13,7 @@ public class JaeMaker implements JxxMaker {
     private JaeMaker() {}
 
     @Override
-    public Jae make(final Immediate where, final SizeHelper<X86Instruction, Size> sizeHelper) {
+    public Jae make(Immediate where, SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Jae(where, sizeHelper);
     }
 }

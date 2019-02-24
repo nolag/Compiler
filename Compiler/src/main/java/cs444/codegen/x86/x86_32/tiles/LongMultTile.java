@@ -7,14 +7,7 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.Size;
-import cs444.codegen.x86.instructions.Add;
-import cs444.codegen.x86.instructions.Comment;
-import cs444.codegen.x86.instructions.IMul;
-import cs444.codegen.x86.instructions.Mov;
-import cs444.codegen.x86.instructions.Mul;
-import cs444.codegen.x86.instructions.Pop;
-import cs444.codegen.x86.instructions.Push;
-import cs444.codegen.x86.instructions.Xchg;
+import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
@@ -22,25 +15,28 @@ import cs444.parser.symbols.ast.expressions.MultiplyExprSymbol;
 public class LongMultTile extends LongOnlyTile<X86Instruction, Size, MultiplyExprSymbol> {
     private static LongMultTile tile;
 
+    private LongMultTile() {}
+
     public static LongMultTile getTile() {
-        if (tile == null) tile = new LongMultTile();
+        if (tile == null) {
+            tile = new LongMultTile();
+        }
         return tile;
     }
 
-    private LongMultTile() {}
-
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final MultiplyExprSymbol mult, final Platform<X86Instruction, Size> platform) {
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final TileHelper<X86Instruction, Size> tileHelper = platform.getTileHelper();
+    public InstructionsAndTiming<X86Instruction> generate(MultiplyExprSymbol mult,
+                                                          Platform<X86Instruction, Size> platform) {
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        TileHelper<X86Instruction, Size> tileHelper = platform.getTileHelper();
 
         instructions.add(new Comment("Start long mult"));
 
         instructions.add(new Push(Register.BASE, sizeHelper));
 
-        final Typeable lhs = (Typeable) mult.children.get(0);
-        final Typeable rhs = (Typeable) mult.children.get(1);
+        Typeable lhs = (Typeable) mult.children.get(0);
+        Typeable rhs = (Typeable) mult.children.get(1);
 
         instructions.addAll(platform.getBest(lhs));
         tileHelper.makeLong(lhs, instructions, sizeHelper);
@@ -69,5 +65,4 @@ public class LongMultTile extends LongOnlyTile<X86Instruction, Size, MultiplyExp
 
         return instructions;
     }
-
 }

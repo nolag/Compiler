@@ -1,4 +1,3 @@
-
 package cs444.parser.symbols.ast.expressions;
 
 import cs444.CompilerException;
@@ -30,15 +29,14 @@ public class InstanceOfExprSymbol extends BinOpExpr {
     public boolean isCollapsable() {
         return false;
     }
-    
+
     @Override
     public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 
-
     @Override
     public TypeableTerminal reduce() {
-         return null;
+        return null;
     }
 }

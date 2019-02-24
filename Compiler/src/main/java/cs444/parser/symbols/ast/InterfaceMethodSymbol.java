@@ -5,24 +5,26 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
+public class InterfaceMethodSymbol extends AMethodSymbol {
 
-public class InterfaceMethodSymbol extends AMethodSymbol{
-
-    public InterfaceMethodSymbol(MethodHeader header, ANonTerminal from) throws IllegalModifierException, UnsupportedException {
+    public InterfaceMethodSymbol(MethodHeader header, ANonTerminal from) throws IllegalModifierException,
+            UnsupportedException {
         super("InterfaceMethod", header, getModifiersParent(from), null, header.type);
     }
 
     private static ANonTerminal getModifiersParent(ANonTerminal from) {
-        return (ANonTerminal)from.firstOrDefault("MethodHeader");
+        return (ANonTerminal) from.firstOrDefault("MethodHeader");
     }
 
     @Override
     public void validate() throws UnsupportedException {
         ImplementationLevel implLvl = getImplementationLevel();
-        if(isStatic() || isNative() || implLvl == ImplementationLevel.FINAL)
+        if (isStatic() || isNative() || implLvl == ImplementationLevel.FINAL) {
             throw new UnsupportedException("A static method cannot be final");
-        if(hasBody())
+        }
+        if (hasBody()) {
             throw new UnsupportedException("An interface method must not have a body");
+        }
 
         super.validate();
     }

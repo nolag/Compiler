@@ -1,18 +1,12 @@
 package cs444.codegen.arm.tiles;
 
-import java.util.Arrays;
-
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.Operand2;
 import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
-import cs444.codegen.arm.instructions.Add;
-import cs444.codegen.arm.instructions.Comment;
-import cs444.codegen.arm.instructions.Mov;
-import cs444.codegen.arm.instructions.Pop;
-import cs444.codegen.arm.instructions.Push;
+import cs444.codegen.arm.instructions.*;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.arm.tiles.helpers.ArmTileHelper;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
@@ -25,30 +19,35 @@ import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassInfo;
 
+import java.util.Arrays;
+
 public class StrAddTile implements ITile<ArmInstruction, Size, AddExprSymbol> {
     private static StrAddTile tile;
 
+    private StrAddTile() {}
+
     public static StrAddTile getTile() {
-        if (tile == null) tile = new StrAddTile();
+        if (tile == null) {
+            tile = new StrAddTile();
+        }
         return tile;
     }
 
-    private StrAddTile() {}
-
     @Override
-    public boolean fits(final AddExprSymbol op, final Platform<ArmInstruction, Size> platform) {
+    public boolean fits(AddExprSymbol op, Platform<ArmInstruction, Size> platform) {
         return op.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.STRING);
     }
 
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(final AddExprSymbol op, final Platform<ArmInstruction, Size> platform) {
+    public InstructionsAndTiming<ArmInstruction> generate(AddExprSymbol op, Platform<ArmInstruction,
+            Size> platform) {
 
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
-        final TileHelper<ArmInstruction, Size> tileHelper = platform.getTileHelper();
-        final APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);
-        final ISymbol firstChild = op.children.get(0);
-        final ISymbol secondChild = op.children.get(1);
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        TileHelper<ArmInstruction, Size> tileHelper = platform.getTileHelper();
+        APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);
+        ISymbol firstChild = op.children.get(0);
+        ISymbol secondChild = op.children.get(1);
 
         instructions.add(new Comment("String add first arg"));
         tileHelper.strPartHelper(firstChild, resolver, instructions, platform);
@@ -63,15 +62,17 @@ public class StrAddTile implements ITile<ArmInstruction, Size, AddExprSymbol> {
         instructions.add(new Push(Register.R0));
         instructions.add(new Push(Register.R8));
 
-        final AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.STR_ADD, false, Arrays.asList(JoosNonTerminal.STRING), false);
-        if (ms.dclInResolver != CodeGenVisitor.<ArmInstruction, Size> getCurrentCodeGen(platform).currentFile) {
+        AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.STR_ADD, false,
+                Arrays.asList(JoosNonTerminal.STRING), false);
+        if (ms.dclInResolver != CodeGenVisitor.getCurrentCodeGen(platform).currentFile) {
             instructions.add(platform.makeExtern(APkgClassResolver.generateFullId(ms)));
         }
 
         tileHelper.makeCall(APkgClassResolver.generateFullId(ms), instructions, sizeHelper);
 
         //The two arguments for string concat
-        final Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, sizeHelper.getDefaultStackSize() * 2, instructions, sizeHelper);
+        Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, sizeHelper.getDefaultStackSize() * 2, instructions,
+                sizeHelper);
         instructions.add(new Add(Register.STACK, Register.STACK, op2, sizeHelper));
         instructions.add(new Pop(Register.R8));
         instructions.add(new Comment("end of string add"));

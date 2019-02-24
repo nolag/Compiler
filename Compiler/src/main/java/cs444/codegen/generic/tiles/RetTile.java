@@ -11,26 +11,29 @@ public class RetTile<T extends Instruction<T>, E extends Enum<E>> implements ITi
 
     private static RetTile tile;
 
+    private RetTile() {}
+
     @SuppressWarnings("unchecked")
     public static <T extends Instruction<T>, E extends Enum<E>> RetTile<T, E> getTile() {
-        if (tile == null) tile = new RetTile();
+        if (tile == null) {
+            tile = new RetTile();
+        }
         return tile;
     }
 
-    private RetTile() {}
-
     @Override
-    public boolean fits(final ReturnExprSymbol symbol, final Platform<T, E> platform) {
+    public boolean fits(ReturnExprSymbol symbol, Platform<T, E> platform) {
         return true;
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final ReturnExprSymbol retSymbol, final Platform<T, E> platform) {
+    public InstructionsAndTiming<T> generate(ReturnExprSymbol retSymbol, Platform<T, E> platform) {
 
-        final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
-        if (retSymbol.children.size() == 1) instructions.addAll(platform.getBest(retSymbol.children.get(0)));
+        InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
+        if (retSymbol.children.size() == 1) {
+            instructions.addAll(platform.getBest(retSymbol.children.get(0)));
+        }
         platform.getTileHelper().methEpilogue(platform.getSizeHelper(), instructions);
         return instructions;
     }
-
 }

@@ -1,8 +1,5 @@
 package cs444.parser.symbols.ast;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.Terminal;
@@ -10,23 +7,22 @@ import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.APkgClassResolver;
 
-public abstract class AModifiersOptSymbol extends ANonTerminal implements Typeable{
-    private boolean hasPublic;
-    private boolean hasProtected;
-    private boolean hasPrivate;
+import java.util.LinkedList;
+import java.util.List;
 
-    protected boolean hasStatic;
-    protected boolean hasAbstract;
-    protected boolean hasFinal;
-
-    private boolean hasNative;
-
-    public static enum ProtectionLevel{PUBLIC, PROTECTED, PRIVATE, NOT_VALID};
-    public static enum ImplementationLevel { ABSTRACT, FINAL, NORMAL };
-
+public abstract class AModifiersOptSymbol extends ANonTerminal implements Typeable {
     public final String dclName;
     public TypeSymbol type;
     public APkgClassResolver dclInResolver;
+    protected boolean hasStatic;
+    protected boolean hasAbstract;
+    protected boolean hasFinal;
+    private boolean hasPublic;
+    private boolean hasProtected;
+
+    private boolean hasPrivate;
+
+    private boolean hasNative;
 
     protected AModifiersOptSymbol(String name, String dclName, ANonTerminal modifiersParent,
                                   TypeSymbol type)
@@ -38,103 +34,141 @@ public abstract class AModifiersOptSymbol extends ANonTerminal implements Typeab
 
         List<Terminal> modifiers = new LinkedList<Terminal>();
 
-        if(modifiersParent != null){
-            ANonTerminal modiferChild = (ANonTerminal)modifiersParent.firstOrDefault("Modifiers");
+        if (modifiersParent != null) {
+            ANonTerminal modiferChild = (ANonTerminal) modifiersParent.firstOrDefault("Modifiers");
 
-            if(modiferChild != null){
-                for(ISymbol child : modiferChild.getChildren()) modifiers.add((Terminal)child);
+            if (modiferChild != null) {
+                for (ISymbol child : modiferChild.getChildren()) {
+                    modifiers.add((Terminal) child);
+                }
             }
         }
 
-        for(Terminal modifer : modifiers) giveModifier(modifer);
+        for (Terminal modifer : modifiers) {
+            giveModifier(modifer);
+        }
 
         //Joos only
-        if(!hasStatic && hasNative) throw new UnsupportedException("native not abstract");
-        if(getImplementationLevel() == ImplementationLevel.ABSTRACT){
-            if(hasFinal)throw new IllegalModifierException("abstract", "final");
-            if(hasStatic)throw new IllegalModifierException("abstract", "static");
-            if(hasNative)throw new IllegalModifierException("abstract", "native");
+        if (!hasStatic && hasNative) {
+            throw new UnsupportedException("native not abstract");
+        }
+        if (getImplementationLevel() == ImplementationLevel.ABSTRACT) {
+            if (hasFinal) {
+                throw new IllegalModifierException("abstract", "final");
+            }
+            if (hasStatic) {
+                throw new IllegalModifierException("abstract", "static");
+            }
+            if (hasNative) {
+                throw new IllegalModifierException("abstract", "native");
+            }
         }
     }
 
-    public ProtectionLevel getProtectionLevel(){
-        if(hasPublic) return ProtectionLevel.PUBLIC;
-        if(hasProtected) return ProtectionLevel.PROTECTED;
-        if(hasPrivate) return ProtectionLevel.PRIVATE;
+    public ProtectionLevel getProtectionLevel() {
+        if (hasPublic) {
+            return ProtectionLevel.PUBLIC;
+        }
+        if (hasProtected) {
+            return ProtectionLevel.PROTECTED;
+        }
+        if (hasPrivate) {
+            return ProtectionLevel.PRIVATE;
+        }
         return defaultProtectionLevel();
     }
 
-    public boolean isStatic(){
+    public boolean isStatic() {
         return hasStatic;
     }
 
-    public ImplementationLevel getImplementationLevel(){
-        if(hasAbstract) return ImplementationLevel.ABSTRACT;
-        if(hasFinal) return ImplementationLevel.FINAL;
+    public ImplementationLevel getImplementationLevel() {
+        if (hasAbstract) {
+            return ImplementationLevel.ABSTRACT;
+        }
+        if (hasFinal) {
+            return ImplementationLevel.FINAL;
+        }
         return defaultImplementationLevel();
     }
 
-    public boolean isNative(){
+    public boolean isNative() {
         return hasNative;
     }
 
-    public void checkVisiblilty(String tokenName) throws IllegalModifierException{
-        if(hasPublic){
+    public void checkVisiblilty(String tokenName) throws IllegalModifierException {
+        if (hasPublic) {
             throw new IllegalModifierException(tokenName, "public");
-        }else if(hasPrivate){
+        } else if (hasPrivate) {
             throw new IllegalModifierException(tokenName, "private");
-        }else if(hasProtected){
+        } else if (hasProtected) {
             throw new IllegalModifierException(tokenName, "private");
         }
     }
 
-    private void giveModifier(Terminal t) throws IllegalModifierException{
+    private void giveModifier(Terminal t) throws IllegalModifierException {
         String name = t.getName();
-        if(name.equals("PRIVATE")){
-            if(hasAbstract) throw new IllegalModifierException("private", "abstract");
+        if (name.equals("PRIVATE")) {
+            if (hasAbstract) {
+                throw new IllegalModifierException("private", "abstract");
+            }
             checkVisiblilty("private");
             hasPrivate = true;
             throw new IllegalModifierException("private");
-        }else if(name.equals("PUBLIC")){
+        } else if (name.equals("PUBLIC")) {
             checkVisiblilty("public");
             hasPublic = true;
-        }else if(name.equals("PROTECTED")){
+        } else if (name.equals("PROTECTED")) {
             checkVisiblilty("protected");
             hasProtected = true;
-        }else if(name.equals("STATIC")){
-            if(hasStatic)throw new IllegalModifierException("static", "static");
-            if(hasAbstract)throw new IllegalModifierException("static", "abstract");
+        } else if (name.equals("STATIC")) {
+            if (hasStatic) {
+                throw new IllegalModifierException("static", "static");
+            }
+            if (hasAbstract) {
+                throw new IllegalModifierException("static", "abstract");
+            }
             hasStatic = true;
-        }else if(name.equals("FINAL")){
-            if(hasFinal)throw new IllegalModifierException("final", "final");
-            if(hasAbstract)throw new IllegalModifierException("final", "abstract");
+        } else if (name.equals("FINAL")) {
+            if (hasFinal) {
+                throw new IllegalModifierException("final", "final");
+            }
+            if (hasAbstract) {
+                throw new IllegalModifierException("final", "abstract");
+            }
             hasFinal = true;
-        }else if(name.equals("ABSTRACT")){
+        } else if (name.equals("ABSTRACT")) {
             //This is checked after because it's possible to imply with interfaces
-            if(hasAbstract)throw new IllegalModifierException("abstract", "abstract");
+            if (hasAbstract) {
+                throw new IllegalModifierException("abstract", "abstract");
+            }
             hasAbstract = true;
-        }else if(name.equals("NATIVE")){
-            if(hasNative) throw new IllegalModifierException("native", "native");
-            if(hasAbstract)throw new IllegalModifierException("native", "abstract");
+        } else if (name.equals("NATIVE")) {
+            if (hasNative) {
+                throw new IllegalModifierException("native", "native");
+            }
+            if (hasAbstract) {
+                throw new IllegalModifierException("native", "abstract");
+            }
             hasNative = true;
-        }else{
+        } else {
             throw new IllegalModifierException(name);
         }
     }
 
-    public boolean empty(){
+    public boolean empty() {
         return false;
     }
 
-    public void validate() throws UnsupportedException{
-        if(getProtectionLevel() == ProtectionLevel.NOT_VALID)
+    public void validate() throws UnsupportedException {
+        if (getProtectionLevel() == ProtectionLevel.NOT_VALID) {
             throw new UnsupportedException("Package private protection for fields, constructors, and methods");
+        }
     }
 
-    public void forcePublic(){
+    public void forcePublic() {
         hasPublic = true;
     }
-
 
     public void forceFinal() {
         hasFinal = true;
@@ -142,16 +176,21 @@ public abstract class AModifiersOptSymbol extends ANonTerminal implements Typeab
     }
 
     @Override
-    public TypeSymbol getType(){
+    public TypeSymbol getType() {
         return type;
     }
 
     @Override
-    public void setType(TypeSymbol type){
+    public void setType(TypeSymbol type) {
         this.type = type;
         type.isFinal = hasFinal;
     }
 
     public abstract ProtectionLevel defaultProtectionLevel();
+
     public abstract ImplementationLevel defaultImplementationLevel();
+
+    public enum ProtectionLevel {PUBLIC, PROTECTED, PRIVATE, NOT_VALID}
+
+    public enum ImplementationLevel {ABSTRACT, FINAL, NORMAL}
 }

@@ -6,7 +6,7 @@ public abstract class ArmInstruction extends Instruction<ArmInstruction> {
     protected ArmInstruction(int time) {
         super(time, 4);
     }
-    
+
     protected ArmInstruction(int time, int space) {
         super(time, space);
     }

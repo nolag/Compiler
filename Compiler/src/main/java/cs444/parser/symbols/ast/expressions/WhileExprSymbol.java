@@ -1,7 +1,5 @@
 package cs444.parser.symbols.ast.expressions;
 
-import java.util.List;
-
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.codegen.CodeGenVisitor;
@@ -10,14 +8,16 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.TypeableTerminal;
 
+import java.util.List;
+
 public class WhileExprSymbol extends BaseExprSymbol {
 
-    public WhileExprSymbol(final List<ISymbol> children) {
+    public WhileExprSymbol(List<ISymbol> children) {
         super("While");
         this.children.addAll(children);
     }
 
-    public Typeable getCondition(){
+    public Typeable getCondition() {
         return (Typeable) getConditionSymbol();
     }
 
@@ -30,21 +30,21 @@ public class WhileExprSymbol extends BaseExprSymbol {
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
         visitor.prepareCondition(getCondition());
-        this.getConditionSymbol().accept(visitor);
+        getConditionSymbol().accept(visitor);
         getBody().accept(visitor);
         visitor.close(this);
     }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 
     @Override
     public TypeableTerminal reduce() {
-         return null;
+        return null;
     }
 }

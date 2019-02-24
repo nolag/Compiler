@@ -1,8 +1,5 @@
 package cs444.parser.symbols.ast;
 
-import java.util.Collection;
-import java.util.List;
-
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.codegen.Platform;
@@ -15,19 +12,25 @@ import cs444.static_analysis.ReachabilityAnalyzer;
 import cs444.types.APkgClassResolver;
 import cs444.types.LocalDclLinker;
 
+import java.util.Collection;
+import java.util.List;
+
 public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
 
-    public APkgClassResolver resolver;
-
     public final List<DclSymbol> params;
+    public APkgClassResolver resolver;
+    boolean alreadyLinked = false;
+    private boolean reachabilityAnalized = false;
 
-    public MethodOrConstructorSymbol(final String nodeName, final MethodHeader header,
-            final ANonTerminal from, final ANonTerminal body, final TypeSymbol type)
+    public MethodOrConstructorSymbol(String nodeName, MethodHeader header,
+                                     ANonTerminal from, ANonTerminal body, TypeSymbol type)
             throws IllegalModifierException, UnsupportedException {
         super(nodeName, header.name.value, from, type);
 
-        this.params = header.params;
-        if(body != null) children.addAll(body.children);
+        params = header.params;
+        if (body != null) {
+            children.addAll(body.children);
+        }
     }
 
     @Override
@@ -46,34 +49,36 @@ public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
 
-        for (final ISymbol param : this.params) {
+        for (ISymbol param : params) {
             param.accept(visitor);
         }
 
         visitor.middle(this);
 
-        for (final ISymbol child : children) {
+        for (ISymbol child : children) {
             child.accept(visitor);
         }
 
         visitor.close(this);
     }
 
-    boolean alreadyLinked = false;
-    public void resolveLocalVars(final String enclosingClassName, final Collection<Platform<?, ?>> platforms) throws CompilerException {
-        if (alreadyLinked) return;
-        this.accept(new LocalDclLinker(enclosingClassName, platforms));
+    public void resolveLocalVars(String enclosingClassName, Collection<Platform<?, ?>> platforms) throws CompilerException {
+        if (alreadyLinked) {
+            return;
+        }
+        accept(new LocalDclLinker(enclosingClassName, platforms));
         alreadyLinked = true;
     }
 
-    private boolean reachabilityAnalized = false;
-    public void analyzeReachability(final String enclosingClassName) throws CompilerException {
-        if (reachabilityAnalized) return;
+    public void analyzeReachability(String enclosingClassName) throws CompilerException {
+        if (reachabilityAnalized) {
+            return;
+        }
 
-        this.accept(new ReachabilityAnalyzer(enclosingClassName));
+        accept(new ReachabilityAnalyzer(enclosingClassName));
 
         reachabilityAnalized = true;
     }
@@ -83,6 +88,6 @@ public abstract class MethodOrConstructorSymbol extends AModifiersOptSymbol {
     }
 
     public boolean isAbstract() {
-        return this.getImplementationLevel() == ImplementationLevel.ABSTRACT;
+        return getImplementationLevel() == ImplementationLevel.ABSTRACT;
     }
 }

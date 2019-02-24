@@ -1,9 +1,5 @@
 package cs444.codegen.x86.tiles.opt;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
@@ -19,18 +15,33 @@ import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+
 @SuppressWarnings("rawtypes")
 public class BinWithConstTile<T extends BinOpExpr> implements ITile<X86Instruction, Size, T> {
-    public static enum Side {
-        EITHER, RIGHT, LEFT
+    private static final Map<Side, Map<Class<? extends BinOpExpr>, BinWithConstTile>> tiles = new EnumMap<>(Side.class);
+    private final BinOpMaker maker;
+    private final Side side;
+
+    protected BinWithConstTile(BinOpMaker maker) {
+        this.maker = maker;
+        side = Side.EITHER;
     }
 
-    private static final Map<Side, Map<Class<? extends BinOpExpr>, BinWithConstTile>> tiles = new EnumMap<>(Side.class);
+    protected BinWithConstTile(BinOpMaker maker, Side side) {
+        this.maker = maker;
+        this.side = side;
+    }
 
     @SuppressWarnings("unchecked")
-    public static <T extends BinOpExpr> BinWithConstTile<T> getTile(final BinOpMaker maker, final Side side, Class<T> klass) {
+    public static <T extends BinOpExpr> BinWithConstTile<T> getTile(BinOpMaker maker, Side side,
+                                                                    Class<T> klass) {
         Map<Class<? extends BinOpExpr>, BinWithConstTile> binMap = tiles.get(side);
-        if (binMap == null) tiles.put(side, binMap = new HashMap<>());
+        if (binMap == null) {
+            tiles.put(side, binMap = new HashMap<>());
+        }
         BinWithConstTile<T> tile = binMap.get(klass);
         if (tile == null) {
             tile = new BinWithConstTile(maker, side);
@@ -39,61 +50,52 @@ public class BinWithConstTile<T extends BinOpExpr> implements ITile<X86Instructi
         return tile;
     }
 
-    private final BinOpMaker maker;
-    private final Side side;
-
-    protected BinWithConstTile(final BinOpMaker maker) {
-        this.maker = maker;
-        this.side = Side.EITHER;
-    }
-
-    protected BinWithConstTile(final BinOpMaker maker, Side side) {
-        this.maker = maker;
-        this.side = side;
-    }
-
     private boolean useable(Typeable t) {
-        if (!(t instanceof ILiteralSymbol)) return false;
+        if (!(t instanceof ILiteralSymbol)) {
+            return false;
+        }
         long lval = ((ILiteralSymbol) t).getAsLongValue();
         int ival = (int) lval;
         return lval == ival;
     }
 
     @Override
-    public boolean fits(final T bin, final Platform<X86Instruction, Size> platform) {
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        if (sizeHelper.getDefaultStackSize() < sizeHelper.getByteSizeOfType(bin.getType().getTypeDclNode().fullName)) return false;
-        final Typeable t1 = (Typeable) bin.children.get(0);
-        final Typeable t2 = (Typeable) bin.children.get(1);
+    public boolean fits(T bin, Platform<X86Instruction, Size> platform) {
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        if (sizeHelper.getDefaultStackSize() < sizeHelper.getByteSizeOfType(bin.getType().getTypeDclNode().fullName)) {
+            return false;
+        }
+        Typeable t1 = (Typeable) bin.children.get(0);
+        Typeable t2 = (Typeable) bin.children.get(1);
         //Since instructions other than mov don't support 64 bit literals
         switch (side) {
-        case EITHER:
-            return useable(t1) || useable(t2);
-        case LEFT:
-            return useable(t1);
-        case RIGHT:
-            return useable(t2);
-        default:
-            return false;
+            case EITHER:
+                return useable(t1) || useable(t2);
+            case LEFT:
+                return useable(t1);
+            case RIGHT:
+                return useable(t2);
+            default:
+                return false;
         }
     }
 
     @Override
     public InstructionsAndTiming<X86Instruction> generate(T bin, Platform<X86Instruction, Size> platform) {
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
-        final Typeable t1 = (Typeable) bin.children.get(0);
-        final Typeable t2 = (Typeable) bin.children.get(1);
+        Typeable t1 = (Typeable) bin.children.get(0);
+        Typeable t2 = (Typeable) bin.children.get(1);
 
-        final TypeSymbol ts1 = t1.getType();
-        final TypeSymbol ts2 = t2.getType();
+        TypeSymbol ts1 = t1.getType();
+        TypeSymbol ts2 = t2.getType();
 
-        final boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
+        boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
                 || ts2.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
 
-        final ILiteralSymbol literal;
-        final Typeable other;
+        ILiteralSymbol literal;
+        Typeable other;
         if (t1 instanceof ILiteralSymbol) {
             literal = (ILiteralSymbol) t1;
             other = t2;
@@ -103,7 +105,7 @@ public class BinWithConstTile<T extends BinOpExpr> implements ITile<X86Instructi
         }
 
         instructions.addAll(platform.getBest(other));
-        final Size size;
+        Size size;
 
         if (hasLong) {
             size = Size.QWORD;
@@ -114,5 +116,9 @@ public class BinWithConstTile<T extends BinOpExpr> implements ITile<X86Instructi
 
         instructions.add(maker.make(Register.ACCUMULATOR, new Immediate(literal.getAsLongValue()), size, sizeHelper));
         return instructions;
+    }
+
+    public enum Side {
+        EITHER, RIGHT, LEFT
     }
 }

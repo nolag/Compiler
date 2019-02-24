@@ -13,7 +13,7 @@ public class JbMaker implements JxxMaker {
     private JbMaker() { }
 
     @Override
-    public Jb make(final Immediate where, final SizeHelper<X86Instruction, Size> sizeHelper) {
+    public Jb make(Immediate where, SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Jb(where, sizeHelper);
     }
 }

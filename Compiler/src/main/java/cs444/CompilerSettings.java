@@ -1,20 +1,16 @@
 package cs444;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import cs444.codegen.Platform;
 import cs444.codegen.Platform.PlatformFactory;
 import cs444.codegen.arm.arm32.Arm32Platform;
 import cs444.codegen.x86.x86_32.X86_32Platform;
 import cs444.codegen.x86.x86_64.X86_64Platform;
 
+import java.util.*;
+
 public class CompilerSettings {
-    public static final Map<String, PlatformFactory<?, ?, ?>> platformMap = new HashMap<String, PlatformFactory<?, ?, ?>>();
+    public static final Map<String, PlatformFactory<?, ?, ?>> platformMap = new HashMap<String, PlatformFactory<?, ?,
+            ?>>();
 
     static {
         platformMap.put("-x86", X86_32Platform.Factory.FACTORY);
@@ -29,29 +25,33 @@ public class CompilerSettings {
     public final List<String> files = new ArrayList<String>();
     public final Set<Platform<?, ?>> platforms = new HashSet<Platform<?, ?>>();
 
-    public CompilerSettings(final String[] args) {
-        final Set<PlatformFactory<?, ?, ?>> pfs = new HashSet<PlatformFactory<?, ?, ?>>();
-        final Set<String> arguments = new HashSet<String>();
+    public CompilerSettings(String[] args) {
+        Set<PlatformFactory<?, ?, ?>> pfs = new HashSet<PlatformFactory<?, ?, ?>>();
+        Set<String> arguments = new HashSet<String>();
 
-        for (final String arg : args) {
+        for (String arg : args) {
             if (arg.startsWith("--")) {
                 arguments.add(arg);
             } else if (arg.startsWith("-")) {
-                final PlatformFactory<?, ?, ?> platform = platformMap.get(arg.toLowerCase());
-                if (platform == null) System.err.println("Unknown platfrom " + arg.substring(1));
-                else pfs.add(platform);
+                PlatformFactory<?, ?, ?> platform = platformMap.get(arg.toLowerCase());
+                if (platform == null) {
+                    System.err.println("Unknown platfrom " + arg.substring(1));
+                } else {
+                    pfs.add(platform);
+                }
             } else {
                 files.add(arg);
             }
         }
 
         if (platforms.size() == 0) {
-            for (final String platformStr : Compiler.defaultPlatforms) {
+            for (String platformStr : Compiler.defaultPlatforms) {
                 platforms.add(platformMap.get(platformStr).getPlatform(arguments));
             }
         } else {
-            for (final PlatformFactory<?, ?, ?> pf : pfs)
+            for (PlatformFactory<?, ?, ?> pf : pfs) {
                 platforms.add(pf.getPlatform(arguments));
+            }
         }
     }
 }

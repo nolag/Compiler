@@ -4,7 +4,6 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.NumericHelperTile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-
 import cs444.codegen.x86.Register;
 import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.Neg;
@@ -14,21 +13,23 @@ import cs444.parser.symbols.ast.expressions.NegOpExprSymbol;
 public class NegTile extends NumericHelperTile<X86Instruction, Size, NegOpExprSymbol> {
     private static NegTile tile;
 
+    private NegTile() {}
+
     public static NegTile getTile() {
-        if (tile == null) tile = new NegTile();
+        if (tile == null) {
+            tile = new NegTile();
+        }
         return tile;
     }
 
-    private NegTile() {}
-
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final NegOpExprSymbol negSymbol, final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(NegOpExprSymbol negSymbol,
+                                                          Platform<X86Instruction, Size> platform) {
 
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         instructions.addAll(platform.getBest(negSymbol.children.get(0)));
         instructions.add(new Neg(Register.ACCUMULATOR, sizeHelper));
         return instructions;
     }
-
 }

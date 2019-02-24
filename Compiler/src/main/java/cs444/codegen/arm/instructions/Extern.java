@@ -7,7 +7,7 @@ import cs444.codegen.instructions.InstructionArg;
 public class Extern extends ArmInstruction {
     private final ImmediateStr what;
 
-    public Extern(final ImmediateStr what) {
+    public Extern(ImmediateStr what) {
         super(0);
         this.what = what;
     }

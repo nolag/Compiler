@@ -1,11 +1,11 @@
 package cs444.parser.symbols;
 
-import java.util.*;
-
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.codegen.CodeGenVisitor;
 import cs444.types.APkgClassResolver;
+
+import java.util.*;
 
 public class JoosNonTerminal extends NonTerminal {
     public static final String BRACKET_PRIMARY = "BRACKETPRIMARY";
@@ -26,7 +26,7 @@ public class JoosNonTerminal extends NonTerminal {
     public static final String ASSIGNMENT = "ASSIGNMENT";
 
     public static final String RETURN = "RETURNSTATEMENT";
-    public static final String EMPTYSTATEMENT= "EMPTYSTATEMENT";
+    public static final String EMPTYSTATEMENT = "EMPTYSTATEMENT";
     public static final String ARRAY_ACCESS = "ARRAYACCESS";
     public static final String NULL = "null";
     public static final String SUPER = "super";
@@ -81,11 +81,11 @@ public class JoosNonTerminal extends NonTerminal {
 
     public static final Set<String> unsigned = new HashSet<String>();
 
-    public static final String ENTRY = APkgClassResolver.generateUniqueName("test", Collections.<String>emptyList());
+    public static final String ENTRY = APkgClassResolver.generateUniqueName("test", Collections.emptyList());
 
     public static final boolean ALLOW_SMART_REDUCTINO = false;
 
-    static{
+    static {
         noCollapse.add("MODIFIERS");
         noCollapse.add("NAME");
         noCollapse.add("INTERFACETYPELIST");
@@ -120,7 +120,6 @@ public class JoosNonTerminal extends NonTerminal {
         specialNoDie.add(BLOCK);
         specialNoDie.add(RETURN);
         specialNoDie.add(DIMS);
-
 
         primativeNumbers.add(BYTE);
         primativeNumbers.add(CHAR);
@@ -161,16 +160,16 @@ public class JoosNonTerminal extends NonTerminal {
         ifs.add("IFTHENELSESTATEMENT");
         ifs.add("IFTHENELSESTATEMENTNOSHORTIF");
 
-        final Set<String> byteCharAssign = new HashSet<String>(Arrays.asList(new String [] {LONG, INTEGER, SHORT, CHAR}));
-        final Set<String> assignToint = new HashSet<String>(Arrays.asList(new String [] {LONG, INTEGER}));
-        final Set<String> intToLong = new HashSet<String>(Arrays.asList(new String [] {LONG}));
+        Set<String> byteCharAssign = new HashSet<String>(Arrays.asList(LONG, INTEGER, SHORT, CHAR));
+        Set<String> assignToint = new HashSet<String>(Arrays.asList(LONG, INTEGER));
+        Set<String> intToLong = new HashSet<String>(Arrays.asList(LONG));
         defaultAssignables.put(BYTE, byteCharAssign);
         defaultAssignables.put(CHAR, assignToint);
         defaultAssignables.put(SHORT, assignToint);
         defaultAssignables.put(INTEGER, intToLong);
 
-        final Set<String> alsoToShort = new HashSet<String>(Arrays.asList(new String [] {CHAR}));
-        final Set<String> alsoToChar = new HashSet<String>(Arrays.asList(new String [] {SHORT}));
+        Set<String> alsoToShort = new HashSet<String>(Arrays.asList(CHAR));
+        Set<String> alsoToChar = new HashSet<String>(Arrays.asList(SHORT));
         specialAssignables.put(SHORT, alsoToShort);
         specialAssignables.put(CHAR, alsoToChar);
 
@@ -178,14 +177,14 @@ public class JoosNonTerminal extends NonTerminal {
         whiles.add("WHILESTATEMENTNOSHORTIF");
 
         nonPrimativeOperativeTypes.add(STRING);
-        arraysExtend.add(JoosNonTerminal.CLONABLE);
-        arraysExtend.add(JoosNonTerminal.SERIALIZABLE);
+        arraysExtend.add(CLONABLE);
+        arraysExtend.add(SERIALIZABLE);
 
         unsigned.add(CHAR);
         unsigned.add(BOOLEAN);
     }
 
-    public JoosNonTerminal(final String name, final ISymbol[] children) {
+    public JoosNonTerminal(String name, ISymbol[] children) {
         super(name, children);
     }
 
@@ -200,17 +199,17 @@ public class JoosNonTerminal extends NonTerminal {
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.visit(this);
         visitor.open(this);
-        for (final ISymbol child : this.children) {
+        for (ISymbol child : children) {
             child.accept(visitor);
         }
         visitor.close(this);
     }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 }

@@ -16,239 +16,358 @@ import java.util.*;
  * on standard input, and writes the generated grammar and parse tables on
  * standard output.
  *
-*/
+ */
 
 public class LanguageGenerator {
-    public static final void create(final InputStream in, final List<String> addTo) {
+    public static final void create(InputStream in, List<String> addTo) {
         Grammar grammar;
         try {
             grammar = Util.readGrammar(new Scanner(in));
-        } catch(final Error e) {
-            System.err.println("Error reading grammar: "+e);
+        } catch (Error e) {
+            System.err.println("Error reading grammar: " + e);
             System.exit(1);
             return;
         }
-        final Generator generator = new Generator(grammar);
+        Generator generator = new Generator(grammar);
         try {
             generator.computeFirstFollowNullable();
             generator.generateLALR1Table();
             generator.generateOutput(addTo);
-        } catch(final Error e) {
-            System.err.println("Error performing construction: "+e);
+        } catch (Error e) {
+            System.err.println("Error performing construction: " + e);
             System.exit(1);
             return;
         }
     }
 }
 
-/** Represents an item (a dotted production). */
+/**
+ * Represents an item (a dotted production).
+ */
 class Item {
+    private static Map<Pair<Production, Pair<Integer, String>>, Item> map = new HashMap<>();
     Production rule; // the production
     int pos; // position of the dot (0 <= pos <= rule.rhs.size())
     String lookahead; // the lookahead terminal
-    private Item( final Production rule, final int pos, final String lookahead ) {
+
+    private Item(Production rule, int pos, String lookahead) {
         this.rule = rule;
         this.pos = pos;
         this.lookahead = lookahead;
     }
-    private static Map<Pair<Production, Pair<Integer, String>>, Item> map =
-        new HashMap<Pair<Production, Pair<Integer, String>>, Item>();
-    public static Item v(final Production rule, final int pos, final String lookahead) {
-        final Pair<Production, Pair<Integer, String>> triple =
-            new Pair<Production, Pair<Integer, String>>(
-                    rule, new Pair<Integer, String>(pos, lookahead));
+
+    public static Item v(Production rule, int pos, String lookahead) {
+        Pair<Production, Pair<Integer, String>> triple = new Pair<>(rule, new Pair<>(pos, lookahead));
         Item ret = map.get(triple);
-        if(ret == null) {
+        if (ret == null) {
             ret = new Item(rule, pos, lookahead);
             map.put(triple, ret);
         }
         return ret;
     }
-    public static Item v(final Production rule, final int pos) {
+
+    public static Item v(Production rule, int pos) {
         return v(rule, pos, "");
     }
-    /** Returns true if the dot is not at the end of the RHS. */
+
+    /**
+     * Returns true if the dot is not at the end of the RHS.
+     */
     public boolean hasNextSym() {
         return pos < rule.rhs.length;
     }
-    /** Returns the symbol immediately after the dot. */
+
+    /**
+     * Returns the symbol immediately after the dot.
+     */
     public String nextSym() {
-        if(!hasNextSym()) throw new RuntimeException("Internal error: getting next symbol of an item with no next symbol");
+        if (!hasNextSym()) {
+            throw new RuntimeException("Internal error: getting next symbol of an item with no next symbol");
+        }
+
         return rule.rhs[pos];
     }
-    /** Returns the item obtained by advancing (shifting) the dot by one
-     *  symbol. */
+
+    /**
+     * Returns the item obtained by advancing (shifting) the dot by one
+     * symbol.
+     */
     public Item advance() {
-        if(!hasNextSym()) throw new RuntimeException("Internal error: advancing an item with no next symbol");
-        return Item.v(rule, pos+1, lookahead);
+        if (!hasNextSym()) {
+            throw new RuntimeException("Internal error: advancing an item with no next symbol");
+        }
+
+        return v(rule, pos + 1, lookahead);
     }
+
     @Override
     public String toString() {
-        final StringBuffer ret = new StringBuffer();
+        StringBuilder ret = new StringBuilder();
         ret.append("(");
         ret.append(rule.lhs);
         ret.append(" ->");
         int i;
-        for(i = 0; i < pos; i++) ret.append(" "+rule.rhs[i]);
+        for (i = 0; i < pos; i++) {
+            ret.append(" " + rule.rhs[i]);
+        }
         ret.append(" ##");
-        for(; i < rule.rhs.length; i++) ret.append(" "+rule.rhs[i]);
+        for (; i < rule.rhs.length; i++) {
+            ret.append(" " + rule.rhs[i]);
+        }
         ret.append(", ");
         ret.append(lookahead);
         ret.append(")");
         return ret.toString();
     }
 }
+
 class State {
+    private static Map<Set<Item>, State> map = new HashMap<>();
     public Set<Item> items;
-    private State(final Set<Item> items) {
+
+    private State(Set<Item> items) {
         this.items = items;
     }
-    private static Map<Set<Item>, State> map = new HashMap<Set<Item>, State>();
-    public static State v(final Set<Item> items) {
+
+    public static State v(Set<Item> items) {
         State ret = map.get(items);
-        if(ret == null) {
+        if (ret == null) {
             ret = new State(items);
             map.put(items, ret);
         }
         return ret;
     }
+
     @Override
     public String toString() {
-        final StringBuffer ret = new StringBuffer();
+        StringBuilder ret = new StringBuilder();
         ret.append("\n");
-        for(final Item item : items) {
+        for (Item item : items) {
             ret.append(item);
             ret.append("\n");
         }
         return ret.toString();
     }
 }
-/** Represents a parser action (shift or reduce). */
+
+/**
+ * Represents a parser action (shift or reduce).
+ */
 abstract class Action {
 }
-/** Represents a shift parser action. */
+
+/**
+ * Represents a shift parser action.
+ */
 class ShiftAction extends Action {
     State nextState; // the automaton state to move to after the shift
-    public ShiftAction(final State nextState) {
+
+    public ShiftAction(State nextState) {
         this.nextState = nextState;
     }
+
     @Override
-    public int hashCode() { return nextState.hashCode(); }
+    public int hashCode() {
+        return nextState.hashCode();
+    }
+
     @Override
-    public boolean equals(final Object other) {
-        if(!(other instanceof ShiftAction)) return false;
-        final ShiftAction o = (ShiftAction) other;
+    public boolean equals(Object other) {
+        if (!(other instanceof ShiftAction)) {
+            return false;
+        }
+
+        ShiftAction o = (ShiftAction) other;
         return nextState.equals(o.nextState);
     }
+
     @Override
     public String toString() {
         return "shift " + nextState;
     }
 }
-/** Represents a reduce parser action. */
+
+/**
+ * Represents a reduce parser action.
+ */
 class ReduceAction extends Action {
     Production rule; // the production to reduce by
-    public ReduceAction(final Production rule) {
+
+    public ReduceAction(Production rule) {
         this.rule = rule;
     }
+
     @Override
-    public int hashCode() { return rule.hashCode(); }
+    public int hashCode() {
+        return rule.hashCode();
+    }
+
     @Override
-    public boolean equals(final Object other) {
-        if(!(other instanceof ReduceAction)) return false;
-        final ReduceAction o = (ReduceAction) other;
+    public boolean equals(Object other) {
+        if (!(other instanceof ReduceAction)) {
+            return false;
+        }
+
+        ReduceAction o = (ReduceAction) other;
         return rule.equals(o.rule);
     }
+
     @Override
     public String toString() {
         return "reduce " + rule;
     }
 }
-/** Utility class representing a pair of arbitrary objects. */
-class Pair<A,B> {
-    public Pair( final A o1, final B o2 ) { this.o1 = o1; this.o2 = o2; }
+
+/**
+ * Utility class representing a pair of arbitrary objects.
+ */
+class Pair<A, B> {
+    protected A o1;
+    protected B o2;
+
+    public Pair(A o1, B o2) {
+        this.o1 = o1;
+        this.o2 = o2;
+    }
+
     @Override
     public int hashCode() {
         return o1.hashCode() + o2.hashCode();
     }
+
     @Override
-    public boolean equals( final Object other ) {
-        if( other instanceof Pair ) {
-            final Pair p = (Pair) other;
-            return o1.equals( p.o1 ) && o2.equals( p.o2 );
-        } else return false;
+    public boolean equals(Object other) {
+        if (other instanceof Pair) {
+            Pair p = (Pair) other;
+            return o1.equals(p.o1) && o2.equals(p.o2);
+        } else {
+            return false;
+        }
     }
+
     @Override
     public String toString() {
-        return "Pair "+o1+","+o2;
+        return "Pair " + o1 + "," + o2;
     }
-    public A getO1() { return o1; }
-    public B getO2() { return o2; }
 
-    protected A o1;
-    protected B o2;
+    public A getO1() {
+        return o1;
+    }
+
+    public B getO2() {
+        return o2;
+    }
 }
 
-
-/** The main LALR/SLR generator class. */
+/**
+ * The main LALR/SLR generator class.
+ */
 class Generator {
-    /** The context-free grammar. */
+    private final Map<List<String>, Set<String>> generalFirstCache = new HashMap<>();
+    private final Map<Set<Item>, Set<Item>> closureCache = new HashMap<>();
+    private final Map<Pair<State, String>, State> gotoCache = new HashMap<>();
+    /**
+     * The context-free grammar.
+     */
     Grammar grammar;
-    /** A map from each non-terminal to the productions that expand it. */
-    Map<String,List<Production>> lhsToRules = new HashMap<String,List<Production>>();
+    /**
+     * A map from each non-terminal to the productions that expand it.
+     */
+    Map<String, List<Production>> lhsToRules = new HashMap<>();
+    // The NULLABLE, FIRST, and FOLLOW sets. See Appel, pp. 47-49
+    Set<String> nullable = new HashSet<String>();
+    Map<String, Set<String>> first = new HashMap<>();
+    Map<String, Set<String>> follow = new HashMap<>();
+    /**
+     * The computed parse table.
+     */
+    Map<Pair<State, String>, Action> table = new HashMap<>();
+    State initialState;
 
-    public Generator(final Grammar grammar) {
+    public Generator(Grammar grammar) {
         this.grammar = grammar;
-        for(final String nonterm : grammar.nonterminals) {
-            lhsToRules.put(nonterm, new ArrayList<Production>());
+        for (String nonterm : grammar.nonterminals) {
+            lhsToRules.put(nonterm, new ArrayList<>());
         }
-        for(final Production p : grammar.productions) {
-            final List<Production> mapRules = lhsToRules.get(p.lhs);
+        for (Production p : grammar.productions) {
+            List<Production> mapRules = lhsToRules.get(p.lhs);
             mapRules.add(p);
         }
     }
 
-    /** Compute the closure of a set of items using the algorithm of
-     * Appel, p. 60 */
-    public Set<Item> closure(final Set<Item> i) {
-        final boolean change;
-        while(true) {
-            final Set<Item> oldI = new HashSet<Item>(i);
-            for( final Item item : oldI ) {
-                if(!item.hasNextSym()) continue;
-                final String x = item.nextSym();
-                if(grammar.isTerminal(x)) continue;
-                for( final Production r : lhsToRules.get(x)) {
+    /**
+     * Print the elements of a list separated by spaces.
+     */
+    public static String listToString(List l) {
+        StringBuilder ret = new StringBuilder();
+        boolean first = true;
+        for (Object o : l) {
+            if (!first) {
+                ret.append(" ");
+            }
+            first = false;
+            ret.append(o);
+        }
+        return ret.toString();
+    }
+
+    /**
+     * Compute the closure of a set of items using the algorithm of
+     * Appel, p. 60
+     */
+    public Set<Item> closure(Set<Item> i) {
+        while (true) {
+            Set<Item> oldI = new HashSet<Item>(i);
+            for (Item item : oldI) {
+                if (!item.hasNextSym()) {
+                    continue;
+                }
+
+                String x = item.nextSym();
+                if (grammar.isTerminal(x)) {
+                    continue;
+                }
+
+                for (Production r : lhsToRules.get(x)) {
                     i.add(Item.v(r, 0));
                 }
             }
-            if( i.equals(oldI) ) return i;
+            if (i.equals(oldI)) {
+                return i;
+            }
         }
     }
-    /** Compute the goto set for state i and symbol x, using the algorithm
-     * of Appel, p. 60 */
-    public Set<Item> goto_(final Set<Item> i, final String x) {
-        final Set<Item> j = new HashSet<Item>();
-        for( final Item item : i ) {
-            if( !item.hasNextSym() ) continue;
-            if( !item.nextSym().equals(x) ) continue;
+
+    /**
+     * Compute the goto set for state i and symbol x, using the algorithm
+     * of Appel, p. 60
+     */
+    public Set<Item> goto_(Set<Item> i, String x) {
+        Set<Item> j = new HashSet<>();
+        for (Item item : i) {
+            if (!item.hasNextSym() || !item.nextSym().equals(x)) {
+                continue;
+            }
+
             j.add(item.advance());
         }
         return closure(j);
     }
-    private final Map<List<String>, Set<String>> generalFirstCache = new HashMap<List<String>, Set<String>>();
-    /** Compute the generalized first using the definition of Appel, p. 50. */
-    public Set<String> generalFirst(final List<String> l) {
+
+    /**
+     * Compute the generalized first using the definition of Appel, p. 50.
+     */
+    public Set<String> generalFirst(List<String> l) {
         Set<String> ret = generalFirstCache.get(l);
-        if(ret == null) {
-            ret = new HashSet<String>();
-            if(l.isEmpty()) {
+        if (ret == null) {
+            ret = new HashSet<>();
+            if (l.isEmpty()) {
                 return ret;
             } else {
                 ret.addAll(first.get(l.get(0)));
                 int i = 0;
-                while(i < l.size()-1 && nullable.contains(l.get(i))) {
-                    ret.addAll(first.get(l.get(i+1)));
+                while (i < l.size() - 1 && nullable.contains(l.get(i))) {
+                    ret.addAll(first.get(l.get(i + 1)));
                     i++;
                 }
             }
@@ -257,30 +376,38 @@ class Generator {
         return ret;
     }
 
-    private final Map<Set<Item>, Set<Item>> closureCache = new HashMap<Set<Item>, Set<Item>>();
-    /** Compute the closure of a set of LR(1) items using the algorithm of
-     * Appel, p. 63 */
-    public Set<Item> lr1_closure(final Set<Item> i) {
-        final boolean change;
+    /**
+     * Compute the closure of a set of LR(1) items using the algorithm of
+     * Appel, p. 63
+     */
+    public Set<Item> lr1_closure(Set<Item> i) {
         Set<Item> ret = closureCache.get(i);
-        if(ret == null) {
-            final Set<Item> origI = new HashSet<Item>(i);
-            final Queue<Item> q = new LinkedList<Item>(i);
-            while(!q.isEmpty()) {
-                final Item item = q.remove();
-                if(!item.hasNextSym()) continue;
-                final String x = item.nextSym();
-                if(grammar.isTerminal(x)) continue;
-                final List<String> betaz = new ArrayList<String>();
-                for(int p = item.pos+1; p < item.rule.rhs.length; p++) {
+        if (ret == null) {
+            Set<Item> origI = new HashSet<>(i);
+            Queue<Item> q = new LinkedList<>(i);
+            while (!q.isEmpty()) {
+                Item item = q.remove();
+                if (!item.hasNextSym()) {
+                    continue;
+                }
+
+                String x = item.nextSym();
+                if (grammar.isTerminal(x)) {
+                    continue;
+                }
+
+                List<String> betaz = new ArrayList<>();
+                for (int p = item.pos + 1; p < item.rule.rhs.length; p++) {
                     betaz.add(item.rule.rhs[p]);
                 }
                 betaz.add(item.lookahead);
-                final Collection<String> ws = generalFirst(betaz);
-                for( final Production r : lhsToRules.get(x)) {
-                    for( final String w : ws ) {
-                        final Item newItem = Item.v(r, 0, w);
-                        if(i.add(newItem)) q.add(newItem);
+                Collection<String> ws = generalFirst(betaz);
+                for (Production r : lhsToRules.get(x)) {
+                    for (String w : ws) {
+                        Item newItem = Item.v(r, 0, w);
+                        if (i.add(newItem)) {
+                            q.add(newItem);
+                        }
                     }
                 }
             }
@@ -290,18 +417,20 @@ class Generator {
         return ret;
     }
 
-
-    private final Map<Pair<State, String>, State> gotoCache = new HashMap<Pair<State, String>, State>();
-    /** Compute the LR(1) goto set for state i and symbol x, using the algorithm
-     * of Appel, p. 63 */
-    public State lr1_goto_(final State i, final String x) {
-        final Pair<State, String> pair = new Pair<State, String>(i, x);
+    /**
+     * Compute the LR(1) goto set for state i and symbol x, using the algorithm
+     * of Appel, p. 63
+     */
+    public State lr1_goto_(State i, String x) {
+        Pair<State, String> pair = new Pair<>(i, x);
         State ret = gotoCache.get(pair);
-        if(ret == null) {
-            final Set<Item> j = new HashSet<Item>();
-            for( final Item item : i.items ) {
-                if( !item.hasNextSym() ) continue;
-                if( !item.nextSym().equals(x) ) continue;
+        if (ret == null) {
+            Set<Item> j = new HashSet<>();
+            for (Item item : i.items) {
+                if (!item.hasNextSym() || !item.nextSym().equals(x)) {
+                    continue;
+                }
+
                 j.add(item.advance());
             }
             ret = State.v(lr1_closure(j));
@@ -309,174 +438,224 @@ class Generator {
         }
         return ret;
     }
-    /** Add the action a to the parse table for the state state and
+
+    /**
+     * Add the action a to the parse table for the state state and
      * symbol sym. Report a conflict if the table already contains
-     * an action for the same state and symbol. */
-    private boolean addAction( final State state, final String sym, final Action a ) {
+     * an action for the same state and symbol.
+     */
+    private boolean addAction(State state, String sym, Action a) {
         boolean ret = false;
-        final Pair<State,String> p = new Pair<State,String>(state, sym);
-        final Action old = table.get(p);
-        if(old != null && !old.equals(a)) {
+        Pair<State, String> p = new Pair<State, String>(state, sym);
+        Action old = table.get(p);
+        if (old != null && !old.equals(a)) {
             throw new Error(
-                "Conflict on symbol "+sym+" in state "+state+"\n"+
-                "Possible actions:\n"+
-                old+"\n"+a);
+                    "Conflict on symbol " + sym + " in state " + state + "\n" +
+                            "Possible actions:\n" +
+                            old + "\n" + a);
         }
-        if(old == null || !old.equals(a)) ret = true;
+        if (!a.equals(old)) {
+            ret = true;
+        }
+
         table.put(p, a);
         return ret;
     }
-    /** Return true if all the symbols in l are in the set nullable. */
-    private boolean allNullable(final String[] l) {
+
+    /**
+     * Return true if all the symbols in l are in the set nullable.
+     */
+    private boolean allNullable(String[] l) {
         return allNullable(l, 0, l.length);
     }
-    /** Return true if the symbols start..end in l are in the set nullable. */
-    private boolean allNullable(final String[] l, final int start, final int end) {
-        boolean ret = true;
-        for(int i = start; i < end; i++) {
-            if(!nullable.contains(l[i])) ret = false;
+
+    /**
+     * Return true if the symbols start..end in l are in the set nullable.
+     */
+    private boolean allNullable(String[] l, int start, int end) {
+        for (int i = start; i < end; i++) {
+            if (!nullable.contains(l[i])) {
+                return false;
+            }
         }
-        return ret;
+
+        return true;
     }
-    // The NULLABLE, FIRST, and FOLLOW sets. See Appel, pp. 47-49
-    Set<String> nullable = new HashSet<String>();
-    Map<String,Set<String>> first = new HashMap<String,Set<String>>();
-    Map<String,Set<String>> follow = new HashMap<String,Set<String>>();
-    /** Computes NULLABLE, FIRST, and FOLLOW sets using the algorithm
-     * of Appel, p. 49 */
+
+    /**
+     * Computes NULLABLE, FIRST, and FOLLOW sets using the algorithm
+     * of Appel, p. 49
+     */
     public void computeFirstFollowNullable() {
-        for( final String z : grammar.syms() ) {
-            first.put(z, new HashSet<String>());
-            if(grammar.isTerminal(z)) first.get(z).add(z);
-            follow.put(z, new HashSet<String>());
+        for (String z : grammar.syms()) {
+            first.put(z, new HashSet<>());
+            if (grammar.isTerminal(z)) {
+                first.get(z).add(z);
+            }
+
+            follow.put(z, new HashSet<>());
         }
         boolean change;
         do {
             change = false;
-            for( final Production rule : grammar.productions ) {
-                if(allNullable(rule.rhs)) {
-                    if( nullable.add(rule.lhs) ) change = true;
+            for (Production rule : grammar.productions) {
+                if (allNullable(rule.rhs)) {
+                    if (nullable.add(rule.lhs)) {
+                        change = true;
+                    }
                 }
-                final int k = rule.rhs.length;
-                for(int i = 0; i < k; i++) {
-                    if(allNullable(rule.rhs, 0, i)) {
-                        if( first.get(rule.lhs).addAll(
-                                first.get(rule.rhs[i])))
+
+                int k = rule.rhs.length;
+                for (int i = 0; i < k; i++) {
+                    if (allNullable(rule.rhs, 0, i)) {
+                        if (first.get(rule.lhs).addAll(first.get(rule.rhs[i]))) {
                             change = true;
+                        }
                     }
-                    if(allNullable(rule.rhs, i+1,k)) {
-                        if( follow.get(rule.rhs[i]).addAll(
-                                follow.get(rule.lhs)))
+                    if (allNullable(rule.rhs, i + 1, k)) {
+                        if (follow.get(rule.rhs[i]).addAll(follow.get(rule.lhs))) {
                             change = true;
+                        }
                     }
-                    for(int j = i+1; j < k; j++) {
-                        if(allNullable(rule.rhs, i+1,j)) {
-                            if( follow.get(rule.rhs[i]).addAll(
-                                    first.get(rule.rhs[j])))
+                    for (int j = i + 1; j < k; j++) {
+                        if (allNullable(rule.rhs, i + 1, j)) {
+                            if (follow.get(rule.rhs[i]).addAll(first.get(rule.rhs[j]))) {
                                 change = true;
+                            }
                         }
                     }
                 }
             }
-        } while(change);
+        }
+        while (change);
     }
-    /** The computed parse table. */
-    Map<Pair<State,String>,Action> table =
-        new HashMap<Pair<State,String>,Action>();
-    State initialState;
 
-    /** Generates the LR(0) parse table using the algorithms on
-     * pp. 60 of Appel. */
+    /**
+     * Generates the LR(0) parse table using the algorithms on
+     * pp. 60 of Appel.
+     */
     public void generateLR0Table() {
-        final Set<Item> startRuleSet = new HashSet<Item>();
-        for(final Production r : lhsToRules.get(grammar.start)) {
+        Set<Item> startRuleSet = new HashSet<>();
+        for (Production r : lhsToRules.get(grammar.start)) {
             startRuleSet.add(Item.v(r, 0));
         }
         initialState = State.v(closure(startRuleSet));
-        final Set<State> t = new HashSet<State>();
+        Set<State> t = new HashSet<>();
         t.add(initialState);
         boolean change;
         // compute goto actions
         do {
             change = false;
-            for( final State i : new ArrayList<State>(t) ) {
-                for( final Item item : i.items ) {
-                    if(!item.hasNextSym()) continue;
-                    final String x = item.nextSym();
-                    final State j = State.v(goto_(i.items, x));
-                    if(t.add(j)) change = true;
-                    if(addAction(i, x, new ShiftAction(j))) change = true;
+            for (State i : new ArrayList<State>(t)) {
+                for (Item item : i.items) {
+                    if (!item.hasNextSym()) {
+                        continue;
+                    }
+
+                    String x = item.nextSym();
+                    State j = State.v(goto_(i.items, x));
+                    if (t.add(j)) {
+                        change = true;
+                    }
+
+                    if (addAction(i, x, new ShiftAction(j))) {
+                        change = true;
+                    }
                 }
             }
-        } while(change);
+        }
+        while (change);
         // compute reduce actions
-        for( final State i : t ) {
-            for( final Item item : i.items ) {
-                if( item.hasNextSym() ) continue;
-                for( final String x : grammar.syms() ) {
+        for (State i : t) {
+            for (Item item : i.items) {
+                if (item.hasNextSym()) {
+                    continue;
+                }
+
+                for (String x : grammar.syms()) {
                     addAction(i, x, new ReduceAction(item.rule));
                 }
             }
         }
     }
 
-    /** Generates the SLR(1) parse table using the algorithms on
-     * pp. 60 and 62 of Appel. */
+    /**
+     * Generates the SLR(1) parse table using the algorithms on
+     * pp. 60 and 62 of Appel.
+     */
     public void generateSLR1Table() {
-        final Set<Item> startRuleSet = new HashSet<Item>();
-        for(final Production r : lhsToRules.get(grammar.start)) {
+        Set<Item> startRuleSet = new HashSet<>();
+        for (Production r : lhsToRules.get(grammar.start)) {
             startRuleSet.add(Item.v(r, 0));
         }
         initialState = State.v(closure(startRuleSet));
-        final Set<State> t = new HashSet<State>();
+        Set<State> t = new HashSet<>();
         t.add(initialState);
         boolean change;
         // compute goto actions
         do {
             change = false;
-            for( final State i : new ArrayList<State>(t) ) {
-                for( final Item item : i.items ) {
-                    if(!item.hasNextSym()) continue;
-                    final String x = item.nextSym();
-                    final State j = State.v(goto_(i.items, x));
-                    if(t.add(j)) change = true;
-                    if(addAction(i, x, new ShiftAction(j))) change = true;
+            for (State i : new ArrayList<>(t)) {
+                for (Item item : i.items) {
+                    if (!item.hasNextSym()) {
+                        continue;
+                    }
+
+                    String x = item.nextSym();
+                    State j = State.v(goto_(i.items, x));
+                    if (t.add(j)) {
+                        change = true;
+                    }
+
+                    if (addAction(i, x, new ShiftAction(j))) {
+                        change = true;
+                    }
                 }
             }
-        } while(change);
+        }
+        while (change);
         // compute reduce actions
-        for( final State i : t ) {
-            for( final Item item : i.items ) {
-                if( item.hasNextSym() ) continue;
-                for( final String x : follow.get(item.rule.lhs) ) {
+        for (State i : t) {
+            for (Item item : i.items) {
+                if (item.hasNextSym()) {
+                    continue;
+                }
+
+                for (String x : follow.get(item.rule.lhs)) {
                     addAction(i, x, new ReduceAction(item.rule));
                 }
             }
         }
     }
 
-    /** Generates the LR(1) parse table using the algorithms on
-     * pp. 60, 62, and 64 of Appel. */
+    /**
+     * Generates the LR(1) parse table using the algorithms on
+     * pp. 60, 62, and 64 of Appel.
+     */
     public void generateLR1Table() {
-        final Set<Item> startRuleSet = new HashSet<Item>();
+        Set<Item> startRuleSet = new HashSet<>();
         System.err.println("Computing start state");
-        for(final Production r : lhsToRules.get(grammar.start)) {
+        for (Production r : lhsToRules.get(grammar.start)) {
             startRuleSet.add(Item.v(r, 0, grammar.terminals.iterator().next()));
         }
+
         initialState = State.v(lr1_closure(startRuleSet));
-        final Set<State> t = new HashSet<State>();
+        Set<State> t = new HashSet<>();
         t.add(initialState);
-        final Queue<State> q = new LinkedList<State>();
+        Queue<State> q = new LinkedList<>();
         q.add(initialState);
         // compute goto actions
         System.err.println("Computing goto actions");
-        while(!q.isEmpty()) {
-            final State i = q.remove();
-            for( final Item item : i.items ) {
-                if(!item.hasNextSym()) continue;
-                final String x = item.nextSym();
-                final State j = lr1_goto_(i, x);
-                if(t.add(j)) {
+        while (!q.isEmpty()) {
+            State i = q.remove();
+            for (Item item : i.items) {
+                if (!item.hasNextSym()) {
+                    continue;
+                }
+
+                String x = item.nextSym();
+                State j = lr1_goto_(i, x);
+                if (t.add(j)) {
                     System.err.print(".");
                     q.add(j);
                 }
@@ -485,61 +664,75 @@ class Generator {
         }
         // compute reduce actions
         System.err.println("Computing reduce actions");
-        for( final State i : t ) {
-            for( final Item item : i.items ) {
-                if( item.hasNextSym() ) continue;
+        for (State i : t) {
+            for (Item item : i.items) {
+                if (item.hasNextSym()) {
+                    continue;
+                }
+
                 addAction(i, item.lookahead, new ReduceAction(item.rule));
             }
         }
     }
-    public Set<Item> core(final Set<Item> items) {
-        final Set<Item> ret = new HashSet<Item>();
-        for(final Item item : items) {
+
+    public Set<Item> core(Set<Item> items) {
+        Set<Item> ret = new HashSet<>();
+        for (Item item : items) {
             ret.add(Item.v(item.rule, item.pos));
         }
+
         return ret;
     }
-    /** Generates the LALR(1) parse table using the algorithms on
-     * pp. 60, 62, and 64 of Appel. */
+
+    /**
+     * Generates the LALR(1) parse table using the algorithms on
+     * pp. 60, 62, and 64 of Appel.
+     */
     public void generateLALR1Table() {
-        final Set<Item> startRuleSet = new HashSet<Item>();
+        Set<Item> startRuleSet = new HashSet<>();
         System.err.println("Computing start state");
-        for(final Production r : lhsToRules.get(grammar.start)) {
+        for (Production r : lhsToRules.get(grammar.start)) {
             startRuleSet.add(Item.v(r, 0, grammar.terminals.iterator().next()));
         }
+
         initialState = State.v(lr1_closure(startRuleSet));
-        final Set<State> t = new HashSet<State>();
+        Set<State> t = new HashSet<>();
         t.add(initialState);
-        final Queue<State> q = new LinkedList<State>();
+        Queue<State> q = new LinkedList<>();
         q.add(initialState);
         System.err.println("Computing states");
-        while(!q.isEmpty()) {
-            final State i = q.remove();
-            for( final Item item : i.items ) {
-                if(!item.hasNextSym()) continue;
-                final String x = item.nextSym();
-                final State j = lr1_goto_(i, x);
-                if(t.add(j)) {
+        while (!q.isEmpty()) {
+            State i = q.remove();
+            for (Item item : i.items) {
+                if (!item.hasNextSym()) {
+                    continue;
+                }
+
+                String x = item.nextSym();
+                State j = lr1_goto_(i, x);
+                if (t.add(j)) {
                     System.err.print(".");
                     q.add(j);
                 }
             }
         }
         System.err.println("Merging states");
-        final Map<Set<Item>, Set<Item>> coreToState = new HashMap<Set<Item>, Set<Item>>();
-        for(final State state : t) {
-            final Set<Item> items = state.items;
-            final Set<Item> core = core(items);
+        Map<Set<Item>, Set<Item>> coreToState = new HashMap<>();
+        for (State state : t) {
+            Set<Item> items = state.items;
+            Set<Item> core = core(items);
             Set<Item> accum = coreToState.get(core);
-            if(accum == null) {
+            if (accum == null) {
                 System.err.print(".");
                 accum = new HashSet<Item>(items);
                 coreToState.put(core, accum);
-            } else accum.addAll(items);
+            } else {
+                accum.addAll(items);
+            }
         }
-        final Map<Set<Item>, State> coreToStateState = new HashMap<Set<Item>, State>();
-        for(final State state : t) {
-            final Set<Item> core = core(state.items);
+        Map<Set<Item>, State> coreToStateState = new HashMap<>();
+        for (State state : t) {
+            Set<Item> core = core(state.items);
             coreToStateState.put(core, State.v(coreToState.get(core)));
         }
         // compute goto actions
@@ -548,14 +741,17 @@ class Generator {
         initialState = State.v(coreToState.get(core(initialState.items)));
         t.add(initialState);
         q.add(initialState);
-        while(!q.isEmpty()) {
-            final State i = q.remove();
-            for( final Item item : i.items ) {
-                if(!item.hasNextSym()) continue;
-                final String x = item.nextSym();
+        while (!q.isEmpty()) {
+            State i = q.remove();
+            for (Item item : i.items) {
+                if (!item.hasNextSym()) {
+                    continue;
+                }
+
+                String x = item.nextSym();
                 State j = lr1_goto_(i, x);
                 j = coreToStateState.get(core(j.items));
-                if(t.add(j)) {
+                if (t.add(j)) {
                     System.err.print(".");
                     q.add(j);
                 }
@@ -564,219 +760,272 @@ class Generator {
         }
         // compute reduce actions
         System.err.println("Computing reduce actions");
-        for( final State i : t ) {
-            for( final Item item : i.items ) {
-                if( item.hasNextSym() ) continue;
+        for (State i : t) {
+            for (Item item : i.items) {
+                if (item.hasNextSym()) {
+                    continue;
+                }
+
                 addAction(i, item.lookahead, new ReduceAction(item.rule));
             }
         }
     }
-    /** Print the elements of a list separated by spaces. */
-    public static String listToString(final List l) {
-        final StringBuffer ret = new StringBuffer();
-        boolean first = true;
-        for( final Object o : l ) {
-            if( !first ) ret.append(" ");
-            first = false;
-            ret.append(o);
-        }
-        return ret.toString();
-    }
-    /** Produce output according to the output specification. */
-    public void generateOutput(final List<String> addTo) {
 
-        final Map<Production,Integer> ruleMap = new HashMap<Production,Integer>();
+    /**
+     * Produce output according to the output specification.
+     */
+    public void generateOutput(List<String> addTo) {
+
+        Map<Production, Integer> ruleMap = new HashMap<>();
         int i = 0;
-        for(final Production r : grammar.productions) {
+        for (Production r : grammar.productions) {
             ruleMap.put(r, i++);
         }
-        final Map<State,Integer> stateMap = new HashMap<State,Integer>();
+        Map<State, Integer> stateMap = new HashMap<>();
         i = 0;
         stateMap.put(initialState, i++);
-        for(final Action a : table.values()) {
-            if(!(a instanceof ShiftAction)) continue;
-            final State state = ((ShiftAction)a).nextState;
-            if(!stateMap.containsKey(state)) {
+        for (Action a : table.values()) {
+            if (!(a instanceof ShiftAction)) {
+                continue;
+            }
+
+            State state = ((ShiftAction) a).nextState;
+            if (!stateMap.containsKey(state)) {
                 stateMap.put(state, i++);
             }
         }
-        for(final Pair<State,String> key : table.keySet()) {
-            final State state = key.getO1();
-            if(!stateMap.containsKey(state)) {
+        for (Pair<State, String> key : table.keySet()) {
+            State state = key.getO1();
+            if (!stateMap.containsKey(state)) {
                 stateMap.put(state, i++);
             }
         }
-        for(final Map.Entry<Pair<State,String>,Action> e : table.entrySet()) {
-
-            final Pair<State,String> p = e.getKey();
-
-            final int map = stateMap.get(p.getO1());
-
-
-            final String name = p.getO2();
-
+        for (Map.Entry<Pair<State, String>, Action> e : table.entrySet()) {
+            Pair<State, String> p = e.getKey();
+            int map = stateMap.get(p.getO1());
+            String name = p.getO2();
             String line = map + " " + name + " ";
+            Action a = e.getValue();
 
-            final Action a = e.getValue();
-            if(a instanceof ShiftAction) {
-                final ShiftAction sa = (ShiftAction) a;
+            if (a instanceof ShiftAction) {
+                ShiftAction sa = (ShiftAction) a;
                 line += stateMap.get(sa.nextState);
-            } else if(a instanceof ReduceAction) {
-                final ReduceAction ra = (ReduceAction)a;
-                line += ra.rule.lhs +  " " + ra.rule.rhs.length;
-            } else throw new Error("Internal error: unknown action");
+            } else if (a instanceof ReduceAction) {
+                ReduceAction ra = (ReduceAction) a;
+                line += ra.rule.lhs + " " + ra.rule.rhs.length;
+            } else {
+                throw new Error("Internal error: unknown action");
+            }
 
             addTo.add(line);
         }
     }
 }
 
-/** A production in the grammar. */
+/**
+ * A production in the grammar.
+ */
 class Production {
+    private static Map<Pair<String, String[]>, Production> map = new HashMap<>();
     public String lhs;
     public String[] rhs;
-    private Production(final String lhs, final String[] rhs) {
-        this.lhs = lhs; this.rhs = rhs;
+
+    private Production(String lhs, String[] rhs) {
+        this.lhs = lhs;
+        this.rhs = rhs;
     }
-    private static Map<Pair<String, String[]>, Production> map =
-        new HashMap<Pair<String, String[]>, Production>();
-    public static Production v(final String lhs, final String[] rhs) {
-        final Pair<String, String[]> pair = new Pair<String, String[]>(lhs, rhs);
+
+    public static Production v(String lhs, String[] rhs) {
+        Pair<String, String[]> pair = new Pair<>(lhs, rhs);
         Production ret = map.get(pair);
-        if(ret == null) {
+        if (ret == null) {
             ret = new Production(lhs, rhs);
             map.put(pair, ret);
         }
         return ret;
     }
+
     @Override
     public String toString() {
-        final StringBuffer ret = new StringBuffer();
+        StringBuilder ret = new StringBuilder();
         ret.append(lhs);
-        //ret.append(" ->");
-        for(final String sym : rhs) {
-            ret.append(" "+sym);
+        for (String sym : rhs) {
+            ret.append(" " + sym);
         }
+
         return ret.toString();
     }
 }
-/** Representation of a context-free grammar. */
+
+/**
+ * Representation of a context-free grammar.
+ */
 class Grammar {
     Set<String> terminals = new LinkedHashSet<String>();
     Set<String> nonterminals = new LinkedHashSet<String>();
     Set<Production> productions = new LinkedHashSet<Production>();
     String start;
 
-    public boolean isTerminal(final String s) {
+    public boolean isTerminal(String s) {
         return terminals.contains(s);
     }
-    public boolean isNonTerminal(final String s) {
+
+    public boolean isNonTerminal(String s) {
         return nonterminals.contains(s);
     }
+
     public List<String> syms() {
-        final List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<String>();
         ret.addAll(terminals);
         ret.addAll(nonterminals);
         return ret;
     }
 }
+
 class Error extends RuntimeException {
-    public Error(final String s) { super(s); }
+    public Error(String s) {
+        super(s);
+    }
 }
+
 class Util {
-    public static String readLine(final Scanner in, final String msg) {
-        if(!in.hasNextLine()) throw new Error(msg+" but input file ended");
+    public static String readLine(Scanner in, String msg) {
+        if (!in.hasNextLine()) {
+            throw new Error(msg + " but input file ended");
+        }
+
         return in.nextLine();
     }
-    public static int toInt(final String line, final String msg) {
+
+    public static int toInt(String line, String msg) {
         try {
-            return new Integer(line);
-        } catch(final NumberFormatException e) {
-            throw new Error("Expecting "+msg+" but the line is not a number:\n"+line);
+            return Integer.parseInt(line);
+        } catch (NumberFormatException e) {
+            throw new Error("Expecting " + msg + " but the line is not a number:\n" + line);
         }
     }
-    public static Grammar readGrammar(final Scanner in) {
-        final Grammar grammar = new Grammar();
+
+    public static Grammar readGrammar(Scanner in) {
+        Grammar grammar = new Grammar();
         String line = readLine(in, "Expecting number of non-terminals");
-        final int nterm = toInt(line, "number of non-terminals");
-        for(int i = 0; i < nterm; i++) {
-            final String term = readLine(in, "Expecting a non-terminal").intern();
-            if(!grammar.terminals.add(term))
-                throw new Error("Duplicate terminal: "+term);
+        int nterm = toInt(line, "number of non-terminals");
+        for (int i = 0; i < nterm; i++) {
+            String term = readLine(in, "Expecting a non-terminal").intern();
+            if (!grammar.terminals.add(term)) {
+                throw new Error("Duplicate terminal: " + term);
+            }
         }
 
         line = readLine(in, "Expecting number of non-terminals");
-        final int nnonterm = toInt(line, "number of non-terminals");
-        for(int i = 0; i < nnonterm; i++) {
-            final String nonterm = readLine(in, "Expecting a non-terminal").intern();
-            if(!grammar.nonterminals.add(nonterm))
-                throw new Error("Duplicate non-terminal: "+nonterm);
-            if(grammar.isTerminal(nonterm))
-                throw new Error("Cannot be both terminal and non-terminal: "+nonterm);
+        int nnonterm = toInt(line, "number of non-terminals");
+        for (int i = 0; i < nnonterm; i++) {
+            String nonterm = readLine(in, "Expecting a non-terminal").intern();
+            if (!grammar.nonterminals.add(nonterm)) {
+                throw new Error("Duplicate non-terminal: " + nonterm);
+            }
+
+            if (grammar.isTerminal(nonterm)) {
+                throw new Error("Cannot be both terminal and non-terminal: " + nonterm);
+            }
         }
 
         grammar.start = readLine(in, "Expecting start symbol").intern();
-        if(!grammar.nonterminals.contains(grammar.start)) throw new Error(
-            "Start symbol "+grammar.start+" was not declared as a non-terminal.");
+        if (!grammar.nonterminals.contains(grammar.start)) {
+            throw new Error("Start symbol " + grammar.start + " was not declared as a non-terminal.");
+        }
 
         line = readLine(in, "Expecting number of productions");
-        final int nprods = toInt(line, "number of productions");
-        for(int i = 0; i < nprods; i++) {
-            final Production prod = readProduction(readLine(in, "Expecting production"), grammar);
-            if(!grammar.productions.add(prod)) {
-                throw new Error("Duplicate production: "+prod);
+        int nprods = toInt(line, "number of productions");
+        for (int i = 0; i < nprods; i++) {
+            Production prod = readProduction(readLine(in, "Expecting production"), grammar);
+            if (!grammar.productions.add(prod)) {
+                throw new Error("Duplicate production: " + prod);
             }
         }
-        if(in.hasNextLine()) {
+        if (in.hasNextLine()) {
             System.err.println("Warning: extra input lines after grammar; maybe your production count is wrong.");
         }
         return grammar;
     }
-    public static Production readProduction(final String line, final Grammar grammar) {
-        final Scanner s = new Scanner(line);
-        if(!s.hasNext()) throw new Error("Empty line instead of a production");
-        final String lhs = s.next().intern();
-        if(!grammar.isNonTerminal(lhs)) throw new Error("Symbol "+lhs+" was not declared as a non-terminal, but appears on the LHS of production "+line);
-        final List<String> rhs = new ArrayList<String>();
-        while(s.hasNext()) {
-            final String sym = s.next().intern();
-            if(!grammar.isNonTerminal(sym) && !grammar.isTerminal(sym)) {
-                throw new Error("Symbol "+sym+" is not a part of the grammar");
+
+    public static Production readProduction(String line, Grammar grammar) {
+        Scanner s = new Scanner(line);
+        if (!s.hasNext()) {
+            throw new Error("Empty line instead of a production");
+        }
+
+        String lhs = s.next().intern();
+        if (!grammar.isNonTerminal(lhs)) {
+            throw new Error(
+                    "Symbol " +
+                            lhs +
+                            " was not declared as a non-terminal, but appears on the LHS of production " +
+                            line);
+        }
+        List<String> rhs = new ArrayList<>();
+        while (s.hasNext()) {
+            String sym = s.next().intern();
+            if (!grammar.isNonTerminal(sym) && !grammar.isTerminal(sym)) {
+                throw new Error("Symbol " + sym + " is not a part of the grammar");
             }
+
             rhs.add(sym);
         }
         return Production.v(lhs,
                 rhs.toArray(new String[rhs.size()]));
     }
-    static String checkIndent(final String line, final int indent) {
-        for(int i = 0; i < indent; i++) {
-            if(line.length() <= i) throw new Error("Expecting production but got empty line.");
-            if(line.charAt(i) != ' ') throw new Error("Production "+line.substring(i)+" should be indented "+indent+" space(s), but it is indented "+i+" spaces");
+
+    static String checkIndent(String line, int indent) {
+        for (int i = 0; i < indent; i++) {
+            if (line.length() <= i) {
+                throw new Error("Expecting production but got empty line.");
+            }
+
+            if (line.charAt(i) != ' ') {
+                throw new Error(
+                        "Production " +
+                                line.substring(i) +
+                                " should be indented " +
+                                indent + " space(s), but it is indented " +
+                                i +
+                                " spaces");
+            }
         }
-        if(line.length() <= indent) throw new Error("Expecting production but got empty line.");
-        if(line.charAt(indent) == ' ') throw new Error("Production "+line+" should be indented "+indent+" spaces, but it is indented more than that.");
+        if (line.length() <= indent) {
+            throw new Error("Expecting production but got empty line.");
+        }
+
+        if (line.charAt(indent) == ' ') {
+            throw new Error(
+                    "Production " +
+                            line + "" +
+                            " should be indented " +
+                            indent +
+                            " spaces, but it is indented more than that.");
+        }
         return line.substring(indent);
     }
-    static void printGrammar(final Grammar grammar) {
+
+    static void printGrammar(Grammar grammar) {
         System.out.println("Terminals:");
-        for(final String s : grammar.terminals) {
-            System.out.println("   "+s);
+        for (String s : grammar.terminals) {
+            System.out.println("   " + s);
         }
         System.out.println();
 
         System.out.println("Nonterminals:");
-        for(final String s : grammar.nonterminals) {
-            System.out.println("   "+s);
+        for (String s : grammar.nonterminals) {
+            System.out.println("   " + s);
         }
         System.out.println();
 
         System.out.println("Start Symbol:");
-        System.out.println("   "+grammar.start);
+        System.out.println("   " + grammar.start);
         System.out.println();
 
         System.out.println("Production Rules:");
-        for(final Production s : grammar.productions) {
-            System.out.println("   "+s);
+        for (Production s : grammar.productions) {
+            System.out.println("   " + s);
         }
     }
 }

@@ -12,7 +12,7 @@ public class Mal extends ArmInstruction {
     public final Register rhs;
     public final Register add;
 
-    public Mal(final Condition c, final Register dest, final Register lhs, final Register rhs, final Register add) {
+    public Mal(Condition c, Register dest, Register lhs, Register rhs, Register add) {
         super(3);
         this.c = c;
         this.dest = dest;
@@ -21,7 +21,7 @@ public class Mal extends ArmInstruction {
         this.add = add;
     }
 
-    public Mal(final Register dest, final Register lhs, final Register rhs, final Register add) {
+    public Mal(Register dest, Register lhs, Register rhs, Register add) {
         this(Condition.AL, dest, lhs, rhs, add);
     }
 

@@ -13,17 +13,19 @@ import cs444.parser.symbols.ast.expressions.LSExprSymbol;
 public class LongLeftShift extends LongShiftTile<LSExprSymbol> {
     private static LongLeftShift tile;
 
-    public static LongLeftShift getTile() {
-        if (tile == null) tile = new LongLeftShift();
-        return tile;
-    }
-
     private LongLeftShift() {
         super(LSOpMaker.maker, ShldMaker.maker, false);
     }
 
+    public static LongLeftShift getTile() {
+        if (tile == null) {
+            tile = new LongLeftShift();
+        }
+        return tile;
+    }
+
     @Override
-    protected X86Instruction bigFinish(final SizeHelper<X86Instruction, Size> sizeHelper) {
+    protected X86Instruction bigFinish(SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Xor(Register.ACCUMULATOR, Register.ACCUMULATOR, sizeHelper);
     }
 }

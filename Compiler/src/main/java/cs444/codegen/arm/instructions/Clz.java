@@ -11,7 +11,7 @@ public class Clz extends ArmInstruction {
     public final Register num;
     public final SizeHelper<ArmInstruction, Size> sizeHelper;
 
-    public Clz(final Register dest, final Register num, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    public Clz(Register dest, Register num, SizeHelper<ArmInstruction, Size> sizeHelper) {
         super(1);
         this.dest = dest;
         this.num = num;

@@ -17,24 +17,26 @@ import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 public final class LongArrayValueTile extends ArrayBaseTile {
     private static LongArrayValueTile tile;
 
+    private LongArrayValueTile() {}
+
     public static LongArrayValueTile getTile() {
-        if (tile == null) tile = new LongArrayValueTile();
+        if (tile == null) {
+            tile = new LongArrayValueTile();
+        }
         return tile;
     }
 
-    private LongArrayValueTile() {}
-
     @Override
-    public final boolean fits(final ArrayAccessExprSymbol typeable, final Platform<ArmInstruction, Size> platform) {
+    public final boolean fits(ArrayAccessExprSymbol typeable, Platform<ArmInstruction, Size> platform) {
         return typeable.getType().value.equals(JoosNonTerminal.LONG);
     }
 
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(final ArrayAccessExprSymbol arrayAccess,
-            final Platform<ArmInstruction, Size> platform) {
+    public InstructionsAndTiming<ArmInstruction> generate(ArrayAccessExprSymbol arrayAccess,
+                                                          Platform<ArmInstruction, Size> platform) {
 
-        final InstructionsAndTiming<ArmInstruction> instructions = super.generate(arrayAccess, platform);
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<ArmInstruction> instructions = super.generate(arrayAccess, platform);
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.add(new Add(Register.R0, Register.R0, Register.R8, sizeHelper));
         instructions.add(new Ldr(Register.R2, Register.R0, Immediate8.FOUR, sizeHelper));

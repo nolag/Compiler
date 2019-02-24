@@ -1,8 +1,5 @@
 package cs444.codegen.x86.tiles;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.x86.Size;
@@ -11,12 +8,20 @@ import cs444.codegen.x86.instructions.factories.BinOpMaker;
 import cs444.codegen.x86.tiles.helpers.BinOpTile;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @SuppressWarnings("rawtypes")
 public class SizedBinOpTile<T extends BinOpExpr> extends BinOpTile<T> {
     private static final Map<Class<? extends BinOpExpr>, SizedBinOpTile> tiles = new HashMap<>();
 
+    protected SizedBinOpTile(BinOpMaker maker, boolean ordered) {
+        super(maker, ordered);
+    }
+
     @SuppressWarnings("unchecked")
-    public static <T extends BinOpExpr> SizedBinOpTile<T> getTile(final BinOpMaker maker, final boolean ordered, Class<T> klass) {
+    public static <T extends BinOpExpr> SizedBinOpTile<T> getTile(BinOpMaker maker, boolean ordered,
+                                                                  Class<T> klass) {
         SizedBinOpTile<T> tile = tiles.get(klass);
         if (tile == null) {
             tile = new SizedBinOpTile(maker, ordered);
@@ -25,13 +30,9 @@ public class SizedBinOpTile<T extends BinOpExpr> extends BinOpTile<T> {
         return tile;
     }
 
-    protected SizedBinOpTile(final BinOpMaker maker, final boolean ordered) {
-        super(maker, ordered);
-    }
-
     @Override
-    public boolean fits(final T op, final Platform<X86Instruction, Size> platform) {
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+    public boolean fits(T op, Platform<X86Instruction, Size> platform) {
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         return sizeHelper.getDefaultStackSize() >= sizeHelper.getByteSizeOfType(op.getType().getTypeDclNode().fullName);
     }
 }

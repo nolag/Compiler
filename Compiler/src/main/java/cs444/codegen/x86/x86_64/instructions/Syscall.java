@@ -17,7 +17,7 @@ public class Syscall extends X86Instruction {
     }
 
     @Override
-    public boolean uses(final InstructionArg<X86Instruction, ?> what) {
+    public boolean uses(InstructionArg<X86Instruction, ?> what) {
         return false;
     }
 }

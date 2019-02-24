@@ -13,7 +13,7 @@ public class JaMaker implements JxxMaker {
     private JaMaker() { }
 
     @Override
-    public Ja make(final Immediate where, final SizeHelper<X86Instruction, Size> sizeHelper) {
+    public Ja make(Immediate where, SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Ja(where, sizeHelper);
     }
 }

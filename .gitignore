@@ -45,5 +45,8 @@ Compiler/src/main/java/cs444/lexer/JoosDFA.java
 Compiler/src/main/java/cs444/lexer/Token.java
 Compiler/src/main/resources/JoosRules.txt
 
+Compiler/target
+Generator/target
+
 # file to submit
 *.zip

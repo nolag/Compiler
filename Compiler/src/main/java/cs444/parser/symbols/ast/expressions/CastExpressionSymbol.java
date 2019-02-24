@@ -7,13 +7,13 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.*;
 
-public class CastExpressionSymbol extends BaseExprSymbol{
+public class CastExpressionSymbol extends BaseExprSymbol {
 
-    public CastExpressionSymbol(final TypeSymbol castExprType,
-                                final ISymbol operandExpression) {
+    public CastExpressionSymbol(TypeSymbol castExprType,
+                                ISymbol operandExpression) {
         super("CastExpression");
-        this.setType(castExprType);
-        this.children.add(operandExpression);
+        setType(castExprType);
+        children.add(operandExpression);
     }
 
     @Override
@@ -26,43 +26,43 @@ public class CastExpressionSymbol extends BaseExprSymbol{
         return false;
     }
 
-    public ISymbol getOperandExpression(){
-        return this.children.get(0);
+    public ISymbol getOperandExpression() {
+        return children.get(0);
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
-        this.getType().accept(visitor);
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
+        getType().accept(visitor);
 
-        for (final ISymbol child : children) {
+        for (ISymbol child : children) {
             child.accept(visitor);
         }
         visitor.visit(this);
     }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 
     @Override
     public TypeableTerminal reduce() {
-        final Typeable operand = (Typeable) getOperandExpression();
-        final String toType = getType().value;
+        Typeable operand = (Typeable) getOperandExpression();
+        String toType = getType().value;
 
-        if (operand instanceof INumericLiteral){
-            final INumericLiteral literal = (INumericLiteral) operand;
+        if (operand instanceof INumericLiteral) {
+            INumericLiteral literal = (INumericLiteral) operand;
 
-            if(toType.equals(JoosNonTerminal.LONG)){
+            if (toType.equals(JoosNonTerminal.LONG)) {
                 return new LongLiteralSymbol(literal.getAsLongValue());
-            }else if (toType.equals(JoosNonTerminal.INTEGER)){
-                return new IntegerLiteralSymbol((int)literal.getAsLongValue());
-            }else if (toType.equals(JoosNonTerminal.SHORT)){
-                return new ShortLiteralSymbol((short)literal.getAsLongValue());
-            }else if (toType.equals(JoosNonTerminal.BYTE)){
-                return new ByteLiteralSymbol((byte)literal.getAsLongValue());
-            }else if (toType.equals(JoosNonTerminal.CHAR)){
-                return new CharacterLiteralSymbol((char)literal.getAsLongValue());
+            } else if (toType.equals(JoosNonTerminal.INTEGER)) {
+                return new IntegerLiteralSymbol((int) literal.getAsLongValue());
+            } else if (toType.equals(JoosNonTerminal.SHORT)) {
+                return new ShortLiteralSymbol((short) literal.getAsLongValue());
+            } else if (toType.equals(JoosNonTerminal.BYTE)) {
+                return new ByteLiteralSymbol((byte) literal.getAsLongValue());
+            } else if (toType.equals(JoosNonTerminal.CHAR)) {
+                return new CharacterLiteralSymbol((char) literal.getAsLongValue());
             }
         }
 

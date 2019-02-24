@@ -2,8 +2,7 @@ package cs444.lexer;
 
 public interface IDFA {
 
-	public LexerState getInitialState();
+    LexerState getInitialState();
 
-	public LexerState getState(int stateId);
-
+    LexerState getState(int stateId);
 }

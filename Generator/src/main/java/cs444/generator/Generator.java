@@ -23,8 +23,9 @@ public abstract class Generator {
 
     protected void writeLine(String str) throws IOException {
 
-        for (int i = 0; i < indent; i++)
+        for (int i = 0; i < indent; i++) {
             writer.write(' ');
+        }
 
         writer.write(str + '\n');
     }

@@ -6,7 +6,7 @@ import cs444.codegen.CodeGenVisitor;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.TypeableTerminal;
 
-public class ArrayAccessExprSymbol extends BaseExprSymbol{
+public class ArrayAccessExprSymbol extends BaseExprSymbol {
 
     public ArrayAccessExprSymbol(ISymbol who, ISymbol value) {
         super("Array Accessor");

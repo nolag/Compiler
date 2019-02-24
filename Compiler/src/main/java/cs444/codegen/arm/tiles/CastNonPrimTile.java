@@ -11,7 +11,6 @@ import cs444.codegen.arm.instructions.Push;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-
 import cs444.codegen.x86.tiles.helpers.X86TileHelper;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
@@ -19,25 +18,28 @@ import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 public class CastNonPrimTile implements ITile<ArmInstruction, Size, CastExpressionSymbol> {
     private static CastNonPrimTile tile;
 
+    private CastNonPrimTile() {}
+
     public static CastNonPrimTile getTile() {
-        if (tile == null) tile = new CastNonPrimTile();
+        if (tile == null) {
+            tile = new CastNonPrimTile();
+        }
         return tile;
     }
 
-    private CastNonPrimTile() {}
-
     @Override
-    public boolean fits(final CastExpressionSymbol symbol, final Platform<ArmInstruction, Size> platform) {
+    public boolean fits(CastExpressionSymbol symbol, Platform<ArmInstruction, Size> platform) {
         return X86TileHelper.isReferenceType(symbol);
     }
 
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(final CastExpressionSymbol symbol, final Platform<ArmInstruction, Size> platform) {
+    public InstructionsAndTiming<ArmInstruction> generate(CastExpressionSymbol symbol,
+                                                          Platform<ArmInstruction, Size> platform) {
 
-        final TypeSymbol type = symbol.getType();
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
-        final String castExprEnd = "CastExprEnd" + CodeGenVisitor.getNewLblNum();
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        TypeSymbol type = symbol.getType();
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
+        String castExprEnd = "CastExprEnd" + CodeGenVisitor.getNewLblNum();
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));
         platform.getTileHelper().setupJmpNull(castExprEnd, sizeHelper, instructions);

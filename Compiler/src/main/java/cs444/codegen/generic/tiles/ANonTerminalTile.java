@@ -14,30 +14,33 @@ public class ANonTerminalTile<T extends Instruction<T>, E extends Enum<E>> imple
 
     private static ANonTerminalTile tile;
 
+    private ANonTerminalTile() {}
+
     @SuppressWarnings("unchecked")
     public static <T extends Instruction<T>, E extends Enum<E>> ANonTerminalTile<T, E> getTile() {
-        if (tile == null) tile = new ANonTerminalTile();
+        if (tile == null) {
+            tile = new ANonTerminalTile();
+        }
         return tile;
     }
 
-    private ANonTerminalTile() {}
-
     @Override
-    public boolean fits(final ANonTerminal symbol, final Platform<T, E> platform) {
+    public boolean fits(ANonTerminal symbol, Platform<T, E> platform) {
         return true;
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final ANonTerminal aNonTerminal, final Platform<T, E> platform) {
-        final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
-        final boolean isBlock = aNonTerminal.getName().equals(JoosNonTerminal.BLOCK);
-        final CodeGenVisitor<T, E> codeGen = CodeGenVisitor.<T, E> getCurrentCodeGen(platform);
+    public InstructionsAndTiming<T> generate(ANonTerminal aNonTerminal, Platform<T, E> platform) {
+        InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
+        boolean isBlock = aNonTerminal.getName().equals(JoosNonTerminal.BLOCK);
+        CodeGenVisitor<T, E> codeGen = CodeGenVisitor.getCurrentCodeGen(platform);
 
-        for (final ISymbol child : aNonTerminal.children)
+        for (ISymbol child : aNonTerminal.children) {
             instructions.addAll(platform.getBest(child));
+        }
 
         if (isBlock && !codeGen.lastWasFunc) {
-            final long size = aNonTerminal.getStackSize(platform);
+            long size = aNonTerminal.getStackSize(platform);
             platform.getTileHelper().cleanStackSpace(aNonTerminal.name, instructions, size, platform);
         }
         return instructions;

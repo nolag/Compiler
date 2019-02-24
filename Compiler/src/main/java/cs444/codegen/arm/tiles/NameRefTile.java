@@ -20,12 +20,14 @@ import cs444.types.PkgClassResolver;
 public class NameRefTile implements ITile<ArmInstruction, Size, SimpleNameSymbol> {
     private static NameRefTile tile;
 
+    private NameRefTile() {}
+
     public static NameRefTile getTile() {
-        if (tile == null) tile = new NameRefTile();
+        if (tile == null) {
+            tile = new NameRefTile();
+        }
         return tile;
     }
-
-    private NameRefTile() {}
 
     @Override
     public boolean fits(SimpleNameSymbol symbol, Platform<ArmInstruction, Size> platform) {
@@ -33,24 +35,27 @@ public class NameRefTile implements ITile<ArmInstruction, Size, SimpleNameSymbol
     }
 
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(SimpleNameSymbol name, Platform<ArmInstruction, Size> platform) {
+    public InstructionsAndTiming<ArmInstruction> generate(SimpleNameSymbol name,
+                                                          Platform<ArmInstruction, Size> platform) {
         InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
-        final DclSymbol dcl = name.dcl;
-        final String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        DclSymbol dcl = name.dcl;
+        String staticFieldLbl = dcl.isStatic() ? PkgClassResolver.getUniqueNameFor(dcl) : null;
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.add(new Comment("Move reference of " + dcl.dclName + " in to R0"));
         if (dcl.isStatic()) {
-            if (dcl.dclInResolver != CodeGenVisitor.<ArmInstruction, Size> getCurrentCodeGen(platform).currentFile) {
+            if (dcl.dclInResolver != CodeGenVisitor.getCurrentCodeGen(platform).currentFile) {
                 platform.makeExtern(staticFieldLbl);
             }
             instructions.addAll(ArmSizeHelper.putInReg(Register.R0, staticFieldLbl, sizeHelper));
         } else if (dcl.isLocal) {
             instructions.add(new Comment("mov frame to r0 because it is local"));
-            final Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, (int) dcl.getOffset(platform), instructions, sizeHelper);
+            Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, (int) dcl.getOffset(platform), instructions,
+                    sizeHelper);
             instructions.add(new Add(Register.R0, Register.INTRA_PROCEDURE, op2, sizeHelper));
         } else {
-            final Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, (int) dcl.getOffset(platform), instructions, sizeHelper);
+            Operand2 op2 = ArmTileHelper.setupOp2(Register.R1, (int) dcl.getOffset(platform), instructions,
+                    sizeHelper);
             instructions.add(new Add(Register.R0, Register.R0, op2, sizeHelper));
         }
 

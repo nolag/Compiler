@@ -9,7 +9,7 @@ public class RegisterShift extends InstructionArg<ArmInstruction, Size> implemen
     public final Register shift;
     public final Shift type;
 
-    public RegisterShift(final Register reg, final Register shift, final Shift type) {
+    public RegisterShift(Register reg, Register shift, Shift type) {
         this.reg = reg;
         this.shift = shift;
         this.type = type;
@@ -22,6 +22,6 @@ public class RegisterShift extends InstructionArg<ArmInstruction, Size> implemen
 
     @Override
     public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return reg.toString() + ", " + type.toString() + " " + shift.getValue(sizeHelper);
+        return reg + ", " + type + " " + shift.getValue(sizeHelper);
     }
 }

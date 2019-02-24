@@ -20,8 +20,10 @@ public abstract class LdrStrBase extends ArmInstruction {
     private final String name;
     private final SizeHelper<ArmInstruction, Size> sizeHelper;
 
-    private LdrStrBase(final String name, final Size size, final Condition condition, final Register dest, final Register from,
-            final InstructionPart<ArmInstruction, Size> offset, final SizeHelper<ArmInstruction, Size> sizeHelper, final Register dest2) {
+    private LdrStrBase(String name, Size size, Condition condition, Register dest,
+                       Register from,
+                       InstructionPart<ArmInstruction, Size> offset,
+                       SizeHelper<ArmInstruction, Size> sizeHelper, Register dest2) {
         super(1);
         this.name = name;
         this.size = size;
@@ -33,67 +35,75 @@ public abstract class LdrStrBase extends ArmInstruction {
         this.dest2 = dest2;
     }
 
-    protected LdrStrBase(final String name, final Size size, final Condition condition, final Register dest, final Register from,
-            final Register offset, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    protected LdrStrBase(String name, Size size, Condition condition, Register dest,
+                         Register from,
+                         Register offset, SizeHelper<ArmInstruction, Size> sizeHelper) {
         this(name, size, condition, dest, from, offset, sizeHelper, null);
     }
 
-    protected LdrStrBase(final String name, final Size size, final Condition condition, final Register dest, final Register from,
-            final Immediate12 offset, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    protected LdrStrBase(String name, Size size, Condition condition, Register dest,
+                         Register from,
+                         Immediate12 offset, SizeHelper<ArmInstruction, Size> sizeHelper) {
         this(name, size, condition, dest, from, offset, sizeHelper, null);
     }
 
-    protected LdrStrBase(final String name, final Condition condition, final Register dest, final Register from, Register offset,
-            final SizeHelper<ArmInstruction, Size> sizeHelper, final Register dest2) {
+    protected LdrStrBase(String name, Condition condition, Register dest, Register from,
+                         Register offset,
+                         SizeHelper<ArmInstruction, Size> sizeHelper, Register dest2) {
         this(name, sizeHelper.getDefaultSize(), condition, dest, from, offset, sizeHelper, dest2);
     }
 
-    protected LdrStrBase(final String name, final Condition condition, final Register dest, final Register from, Immediate12 offset,
-            final SizeHelper<ArmInstruction, Size> sizeHelper, final Register dest2) {
+    protected LdrStrBase(String name, Condition condition, Register dest, Register from,
+                         Immediate12 offset,
+                         SizeHelper<ArmInstruction, Size> sizeHelper, Register dest2) {
         this(name, sizeHelper.getDefaultSize(), condition, dest, from, offset, sizeHelper, dest2);
     }
 
-    protected LdrStrBase(final String name, final Size size, final Register dest, final Register from, final Register offset,
-            final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    protected LdrStrBase(String name, Size size, Register dest, Register from,
+                         Register offset,
+                         SizeHelper<ArmInstruction, Size> sizeHelper) {
         this(name, size, Condition.AL, dest, from, offset, sizeHelper, null);
     }
 
-    protected LdrStrBase(final String name, final Size size, final Register dest, final Register from, final Immediate12 offset,
-            final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    protected LdrStrBase(String name, Size size, Register dest, Register from,
+                         Immediate12 offset,
+                         SizeHelper<ArmInstruction, Size> sizeHelper) {
         this(name, size, Condition.AL, dest, from, offset, sizeHelper, null);
     }
 
-    protected LdrStrBase(final String name, final Register dest, final Register from, Register offset,
-            final SizeHelper<ArmInstruction, Size> sizeHelper, final Register dest2) {
+    protected LdrStrBase(String name, Register dest, Register from, Register offset,
+                         SizeHelper<ArmInstruction, Size> sizeHelper, Register dest2) {
         this(name, sizeHelper.getDefaultSize(), Condition.AL, dest, from, offset, sizeHelper, dest2);
     }
 
-    protected LdrStrBase(final String name, final Register dest, final Register from, Immediate12 offset,
-            final SizeHelper<ArmInstruction, Size> sizeHelper, final Register dest2) {
+    protected LdrStrBase(String name, Register dest, Register from, Immediate12 offset,
+                         SizeHelper<ArmInstruction, Size> sizeHelper, Register dest2) {
         this(name, sizeHelper.getDefaultSize(), Condition.AL, dest, from, offset, sizeHelper, dest2);
     }
 
-    protected LdrStrBase(final String name, final Register dest, final Register from, final Register offset,
-            final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    protected LdrStrBase(String name, Register dest, Register from, Register offset,
+                         SizeHelper<ArmInstruction, Size> sizeHelper) {
         this(name, Condition.AL, dest, from, offset, sizeHelper, null);
     }
 
-    protected LdrStrBase(final String name, final Register dest, final Register from, final Immediate12 offset,
-            final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    protected LdrStrBase(String name, Register dest, Register from, Immediate12 offset,
+                         SizeHelper<ArmInstruction, Size> sizeHelper) {
         this(name, Condition.AL, dest, from, offset, sizeHelper, null);
     }
 
-    protected LdrStrBase(final String name, final Register dest, final Register from, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    protected LdrStrBase(String name, Register dest, Register from, SizeHelper<ArmInstruction
+            , Size> sizeHelper) {
         this(name, sizeHelper.getDefaultSize(), Condition.AL, dest, from, null, sizeHelper, null);
     }
 
-    protected LdrStrBase(final String name, final Register dest, final Register from, final SizeHelper<ArmInstruction, Size> sizeHelper,
-            final Register dest2) {
+    protected LdrStrBase(String name, Register dest, Register from, SizeHelper<ArmInstruction
+            , Size> sizeHelper,
+                         Register dest2) {
         this(name, sizeHelper.getDefaultSize(), Condition.AL, dest, from, null, sizeHelper, dest2);
     }
 
-    protected LdrStrBase(final String name, final Size size, final Register dest, final Register from,
-            final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    protected LdrStrBase(String name, Size size, Register dest, Register from,
+                         SizeHelper<ArmInstruction, Size> sizeHelper) {
         this(name, size, Condition.AL, dest, from, null, sizeHelper, null);
     }
 
@@ -104,14 +114,19 @@ public abstract class LdrStrBase extends ArmInstruction {
 
     @Override
     public String generate() {
-        final StringBuilder sb = new StringBuilder(name).append(size.toString()).append(" ").append(condition.toString()).append(" ")
-                .append(dest.getValue(sizeHelper)).append(", ");
+        StringBuilder sb =
+                new StringBuilder(name).append(size).append(" ").append(condition).append(" ")
+                        .append(dest.getValue(sizeHelper)).append(", ");
 
-        if (dest2 != null) sb.append(dest2.getValue(sizeHelper)).append(", ");
+        if (dest2 != null) {
+            sb.append(dest2.getValue(sizeHelper)).append(", ");
+        }
 
         sb.append("[").append(from.getValue(sizeHelper));
 
-        if (offset != null) sb.append(", ").append(offset.getValue(sizeHelper));
+        if (offset != null) {
+            sb.append(", ").append(offset.getValue(sizeHelper));
+        }
 
         return sb.append("]").toString();
     }

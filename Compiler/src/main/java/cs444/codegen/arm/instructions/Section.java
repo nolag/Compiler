@@ -10,7 +10,7 @@ public class Section extends ArmInstruction {
 
     private final String type;
 
-    private Section(final String type) {
+    private Section(String type) {
         super(0, 0);
         this.type = type;
     }
@@ -21,7 +21,7 @@ public class Section extends ArmInstruction {
     }
 
     @Override
-    public boolean uses(final InstructionArg<ArmInstruction, ?> what) {
+    public boolean uses(InstructionArg<ArmInstruction, ?> what) {
         return false;
     }
 }

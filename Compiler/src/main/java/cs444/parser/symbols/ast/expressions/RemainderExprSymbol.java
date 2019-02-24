@@ -1,4 +1,3 @@
-
 package cs444.parser.symbols.ast.expressions;
 
 import cs444.CompilerException;
@@ -13,7 +12,7 @@ import cs444.parser.symbols.ast.TypeableTerminal;
 public class RemainderExprSymbol extends BinOpExpr {
     public final static String myName = "Remainder";
 
-    public RemainderExprSymbol(final ISymbol left, final ISymbol right) {
+    public RemainderExprSymbol(ISymbol left, ISymbol right) {
         super(myName, left, right);
     }
 
@@ -23,7 +22,7 @@ public class RemainderExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         children.get(0).accept(visitor);
         children.get(1).accept(visitor);
         visitor.visit(this);
@@ -35,25 +34,24 @@ public class RemainderExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 
-
     @Override
     public TypeableTerminal reduce() {
-        final ISymbol rightOperand = getRightOperand();
-        final ISymbol leftOperand = getLeftOperand();
+        ISymbol rightOperand = getRightOperand();
+        ISymbol leftOperand = getLeftOperand();
 
         if (rightOperand instanceof INumericLiteral &&
-                leftOperand instanceof INumericLiteral){
-            final long val1 = ((INumericLiteral)leftOperand).getAsLongValue();
-            final long val2 = ((INumericLiteral)rightOperand).getAsLongValue();
-            if(rightOperand instanceof LongLiteralSymbol || leftOperand instanceof LongLiteralSymbol){
-                return (val2 == 0)? null : new LongLiteralSymbol(val1 % val2);
+                leftOperand instanceof INumericLiteral) {
+            long val1 = ((INumericLiteral) leftOperand).getAsLongValue();
+            long val2 = ((INumericLiteral) rightOperand).getAsLongValue();
+            if (rightOperand instanceof LongLiteralSymbol || leftOperand instanceof LongLiteralSymbol) {
+                return (val2 == 0) ? null : new LongLiteralSymbol(val1 % val2);
             }
-            return (val2 == 0)? null : new IntegerLiteralSymbol((int)val1 % (int)val2);
-        }else{
+            return (val2 == 0) ? null : new IntegerLiteralSymbol((int) val1 % (int) val2);
+        } else {
             return null;
         }
     }

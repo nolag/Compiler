@@ -1,13 +1,13 @@
 package cs444.generator.lexer.grammar;
 
-import java.util.Collection;
-import java.util.HashMap;
-
 import cs444.generator.lexer.dfa.DFA;
 import cs444.generator.lexer.dfa.DFAState;
 import cs444.generator.lexer.grammar.TokenMetadata.Type;
 import cs444.generator.lexer.nfa.NFA;
 import cs444.generator.lexer.nfa.NFAState;
+
+import java.util.Collection;
+import java.util.HashMap;
 
 public class LexicalGrammar {
 
@@ -16,7 +16,7 @@ public class LexicalGrammar {
     private DFA dfa;
 
     public LexicalGrammar() {
-        patterns = new HashMap<TokenMetadata, NFA>();
+        patterns = new HashMap<>();
     }
 
     public void addPattern(String name, NFA nfa, Type type) {
@@ -25,20 +25,16 @@ public class LexicalGrammar {
             state.setTokenMetadata(data);
         }
         patterns.put(data, nfa);
-        ++nextPriority;
+        nextPriority++;
     }
 
     private DFA getDFA() {
-
         if (null == dfa) {
-
             Collection<NFA> storedNfas = patterns.values();
             NFA[] nfas = new NFA[storedNfas.size()];
             storedNfas.toArray(nfas);
-            NFA nfa = NFA.union(false, nfas); 
-
-            System.out.println(nfa.toString());
-
+            NFA nfa = NFA.union(false, nfas);
+            System.out.println(nfa);
             dfa = new DFA(nfa);
         }
 
@@ -52,14 +48,14 @@ public class LexicalGrammar {
 
     public String getTokenName(int priority) {
         for (TokenMetadata data : getTokenMetadata()) {
-            if (data.priority == priority)
+            if (data.priority == priority) {
                 return data.name;
+            }
         }
         return null;
     }
 
     public int[] getAcceptTable() {
-
         DFA dfa = getDFA();
         int[] acceptTable = new int[dfa.getSize()];
 
@@ -72,7 +68,6 @@ public class LexicalGrammar {
     }
 
     public int[][] getStateTable() {
-
         DFA dfa = getDFA();
         int[][] stateTable = new int[dfa.getSize()][];
 

@@ -12,17 +12,19 @@ import cs444.parser.symbols.ast.expressions.RSExprSymbol;
 public class LongRightShiftTile extends LongShiftTile<RSExprSymbol> {
     private static LongRightShiftTile tile;
 
-    public static LongRightShiftTile getTile() {
-        if (tile == null) tile = new LongRightShiftTile();
-        return tile;
-    }
-
     private LongRightShiftTile() {
         super(RSOpMaker.maker, ShrdMaker.maker, true);
     }
 
+    public static LongRightShiftTile getTile() {
+        if (tile == null) {
+            tile = new LongRightShiftTile();
+        }
+        return tile;
+    }
+
     @Override
-    protected X86Instruction bigFinish(final SizeHelper<X86Instruction, Size> sizeHelper) {
+    protected X86Instruction bigFinish(SizeHelper<X86Instruction, Size> sizeHelper) {
         return Cdq.cdq;
     }
 }

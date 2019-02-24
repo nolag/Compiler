@@ -6,35 +6,38 @@ import cs444.generator.lexer.nfa.NFA;
 public class JoosGrammar extends LexicalGrammar {
 
     public JoosGrammar() {
-
-        addPattern("WHITESPACE", NFA.union(NFA.literal(" "), NFA.literal("\t"),
-                                           NFA.literal("\n"), NFA.literal("\r")), Type.IGNORE);
+        addPattern(
+                "WHITESPACE",
+                NFA.union(NFA.literal(" "), NFA.literal("\t"), NFA.literal("\n"), NFA.literal("\r")),
+                Type.IGNORE);
 
         // Traditional comment pattern: /\*([^*]|(\*+[^*/]))*\*+/
         // http://ostermiller.org/findcomment.html
 
-        addPattern("COMMENT", NFA.concatenate(
-            NFA.literal("/*"),
-            NFA.zeroOrMore(
-        		NFA.union(
-               		anythingButStar(),
-                	NFA.concatenate(
-                		NFA.oneOrMore(NFA.literal("*")),
-                		anythingButStarOrSlash()
-                	)
-                )
-            ),
-            NFA.oneOrMore(NFA.literal("*")),
-            NFA.literal("/")
-        	), Type.IGNORE);
+        addPattern(
+                "COMMENT",
+                NFA.concatenate(
+                        NFA.literal("/*"),
+                        NFA.zeroOrMore(
+                                NFA.union(
+                                        anythingButStar(),
+                                        NFA.concatenate(NFA.oneOrMore(NFA.literal("*")),
+                                                anythingButStarOrSlash()))),
+                        NFA.oneOrMore(NFA.literal("*")),
+                        NFA.literal("/")),
+                Type.IGNORE);
 
-        addPattern("END_LINE_COMMENT", NFA.concatenate(NFA.literal("//"),
-                                                       NFA.zeroOrMore(anythingButEndOfLine()),
-                                                       NFA.union(NFA.literal("\r"), NFA.literal("\n"))), Type.IGNORE);
+        addPattern(
+                "END_LINE_COMMENT",
+                NFA.concatenate(
+                        NFA.literal("//"),
+                        NFA.zeroOrMore(anythingButEndOfLine()),
+                        NFA.union(NFA.literal("\r"),
+                                NFA.literal("\n"))),
+                Type.IGNORE);
 
-        addPattern("ID", NFA.concatenate(NFA.letter(),
-                                         NFA.zeroOrMore(NFA.union(NFA.letter(),
-                                                                  NFA.digit()))), Type.VALID);
+        addPattern(
+                "ID", NFA.concatenate(NFA.letter(), NFA.zeroOrMore(NFA.union(NFA.letter(), NFA.digit()))), Type.VALID);
 
         addPattern("IF", NFA.literal("if"), Type.VALID);
         addPattern("ABSTRACT", NFA.literal("abstract"), Type.VALID);
@@ -88,26 +91,33 @@ public class JoosGrammar extends LexicalGrammar {
         addPattern("WHILE", NFA.literal("while"), Type.VALID);
 
         //Literals
-        addPattern("DECIMAL_INTEGER_LITERAL", NFA.union(NFA.literal("0"),
-                                                        NFA.concatenate(NFA.nonZeroDigit(),
-                                                                        NFA.zeroOrMore(NFA.digit()))), Type.VALID);
+        addPattern(
+                "DECIMAL_INTEGER_LITERAL",
+                NFA.union(NFA.literal("0"), NFA.concatenate(NFA.nonZeroDigit(), NFA.zeroOrMore(NFA.digit()))),
+                Type.VALID);
 
-        final NFA l = NFA.union(NFA.literal("L"), NFA.literal("L"));
-        addPattern("LONG_INTEGER_LITERAL", NFA.union(NFA.concatenate(NFA.literal("0"), l),
-                NFA.concatenate(NFA.nonZeroDigit(),
-                                NFA.zeroOrMore(NFA.digit()), l)), Type.VALID);
+        NFA l = NFA.union(NFA.literal("L"), NFA.literal("L"));
+        addPattern(
+                "LONG_INTEGER_LITERAL",
+                NFA.union(
+                        NFA.concatenate(NFA.literal("0"), l),
+                        NFA.concatenate(NFA.nonZeroDigit(), NFA.zeroOrMore(NFA.digit()), l)),
+                Type.VALID);
 
         addPattern("TRUE", NFA.literal("true"), Type.VALID);
         addPattern("FALSE", NFA.literal("false"), Type.VALID);
 
-        addPattern("CHAR_LITERAL", NFA.concatenate(NFA.literal("'"),
-                                                   NFA.union(NFA.singleChar(), escapeSequence()),
-                                                   NFA.literal("'")), Type.VALID);
+        addPattern(
+                "CHAR_LITERAL",
+                NFA.concatenate(NFA.literal("'"), NFA.union(NFA.singleChar(), escapeSequence()), NFA.literal("'")),
+                Type.VALID);
 
-        addPattern("STR_LITERAL", NFA.concatenate(NFA.literal("\""),
-                                                  NFA.zeroOrMore(NFA.union(NFA.stringCharacter(),
-                                                                           escapeSequence())),
-                                                  NFA.literal("\"")), Type.VALID);
+        addPattern("STR_LITERAL",
+                NFA.concatenate(
+                        NFA.literal("\""),
+                        NFA.zeroOrMore(NFA.union(NFA.stringCharacter(), escapeSequence())),
+                        NFA.literal("\"")),
+                Type.VALID);
 
         addPattern("NULL", NFA.literal("null"), Type.VALID);
 
@@ -153,46 +163,47 @@ public class JoosGrammar extends LexicalGrammar {
     }
 
     private NFA anythingButEndOfLine() {
-		return NFA.union(NFA.acceptRange((char)0, (char)9),
-				NFA.acceptRange((char)11, (char)12),
-				NFA.acceptRange((char)14, (char)127));
-	}
+        return NFA.union(
+                NFA.acceptRange((char) 0, (char) 9),
+                NFA.acceptRange((char) 11, (char) 12),
+                NFA.acceptRange((char) 14, (char) 127));
+    }
 
-	private NFA anythingButStarOrSlash() {
-		// * is 42
-		// / is 47
-    	return NFA.union(NFA.acceptRange((char)0, (char)41),
-    			NFA.acceptRange((char)43, (char)46),
-    			NFA.acceptRange((char)48, (char)127));
-	}
+    private NFA anythingButStarOrSlash() {
+        // * is 42
+        // / is 47
+        return NFA.union(
+                NFA.acceptRange((char) 0, (char) 41),
+                NFA.acceptRange((char) 43, (char) 46),
+                NFA.acceptRange((char) 48, (char) 127));
+    }
 
-	private NFA anythingButStar() {
-		// * is 42
-		return NFA.union(NFA.acceptRange((char)0, (char)41),
-				NFA.acceptRange((char)43, (char)127));
-	}
+    private NFA anythingButStar() {
+        // * is 42
+        return NFA.union(NFA.acceptRange((char) 0, (char) 41), NFA.acceptRange((char) 43, (char) 127));
+    }
 
-	private NFA escapeSequence() {
+    private NFA escapeSequence() {
         // escapeSequence -> \b|\t|\n|\f|\r|\"|\'|\\|(OctalEscape)
         // http://docs.oracle.com/javase/specs/jls/se5.0/html/lexical.html#101089
-        return NFA.concatenate(NFA.literal("\\"),
-                               NFA.union(NFA.literal("b"),
-                                         NFA.literal("t"),
-                                         NFA.literal("n"),
-                                         NFA.literal("f"),
-                                         NFA.literal("r"),
-                                         NFA.literal("\""),
-                                         NFA.literal("'"),
-                                         NFA.literal("\\"),
-                                         octal()));
+        return NFA.concatenate(
+                NFA.literal("\\"),
+                NFA.union(
+                        NFA.literal("b"),
+                        NFA.literal("t"),
+                        NFA.literal("n"),
+                        NFA.literal("f"),
+                        NFA.literal("r"),
+                        NFA.literal("\""),
+                        NFA.literal("'"),
+                        NFA.literal("\\"),
+                        octal()));
     }
 
     private NFA octal() {
-        return NFA.union(NFA.acceptRange('0', '7'),
-                         NFA.concatenate(NFA.acceptRange('0', '7'),
-                                         NFA.acceptRange('0', '7')),
-                         NFA.concatenate(NFA.acceptRange('0', '3'),
-                                         NFA.acceptRange('0', '7'),
-                                         NFA.acceptRange('0', '7')));
+        return NFA.union(
+                NFA.acceptRange('0', '7'),
+                NFA.concatenate(NFA.acceptRange('0', '7'), NFA.acceptRange('0', '7')),
+                NFA.concatenate(NFA.acceptRange('0', '3'), NFA.acceptRange('0', '7'), NFA.acceptRange('0', '7')));
     }
 }

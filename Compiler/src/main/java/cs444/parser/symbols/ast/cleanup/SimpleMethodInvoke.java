@@ -12,9 +12,9 @@ import cs444.parser.symbols.ast.Typeable;
 public class SimpleMethodInvoke extends ANonTerminal implements Typeable {
     public final MethodOrConstructorSymbol call;
 
-    public SimpleMethodInvoke(final MethodInvokeSymbol invoke) {
+    public SimpleMethodInvoke(MethodInvokeSymbol invoke) {
         super("Method Invoke");
-        this.call = invoke.getCallSymbol();
+        call = invoke.getCallSymbol();
         children.addAll(invoke.getArgs());
     }
 
@@ -24,12 +24,12 @@ public class SimpleMethodInvoke extends ANonTerminal implements Typeable {
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.visit(this);
     }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 
@@ -39,7 +39,7 @@ public class SimpleMethodInvoke extends ANonTerminal implements Typeable {
     }
 
     @Override
-    public void setType(final TypeSymbol type) {
+    public void setType(TypeSymbol type) {
         call.setType(type);
     }
 

@@ -14,16 +14,18 @@ public class ConstantExprReducer extends ASTSymbolFactory {
     protected ISymbol convert(ISymbol from) throws OutOfRangeException,
             UnsupportedException, IllegalModifierException {
         if (!(from instanceof BaseExprSymbol)
-            && !(from.getName().equals(JoosNonTerminal.BRACKET_PRIMARY))) return from;
+                && !(from.getName().equals(JoosNonTerminal.BRACKET_PRIMARY))) {
+            return from;
+        }
 
-        if (from.getName().equals(JoosNonTerminal.BRACKET_PRIMARY)){
-            return ((JoosNonTerminal)from).children.get(0);
+        if (from.getName().equals(JoosNonTerminal.BRACKET_PRIMARY)) {
+            return ((JoosNonTerminal) from).children.get(0);
         }
 
         ISymbol reduced = ((BaseExprSymbol) from).reduce();
-        if (reduced == null){
+        if (reduced == null) {
             return from;
-        }else{
+        } else {
             return reduced;
         }
     }

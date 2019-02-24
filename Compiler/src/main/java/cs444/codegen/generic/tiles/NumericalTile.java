@@ -6,33 +6,34 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-
 import cs444.parser.symbols.ast.INumericLiteral;
 
 @SuppressWarnings("rawtypes")
 public class NumericalTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, INumericLiteral> {
-        private static NumericalTile tile;
 
-    
-@SuppressWarnings("unchecked")
-    public static <T extends Instruction<T>, E extends Enum<E>> NumericalTile<T, E> getTile() {
-        if (tile == null) tile = new NumericalTile();
-        return tile;
-    }
+    private static NumericalTile tile;
 
     private NumericalTile() {}
 
+    @SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> NumericalTile<T, E> getTile() {
+        if (tile == null) {
+            tile = new NumericalTile();
+        }
+        return tile;
+    }
+
     @Override
-    public boolean fits(INumericLiteral symbol, final Platform<T, E> platform) {
+    public boolean fits(INumericLiteral symbol, Platform<T, E> platform) {
         return true;
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final INumericLiteral num, final Platform<T, E> platform) {
+    public InstructionsAndTiming<T> generate(INumericLiteral num, Platform<T, E> platform) {
 
-        final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<>();
-        final SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
-        final TileHelper<T, E> tileHelper = platform.getTileHelper();
+        InstructionsAndTiming<T> instructions = new InstructionsAndTiming<>();
+        SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
+        TileHelper<T, E> tileHelper = platform.getTileHelper();
         tileHelper.loadNumberToDefault(num, instructions, sizeHelper);
         return instructions;
     }

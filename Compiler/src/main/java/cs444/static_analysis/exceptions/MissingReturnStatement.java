@@ -9,5 +9,4 @@ public class MissingReturnStatement extends CompilerException {
         super("In " + className + " method '" + methodName +
                 "' is missing return statement");
     }
-
 }

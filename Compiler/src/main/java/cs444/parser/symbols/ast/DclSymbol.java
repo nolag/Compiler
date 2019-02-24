@@ -1,8 +1,5 @@
 package cs444.parser.symbols.ast;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.codegen.CodeGenVisitor;
@@ -13,50 +10,62 @@ import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 import cs444.types.APkgClassResolver;
 
+import java.util.HashMap;
+import java.util.Map;
 
 public class DclSymbol extends AModifiersOptSymbol {
     public final boolean isLocal;
     private final Map<Platform<?, ?>, Long> offsetsMap = new HashMap<>();
 
-    public static DclSymbol getClassSymbol(final String fullName, final APkgClassResolver resolver) {
-        DclSymbol retVal = null;
-        try{
-            retVal = new DclSymbol(fullName, null, new TypeSymbol(fullName, false, true), null, false);
-            retVal.type.setTypeDclNode(resolver);
-        }catch (final Exception e){ }
-        return retVal;
-    }
-
-    public DclSymbol(final String dclName, final ANonTerminal from, final TypeSymbol type,
-            final ANonTerminal initVal, final boolean isLocal) throws IllegalModifierException, UnsupportedException {
+    public DclSymbol(String dclName, ANonTerminal from, TypeSymbol type,
+                     ANonTerminal initVal, boolean isLocal) throws IllegalModifierException,
+            UnsupportedException {
 
         this(dclName, from, type, isLocal);
-        if(initVal != null) children.addAll(initVal.children);
+        if (initVal != null) {
+            children.addAll(initVal.children);
+        }
     }
 
-    public DclSymbol(final String dclName, final ANonTerminal from, final TypeSymbol type, final boolean isLocal)
+    public DclSymbol(String dclName, ANonTerminal from, TypeSymbol type, boolean isLocal)
             throws IllegalModifierException, UnsupportedException {
         super("Dcl", dclName, from, type);
         this.isLocal = isLocal;
     }
 
-    public void setOffset(final long offset, final Platform<?, ?> platform) {
+    public static DclSymbol getClassSymbol(String fullName, APkgClassResolver resolver) {
+        DclSymbol retVal = null;
+        try {
+            retVal = new DclSymbol(fullName, null, new TypeSymbol(fullName, false, true), null, false);
+            retVal.type.setTypeDclNode(resolver);
+        } catch (Exception e) {
+        }
+        return retVal;
+    }
+
+    public void setOffset(long offset, Platform<?, ?> platform) {
         offsetsMap.put(platform, offset);
     }
 
-    public long getOffset(final Platform<?, ?> platform) {
-        final Long l = offsetsMap.get(platform);
+    public long getOffset(Platform<?, ?> platform) {
+        Long l = offsetsMap.get(platform);
         return null != l ? l : 0;
     }
 
     @Override
     public void validate() throws UnsupportedException {
-        final ImplementationLevel lvl = getImplementationLevel();
-        if(lvl == ImplementationLevel.ABSTRACT )throw new UnsupportedException("abstract fields");
+        ImplementationLevel lvl = getImplementationLevel();
+        if (lvl == ImplementationLevel.ABSTRACT) {
+            throw new UnsupportedException("abstract fields");
+        }
 
-        if(lvl == ImplementationLevel.FINAL ) throw new UnsupportedException("final fields");
+        if (lvl == ImplementationLevel.FINAL) {
+            throw new UnsupportedException("final fields");
+        }
 
-        if (this.isLocal && children.isEmpty()) throw new UnsupportedException("omitted local initializer");
+        if (isLocal && children.isEmpty()) {
+            throw new UnsupportedException("omitted local initializer");
+        }
         super.validate();
     }
 
@@ -77,12 +86,12 @@ public class DclSymbol extends AModifiersOptSymbol {
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
 
-        this.type.accept(visitor);
+        type.accept(visitor);
 
-        for (final ISymbol child : children) {
+        for (ISymbol child : children) {
             child.accept(visitor);
         }
 
@@ -90,7 +99,7 @@ public class DclSymbol extends AModifiersOptSymbol {
     }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 }

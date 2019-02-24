@@ -13,7 +13,8 @@ public class Sbfx extends ArmInstruction {
     public final Immediate8 lsb;
     public final Immediate8 width;
 
-    public Sbfx(final Condition cond, final Register dest, final Register src, final Immediate8 lsb, final Immediate8 width) {
+    public Sbfx(Condition cond, Register dest, Register src, Immediate8 lsb,
+                Immediate8 width) {
         super(1);
         this.cond = cond;
         this.dest = dest;
@@ -22,7 +23,7 @@ public class Sbfx extends ArmInstruction {
         this.width = width;
     }
 
-    public Sbfx(final Register dest, final Register src, final Immediate8 lsb, final Immediate8 width) {
+    public Sbfx(Register dest, Register src, Immediate8 lsb, Immediate8 width) {
         this(Condition.AL, dest, src, lsb, width);
     }
 

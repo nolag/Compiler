@@ -9,11 +9,13 @@ import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
-public class IfExprFactory extends ASTSymbolFactory{
+public class IfExprFactory extends ASTSymbolFactory {
 
     @Override
     protected ISymbol convert(ISymbol from) throws OutOfRangeException, UnsupportedException, IllegalModifierException {
-        if(!JoosNonTerminal.ifs.contains(from.getName())) return from;
+        if (!JoosNonTerminal.ifs.contains(from.getName())) {
+            return from;
+        }
 
         ANonTerminal nonTerms = (ANonTerminal) from;
 
@@ -23,9 +25,9 @@ public class IfExprFactory extends ASTSymbolFactory{
         condition = nonTerms.children.get(1);
         body1 = nonTerms.children.get(2);
 
-        if (from.getName().equals(JoosNonTerminal.IF_THEN_STATEMENT)){
+        if (from.getName().equals(JoosNonTerminal.IF_THEN_STATEMENT)) {
             return new IfExprSymbol(condition, body1);
-        }else {
+        } else {
             return new IfExprSymbol(condition, body1, nonTerms.children.get(4));
         }
     }

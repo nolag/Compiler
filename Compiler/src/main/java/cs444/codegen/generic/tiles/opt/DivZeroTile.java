@@ -12,22 +12,24 @@ import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 public class DivZeroTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, DivideExprSymbol> {
     private static DivZeroTile tile;
 
+    private DivZeroTile() {}
+
     @SuppressWarnings("unchecked")
     public static <T extends Instruction<T>, E extends Enum<E>> DivZeroTile<T, E> getTile() {
-        if (tile == null) tile = new DivZeroTile();
+        if (tile == null) {
+            tile = new DivZeroTile();
+        }
         return tile;
     }
 
-    private DivZeroTile() {}
-
     @Override
-    public boolean fits(final DivideExprSymbol symbol, final Platform<T, E> platform) {
+    public boolean fits(DivideExprSymbol symbol, Platform<T, E> platform) {
         return TileHelper.isZero(symbol.children.get(1));
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final DivideExprSymbol op, final Platform<T, E> platform) {
-        final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
+    public InstructionsAndTiming<T> generate(DivideExprSymbol op, Platform<T, E> platform) {
+        InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
         instructions.addAll(platform.getBest(op.children.get(0)));
         platform.getRunime().throwException(instructions, JoosNonTerminal.DIV_ZERO);
         return instructions;

@@ -1,13 +1,16 @@
 package cs444.codegen;
 
-import java.util.Collection;
-
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.InstructionsAndTiming;
 
+import java.util.Collection;
+
 public interface Addable<T extends Instruction<T>> {
-    public void add(T instruction);
-    public void addAll(T [] instructions);
-    public void addAll(Collection<T> instructions);
-    public void addAll(final InstructionsAndTiming<T> other);
+    void add(T instruction);
+
+    void addAll(T[] instructions);
+
+    void addAll(Collection<T> instructions);
+
+    void addAll(InstructionsAndTiming<T> other);
 }

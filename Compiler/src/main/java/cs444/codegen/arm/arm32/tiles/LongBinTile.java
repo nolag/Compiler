@@ -1,8 +1,5 @@
 package cs444.codegen.arm.arm32.tiles;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.Register;
@@ -18,6 +15,9 @@ import cs444.codegen.tiles.InstructionsAndTiming;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @SuppressWarnings("rawtypes")
 public class LongBinTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstruction, Size, T> {
 
@@ -26,8 +26,14 @@ public class LongBinTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
     private final BinOpRegMaker first;
     private final BinOpRegMaker second;
 
+    private LongBinTile(BinOpRegMaker first, BinOpRegMaker second) {
+        this.first = first;
+        this.second = second;
+    }
+
     @SuppressWarnings("unchecked")
-    public static <T extends BinOpExpr> LongBinTile<T> getTile(final BinOpRegMaker first, final BinOpRegMaker second, Class<T> klass) {
+    public static <T extends BinOpExpr> LongBinTile<T> getTile(BinOpRegMaker first, BinOpRegMaker second,
+                                                               Class<T> klass) {
         LongBinTile<T> tile = tiles.get(klass);
         if (tile == null) {
             tile = new LongBinTile(first, second);
@@ -36,25 +42,20 @@ public class LongBinTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
         return tile;
     }
 
-    private LongBinTile(final BinOpRegMaker first, final BinOpRegMaker second) {
-        this.first = first;
-        this.second = second;
-    }
-
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(final T bin, final Platform<ArmInstruction, Size> platform) {
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
-        final TileHelper<ArmInstruction, Size> tileHelper = platform.getTileHelper();
+    public InstructionsAndTiming<ArmInstruction> generate(T bin, Platform<ArmInstruction, Size> platform) {
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        TileHelper<ArmInstruction, Size> tileHelper = platform.getTileHelper();
 
         instructions.add(new Comment("Start long add or sub"));
-        final Typeable lhs = (Typeable) bin.children.get(0);
+        Typeable lhs = (Typeable) bin.children.get(0);
         instructions.addAll(platform.getBest(lhs));
         tileHelper.makeLong(lhs, instructions, sizeHelper);
 
         instructions.add(new Push(Register.R2, Register.R0));
 
-        final Typeable rhs = (Typeable) bin.children.get(1);
+        Typeable rhs = (Typeable) bin.children.get(1);
         instructions.addAll(platform.getBest(rhs));
         tileHelper.makeLong(rhs, instructions, sizeHelper);
 

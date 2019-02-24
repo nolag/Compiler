@@ -20,27 +20,27 @@ public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruc
     private final BinOpMaker maker;
     private final boolean ordered;
 
-    protected BinOpTile(final BinOpMaker maker, final boolean ordered) {
+    protected BinOpTile(BinOpMaker maker, boolean ordered) {
         this.maker = maker;
         this.ordered = ordered;
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction, Size> platform) {
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+    public InstructionsAndTiming<X86Instruction> generate(T bin, Platform<X86Instruction, Size> platform) {
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
-        final Typeable t1 = (Typeable) bin.children.get(0);
-        final Typeable t2 = (Typeable) bin.children.get(1);
+        Typeable t1 = (Typeable) bin.children.get(0);
+        Typeable t2 = (Typeable) bin.children.get(1);
 
-        final TypeSymbol ts1 = t1.getType();
-        final TypeSymbol ts2 = t2.getType();
+        TypeSymbol ts1 = t1.getType();
+        TypeSymbol ts2 = t2.getType();
 
-        final boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
+        boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
                 || ts2.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
 
         instructions.addAll(platform.getBest(t1));
-        final Size size;
+        Size size;
 
         if (hasLong) {
             size = Size.QWORD;
@@ -52,7 +52,9 @@ public abstract class BinOpTile<T extends BinOpExpr> implements ITile<X86Instruc
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
 
         instructions.addAll(platform.getBest(t2));
-        if (hasLong) platform.getTileHelper().makeLong(t2, instructions, sizeHelper);
+        if (hasLong) {
+            platform.getTileHelper().makeLong(t2, instructions, sizeHelper);
+        }
 
         if (ordered) {
             instructions.add(new Mov(Register.COUNTER, Register.ACCUMULATOR, sizeHelper));

@@ -1,31 +1,22 @@
 package cs444.codegen.x86.tiles.helpers;
 
-import cs444.codegen.CodeGenVisitor;
-import cs444.codegen.IRuntime;
-import cs444.codegen.ObjectLayout;
-import cs444.codegen.Platform;
-import cs444.codegen.SizeHelper;
+import cs444.codegen.*;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.x86.AddMemoryFormat;
-import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.Memory;
-import cs444.codegen.x86.Register;
-import cs444.codegen.x86.Size;
-import cs444.codegen.x86.X86SizeHelper;
+import cs444.codegen.x86.*;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
 public abstract class ArrayBaseTile implements ITile<X86Instruction, Size, ArrayAccessExprSymbol> {
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess,
-            final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(ArrayAccessExprSymbol arrayAccess,
+                                                          Platform<X86Instruction, Size> platform) {
 
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final ObjectLayout<X86Instruction, Size> objectLayout = platform.getObjectLayout();
-        final IRuntime<X86Instruction> runtime = platform.getRunime();
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        ObjectLayout<X86Instruction, Size> objectLayout = platform.getObjectLayout();
+        IRuntime<X86Instruction> runtime = platform.getRunime();
 
         instructions.add(new Comment("Accessing array"));
         instructions.addAll(platform.getBest(arrayAccess.children.get(0)));
@@ -37,7 +28,7 @@ public abstract class ArrayBaseTile implements ITile<X86Instruction, Size, Array
         instructions.addAll(platform.getBest(arrayAccess.children.get(1)));
 
         instructions.add(new Comment("Checking element >= 0"));
-        final long myVal = CodeGenVisitor.getNewLblNum();
+        long myVal = CodeGenVisitor.getNewLblNum();
         String ok = "arrayAccessP1Ok" + myVal;
         instructions.add(new Xor(Register.DATA, Register.DATA, sizeHelper));
         instructions.add(new Cmp(Register.ACCUMULATOR, Register.DATA, sizeHelper));
@@ -46,17 +37,20 @@ public abstract class ArrayBaseTile implements ITile<X86Instruction, Size, Array
         instructions.add(new Label(ok));
 
         ok = "arrayAccessOk" + myVal;
-        final Memory len = new Memory(new AddMemoryFormat(Register.BASE, new Immediate(platform.getObjectLayout().objSize())));
+        Memory len = new Memory(new AddMemoryFormat(Register.BASE,
+                new Immediate(platform.getObjectLayout().objSize())));
         instructions.add(new Cmp(len, Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Jg(new Immediate(ok), sizeHelper));
         runtime.throwException(instructions, "Invalid array access");
         instructions.add(new Label(ok));
 
-        final Size elementSize = sizeHelper.getPushSize(sizeHelper.getSizeOfType(arrayAccess.getType().value));
-        if (elementSize != Size.LOW && elementSize != Size.HIGH) instructions.add(new Shl(Register.ACCUMULATOR, X86SizeHelper
-                .getPowerSizeImd(elementSize), sizeHelper));
+        Size elementSize = sizeHelper.getPushSize(sizeHelper.getSizeOfType(arrayAccess.getType().value));
+        if (elementSize != Size.LOW && elementSize != Size.HIGH) {
+            instructions.add(new Shl(Register.ACCUMULATOR, X86SizeHelper
+                    .getPowerSizeImd(elementSize), sizeHelper));
+        }
 
-        final Immediate offset = new Immediate(objectLayout.objSize() + sizeHelper.getDefaultStackSize());
+        Immediate offset = new Immediate(objectLayout.objSize() + sizeHelper.getDefaultStackSize());
         instructions.add(new Add(Register.ACCUMULATOR, offset, sizeHelper));
 
         return instructions;

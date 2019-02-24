@@ -20,27 +20,32 @@ public class StaticNameValue extends NumericHelperTile<X86Instruction, Size, Sim
     private static StaticNameValue tile;
 
     public static StaticNameValue getTile() {
-        if (tile == null) tile = new StaticNameValue();
+        if (tile == null) {
+            tile = new StaticNameValue();
+        }
         return tile;
     }
 
     @Override
-    public boolean fits(final SimpleNameSymbol name, final Platform<X86Instruction, Size> platform) {
+    public boolean fits(SimpleNameSymbol name, Platform<X86Instruction, Size> platform) {
         return super.fits(name, platform) && name.dcl.isStatic();
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(SimpleNameSymbol name, Platform<X86Instruction, Size> platform) {
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final DclSymbol dcl = name.dcl;
-        final Size size = sizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
-        final String staticFieldLbl = PkgClassResolver.getUniqueNameFor(dcl);
+    public InstructionsAndTiming<X86Instruction> generate(SimpleNameSymbol name,
+                                                          Platform<X86Instruction, Size> platform) {
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        DclSymbol dcl = name.dcl;
+        Size size = sizeHelper.getSize(dcl.getType().getTypeDclNode().getRealSize(sizeHelper));
+        String staticFieldLbl = PkgClassResolver.getUniqueNameFor(dcl);
 
-        if (dcl.dclInResolver != CodeGenVisitor.<X86Instruction, Size> getCurrentCodeGen(platform).currentFile) instructions
-                .add(new Extern(staticFieldLbl));
+        if (dcl.dclInResolver != CodeGenVisitor.getCurrentCodeGen(platform).currentFile) {
+            instructions
+                    .add(new Extern(staticFieldLbl));
+        }
 
-        final Memory from = new Memory(new BasicMemoryFormat(new Immediate(staticFieldLbl)));
+        Memory from = new Memory(new BasicMemoryFormat(new Immediate(staticFieldLbl)));
         X86TileHelper.genMov(size, from, dcl.dclName, dcl, sizeHelper, instructions);
 
         return instructions;

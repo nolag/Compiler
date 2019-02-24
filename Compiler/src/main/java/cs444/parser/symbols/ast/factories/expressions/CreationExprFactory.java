@@ -1,8 +1,5 @@
 package cs444.parser.symbols.ast.factories.expressions;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
@@ -14,6 +11,9 @@ import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
+import java.util.LinkedList;
+import java.util.List;
+
 // Take care of:
 //ClassInstanceCreationExpression:
 //new ClassType lparen [ArgumentList] rparen
@@ -21,13 +21,15 @@ import cs444.parser.symbols.exceptions.UnsupportedException;
 //ArrayCreationExpression:
 //new PrimitiveType DimExpr
 //new Name DimExpr
-public class CreationExprFactory  extends ASTSymbolFactory{
+public class CreationExprFactory extends ASTSymbolFactory {
 
     @Override
     protected ISymbol convert(ISymbol from) throws OutOfRangeException,
             UnsupportedException, IllegalModifierException {
-        if(!from.getName().equalsIgnoreCase("ClassInstanceCreationExpression")
-                && !from.getName().equalsIgnoreCase("ArrayCreationExpression")) return from;
+        if (!from.getName().equalsIgnoreCase("ClassInstanceCreationExpression")
+                && !from.getName().equalsIgnoreCase("ArrayCreationExpression")) {
+            return from;
+        }
 
         ANonTerminal expr = (ANonTerminal) from;
 
@@ -35,10 +37,10 @@ public class CreationExprFactory  extends ASTSymbolFactory{
 
         List<ISymbol> args;
 
-        if(isArray){
+        if (isArray) {
             args = new LinkedList<ISymbol>();
             args.add(((ANonTerminal) expr.children.get(2)).children.get(0));
-        }else{
+        } else {
             ANonTerminal argumentList = (ANonTerminal) expr.firstOrDefault(JoosNonTerminal.ARGUMENT_LIST);
             args = getArguments(argumentList);
         }
@@ -50,10 +52,10 @@ public class CreationExprFactory  extends ASTSymbolFactory{
     private String getTypeValue(ANonTerminal expr) {
         ISymbol symbolType = expr.children.get(1);
         ATerminal typeChild;
-        if(symbolType.getName().equalsIgnoreCase("ClassType")){
+        if (symbolType.getName().equalsIgnoreCase("ClassType")) {
             ANonTerminal classType = (ANonTerminal) symbolType;
             typeChild = (ATerminal) classType.children.get(0);
-        }else{
+        } else {
             typeChild = (ATerminal) symbolType;
         }
 
@@ -63,7 +65,7 @@ public class CreationExprFactory  extends ASTSymbolFactory{
     private List<ISymbol> getArguments(ANonTerminal argumentList) {
         List<ISymbol> args = new LinkedList<ISymbol>();
 
-        if(argumentList != null){
+        if (argumentList != null) {
             for (ISymbol argument : argumentList.children) {
                 args.add(argument);
             }
@@ -74,5 +76,4 @@ public class CreationExprFactory  extends ASTSymbolFactory{
     private boolean haveDimExpression(ANonTerminal expr) {
         return expr.children.size() > 2 && expr.children.get(2).getName().equalsIgnoreCase(JoosNonTerminal.DIM_EXPR);
     }
-
 }

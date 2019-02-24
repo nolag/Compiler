@@ -20,21 +20,24 @@ public class StaticNameValue extends NumericHelperTile<ArmInstruction, Size, Sim
     private static StaticNameValue tile;
 
     public static StaticNameValue getTile() {
-        if (tile == null) tile = new StaticNameValue();
+        if (tile == null) {
+            tile = new StaticNameValue();
+        }
         return tile;
     }
 
     @Override
-    public boolean fits(final SimpleNameSymbol name, final Platform<ArmInstruction, Size> platform) {
+    public boolean fits(SimpleNameSymbol name, Platform<ArmInstruction, Size> platform) {
         return super.fits(name, platform) && name.dcl.isStatic();
     }
 
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(SimpleNameSymbol name, Platform<ArmInstruction, Size> platform) {
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
-        final DclSymbol dcl = name.dcl;
-        final String staticFieldLbl = PkgClassResolver.getUniqueNameFor(dcl);
+    public InstructionsAndTiming<ArmInstruction> generate(SimpleNameSymbol name,
+                                                          Platform<ArmInstruction, Size> platform) {
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
+        DclSymbol dcl = name.dcl;
+        String staticFieldLbl = PkgClassResolver.getUniqueNameFor(dcl);
 
         instructions.add(new Comment("Moving " + staticFieldLbl + " into R0"));
         instructions.add(new Movw(Register.R0, new ImmediateStr(":lower16:" + staticFieldLbl), sizeHelper));

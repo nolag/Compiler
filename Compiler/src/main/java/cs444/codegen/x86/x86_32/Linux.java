@@ -8,8 +8,8 @@ class Linux extends X86OperatingSystem<X86_32Platform> {
     }
 
     @Override
-    public String[] getLinkCmd(final String execName) {
-        final String outputDir = getOutputDir();
-        return new String[] {"bash", "-c", "ld -melf_i386 -o " + outputDir  + execName + " " + getAllObects()};
+    public String[] getLinkCmd(String execName) {
+        String outputDir = getOutputDir();
+        return new String[]{"bash", "-c", "ld -melf_i386 -o " + outputDir + execName + " " + getAllObects()};
     }
 }

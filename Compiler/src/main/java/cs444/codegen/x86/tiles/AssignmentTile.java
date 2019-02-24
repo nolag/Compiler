@@ -21,22 +21,25 @@ import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
 public class AssignmentTile extends NumericHelperTile<X86Instruction, Size, AssignmentExprSymbol> {
     private static AssignmentTile tile;
 
+    private AssignmentTile() {}
+
     public static AssignmentTile getTile() {
-        if (tile == null) tile = new AssignmentTile();
+        if (tile == null) {
+            tile = new AssignmentTile();
+        }
         return tile;
     }
 
-    private AssignmentTile() {}
-
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final AssignmentExprSymbol op, final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(AssignmentExprSymbol op,
+                                                          Platform<X86Instruction, Size> platform) {
 
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final TileHelper<X86Instruction, Size> tileHelper = platform.getTileHelper();
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        TileHelper<X86Instruction, Size> tileHelper = platform.getTileHelper();
 
-        final Typeable leftHandSide = (Typeable) op.children.get(0);
-        final Typeable rightHandSide = (Typeable) op.children.get(1);
+        Typeable leftHandSide = (Typeable) op.children.get(0);
+        Typeable rightHandSide = (Typeable) op.children.get(1);
 
         instructions.add(new Comment("Start Assignment " + leftHandSide.getName() + "=" + rightHandSide.getName()));
         instructions.addAll(platform.getBest(leftHandSide));
@@ -44,9 +47,9 @@ public class AssignmentTile extends NumericHelperTile<X86Instruction, Size, Assi
         instructions.addAll(platform.getBest(rightHandSide));
 
         instructions.add(new Pop(Register.DATA, sizeHelper));
-        final Memory to = new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.DATA));
+        Memory to = new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.DATA));
 
-        final Size size = sizeHelper.getSizeOfType(op.getType().getTypeDclNode().fullName);
+        Size size = sizeHelper.getSizeOfType(op.getType().getTypeDclNode().fullName);
 
         if (leftHandSide.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)) {
             tileHelper.makeLong(rightHandSide, instructions, sizeHelper);
@@ -56,5 +59,4 @@ public class AssignmentTile extends NumericHelperTile<X86Instruction, Size, Assi
         instructions.add(new Comment("End Assignment"));
         return instructions;
     }
-
 }

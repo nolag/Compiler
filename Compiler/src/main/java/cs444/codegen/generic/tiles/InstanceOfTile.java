@@ -7,43 +7,44 @@ import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.expressions.InstanceOfExprSymbol;
 
 @SuppressWarnings("rawtypes")
 public class InstanceOfTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, InstanceOfExprSymbol> {
-        private static InstanceOfTile tile;
 
-    
-@SuppressWarnings("unchecked")
-    public static <T extends Instruction<T>, E extends Enum<E>> InstanceOfTile<T, E> getTile() {
-        if (tile == null) tile = new InstanceOfTile();
-        return tile;
-    }
+    private static InstanceOfTile tile;
 
     private InstanceOfTile() {}
 
+    @SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> InstanceOfTile<T, E> getTile() {
+        if (tile == null) {
+            tile = new InstanceOfTile();
+        }
+        return tile;
+    }
+
     @Override
-    public boolean fits(final InstanceOfExprSymbol symbol, final Platform<T, E> platform) {
+    public boolean fits(InstanceOfExprSymbol symbol, Platform<T, E> platform) {
         return true;
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final InstanceOfExprSymbol op, final Platform<T, E> platform) {
+    public InstructionsAndTiming<T> generate(InstanceOfExprSymbol op, Platform<T, E> platform) {
 
-        final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
-        final SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
-        final TileHelper<T, E> tileHelper = platform.getTileHelper();
+        InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
+        SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
+        TileHelper<T, E> tileHelper = platform.getTileHelper();
 
         instructions.addAll(platform.getBest(op.getLeftOperand()));
         // eax should have reference to object
-        final String nullObjectLbl = "nullObject" + CodeGenVisitor.getNewLblNum();
+        String nullObjectLbl = "nullObject" + CodeGenVisitor.getNewLblNum();
         tileHelper.setupJmpNull(nullObjectLbl, sizeHelper, instructions);
 
         instructions.addAll(platform.getObjectLayout().subtypeCheckCode((TypeSymbol) op.getRightOperand(), platform));
 
-        final String endLbl = "instanceOfEnd" + CodeGenVisitor.getNewLblNum();
+        String endLbl = "instanceOfEnd" + CodeGenVisitor.getNewLblNum();
         tileHelper.setupJump(endLbl, sizeHelper, instructions);
 
         tileHelper.setupLbl(nullObjectLbl, instructions);

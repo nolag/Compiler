@@ -9,5 +9,4 @@ public class UnreachableCode extends CompilerException {
         super("In " + className + " method '" + methodName +
                 "' unreachable code '" + code + "'");
     }
-
 }

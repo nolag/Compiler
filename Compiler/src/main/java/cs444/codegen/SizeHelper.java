@@ -1,11 +1,11 @@
 package cs444.codegen;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import cs444.codegen.instructions.Instruction;
 import cs444.parser.symbols.JoosNonTerminal;
 import cs444.parser.symbols.ast.Typeable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class SizeHelper<T extends Instruction<T>, U extends Enum<U>> {
     public static final Map<String, Integer> stackSizes = new HashMap<String, Integer>();
@@ -27,25 +27,25 @@ public abstract class SizeHelper<T extends Instruction<T>, U extends Enum<U>> {
         maxValues.put(JoosNonTerminal.CHAR, (long) Character.MAX_VALUE);
     }
 
-    public boolean hasSetSize(final String type) {
+    public boolean hasSetSize(String type) {
         return stackSizes.containsKey(type);
     }
 
-    public int getByteSizeOfType(final Typeable type) {
+    public int getByteSizeOfType(Typeable type) {
         return getByteSizeOfType(type.getType().getTypeDclNode().fullName);
     }
 
-    public abstract int getByteSizeOfType(final String typeName);
+    public abstract int getByteSizeOfType(String typeName);
 
-    public abstract int getBytePushSizeOfType(final String typeName);
+    public abstract int getBytePushSizeOfType(String typeName);
 
-    public abstract U getSize(final long stackSize);
+    public abstract U getSize(long stackSize);
 
-    public abstract U getSizeOfType(final String typeName);
+    public abstract U getSizeOfType(String typeName);
 
-    public abstract U getPushSize(final U size);
+    public abstract U getPushSize(U size);
 
-    public abstract int getIntSize(final U size);
+    public abstract int getIntSize(U size);
 
     public final int getDefaultStackPower() {
         return 31 - Integer.numberOfLeadingZeros(getDefaultStackSize());

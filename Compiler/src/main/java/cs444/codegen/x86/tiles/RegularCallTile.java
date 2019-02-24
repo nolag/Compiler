@@ -5,7 +5,6 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-
 import cs444.codegen.x86.*;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
@@ -17,26 +16,28 @@ import cs444.types.exceptions.UndeclaredException;
 public class RegularCallTile implements ITile<X86Instruction, Size, SimpleMethodInvoke> {
     private static RegularCallTile tile;
 
+    private RegularCallTile() { }
+
     public static RegularCallTile getTile() {
-        if(tile == null) tile = new RegularCallTile();
+        if (tile == null) {
+            tile = new RegularCallTile();
+        }
         return tile;
     }
 
-    private RegularCallTile() { }
-
     @Override
-    public boolean fits(final SimpleMethodInvoke invoke, final Platform<X86Instruction, Size> platform) {
-        final MethodOrConstructorSymbol call = invoke.call;
-        return !call.isStatic() && !CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).isSuper;
+    public boolean fits(SimpleMethodInvoke invoke, Platform<X86Instruction, Size> platform) {
+        MethodOrConstructorSymbol call = invoke.call;
+        return !call.isStatic() && !CodeGenVisitor.getCurrentCodeGen(platform).isSuper;
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final SimpleMethodInvoke invoke,
-            final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(SimpleMethodInvoke invoke,
+                                                          Platform<X86Instruction, Size> platform) {
 
-        final MethodOrConstructorSymbol call = invoke.call;
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        MethodOrConstructorSymbol call = invoke.call;
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.add(new Comment("Backing up ebx because having this in ecx is bad"));
         instructions.add(new Push(Register.BASE, sizeHelper));
@@ -46,17 +47,19 @@ public class RegularCallTile implements ITile<X86Instruction, Size, SimpleMethod
 
         instructions.add(new Push(Register.BASE, sizeHelper));
         instructions.add(new Comment("get SIT column of " + call.dclName));
-        instructions.add(new Mov(Register.BASE, new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.BASE)), sizeHelper));
+        instructions.add(new Mov(Register.BASE, new Memory(BasicMemoryFormat.getBasicMemoryFormat(Register.BASE)),
+                sizeHelper));
 
         Memory methodAddr = null;
         try {
-            final long by = platform.getSelectorIndex().getOffset(PkgClassResolver.generateUniqueName(call, call.dclName));
+            long by = platform.getSelectorIndex().getOffset(PkgClassResolver.generateUniqueName(call,
+                    call.dclName));
             methodAddr = new Memory(new AddMemoryFormat(Register.BASE, new Immediate(by)));
-        } catch (final UndeclaredException e) {
+        } catch (UndeclaredException e) {
             // shouldn't get here
             e.printStackTrace();
         }
-        instructions.add(new Mov(Register.BASE,  methodAddr, sizeHelper));
+        instructions.add(new Mov(Register.BASE, methodAddr, sizeHelper));
         instructions.add(new Call(Register.BASE, sizeHelper));
 
         platform.getTileHelper().callEndHelper(call, instructions, platform);

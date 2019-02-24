@@ -9,32 +9,33 @@ import cs444.parser.symbols.ast.IntegerLiteralSymbol;
 import cs444.parser.symbols.ast.LongLiteralSymbol;
 import cs444.parser.symbols.ast.Typeable;
 
-public class NegOpExprSymbol extends UnaryOpExprSymbol{
+public class NegOpExprSymbol extends UnaryOpExprSymbol {
     public static final String myName = "Negative";
 
-    public NegOpExprSymbol(final ISymbol on) {
+    public NegOpExprSymbol(ISymbol on) {
         super(myName, on);
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         children.get(0).accept(visitor);
         visitor.visit(this);
     }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 
     @Override
     public Typeable reduce() {
-        final ISymbol operand = getOperand();
+        ISymbol operand = getOperand();
         if (operand instanceof INumericLiteral) {
-            final long val = ((INumericLiteral)operand).getAsLongValue();
-            return operand instanceof LongLiteralSymbol ? new LongLiteralSymbol(-val) : new IntegerLiteralSymbol((int)-val);
+            long val = ((INumericLiteral) operand).getAsLongValue();
+            return operand instanceof LongLiteralSymbol ? new LongLiteralSymbol(-val) :
+                    new IntegerLiteralSymbol((int) -val);
         } else if (operand instanceof NegOpExprSymbol) {
-            final NegOpExprSymbol neg = (NegOpExprSymbol) operand;
+            NegOpExprSymbol neg = (NegOpExprSymbol) operand;
             return ((Typeable) neg.getOperand());
         } else {
             return null;

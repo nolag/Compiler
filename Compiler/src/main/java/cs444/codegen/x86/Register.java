@@ -17,7 +17,7 @@ public class Register extends NotMemory {
     protected final String name;
     private final char ending;
 
-    protected Register(final String name, final char ending) {
+    protected Register(String name, char ending) {
         this.name = name;
         this.ending = ending;
     }
@@ -43,19 +43,24 @@ public class Register extends NotMemory {
     }
 
     @Override
-    public String getValue(final Size size, final SizeHelper<X86Instruction, Size> sizeHelper) {
-        switch(size){
-        case LOW: return get8Low();
-        case HIGH: return get8High();
-        case WORD: return get16();
-        case DWORD: return get32();
-        case QWORD: return get64();
+    public String getValue(Size size, SizeHelper<X86Instruction, Size> sizeHelper) {
+        switch (size) {
+            case LOW:
+                return get8Low();
+            case HIGH:
+                return get8High();
+            case WORD:
+                return get16();
+            case DWORD:
+                return get32();
+            case QWORD:
+                return get64();
         }
         return null;
     }
 
     @Override
-    public boolean uses(final InstructionArg<X86Instruction, ?> what) {
+    public boolean uses(InstructionArg<X86Instruction, ?> what) {
         return this == what;
     }
 }

@@ -8,8 +8,8 @@ import cs444.codegen.instructions.InstructionArg;
 public class Immediate16 extends InstructionArg<ArmInstruction, Size> {
     public final int value;
 
-    public Immediate16(final int i) {
-        this.value = i;
+    public Immediate16(int i) {
+        value = i;
     }
 
     @Override
@@ -24,6 +24,6 @@ public class Immediate16 extends InstructionArg<ArmInstruction, Size> {
 
     @Override
     public String toString() {
-        return "#" + Integer.toString(value);
+        return "#" + value;
     }
 }

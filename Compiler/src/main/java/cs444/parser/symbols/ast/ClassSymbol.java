@@ -1,34 +1,38 @@
 package cs444.parser.symbols.ast;
 
-import java.util.List;
-
 import cs444.codegen.CodeGenVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
-public class ClassSymbol extends AInterfaceOrClassSymbol{
+import java.util.List;
 
+public class ClassSymbol extends AInterfaceOrClassSymbol {
 
     public ClassSymbol(String className, ANonTerminal from, Iterable<String> impls, List<ISymbol> body,
-            String superName, Iterable<NameSymbol> pkgImports) throws IllegalModifierException, UnsupportedException {
+                       String superName, Iterable<NameSymbol> pkgImports) throws IllegalModifierException,
+            UnsupportedException {
         super("ClassDeclaration", className, from, impls, body, superName, pkgImports);
     }
 
     @Override
     public void validate() throws UnsupportedException {
-        switch(getProtectionLevel()){
-        case PRIVATE:
-            throw new UnsupportedException("private classes");
-        case NOT_VALID:
-            throw new UnsupportedException("package declared classes");
-        default:
-            break;
+        switch (getProtectionLevel()) {
+            case PRIVATE:
+                throw new UnsupportedException("private classes");
+            case NOT_VALID:
+                throw new UnsupportedException("package declared classes");
+            default:
+                break;
         }
-        if(isNative())throw new UnsupportedException("native constructors");
+        if (isNative()) {
+            throw new UnsupportedException("native constructors");
+        }
         //Since we don't have nested classes, the class can't be static
-        if(isStatic()) throw new UnsupportedException("static classes");
+        if (isStatic()) {
+            throw new UnsupportedException("static classes");
+        }
     }
 
     @Override

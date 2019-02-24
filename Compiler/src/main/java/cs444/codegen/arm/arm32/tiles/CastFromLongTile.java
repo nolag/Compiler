@@ -17,24 +17,27 @@ import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
 public class CastFromLongTile implements ITile<ArmInstruction, Size, CastExpressionSymbol> {
     private static CastFromLongTile tile;
 
+    private CastFromLongTile() {}
+
     public static CastFromLongTile getTile() {
-        if (tile == null) tile = new CastFromLongTile();
+        if (tile == null) {
+            tile = new CastFromLongTile();
+        }
         return tile;
     }
 
-    private CastFromLongTile() {}
-
     @Override
-    public boolean fits(final CastExpressionSymbol symbol, final Platform<ArmInstruction, Size> platform) {
-        final Typeable typeable = (Typeable) symbol.getOperandExpression();
+    public boolean fits(CastExpressionSymbol symbol, Platform<ArmInstruction, Size> platform) {
+        Typeable typeable = (Typeable) symbol.getOperandExpression();
         return typeable.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
     }
 
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(final CastExpressionSymbol symbol, final Platform<ArmInstruction, Size> platform) {
+    public InstructionsAndTiming<ArmInstruction> generate(CastExpressionSymbol symbol,
+                                                          Platform<ArmInstruction, Size> platform) {
 
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<ArmInstruction>();
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.addAll(platform.getBest(symbol.getOperandExpression()));
         instructions.add(platform.makeComment("making long"));

@@ -1,8 +1,5 @@
 package cs444.codegen.arm.tiles;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.Immediate8;
@@ -21,24 +18,27 @@ import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @SuppressWarnings("rawtypes")
 public class CompOpTile<T extends BinOpExpr> implements ITile<ArmInstruction, Size, T> {
     private static final Map<Condition, CompOpTile> tiles = new HashMap<>();
 
     public final Condition tcond;
 
+    private CompOpTile(Condition tcond) {
+        this.tcond = tcond;
+    }
+
     @SuppressWarnings("unchecked")
-    public static <T extends BinOpExpr> CompOpTile<T> getTile(final Condition tcond) {
+    public static <T extends BinOpExpr> CompOpTile<T> getTile(Condition tcond) {
         CompOpTile<T> tile = tiles.get(tcond);
         if (tile == null) {
             tile = new CompOpTile(tcond);
             tiles.put(tcond, tile);
         }
         return tile;
-    }
-
-    private CompOpTile(final Condition tcond) {
-        this.tcond = tcond;
     }
 
     @Override
@@ -49,23 +49,27 @@ public class CompOpTile<T extends BinOpExpr> implements ITile<ArmInstruction, Si
     @Override
     public InstructionsAndTiming<ArmInstruction> generate(T bin, Platform<ArmInstruction, Size> platform) {
         InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
 
-        final Typeable t1 = (Typeable) bin.children.get(0);
-        final Typeable t2 = (Typeable) bin.children.get(1);
+        Typeable t1 = (Typeable) bin.children.get(0);
+        Typeable t2 = (Typeable) bin.children.get(1);
 
-        final TypeSymbol ts1 = t1.getType();
-        final TypeSymbol ts2 = t2.getType();
+        TypeSymbol ts1 = t1.getType();
+        TypeSymbol ts2 = t2.getType();
 
-        final boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
+        boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
                 || ts2.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
 
         instructions.addAll(platform.getBest(t1));
-        if (hasLong) platform.getTileHelper().makeLong(t1, instructions, sizeHelper);
+        if (hasLong) {
+            platform.getTileHelper().makeLong(t1, instructions, sizeHelper);
+        }
         instructions.add(new Push(Register.R0));
 
         instructions.addAll(platform.getBest(t2));
-        if (hasLong) platform.getTileHelper().makeLong(t2, instructions, sizeHelper);
+        if (hasLong) {
+            platform.getTileHelper().makeLong(t2, instructions, sizeHelper);
+        }
         instructions.add(new Pop(Register.R1));
 
         instructions.add(new Cmp(Register.R1, Register.R0, sizeHelper));

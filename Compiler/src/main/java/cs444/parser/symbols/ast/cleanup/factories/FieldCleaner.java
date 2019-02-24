@@ -11,21 +11,23 @@ import cs444.parser.symbols.ast.factories.ASTSymbolFactory;
 public class FieldCleaner extends ASTSymbolFactory {
 
     @Override
-    protected ISymbol convert(final ISymbol from) throws CompilerException {
-        if(from instanceof FieldAccessSymbol){
-            final FieldAccessSymbol fas = (FieldAccessSymbol) from;
-            final ISymbol first = fas.children.get(0);
-            final ISymbol second = fas.children.get(1);
+    protected ISymbol convert(ISymbol from) throws CompilerException {
+        if (from instanceof FieldAccessSymbol) {
+            FieldAccessSymbol fas = (FieldAccessSymbol) from;
+            ISymbol first = fas.children.get(0);
+            ISymbol second = fas.children.get(1);
 
-            if(first instanceof SimpleNameSymbol){
-                if(((SimpleNameSymbol)first).getType().isClass) return convert(second);
+            if (first instanceof SimpleNameSymbol) {
+                if (((SimpleNameSymbol) first).getType().isClass) {
+                    return convert(second);
+                }
             }
 
-            if(second instanceof FieldAccessSymbol){
-                final FieldAccessSymbol fas2 = (FieldAccessSymbol) second;
-                final ISymbol secondFirst = fas2.children.get(0);
-                if(secondFirst instanceof ThisSymbol){
-                    final Typeable typeable = (Typeable)fas2.children.get(1);
+            if (second instanceof FieldAccessSymbol) {
+                FieldAccessSymbol fas2 = (FieldAccessSymbol) second;
+                ISymbol secondFirst = fas2.children.get(0);
+                if (secondFirst instanceof ThisSymbol) {
+                    Typeable typeable = (Typeable) fas2.children.get(1);
                     return new FieldAccessSymbol(fas.children.get(0), typeable, typeable.getType());
                 }
             }
@@ -33,5 +35,4 @@ public class FieldCleaner extends ASTSymbolFactory {
 
         return from;
     }
-
 }

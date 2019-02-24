@@ -1,16 +1,15 @@
 package cs444.parser.symbols.ast;
 
-import java.util.Collections;
-import java.util.List;
-
 import cs444.codegen.CodeGenVisitor;
 import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
+import java.util.Collections;
+import java.util.List;
 
-public class EmptyClassSymbol extends AInterfaceOrClassSymbol{
+public class EmptyClassSymbol extends AInterfaceOrClassSymbol {
     private static List<String> empty = Collections.emptyList();
     private static List<ISymbol> body = Collections.emptyList();
 
@@ -38,5 +37,4 @@ public class EmptyClassSymbol extends AInterfaceOrClassSymbol{
     public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
-
 }

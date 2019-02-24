@@ -13,17 +13,19 @@ import cs444.parser.symbols.ast.expressions.URSExprSymbol;
 public class LongUnsignedRightShift extends LongShiftTile<URSExprSymbol> {
     private static LongUnsignedRightShift tile;
 
-    public static LongUnsignedRightShift getTile() {
-        if (tile == null) tile = new LongUnsignedRightShift();
-        return tile;
-    }
-
     private LongUnsignedRightShift() {
         super(URSOpMaker.maker, ShrdMaker.maker, true);
     }
 
+    public static LongUnsignedRightShift getTile() {
+        if (tile == null) {
+            tile = new LongUnsignedRightShift();
+        }
+        return tile;
+    }
+
     @Override
-    protected X86Instruction bigFinish(final SizeHelper<X86Instruction, Size> sizeHelper) {
+    protected X86Instruction bigFinish(SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Xor(Register.DATA, Register.DATA, sizeHelper);
     }
 }

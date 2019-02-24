@@ -12,16 +12,16 @@ public class IfExprSymbol extends BaseExprSymbol {
 
     public IfExprSymbol(ISymbol condition, ISymbol ifBody, ISymbol elseBody) {
         this(condition, ifBody);
-        this.children.add(elseBody);
+        children.add(elseBody);
     }
 
     public IfExprSymbol(ISymbol condition, ISymbol ifBody) {
         super("If");
-        this.children.add(condition);
-        this.children.add(ifBody);
+        children.add(condition);
+        children.add(ifBody);
     }
 
-    public Typeable getCondition(){
+    public Typeable getCondition() {
         return (Typeable) getConditionSymbol();
     }
 
@@ -34,7 +34,9 @@ public class IfExprSymbol extends BaseExprSymbol {
     }
 
     public ANonTerminal getElseBody() {
-        if (children.size() < 3) return null;
+        if (children.size() < 3) {
+            return null;
+        }
         return (ANonTerminal) children.get(2);
     }
 
@@ -42,9 +44,9 @@ public class IfExprSymbol extends BaseExprSymbol {
     public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.open(this);
         visitor.prepareCondition(getCondition());
-        this.getConditionSymbol().accept(visitor);
-        this.getifBody().accept(visitor);
-        ISymbol elseBody = this.getElseBody();
+        getConditionSymbol().accept(visitor);
+        getifBody().accept(visitor);
+        ISymbol elseBody = getElseBody();
         if (elseBody != null) {
             visitor.prepareElseBody(this);
             elseBody.accept(visitor);
@@ -59,6 +61,6 @@ public class IfExprSymbol extends BaseExprSymbol {
 
     @Override
     public TypeableTerminal reduce() {
-         return null;
+        return null;
     }
 }

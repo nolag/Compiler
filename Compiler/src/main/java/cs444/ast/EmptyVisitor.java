@@ -10,216 +10,215 @@ import cs444.parser.symbols.ast.cleanup.SimpleNameSymbol;
 import cs444.parser.symbols.ast.expressions.*;
 
 public abstract class EmptyVisitor implements ISymbolVisitor {
+    @Override
+    public void visit(TypeSymbol typeSymbol) throws CompilerException {}
 
     @Override
-    public void visit(final TypeSymbol typeSymbol) throws CompilerException {}
+    public void visit(ISymbol symbol) throws CompilerException {}
 
     @Override
-    public void visit(final ISymbol symbol) throws CompilerException {}
+    public void open(AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException {}
 
     @Override
-    public void open(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol)  throws CompilerException {}
+    public void open(DclSymbol dclSymbol) throws CompilerException {}
 
     @Override
-    public void open(final DclSymbol dclSymbol) throws CompilerException  {}
+    public void open(MethodOrConstructorSymbol constructorSymbol) throws CompilerException {}
 
     @Override
-    public void open(final MethodOrConstructorSymbol constructorSymbol) throws CompilerException {}
+    public void open(NonTerminal aNonTerminal) throws CompilerException {}
 
     @Override
-    public void open(final NonTerminal aNonTerminal) throws CompilerException {}
+    public void close(AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException {}
 
     @Override
-    public void close(final AInterfaceOrClassSymbol aInterfaceOrClassSymbol) throws CompilerException {}
+    public void close(DclSymbol dclSymbol) throws CompilerException {}
 
     @Override
-    public void close(final DclSymbol dclSymbol) throws CompilerException {}
+    public void close(MethodOrConstructorSymbol constructorSymbol) throws CompilerException {}
 
     @Override
-    public void close(final MethodOrConstructorSymbol constructorSymbol) throws CompilerException {}
+    public void close(NonTerminal aNonTerminal) throws CompilerException {}
 
     @Override
-    public void close(final NonTerminal aNonTerminal) throws CompilerException {}
+    public void visit(ATerminal terminal) throws CompilerException {}
 
     @Override
-    public void visit(final ATerminal terminal) throws CompilerException {}
+    public void visit(NameSymbol nameSymbol) throws CompilerException {}
 
     @Override
-    public void visit(final NameSymbol nameSymbol) throws CompilerException {}
+    public void open(CreationExpression creationExpression) throws CompilerException {}
 
     @Override
-    public void open(final CreationExpression creationExpression) throws CompilerException {}
+    public void close(CreationExpression creationExpression) throws CompilerException {}
 
     @Override
-    public void close(final CreationExpression creationExpression) throws CompilerException {}
+    public void visit(NegOpExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final NegOpExprSymbol op) throws CompilerException { }
+    public void visit(NotOpExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final NotOpExprSymbol op) throws CompilerException { }
+    public void visit(MultiplyExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final MultiplyExprSymbol op) throws CompilerException { }
+    public void visit(AssignmentExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final AssignmentExprSymbol op) throws CompilerException { }
+    public void visit(DivideExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final DivideExprSymbol op) throws CompilerException { }
+    public void visit(RemainderExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final RemainderExprSymbol op) throws CompilerException { }
+    public void visit(AddExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final AddExprSymbol op) throws CompilerException { }
+    public void visit(SubtractExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final SubtractExprSymbol op) throws CompilerException { }
+    public void visit(LSExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final LSExprSymbol op) throws CompilerException { }
+    public void visit(RSExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final RSExprSymbol op) throws CompilerException { }
+    public void visit(URSExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final URSExprSymbol op) throws CompilerException { }
+    public void visit(LtExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final LtExprSymbol op) throws CompilerException { }
+    public void visit(GtExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final GtExprSymbol op) throws CompilerException { }
-    
-    @Override
-    public void visit(final EqExprSymbol op) throws CompilerException { }
+    public void visit(EqExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final NeExprSymbol op) throws CompilerException { }
+    public void visit(NeExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final AndExprSymbol op) throws CompilerException { }
+    public void visit(AndExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final OrExprSymbol op) throws CompilerException { }
+    public void visit(OrExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final LeExprSymbol op) throws CompilerException { }
-    
-    @Override
-    public void visit(final GeExprSymbol op) throws CompilerException { }
+    public void visit(LeExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final InstanceOfExprSymbol op) throws CompilerException { }
+    public void visit(GeExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final CastExpressionSymbol symbol) throws CompilerException { }
+    public void visit(InstanceOfExprSymbol op) throws CompilerException { }
 
     @Override
-    public void visit(final EAndExprSymbol op) throws CompilerException { }
+    public void visit(CastExpressionSymbol symbol) throws CompilerException { }
 
     @Override
-    public void visit(final EOrExprSymbol op) throws CompilerException { }
+    public void visit(EAndExprSymbol op) throws CompilerException { }
 
     @Override
-    public void open(final MethodInvokeSymbol invoke) throws CompilerException { }
+    public void visit(EOrExprSymbol op) throws CompilerException { }
 
     @Override
-    public void close(final MethodInvokeSymbol invoke) throws CompilerException { }
+    public void open(MethodInvokeSymbol invoke) throws CompilerException { }
 
     @Override
-    public void prepare(final MethodInvokeSymbol invode) throws CompilerException { }
+    public void close(MethodInvokeSymbol invoke) throws CompilerException { }
 
     @Override
-    public void visit(final IntegerLiteralSymbol intLiteral) throws CompilerException { }
+    public void prepare(MethodInvokeSymbol invode) throws CompilerException { }
 
     @Override
-    public void visit(final LongLiteralSymbol longLiteral) throws CompilerException { }
+    public void visit(IntegerLiteralSymbol intLiteral) throws CompilerException { }
 
     @Override
-    public void open(final FieldAccessSymbol field) throws CompilerException { }
+    public void visit(LongLiteralSymbol longLiteral) throws CompilerException { }
 
     @Override
-    public void close(final FieldAccessSymbol field) throws CompilerException { }
+    public void open(FieldAccessSymbol field) throws CompilerException { }
 
     @Override
-    public void prepareCondition(final Typeable condition) { }
+    public void close(FieldAccessSymbol field) throws CompilerException { }
 
     @Override
-    public void open(final WhileExprSymbol whileExprSymbol) throws CompilerException { }
+    public void prepareCondition(Typeable condition) { }
 
     @Override
-    public void close(final WhileExprSymbol whileExprSymbol) throws CompilerException { }
+    public void open(WhileExprSymbol whileExprSymbol) throws CompilerException { }
 
     @Override
-    public void visit(final NullSymbol nullSymbol) throws CompilerException { }
+    public void close(WhileExprSymbol whileExprSymbol) throws CompilerException { }
 
     @Override
-    public void visit(final BooleanLiteralSymbol boolSymbol) throws CompilerException { }
+    public void visit(NullSymbol nullSymbol) throws CompilerException { }
 
     @Override
-    public void visit(final ThisSymbol thisSymbol) throws CompilerException { }
+    public void visit(BooleanLiteralSymbol boolSymbol) throws CompilerException { }
 
     @Override
-    public void visit(final SuperSymbol thisSymbol) throws CompilerException { }
+    public void visit(ThisSymbol thisSymbol) throws CompilerException { }
 
     @Override
-    public void visit(final StringLiteralSymbol stringSymbol) throws CompilerException { }
+    public void visit(SuperSymbol thisSymbol) throws CompilerException { }
 
     @Override
-    public void visit(final CharacterLiteralSymbol characterSymbol) throws CompilerException { }
+    public void visit(StringLiteralSymbol stringSymbol) throws CompilerException { }
 
     @Override
-    public void close(final ReturnExprSymbol returnSymbol) throws CompilerException { }
+    public void visit(CharacterLiteralSymbol characterSymbol) throws CompilerException { }
 
     @Override
-    public void open(final ForExprSymbol forExprSymbol) throws CompilerException { }
+    public void close(ReturnExprSymbol returnSymbol) throws CompilerException { }
 
     @Override
-    public void close(final ForExprSymbol forExprSymbol) throws CompilerException { }
+    public void open(ForExprSymbol forExprSymbol) throws CompilerException { }
 
     @Override
-    public void open(final IfExprSymbol ifExprSymbol) throws CompilerException { }
+    public void close(ForExprSymbol forExprSymbol) throws CompilerException { }
 
     @Override
-    public void close(final IfExprSymbol ifExprSymbol) throws CompilerException { }
+    public void open(IfExprSymbol ifExprSymbol) throws CompilerException { }
 
     @Override
-    public void open(final ReturnExprSymbol retSymbol) throws CompilerException { }
+    public void close(IfExprSymbol ifExprSymbol) throws CompilerException { }
 
     @Override
-    public void prepare(final FieldAccessSymbol fieldAccessSymbol) throws CompilerException { }
+    public void open(ReturnExprSymbol retSymbol) throws CompilerException { }
 
     @Override
-    public void visit(final EmptyStatementSymbol emptySymbol) throws CompilerException { }
+    public void prepare(FieldAccessSymbol fieldAccessSymbol) throws CompilerException { }
 
     @Override
-    public void visit(final ArrayAccessExprSymbol arrayAccess) throws CompilerException { }
+    public void visit(EmptyStatementSymbol emptySymbol) throws CompilerException { }
 
     @Override
-    public void afterClause(final ForExprSymbol forExprSymbol)
+    public void visit(ArrayAccessExprSymbol arrayAccess) throws CompilerException { }
+
+    @Override
+    public void afterClause(ForExprSymbol forExprSymbol)
             throws CompilerException { }
 
     @Override
-    public void afterCondition(final ForExprSymbol forExprSymbol)
+    public void afterCondition(ForExprSymbol forExprSymbol)
             throws CompilerException { }
 
     @Override
-    public void prepareElseBody(final IfExprSymbol ifExpr) throws CompilerException { }
+    public void prepareElseBody(IfExprSymbol ifExpr) throws CompilerException { }
 
     @Override
-    public void middle(final MethodOrConstructorSymbol methodOrConstructorSymbol) throws CompilerException { }
+    public void middle(MethodOrConstructorSymbol methodOrConstructorSymbol) throws CompilerException { }
 
     @Override
-    public void visit(final ShortLiteralSymbol shortLiteral) throws CompilerException { }
+    public void visit(ShortLiteralSymbol shortLiteral) throws CompilerException { }
 
     @Override
-    public void visit(final ByteLiteralSymbol byteLiteral) throws CompilerException { }
+    public void visit(ByteLiteralSymbol byteLiteral) throws CompilerException { }
 
     @Override
-    public void visit(final SimpleNameSymbol name) throws CompilerException {	}
+    public void visit(SimpleNameSymbol name) throws CompilerException { }
 
     @Override
-    public void visit(final SimpleMethodInvoke invoke) throws CompilerException { }
+    public void visit(SimpleMethodInvoke invoke) throws CompilerException { }
 }

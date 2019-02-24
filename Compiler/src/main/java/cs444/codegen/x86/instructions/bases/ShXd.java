@@ -4,15 +4,16 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.instructions.InstructionArg;
 import cs444.codegen.x86.Size;
 
-public abstract class ShXd extends X86Instruction{
+public abstract class ShXd extends X86Instruction {
     public final String what;
-    public final InstructionArg<X86Instruction, Size>  arg1;
+    public final InstructionArg<X86Instruction, Size> arg1;
     public final InstructionArg<X86Instruction, Size> arg2;
     public final InstructionArg<X86Instruction, Size> arg3;
     public final SizeHelper<X86Instruction, Size> sizeHelper;
 
-    protected ShXd(final String what, final InstructionArg<X86Instruction, Size> arg1, final InstructionArg<X86Instruction, Size> arg2, final InstructionArg<X86Instruction, Size> arg3,
-            final SizeHelper<X86Instruction, Size> sizeHelper, final int time, final int size){
+    protected ShXd(String what, InstructionArg<X86Instruction, Size> arg1,
+                   InstructionArg<X86Instruction, Size> arg2, InstructionArg<X86Instruction, Size> arg3,
+                   SizeHelper<X86Instruction, Size> sizeHelper, int time, int size) {
         super(time, size);
         this.what = what;
         this.arg1 = arg1;
@@ -23,13 +24,13 @@ public abstract class ShXd extends X86Instruction{
 
     @Override
     public final String generate() {
-        final Size size = sizeHelper.getDefaultSize();
+        Size size = sizeHelper.getDefaultSize();
         return what + " " + arg1.getValue(size, sizeHelper) + ", " + arg2.getValue(size, sizeHelper)
                 + ", " + arg3.getValue(Size.LOW, sizeHelper);
     }
 
     @Override
-    public final boolean uses(final InstructionArg<X86Instruction, ?> what) {
+    public final boolean uses(InstructionArg<X86Instruction, ?> what) {
         return arg1.uses(what);
     }
 }

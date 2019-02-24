@@ -1,44 +1,46 @@
 package cs444.codegen.generic.tiles;
 
-import java.util.List;
-
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.CreationExpression;
 import cs444.types.APkgClassResolver;
 
-@SuppressWarnings("rawtypes")
-public class NormalCreationTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E, CreationExpression> {
-        private static NormalCreationTile tile;
+import java.util.List;
 
-    
-@SuppressWarnings("unchecked")
-    public static <T extends Instruction<T>, E extends Enum<E>> NormalCreationTile<T, E> getTile() {
-        if (tile == null) tile = new NormalCreationTile();
-        return tile;
-    }
+@SuppressWarnings("rawtypes")
+public class NormalCreationTile<T extends Instruction<T>, E extends Enum<E>> implements ITile<T, E,
+        CreationExpression> {
+
+    private static NormalCreationTile tile;
 
     private NormalCreationTile() {}
 
+    @SuppressWarnings("unchecked")
+    public static <T extends Instruction<T>, E extends Enum<E>> NormalCreationTile<T, E> getTile() {
+        if (tile == null) {
+            tile = new NormalCreationTile();
+        }
+        return tile;
+    }
+
     @Override
-    public boolean fits(final CreationExpression creation, final Platform<T, E> platform) {
+    public boolean fits(CreationExpression creation, Platform<T, E> platform) {
         return !creation.getType().isArray;
     }
 
     @Override
-    public InstructionsAndTiming<T> generate(final CreationExpression creation, final Platform<T, E> platform) {
+    public InstructionsAndTiming<T> generate(CreationExpression creation, Platform<T, E> platform) {
 
-        final InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
-        final APkgClassResolver typeDclNode = creation.getType().getTypeDclNode();
-        final SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
-        final TileHelper<T, E> tileHelper = platform.getTileHelper();
-        final long allocSize = typeDclNode.getStackSize(platform) + platform.getObjectLayout().objSize();
+        InstructionsAndTiming<T> instructions = new InstructionsAndTiming<T>();
+        APkgClassResolver typeDclNode = creation.getType().getTypeDclNode();
+        SizeHelper<T, E> sizeHelper = platform.getSizeHelper();
+        TileHelper<T, E> tileHelper = platform.getTileHelper();
+        long allocSize = typeDclNode.getStackSize(platform) + platform.getObjectLayout().objSize();
 
         platform.makeComment("Allocate " + allocSize + " bytes for " + typeDclNode.fullName);
         tileHelper.loadNumberToDefault((int) allocSize, instructions, sizeHelper);
@@ -47,9 +49,9 @@ public class NormalCreationTile<T extends Instruction<T>, E extends Enum<E>> imp
 
         platform.getObjectLayout().initialize(typeDclNode, instructions);
 
-        final APkgClassResolver resolver = creation.getType().getTypeDclNode();
+        APkgClassResolver resolver = creation.getType().getTypeDclNode();
 
-        final List<ISymbol> children = creation.children;
+        List<ISymbol> children = creation.children;
 
         platform.makeComment("invoke Constructor");
 

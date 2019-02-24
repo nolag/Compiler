@@ -1,30 +1,18 @@
 package cs444.static_analysis;
 
-import java.util.Stack;
-
 import cs444.CompilerException;
 import cs444.ast.EmptyVisitor;
 import cs444.parser.symbols.ATerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.NonTerminal;
-import cs444.parser.symbols.ast.BooleanLiteralSymbol;
-import cs444.parser.symbols.ast.DclSymbol;
-import cs444.parser.symbols.ast.EmptyStatementSymbol;
-import cs444.parser.symbols.ast.FieldAccessSymbol;
-import cs444.parser.symbols.ast.MethodInvokeSymbol;
-import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
-import cs444.parser.symbols.ast.Typeable;
-import cs444.parser.symbols.ast.expressions.AssignmentExprSymbol;
-import cs444.parser.symbols.ast.expressions.CastExpressionSymbol;
-import cs444.parser.symbols.ast.expressions.CreationExpression;
-import cs444.parser.symbols.ast.expressions.ForExprSymbol;
-import cs444.parser.symbols.ast.expressions.IfExprSymbol;
-import cs444.parser.symbols.ast.expressions.ReturnExprSymbol;
-import cs444.parser.symbols.ast.expressions.WhileExprSymbol;
+import cs444.parser.symbols.ast.*;
+import cs444.parser.symbols.ast.expressions.*;
 import cs444.static_analysis.exceptions.MissingReturnStatement;
 import cs444.static_analysis.exceptions.UnreachableCode;
 import cs444.types.ContextInfo;
 import cs444.types.exceptions.UndeclaredException;
+
+import java.util.Stack;
 
 public class ReachabilityAnalyzer extends EmptyVisitor {
     private final ContextInfo context;
@@ -33,7 +21,7 @@ public class ReachabilityAnalyzer extends EmptyVisitor {
 
     private final Stack<Boolean> stack = new Stack<Boolean>();
 
-    public ReachabilityAnalyzer(String enclosingClassName){
+    public ReachabilityAnalyzer(String enclosingClassName) {
         context = new ContextInfo(enclosingClassName);
     }
 
@@ -48,7 +36,7 @@ public class ReachabilityAnalyzer extends EmptyVisitor {
             throws CompilerException {
         boolean outMethod = stack.pop();
         MethodOrConstructorSymbol currentMC = (MethodOrConstructorSymbol) context.getCurrentMember();
-        if (outMethod == MAYBE && !currentMC.isVoid() && !currentMC.isAbstract() && !currentMC.isNative()){
+        if (outMethod == MAYBE && !currentMC.isVoid() && !currentMC.isAbstract() && !currentMC.isNative()) {
             throw new MissingReturnStatement(context.enclosingClassName, context.getMemberName());
         }
         context.setCurrentMember(null);
@@ -86,9 +74,9 @@ public class ReachabilityAnalyzer extends EmptyVisitor {
 
     @Override
     public void close(IfExprSymbol ifExprSymbol) throws CompilerException {
-        if (ifExprSymbol.getElseBody() == null){
+        if (ifExprSymbol.getElseBody() == null) {
             stack.pop();  // discard out of ifBody
-        }else{
+        } else {
             boolean outElseBody = stack.pop();
             boolean outIfBody = stack.pop();
             stack.push(outIfBody || outElseBody);
@@ -143,8 +131,11 @@ public class ReachabilityAnalyzer extends EmptyVisitor {
     }
 
     private void assertIsReachable(String what) throws UnreachableCode, UndeclaredException {
-        if(stack.peek() == NO) throw new UnreachableCode(what, context.enclosingClassName, context.getMemberName());
+        if (stack.peek() == NO) {
+            throw new UnreachableCode(what, context.enclosingClassName, context.getMemberName());
+        }
     }
+
     @Override
     public void open(WhileExprSymbol whileExprSymbol) throws CompilerException {
         assertIsReachable(whileExprSymbol.getName());
@@ -177,23 +168,23 @@ public class ReachabilityAnalyzer extends EmptyVisitor {
     }
 
     private void analyzeLoopConditionEntry(Typeable condition) {
-        if (conditionEvalTo(condition, false)){
+        if (conditionEvalTo(condition, false)) {
             stack.push(NO);
-        }else{
+        } else {
             stack.push(stack.peek());
         }
     }
 
     private void analyzeLoopConditionExit(Typeable condition,
-            boolean inLoop, boolean outBody) {
-        if (conditionEvalTo(condition, true)){
+                                          boolean inLoop, boolean outBody) {
+        if (conditionEvalTo(condition, true)) {
             stack.push(NO);
-        }else{
+        } else {
             stack.push(outBody || inLoop);
         }
     }
 
-    private boolean conditionEvalTo(Typeable condition, boolean to){
+    private boolean conditionEvalTo(Typeable condition, boolean to) {
         return condition instanceof BooleanLiteralSymbol &&
                 ((BooleanLiteralSymbol) condition).boolValue == to;
     }

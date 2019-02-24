@@ -1,8 +1,5 @@
 package cs444.codegen.x86.x86_32.tiles;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.LongOnlyTile;
@@ -19,6 +16,9 @@ import cs444.codegen.x86.instructions.factories.BinOpMaker;
 import cs444.parser.symbols.ast.Typeable;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @SuppressWarnings("rawtypes")
 public class LongBinTile<T extends BinOpExpr> extends LongOnlyTile<X86Instruction, Size, T> {
 
@@ -28,9 +28,16 @@ public class LongBinTile<T extends BinOpExpr> extends LongOnlyTile<X86Instructio
     private final BinOpMaker second;
     private final boolean ordered;
 
+    private LongBinTile(BinOpMaker first, BinOpMaker second, boolean ordered) {
+        this.first = first;
+        this.second = second;
+        this.ordered = ordered;
+    }
+
     @SuppressWarnings("unchecked")
-    public static <T extends BinOpExpr> LongBinTile<T> getTile(final BinOpMaker first, final BinOpMaker second, final boolean ordered,
-            Class<T> klass) {
+    public static <T extends BinOpExpr> LongBinTile<T> getTile(BinOpMaker first, BinOpMaker second,
+                                                               boolean ordered,
+                                                               Class<T> klass) {
         LongBinTile<T> tile = tiles.get(klass);
         if (tile == null) {
             tile = new LongBinTile(first, second, ordered);
@@ -39,27 +46,21 @@ public class LongBinTile<T extends BinOpExpr> extends LongOnlyTile<X86Instructio
         return tile;
     }
 
-    private LongBinTile(final BinOpMaker first, final BinOpMaker second, final boolean ordered) {
-        this.first = first;
-        this.second = second;
-        this.ordered = ordered;
-    }
-
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final T bin, final Platform<X86Instruction, Size> platform) {
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final TileHelper<X86Instruction, Size> tileHelper = platform.getTileHelper();
+    public InstructionsAndTiming<X86Instruction> generate(T bin, Platform<X86Instruction, Size> platform) {
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        TileHelper<X86Instruction, Size> tileHelper = platform.getTileHelper();
 
         instructions.add(new Comment("Start long add or sub"));
-        final Typeable lhs = (Typeable) bin.children.get(0);
+        Typeable lhs = (Typeable) bin.children.get(0);
         instructions.addAll(platform.getBest(lhs));
         tileHelper.makeLong(lhs, instructions, sizeHelper);
 
         instructions.add(new Push(Register.DATA, sizeHelper));
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
 
-        final Typeable rhs = (Typeable) bin.children.get(1);
+        Typeable rhs = (Typeable) bin.children.get(1);
         instructions.addAll(platform.getBest(rhs));
         tileHelper.makeLong(rhs, instructions, sizeHelper);
 

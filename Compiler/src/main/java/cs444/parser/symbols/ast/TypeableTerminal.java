@@ -10,12 +10,12 @@ public abstract class TypeableTerminal extends ATerminal implements Typeable {
     }
 
     @Override
-    public TypeSymbol getType(){
+    public TypeSymbol getType() {
         return type;
     }
 
     @Override
-    public void setType(TypeSymbol type){
+    public void setType(TypeSymbol type) {
         this.type = type;
     }
 
@@ -23,5 +23,4 @@ public abstract class TypeableTerminal extends ATerminal implements Typeable {
     public boolean empty() {
         return false;
     }
-
 }

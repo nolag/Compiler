@@ -4,10 +4,10 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ast.TypeSymbol;
 import cs444.parser.symbols.ast.Typeable;
 
-public abstract class BaseExprSymbol extends ANonTerminal implements Typeable{
+public abstract class BaseExprSymbol extends ANonTerminal implements Typeable {
     private TypeSymbol type;
 
-    protected BaseExprSymbol(final String name) {
+    protected BaseExprSymbol(String name) {
         super(name);
     }
 
@@ -22,18 +22,17 @@ public abstract class BaseExprSymbol extends ANonTerminal implements Typeable{
     }
 
     @Override
-    public TypeSymbol getType(){
+    public TypeSymbol getType() {
         return type;
     }
 
     @Override
-    public void setType(final TypeSymbol type){
+    public void setType(TypeSymbol type) {
         this.type = type;
     }
 
     /**
-    *
-    * @return reduces to an expression or returns null if it cannot reduce.
-    */
+     * @return reduces to an expression or returns null if it cannot reduce.
+     */
     public abstract Typeable reduce();
 }

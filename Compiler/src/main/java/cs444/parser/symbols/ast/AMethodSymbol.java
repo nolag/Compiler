@@ -4,7 +4,7 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
-public abstract class AMethodSymbol extends MethodOrConstructorSymbol{
+public abstract class AMethodSymbol extends MethodOrConstructorSymbol {
 
     public AMethodSymbol(String nodeName, MethodHeader header, ANonTerminal from, ANonTerminal body, TypeSymbol type)
             throws IllegalModifierException, UnsupportedException {

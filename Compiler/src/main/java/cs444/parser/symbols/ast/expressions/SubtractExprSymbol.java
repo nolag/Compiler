@@ -1,4 +1,3 @@
-
 package cs444.parser.symbols.ast.expressions;
 
 import cs444.CompilerException;
@@ -13,7 +12,7 @@ import cs444.parser.symbols.ast.Typeable;
 public class SubtractExprSymbol extends BinOpExpr {
     public final static String myName = "Subtract";
 
-    public SubtractExprSymbol(final ISymbol left, final ISymbol right) {
+    public SubtractExprSymbol(ISymbol left, ISymbol right) {
         super(myName, left, right);
     }
 
@@ -23,7 +22,7 @@ public class SubtractExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         children.get(0).accept(visitor);
         children.get(1).accept(visitor);
         visitor.visit(this);
@@ -35,29 +34,29 @@ public class SubtractExprSymbol extends BinOpExpr {
     }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 
     @Override
     public Typeable reduce() {
-        final Typeable rightOperand = (Typeable) getRightOperand();
-        final Typeable leftOperand = (Typeable) getLeftOperand();
+        Typeable rightOperand = (Typeable) getRightOperand();
+        Typeable leftOperand = (Typeable) getLeftOperand();
 
         if (rightOperand instanceof INumericLiteral &&
-                leftOperand instanceof INumericLiteral){
-            final long val1 = ((INumericLiteral)leftOperand).getAsLongValue();
-            final long val2 = ((INumericLiteral)rightOperand).getAsLongValue();
+                leftOperand instanceof INumericLiteral) {
+            long val1 = ((INumericLiteral) leftOperand).getAsLongValue();
+            long val2 = ((INumericLiteral) rightOperand).getAsLongValue();
             if (rightOperand instanceof LongLiteralSymbol || leftOperand instanceof LongLiteralSymbol) {
                 return new LongLiteralSymbol(val1 - val2);
             }
-            return new IntegerLiteralSymbol((int)(val1 - val2));
+            return new IntegerLiteralSymbol((int) (val1 - val2));
         } else if (rightOperand instanceof INumericLiteral) {
             return zeroReducer((INumericLiteral) rightOperand, leftOperand);
         } else if (leftOperand instanceof INumericLiteral) {
-            final INumericLiteral num = (INumericLiteral) leftOperand;
+            INumericLiteral num = (INumericLiteral) leftOperand;
             if (num.getAsLongValue() == 0) {
-                final NegOpExprSymbol neg = new NegOpExprSymbol(rightOperand);
+                NegOpExprSymbol neg = new NegOpExprSymbol(rightOperand);
                 return neg;
             }
         }

@@ -3,13 +3,8 @@ package cs444.codegen.arm.tiles;
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
-import cs444.codegen.arm.ArmSizeHelper;
-import cs444.codegen.arm.ConstantShift;
-import cs444.codegen.arm.Immediate8;
+import cs444.codegen.arm.*;
 import cs444.codegen.arm.Operand2.Shift;
-import cs444.codegen.arm.Register;
-import cs444.codegen.arm.RegisterShift;
-import cs444.codegen.arm.Size;
 import cs444.codegen.arm.instructions.*;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.arm.instructions.bases.Branch.Condition;
@@ -24,48 +19,56 @@ import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 
 public class DivTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstruction, Size, T> {
-    public final boolean divide;
-    public final boolean bothForNeg;
     private static DivTile<DivideExprSymbol> div = new DivTile<DivideExprSymbol>(true, true);
     private static DivTile<RemainderExprSymbol> rem = new DivTile<RemainderExprSymbol>(false, false);
+    public final boolean divide;
+    public final boolean bothForNeg;
 
-    @SuppressWarnings("unchecked")
-    public static <T extends BinOpExpr> DivTile<T> getTile(boolean divide, boolean bothForNeg) {
-        if (divide & bothForNeg) return (DivTile<T>) div;
-        if (!(divide | bothForNeg)) return (DivTile<T>) rem;
-        throw new IllegalArgumentException("This combination does not seem legal!");
-    }
-
-    private DivTile(final boolean divide, final boolean bothForNeg) {
+    private DivTile(boolean divide, boolean bothForNeg) {
         this.divide = divide;
         this.bothForNeg = bothForNeg;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T extends BinOpExpr> DivTile<T> getTile(boolean divide, boolean bothForNeg) {
+        if (divide & bothForNeg) {
+            return (DivTile<T>) div;
+        }
+        if (!(divide | bothForNeg)) {
+            return (DivTile<T>) rem;
+        }
+        throw new IllegalArgumentException("This combination does not seem legal!");
+    }
+
     @Override
     public InstructionsAndTiming<ArmInstruction> generate(T div, Platform<ArmInstruction, Size> platform) {
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
-        final Typeable t1 = (Typeable) div.children.get(0);
-        final Typeable t2 = (Typeable) div.children.get(1);
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
+        Typeable t1 = (Typeable) div.children.get(0);
+        Typeable t2 = (Typeable) div.children.get(1);
 
-        final TypeSymbol ts1 = t1.getType();
-        final TypeSymbol ts2 = t2.getType();
+        TypeSymbol ts1 = t1.getType();
+        TypeSymbol ts2 = t2.getType();
 
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
-        final TileHelper<ArmInstruction, Size> tileHelper = platform.getTileHelper();
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        TileHelper<ArmInstruction, Size> tileHelper = platform.getTileHelper();
 
-        final boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
+        boolean hasLong = ts1.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG)
                 || ts2.getTypeDclNode().fullName.equals(JoosNonTerminal.LONG);
 
         instructions.addAll(platform.getBest(t1));
-        if (hasLong) tileHelper.makeLong(t1, instructions, sizeHelper);
+        if (hasLong) {
+            tileHelper.makeLong(t1, instructions, sizeHelper);
+        }
         instructions.add(new Push(Register.R0));
 
         instructions.addAll(platform.getBest(t2));
-        if (hasLong) tileHelper.makeLong(t2, instructions, sizeHelper);
+        if (hasLong) {
+            tileHelper.makeLong(t2, instructions, sizeHelper);
+        }
 
         instructions.add(new Cmp(Register.R0, Immediate8.ZERO, sizeHelper));
         long mynum = CodeGenVisitor.getNewLblNum();
-        final String safeDiv = "safeDiv" + mynum;
+        String safeDiv = "safeDiv" + mynum;
         instructions.add(new B(Condition.NE, safeDiv));
         platform.getRunime().throwException(instructions, JoosNonTerminal.DIV_ZERO);
         instructions.add(platform.makeLabel(safeDiv));
@@ -75,8 +78,9 @@ public class DivTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstructi
         instructions.add(platform.makeComment("Sdiv is not on most Arm processors :(, use long division"));
         // instructions.add(new Sdiv(Register.R0, Register.R1, Register.R0, platform.getSizeHelper()));
 
-        instructions.add(platform.makeComment("we need to check for -max int on both numbers, so may as well do the = check first"));
-        final String doneDiv = "doneDiv" + mynum;
+        instructions.add(platform.makeComment("we need to check for -max int on both numbers, so may as well do the =" +
+                " check first"));
+        String doneDiv = "doneDiv" + mynum;
         instructions.add(new Cmp(Register.R0, Register.R1, sizeHelper));
         instructions.add(new Mov(Condition.EQ, Register.R0, divide ? Immediate8.ONE : Immediate8.ZERO, sizeHelper));
         instructions.add(new B(Condition.EQ, doneDiv));
@@ -93,7 +97,9 @@ public class DivTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstructi
 
         instructions.add(new Cmp(Register.R0, Immediate8.ZERO, sizeHelper));
         instructions.add(new Rsb(Condition.LT, Register.R0, Register.R0, Immediate8.ZERO, sizeHelper));
-        if (bothForNeg) instructions.add(new Eor(Condition.LT, Register.R4, Register.R4, Immediate8.TRUE, sizeHelper));
+        if (bothForNeg) {
+            instructions.add(new Eor(Condition.LT, Register.R4, Register.R4, Immediate8.TRUE, sizeHelper));
+        }
 
         char numbits = (char) (8 * sizeHelper.getByteSizeOfType(div) - 1);
         instructions.add(new Clz(Register.R3, Register.R1, sizeHelper));
@@ -106,8 +112,8 @@ public class DivTile<T extends BinOpExpr> extends NumericHelperTile<ArmInstructi
         instructions.add(new Eor(Register.R5, Register.R5, Register.R5, sizeHelper));
 
         instructions.add(platform.makeComment("Time for long division"));
-        final String loopStart = "divideStart" + mynum;
-        final String loopEnd = "divideEnd" + mynum;
+        String loopStart = "divideStart" + mynum;
+        String loopEnd = "divideEnd" + mynum;
         tileHelper.setupLbl(loopStart, instructions);
         instructions.add(new Cmp(Register.R2, Immediate8.ZERO, sizeHelper));
         instructions.add(new B(Condition.EQ, loopEnd));

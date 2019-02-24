@@ -1,9 +1,7 @@
 package cs444.cfgrulesgenerator.lexer;
 
 public interface IDFA {
+    LexerState getInitialState();
 
-	public LexerState getInitialState();
-
-	public LexerState getState(int stateId);
-
+    LexerState getState(int stateId);
 }

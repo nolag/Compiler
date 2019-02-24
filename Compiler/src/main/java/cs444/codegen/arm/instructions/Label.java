@@ -3,11 +3,10 @@ package cs444.codegen.arm.instructions;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.instructions.InstructionArg;
 
-
-public class Label extends ArmInstruction{
+public class Label extends ArmInstruction {
     private final String lbl;
 
-    public Label(final String lbl){
+    public Label(String lbl) {
         super(0, 0);
         this.lbl = lbl + ":";
     }
@@ -18,7 +17,7 @@ public class Label extends ArmInstruction{
     }
 
     @Override
-    public boolean uses(final InstructionArg<ArmInstruction, ?> what) {
+    public boolean uses(InstructionArg<ArmInstruction, ?> what) {
         return false;
     }
 }

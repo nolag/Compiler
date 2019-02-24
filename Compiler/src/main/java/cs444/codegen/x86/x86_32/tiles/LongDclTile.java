@@ -15,26 +15,29 @@ import cs444.parser.symbols.ast.Typeable;
 public class LongDclTile extends LongOnlyTile<X86Instruction, Size, DclSymbol> {
     private static LongDclTile tile;
 
+    private LongDclTile() {}
+
     public static LongDclTile getTile() {
-        if (tile == null) tile = new LongDclTile();
+        if (tile == null) {
+            tile = new LongDclTile();
+        }
         return tile;
     }
 
-    private LongDclTile() {}
-
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final DclSymbol dclSymbol, final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(DclSymbol dclSymbol, Platform<X86Instruction,
+            Size> platform) {
 
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final TileHelper<X86Instruction, Size> tileHelper = platform.getTileHelper();
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        TileHelper<X86Instruction, Size> tileHelper = platform.getTileHelper();
 
         if (dclSymbol.children.isEmpty()) {
-            final X86Instruction push0 = new Push(Immediate.ZERO, sizeHelper);
+            X86Instruction push0 = new Push(Immediate.ZERO, sizeHelper);
             instructions.add(push0);
             instructions.add(push0);
         } else {
-            final Typeable init = (Typeable) dclSymbol.children.get(0);
+            Typeable init = (Typeable) dclSymbol.children.get(0);
             instructions.addAll(platform.getBest(init));
             tileHelper.pushLong(init, instructions, sizeHelper);
         }

@@ -7,17 +7,17 @@ import cs444.codegen.instructions.InstructionArg;
 public class ImmediateStr extends InstructionArg<ArmInstruction, Size> {
     public final String value;
 
-    public ImmediateStr(final String value) {
+    public ImmediateStr(String value) {
         this.value = "#" + value;
     }
 
     @Override
-    public boolean uses(final InstructionArg<ArmInstruction, ?> what) {
+    public boolean uses(InstructionArg<ArmInstruction, ?> what) {
         return false;
     }
 
     @Override
-    public String getValue(final Size size, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
         return value;
     }
 

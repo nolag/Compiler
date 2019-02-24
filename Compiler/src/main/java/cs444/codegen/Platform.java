@@ -1,13 +1,5 @@
 package cs444.codegen;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import cs444.Compiler;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
 import cs444.codegen.instructions.Instruction;
@@ -18,45 +10,39 @@ import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.DclSymbol;
 import cs444.types.APkgClassResolver;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+
 public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
+    public static final String ENTRY = "entry";
     protected static final String NO_PEEPHOLE = "--no_peep";
-
-    private final InstructionHolder<T> instructions;
-
     protected final IRuntime<T> runtime;
-
+    private final InstructionHolder<T> instructions;
     private final SelectorIndexedTable<T, E> sit;
-
-    private SubtypeIndexedTable<T, E> subtype;
-
-    public interface PlatformFactory<T extends Instruction<T>, E extends Enum<E>, P extends Platform<T, E>> {
-        P getPlatform(Set<String> opts);
-    }
-
     private final Set<String> options;
     private final String outDir;
-
     private final SizeHelper<T, E> sizeHelper;
+    private final Map<ISymbol, InstructionsAndTiming<T>> bests = new HashMap<ISymbol, InstructionsAndTiming<T>>();
+    private SubtypeIndexedTable<T, E> subtype;
 
-    protected Platform(final Set<String> options, final String name, final IRuntime<T> runtime, final TileInit<T, E> tiles,
-            final InstructionHolder<T> instrucitons, SizeHelper<T, E> sizeHelper) {
+    protected Platform(Set<String> options, String name, IRuntime<T> runtime,
+                       TileInit<T, E> tiles,
+                       InstructionHolder<T> instrucitons, SizeHelper<T, E> sizeHelper) {
         this.options = new HashSet<>(options);
         outDir = Compiler.OUTPUT_DIRECTORY + File.separator + name;
         this.runtime = runtime;
-        this.instructions = instrucitons;
+        instructions = instrucitons;
         this.sizeHelper = sizeHelper;
         sit = new SelectorIndexedTable<>(this);
         tiles.init(options);
     }
 
-    private final Map<ISymbol, InstructionsAndTiming<T>> bests = new HashMap<ISymbol, InstructionsAndTiming<T>>();
-    public static final String ENTRY = "entry";
-
-    public final void addBest(final ISymbol symbol, final InstructionsAndTiming<T> tile) {
+    public final void addBest(ISymbol symbol, InstructionsAndTiming<T> tile) {
         bests.put(symbol, tile);
     }
 
-    public final InstructionsAndTiming<T> getBest(final ISymbol symbol) {
+    public final InstructionsAndTiming<T> getBest(ISymbol symbol) {
         return bests.get(symbol);
     }
 
@@ -66,12 +52,17 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
 
     //TODO revisit this
     @Override
-    public final boolean equals(final Object other) {
-        if (this == other) return true;
-        if (other == null) return false;
-        if (getClass() != other.getClass()) return false;
-        @SuppressWarnings("unchecked")
-        final Platform<T, E> platform = (Platform<T, E>) other;
+    public final boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null) {
+            return false;
+        }
+        if (getClass() != other.getClass()) {
+            return false;
+        }
+        @SuppressWarnings("unchecked") Platform<T, E> platform = (Platform<T, E>) other;
         return options.equals(platform.options);
     }
 
@@ -90,7 +81,8 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
         return sit;
     }
 
-    public final void makeSubtypeTable(final List<APkgClassResolver> resolvers, final boolean outputFile, final String directory)
+    public final void makeSubtypeTable(List<APkgClassResolver> resolvers, boolean outputFile,
+                                       String directory)
             throws IOException {
         subtype = new SubtypeIndexedTable<>(this, resolvers, outputFile, directory);
     }
@@ -112,8 +104,8 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
     public abstract OperatingSystem<? extends Platform<T, E>>[] getOperatingSystems();
 
     // Functions for file headers
-    public final void genStartInstructions(final String methodName, final Addable<T> instructions) {
-        TileHelper<T, E> helper = this.getTileHelper();
+    public final void genStartInstructions(String methodName, Addable<T> instructions) {
+        TileHelper<T, E> helper = getTileHelper();
         instructions.add(makeGlobal(ENTRY));
         instructions.add(makeLabel(ENTRY));
         instructions.add(makeExtern(StaticFieldInit.STATIC_FIELD_INIT_LBL));
@@ -122,35 +114,36 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
         helper.setupStaticFooter(instructions, sizeHelper);
     }
 
-    public abstract void genInstructorInvoke(final APkgClassResolver resolver, final Addable<T> instructions);
+    public abstract void genInstructorInvoke(APkgClassResolver resolver, Addable<T> instructions);
 
-    public void getEnterStaticField(final Addable<T> instructions) {
+    public void getEnterStaticField(Addable<T> instructions) {
         instructions.add(getTextSection());
         instructions.add(makeGlobal(StaticFieldInit.STATIC_FIELD_INIT_LBL));
         instructions.add(makeLabel(StaticFieldInit.STATIC_FIELD_INIT_LBL));
         runtime.externAll(instructions);
     }
 
-    public void genHeaderStart(final Addable<T> instructions) {
+    public void genHeaderStart(Addable<T> instructions) {
         runtime.externAll(instructions);
         instructions.add(getTextSection());
-        instructions.add(makeComment(CodeGenVisitor.INIT_OBJECT_FUNC + ": call super default constructor and initialize obj fields."));
+        instructions.add(makeComment(CodeGenVisitor.INIT_OBJECT_FUNC + ": call super default constructor and " +
+                "initialize obj fields."));
         instructions.add(makeLabel(CodeGenVisitor.INIT_OBJECT_FUNC));
     }
 
-    public abstract void genHeaderEnd(final APkgClassResolver resolver, final Addable<T> instructions);
+    public abstract void genHeaderEnd(APkgClassResolver resolver, Addable<T> instructions);
 
     public abstract TileSet<T, E> getTiles();
 
-    public void genLayoutForStaticFields(final Iterable<DclSymbol> staticFields, final Addable<T> instructions) {
+    public void genLayoutForStaticFields(Iterable<DclSymbol> staticFields, Addable<T> instructions) {
         if (staticFields.iterator().hasNext()) {
             instructions.add(makeComment("Static fields:"));
             instructions.add(getBSSSection());
         }
 
-        for (final DclSymbol fieldDcl : staticFields) {
-            final E size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
-            final String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
+        for (DclSymbol fieldDcl : staticFields) {
+            E size = sizeHelper.getSize(fieldDcl.getType().getTypeDclNode().getRealSize(sizeHelper));
+            String fieldLbl = APkgClassResolver.getUniqueNameFor(fieldDcl);
             instructions.add(makeGlobal(fieldLbl));
             instructions.addAll(makeSpace(fieldLbl, size));
         }
@@ -158,17 +151,17 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
 
     public abstract TileHelper<T, E> getTileHelper();
 
-    public abstract void zeroDefaultLocation(final Addable<T> instructions);
+    public abstract void zeroDefaultLocation(Addable<T> instructions);
 
-    public abstract void moveStatic(final String staticLbl, E size, final Addable<T> instructions);
+    public abstract void moveStatic(String staticLbl, E size, Addable<T> instructions);
 
-    public abstract void zeroStatic(final String staticLbl, E size, final Addable<T> instructions);
+    public abstract void zeroStatic(String staticLbl, E size, Addable<T> instructions);
 
-    public abstract void moveStaticLong(final String staticLbl, final Addable<T> instructions);
+    public abstract void moveStaticLong(String staticLbl, Addable<T> instructions);
 
-    public abstract void zeroStaticLong(final String staticLbl, final Addable<T> instructions);
+    public abstract void zeroStaticLong(String staticLbl, Addable<T> instructions);
 
-    public abstract T makeComment(final String val);
+    public abstract T makeComment(String val);
 
     public abstract String getNullStr();
 
@@ -178,11 +171,11 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
 
     //TODO make these like the rest and just take Addable as an arg.  More consistant and won't need to return T[] ever
     // Extern is not always needed depending on the assembler
-    public abstract T makeExtern(final String what);
+    public abstract T makeExtern(String what);
 
-    public abstract T makeLabel(final String what);
+    public abstract T makeLabel(String what);
 
-    public abstract T makeGlobal(final String what);
+    public abstract T makeGlobal(String what);
 
     public abstract T getDataSection();
 
@@ -198,5 +191,9 @@ public abstract class Platform<T extends Instruction<T>, E extends Enum<E>> {
 
     public final String getOutputDir() {
         return outDir;
+    }
+
+    public interface PlatformFactory<T extends Instruction<T>, E extends Enum<E>, P extends Platform<T, E>> {
+        P getPlatform(Set<String> opts);
     }
 }

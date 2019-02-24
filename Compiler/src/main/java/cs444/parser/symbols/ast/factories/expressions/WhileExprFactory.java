@@ -9,11 +9,13 @@ import cs444.parser.symbols.exceptions.IllegalModifierException;
 import cs444.parser.symbols.exceptions.OutOfRangeException;
 import cs444.parser.symbols.exceptions.UnsupportedException;
 
-public class WhileExprFactory extends ASTSymbolFactory{
+public class WhileExprFactory extends ASTSymbolFactory {
 
     @Override
     protected ISymbol convert(ISymbol from) throws OutOfRangeException, UnsupportedException, IllegalModifierException {
-        if(!JoosNonTerminal.whiles.contains(from.getName())) return from;
+        if (!JoosNonTerminal.whiles.contains(from.getName())) {
+            return from;
+        }
 
         ANonTerminal nonTerms = (ANonTerminal) from;
         nonTerms.children.remove(0);  // remove word "while"

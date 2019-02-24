@@ -5,10 +5,9 @@ import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.generic.tiles.helpers.LongOnlyTile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.Size;
 import cs444.codegen.x86.Register;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.instructions.factories.BinOpMaker;
@@ -16,26 +15,27 @@ import cs444.codegen.x86.instructions.factories.ShXdMaker;
 import cs444.parser.symbols.ISymbol;
 import cs444.parser.symbols.ast.expressions.BinOpExpr;
 
-public abstract class LongShiftTile<T extends BinOpExpr> extends LongOnlyTile<X86Instruction, Size, T>{
+public abstract class LongShiftTile<T extends BinOpExpr> extends LongOnlyTile<X86Instruction, Size, T> {
     private final BinOpMaker shift;
     private final ShXdMaker shiftCpy;
     private final boolean aFirst;
 
-    protected LongShiftTile(final BinOpMaker shift, final ShXdMaker shiftCpy, final boolean aFirst){
+    protected LongShiftTile(BinOpMaker shift, ShXdMaker shiftCpy, boolean aFirst) {
         this.shift = shift;
         this.shiftCpy = shiftCpy;
         this.aFirst = aFirst;
     }
 
-    protected abstract X86Instruction bigFinish(final SizeHelper<X86Instruction, Size> sizeHelper);
+    protected abstract X86Instruction bigFinish(SizeHelper<X86Instruction, Size> sizeHelper);
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final T symbol, final Platform<X86Instruction, Size> platform) {
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+    public InstructionsAndTiming<X86Instruction> generate(T symbol,
+                                                          Platform<X86Instruction, Size> platform) {
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
-        final ISymbol num = symbol.children.get(0);
-        final ISymbol shiftBy = symbol.children.get(1);
+        ISymbol num = symbol.children.get(0);
+        ISymbol shiftBy = symbol.children.get(1);
 
         instructions.add(new Comment("Long shift start"));
         instructions.addAll(platform.getBest(num));
@@ -49,18 +49,18 @@ public abstract class LongShiftTile<T extends BinOpExpr> extends LongOnlyTile<X8
         instructions.add(new Pop(Register.ACCUMULATOR, sizeHelper));
 
         Register r1, r2;
-        if(aFirst){
+        if (aFirst) {
             r1 = Register.ACCUMULATOR;
             r2 = Register.DATA;
-        }else{
+        } else {
             r1 = Register.DATA;
             r2 = Register.ACCUMULATOR;
         }
 
-        final long myVal = CodeGenVisitor.getNewLblNum();
+        long myVal = CodeGenVisitor.getNewLblNum();
 
-        final String big = "big" + myVal;
-        final String end = "done" + myVal;
+        String big = "big" + myVal;
+        String end = "done" + myVal;
 
         instructions.add(new Comment("making -ve numbers work"));
         instructions.add(new And(Register.COUNTER, Immediate.SIXTY_THREE, sizeHelper));

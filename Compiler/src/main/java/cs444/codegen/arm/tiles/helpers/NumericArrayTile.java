@@ -8,8 +8,8 @@ import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 
 public abstract class NumericArrayTile extends ArrayBaseTile {
     @Override
-    public final boolean fits(final ArrayAccessExprSymbol access, final Platform<ArmInstruction, Size> platform) {
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+    public final boolean fits(ArrayAccessExprSymbol access, Platform<ArmInstruction, Size> platform) {
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
         return sizeHelper.getDefaultStackSize() >= sizeHelper.getByteSizeOfType(access.getType().getTypeDclNode().fullName);
     }
 }

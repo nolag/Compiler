@@ -13,7 +13,7 @@ public class JeMaker implements JxxMaker {
     private JeMaker() { }
 
     @Override
-    public Je make(final Immediate where, final SizeHelper<X86Instruction, Size> sizeHelper) {
+    public Je make(Immediate where, SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Je(where, sizeHelper);
     }
 }

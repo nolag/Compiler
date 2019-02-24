@@ -1,17 +1,13 @@
 package cs444.codegen.x86.tiles;
 
-import java.util.Arrays;
-
 import cs444.codegen.CodeGenVisitor;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
-
-import cs444.codegen.x86.instructions.Comment;
 import cs444.codegen.x86.Immediate;
-import cs444.codegen.x86.Size;
 import cs444.codegen.x86.Register;
+import cs444.codegen.x86.Size;
 import cs444.codegen.x86.instructions.*;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.parser.symbols.ISymbol;
@@ -21,30 +17,34 @@ import cs444.parser.symbols.ast.expressions.AddExprSymbol;
 import cs444.types.APkgClassResolver;
 import cs444.types.PkgClassInfo;
 
-public class StrAddTile implements ITile<X86Instruction, Size, AddExprSymbol>{
-    private static StrAddTile tile;
+import java.util.Arrays;
 
-    public static StrAddTile getTile() {
-        if(tile == null) tile = new StrAddTile();
-        return tile;
-    }
+public class StrAddTile implements ITile<X86Instruction, Size, AddExprSymbol> {
+    private static StrAddTile tile;
 
     private StrAddTile() { }
 
+    public static StrAddTile getTile() {
+        if (tile == null) {
+            tile = new StrAddTile();
+        }
+        return tile;
+    }
+
     @Override
-    public boolean fits(final AddExprSymbol op, final Platform<X86Instruction, Size> platform) {
+    public boolean fits(AddExprSymbol op, Platform<X86Instruction, Size> platform) {
         return op.getType().getTypeDclNode().fullName.equals(JoosNonTerminal.STRING);
     }
 
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final AddExprSymbol op,
-            final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(AddExprSymbol op,
+                                                          Platform<X86Instruction, Size> platform) {
 
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
-        final APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);
-        final ISymbol firstChild = op.children.get(0);
-        final ISymbol secondChild = op.children.get(1);
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        APkgClassResolver resolver = PkgClassInfo.instance.getSymbol(JoosNonTerminal.STRING);
+        ISymbol firstChild = op.children.get(0);
+        ISymbol secondChild = op.children.get(1);
 
         instructions.add(new Comment("String add first arg"));
         platform.getTileHelper().strPartHelper(firstChild, resolver, instructions, platform);
@@ -58,9 +58,12 @@ public class StrAddTile implements ITile<X86Instruction, Size, AddExprSymbol>{
         instructions.add(new Comment("Pushing second string as argument then first as this"));
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
         instructions.add(new Push(Register.BASE, sizeHelper));
-        final AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.STR_ADD, false, Arrays.asList(JoosNonTerminal.STRING), false);
-        final Immediate arg = new Immediate(APkgClassResolver.generateFullId(ms));
-        if(ms.dclInResolver != CodeGenVisitor.<X86Instruction, Size>getCurrentCodeGen(platform).currentFile) instructions.add(new Extern(arg));
+        AMethodSymbol ms = resolver.safeFindMethod(JoosNonTerminal.STR_ADD, false,
+                Arrays.asList(JoosNonTerminal.STRING), false);
+        Immediate arg = new Immediate(APkgClassResolver.generateFullId(ms));
+        if (ms.dclInResolver != CodeGenVisitor.getCurrentCodeGen(platform).currentFile) {
+            instructions.add(new Extern(arg));
+        }
         instructions.add(new Call(arg, sizeHelper));
 
         //The two arguments for string concat

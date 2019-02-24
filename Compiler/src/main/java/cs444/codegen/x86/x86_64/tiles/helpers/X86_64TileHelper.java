@@ -21,23 +21,27 @@ public class X86_64TileHelper extends X86TileHelper {
     private X86_64TileHelper() {}
 
     @Override
-    public void makeLong(final Typeable item, final Addable<X86Instruction> instructions, final SizeHelper<X86Instruction, Size> sizeHelper) {
+    public void makeLong(Typeable item, Addable<X86Instruction> instructions,
+                         SizeHelper<X86Instruction, Size> sizeHelper) {
 
-        if (item.getType().value.equals(JoosNonTerminal.LONG)) return;
+        if (item.getType().value.equals(JoosNonTerminal.LONG)) {
+            return;
+        }
         instructions.add(new Comment("cast to long, since it is already loaded, it is either a long or int in size"));
         instructions.add(new Movsx(Register.ACCUMULATOR, Register.ACCUMULATOR, Size.DWORD, sizeHelper));
-
     }
 
     @Override
-    public void pushLong(final Typeable item, final Addable<X86Instruction> instructions, final SizeHelper<X86Instruction, Size> sizeHelper) {
+    public void pushLong(Typeable item, Addable<X86Instruction> instructions,
+                         SizeHelper<X86Instruction, Size> sizeHelper) {
         makeLong(item, instructions, sizeHelper);
         instructions.add(new Push(Register.ACCUMULATOR, sizeHelper));
     }
 
     @Override
-    public void loadNumberToDefault(final INumericLiteral numeric, Addable<X86Instruction> instructions,
-            SizeHelper<X86Instruction, Size> sizeHelper) {
-        instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(numeric.getAsLongValue()), Size.QWORD, sizeHelper));
+    public void loadNumberToDefault(INumericLiteral numeric, Addable<X86Instruction> instructions,
+                                    SizeHelper<X86Instruction, Size> sizeHelper) {
+        instructions.add(new Mov(Register.ACCUMULATOR, new Immediate(numeric.getAsLongValue()), Size.QWORD,
+                sizeHelper));
     }
 }

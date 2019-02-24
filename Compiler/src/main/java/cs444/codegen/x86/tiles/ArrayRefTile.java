@@ -14,26 +14,28 @@ import cs444.parser.symbols.ast.expressions.ArrayAccessExprSymbol;
 public class ArrayRefTile extends ArrayBaseTile {
     private static ArrayRefTile tile;
 
+    private ArrayRefTile() {}
+
     public static ArrayRefTile getTile() {
-        if (tile == null) tile = new ArrayRefTile();
+        if (tile == null) {
+            tile = new ArrayRefTile();
+        }
         return tile;
     }
 
-    private ArrayRefTile() {}
-
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess,
-            final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(ArrayAccessExprSymbol arrayAccess,
+                                                          Platform<X86Instruction, Size> platform) {
 
-        final InstructionsAndTiming<X86Instruction> instructions = super.generate(arrayAccess, platform);
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<X86Instruction> instructions = super.generate(arrayAccess, platform);
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
         instructions.add(new Add(Register.ACCUMULATOR, Register.BASE, sizeHelper));
         instructions.add(new Pop(Register.BASE, sizeHelper));
         return instructions;
     }
 
     @Override
-    public boolean fits(final ArrayAccessExprSymbol symbol, final Platform<X86Instruction, Size> platform) {
+    public boolean fits(ArrayAccessExprSymbol symbol, Platform<X86Instruction, Size> platform) {
         return true;
     }
 }

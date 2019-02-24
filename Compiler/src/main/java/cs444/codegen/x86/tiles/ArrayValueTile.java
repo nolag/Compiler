@@ -3,11 +3,7 @@ package cs444.codegen.x86.tiles;
 import cs444.codegen.Platform;
 import cs444.codegen.SizeHelper;
 import cs444.codegen.tiles.InstructionsAndTiming;
-import cs444.codegen.x86.AddMemoryFormat;
-import cs444.codegen.x86.Memory;
-import cs444.codegen.x86.MemoryFormat;
-import cs444.codegen.x86.Register;
-import cs444.codegen.x86.Size;
+import cs444.codegen.x86.*;
 import cs444.codegen.x86.instructions.Pop;
 import cs444.codegen.x86.instructions.bases.X86Instruction;
 import cs444.codegen.x86.tiles.helpers.NumericArrayTile;
@@ -18,25 +14,30 @@ public final class ArrayValueTile extends NumericArrayTile {
     private static ArrayValueTile tile;
     private static MemoryFormat format = new AddMemoryFormat(Register.ACCUMULATOR, Register.BASE);
 
+    private ArrayValueTile() {}
+
     public static ArrayValueTile getTile() {
-        if (tile == null) tile = new ArrayValueTile();
+        if (tile == null) {
+            tile = new ArrayValueTile();
+        }
         return tile;
     }
 
-    private ArrayValueTile() {}
-
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final ArrayAccessExprSymbol arrayAccess,
-            final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(ArrayAccessExprSymbol arrayAccess,
+                                                          Platform<X86Instruction, Size> platform) {
 
-        final InstructionsAndTiming<X86Instruction> instructions = super.generate(arrayAccess, platform);
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<X86Instruction> instructions = super.generate(arrayAccess, platform);
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
-        final long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
+        long stackSize = arrayAccess.getType().getTypeDclNode().getRefStackSize(sizeHelper);
         Size elementSize;
-        if (stackSize >= sizeHelper.getDefaultStackSize()) elementSize = sizeHelper.getDefaultSize();
-        else elementSize = sizeHelper.getSize(stackSize);
-        final Memory mem = new Memory(format);
+        if (stackSize >= sizeHelper.getDefaultStackSize()) {
+            elementSize = sizeHelper.getDefaultSize();
+        } else {
+            elementSize = sizeHelper.getSize(stackSize);
+        }
+        Memory mem = new Memory(format);
         X86TileHelper.genMov(elementSize, mem, "array", arrayAccess, sizeHelper, instructions);
         instructions.add(new Pop(Register.BASE, sizeHelper));
         return instructions;

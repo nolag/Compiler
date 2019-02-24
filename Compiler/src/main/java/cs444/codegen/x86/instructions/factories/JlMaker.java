@@ -12,7 +12,7 @@ public class JlMaker implements JxxMaker {
     private JlMaker() { }
 
     @Override
-    public Jl make(final Immediate where, final SizeHelper<X86Instruction, Size> sizeHelper) {
+    public Jl make(Immediate where, SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Jl(where, sizeHelper);
     }
 }

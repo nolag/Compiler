@@ -6,7 +6,7 @@ import cs444.codegen.instructions.InstructionArg;
 public class Global extends ArmInstruction {
     private final String val;
 
-    public Global(final String val) {
+    public Global(String val) {
         super(0, 0);
         this.val = val;
     }
@@ -20,5 +20,4 @@ public class Global extends ArmInstruction {
     public String generate() {
         return ".global " + val;
     }
-
 }

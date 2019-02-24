@@ -6,12 +6,13 @@ import cs444.codegen.arm.Size;
 import cs444.codegen.instructions.InstructionArg;
 
 public abstract class Extend extends ArmInstruction {
-    private final String name;
     public final Register src;
     public final Register dst;
     public final SizeHelper<ArmInstruction, Size> sizeHelper;
+    private final String name;
 
-    protected Extend(final String name, final Register dst, final Register src, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    protected Extend(String name, Register dst, Register src, SizeHelper<ArmInstruction,
+            Size> sizeHelper) {
         super(1);
         this.name = name;
         this.dst = dst;

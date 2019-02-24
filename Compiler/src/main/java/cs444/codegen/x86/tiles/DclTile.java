@@ -16,27 +16,33 @@ import cs444.parser.symbols.ast.Typeable;
 public class DclTile extends NumericHelperTile<X86Instruction, Size, DclSymbol> {
     private static DclTile tile;
 
+    private DclTile() {}
+
     public static DclTile getTile() {
-        if (tile == null) tile = new DclTile();
+        if (tile == null) {
+            tile = new DclTile();
+        }
         return tile;
     }
 
-    private DclTile() {}
-
     @Override
-    public InstructionsAndTiming<X86Instruction> generate(final DclSymbol dclSymbol, final Platform<X86Instruction, Size> platform) {
+    public InstructionsAndTiming<X86Instruction> generate(DclSymbol dclSymbol, Platform<X86Instruction,
+            Size> platform) {
 
-        final InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
-        final SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
+        InstructionsAndTiming<X86Instruction> instructions = new InstructionsAndTiming<X86Instruction>();
+        SizeHelper<X86Instruction, Size> sizeHelper = platform.getSizeHelper();
 
         if (dclSymbol.children.isEmpty()) {
             instructions.add(new Xor(Register.ACCUMULATOR, Register.ACCUMULATOR, sizeHelper));
         } else {
-            final Typeable child = (Typeable) dclSymbol.children.get(0);
+            Typeable child = (Typeable) dclSymbol.children.get(0);
             instructions.addAll(platform.getBest(child));
-            if (dclSymbol.getType().value.equals(JoosNonTerminal.LONG)) platform.getTileHelper().makeLong(child, instructions, sizeHelper);
+            if (dclSymbol.getType().value.equals(JoosNonTerminal.LONG)) {
+                platform.getTileHelper().makeLong(child, instructions, sizeHelper);
+            }
         }
-        final Size size = sizeHelper.getPushSize(sizeHelper.getSize(dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper)));
+        Size size =
+                sizeHelper.getPushSize(sizeHelper.getSize(dclSymbol.getType().getTypeDclNode().getRefStackSize(sizeHelper)));
         instructions.add(new Push(Register.ACCUMULATOR, size, sizeHelper));
         return instructions;
     }

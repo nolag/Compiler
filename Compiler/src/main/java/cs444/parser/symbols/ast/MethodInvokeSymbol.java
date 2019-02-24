@@ -1,7 +1,5 @@
 package cs444.parser.symbols.ast;
 
-import java.util.List;
-
 import cs444.CompilerException;
 import cs444.ast.ISymbolVisitor;
 import cs444.codegen.CodeGenVisitor;
@@ -9,7 +7,9 @@ import cs444.parser.symbols.ANonTerminal;
 import cs444.parser.symbols.ISymbol;
 import cs444.types.LookupLink;
 
-public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
+import java.util.List;
+
+public class MethodInvokeSymbol extends ANonTerminal implements Typeable {
     public final boolean hasFirst;
     public final String methodName;
     public final String lookupFirst;
@@ -17,16 +17,17 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
     private LookupLink link;
     private MethodOrConstructorSymbol call;
 
-
-    public MethodInvokeSymbol(String name, final List<ISymbol> params, final ISymbol on) {
+    public MethodInvokeSymbol(String name, List<ISymbol> params, ISymbol on) {
         super("Method Invoke");
-        if(on != null)children.add(on);
-        final String [] parts = name.split("\\.");
+        if (on != null) {
+            children.add(on);
+        }
+        String[] parts = name.split("\\.");
 
-        if(parts.length != 1){
+        if (parts.length != 1) {
             name = name.substring(0, name.lastIndexOf("."));
             lookupFirst = name;
-        }else{
+        } else {
             lookupFirst = null;
         }
 
@@ -42,16 +43,16 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
     }
 
     @Override
-    public void accept(final ISymbolVisitor visitor) throws CompilerException {
+    public void accept(ISymbolVisitor visitor) throws CompilerException {
         visitor.prepare(this);
         int i = 0;
-        if(hasFirst){
+        if (hasFirst) {
             children.get(0).accept(visitor);
             i++;
         }
         visitor.open(this);
-        for(; i < children.size(); i++){
-            final ISymbol param = children.get(i);
+        for (; i < children.size(); i++) {
+            ISymbol param = children.get(i);
             param.accept(visitor);
         }
         visitor.close(this);
@@ -62,25 +63,27 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
         return false;
     }
 
-    public void setLookup(final LookupLink link){
-        this.link = link;
-    }
-
-    public LookupLink getLookup(){
+    public LookupLink getLookup() {
         return link;
     }
 
-    public List<ISymbol> getArgs(){
-        if(hasFirst) return children.subList(1, children.size());
+    public void setLookup(LookupLink link) {
+        this.link = link;
+    }
+
+    public List<ISymbol> getArgs() {
+        if (hasFirst) {
+            return children.subList(1, children.size());
+        }
         return children;
     }
 
-    public void setCallSymbol(final MethodOrConstructorSymbol call){
-        this.call = call;
+    public MethodOrConstructorSymbol getCallSymbol() {
+        return call;
     }
 
-    public MethodOrConstructorSymbol getCallSymbol(){
-        return call;
+    public void setCallSymbol(MethodOrConstructorSymbol call) {
+        this.call = call;
     }
 
     @Override
@@ -89,10 +92,10 @@ public class MethodInvokeSymbol extends ANonTerminal implements Typeable{
     }
 
     @Override
-    public void setType(final TypeSymbol type) { }
+    public void setType(TypeSymbol type) { }
 
     @Override
-    public void accept(final CodeGenVisitor<?, ?> visitor) {
+    public void accept(CodeGenVisitor<?, ?> visitor) {
         visitor.visit(this);
     }
 }

@@ -1,5 +1,5 @@
 package cs444.parser.symbols.ast;
 
-public interface ILiteralSymbol extends Typeable { 
+public interface ILiteralSymbol extends Typeable {
     long getAsLongValue();
 }

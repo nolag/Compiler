@@ -9,7 +9,7 @@ public class ConstantShift extends InstructionArg<ArmInstruction, Size> implemen
     public final byte shift;
     public final Shift type;
 
-    public ConstantShift(final Register reg, final byte shift, final Shift type) {
+    public ConstantShift(Register reg, byte shift, Shift type) {
         this.reg = reg;
         this.shift = shift;
         this.type = type;
@@ -22,6 +22,6 @@ public class ConstantShift extends InstructionArg<ArmInstruction, Size> implemen
 
     @Override
     public String getValue(Size size, SizeHelper<ArmInstruction, Size> sizeHelper) {
-        return reg.toString() + ", " + type.toString() + " #" + shift;
+        return reg + ", " + type + " #" + shift;
     }
 }

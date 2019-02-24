@@ -14,8 +14,9 @@ public abstract class CmpBase extends ArmInstruction {
     private final Condition cond;
     private final SizeHelper<ArmInstruction, Size> sizeHelper;
 
-    protected CmpBase(final String name, final Register reg, final Operand2 op2, final SizeHelper<ArmInstruction, Size> sizeHelper,
-            final Condition cond) {
+    protected CmpBase(String name, Register reg, Operand2 op2, SizeHelper<ArmInstruction,
+            Size> sizeHelper,
+                      Condition cond) {
         super(0);
         this.name = name;
         this.reg = reg;
@@ -24,7 +25,8 @@ public abstract class CmpBase extends ArmInstruction {
         this.sizeHelper = sizeHelper;
     }
 
-    protected CmpBase(final String name, final Register reg, final Operand2 op2, final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    protected CmpBase(String name, Register reg, Operand2 op2, SizeHelper<ArmInstruction,
+            Size> sizeHelper) {
         this(name, reg, op2, sizeHelper, Condition.AL);
     }
 

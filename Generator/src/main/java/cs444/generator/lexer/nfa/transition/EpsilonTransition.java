@@ -22,5 +22,4 @@ public class EpsilonTransition extends NFATransition {
     public String toString() {
         return "eps->" + getNextState().getId();
     }
-
 }

@@ -6,8 +6,8 @@ import cs444.parser.symbols.ast.MethodOrConstructorSymbol;
 import cs444.types.exceptions.UndeclaredException;
 
 public class ContextInfo {
-    private AModifiersOptSymbol currentMember;
     public final String enclosingClassName;
+    private AModifiersOptSymbol currentMember;
 
     public ContextInfo(String enclosingClassName) {
         this.enclosingClassName = enclosingClassName;
@@ -18,14 +18,14 @@ public class ContextInfo {
     }
 
     public void setCurrentMember(AModifiersOptSymbol currentMC) {
-        this.currentMember = currentMC;
+        currentMember = currentMC;
     }
 
     public String getMemberName() throws UndeclaredException {
-        AModifiersOptSymbol current = this.getCurrentMember();
-        if (current instanceof MethodOrConstructorSymbol){
+        AModifiersOptSymbol current = getCurrentMember();
+        if (current instanceof MethodOrConstructorSymbol) {
             return APkgClassResolver.generateUniqueName((MethodOrConstructorSymbol) current, current.dclName);
-        }else{
+        } else {
             return APkgClassResolver.getUniqueNameFor((DclSymbol) current);
         }
     }

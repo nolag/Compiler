@@ -6,11 +6,7 @@ import cs444.codegen.SizeHelper;
 import cs444.codegen.arm.Immediate12;
 import cs444.codegen.arm.Register;
 import cs444.codegen.arm.Size;
-import cs444.codegen.arm.instructions.Comment;
-import cs444.codegen.arm.instructions.Ldr;
-import cs444.codegen.arm.instructions.Mov;
-import cs444.codegen.arm.instructions.Pop;
-import cs444.codegen.arm.instructions.Push;
+import cs444.codegen.arm.instructions.*;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
 import cs444.codegen.tiles.ITile;
 import cs444.codegen.tiles.InstructionsAndTiming;
@@ -22,25 +18,28 @@ import cs444.types.exceptions.UndeclaredException;
 public class RegularCallTile implements ITile<ArmInstruction, Size, SimpleMethodInvoke> {
     private static RegularCallTile tile;
 
+    private RegularCallTile() {}
+
     public static RegularCallTile getTile() {
-        if (tile == null) tile = new RegularCallTile();
+        if (tile == null) {
+            tile = new RegularCallTile();
+        }
         return tile;
     }
 
-    private RegularCallTile() {}
-
     @Override
-    public boolean fits(final SimpleMethodInvoke invoke, final Platform<ArmInstruction, Size> platform) {
-        final MethodOrConstructorSymbol call = invoke.call;
-        return !call.isStatic() && !CodeGenVisitor.<ArmInstruction, Size> getCurrentCodeGen(platform).isSuper;
+    public boolean fits(SimpleMethodInvoke invoke, Platform<ArmInstruction, Size> platform) {
+        MethodOrConstructorSymbol call = invoke.call;
+        return !call.isStatic() && !CodeGenVisitor.getCurrentCodeGen(platform).isSuper;
     }
 
     @Override
-    public InstructionsAndTiming<ArmInstruction> generate(final SimpleMethodInvoke invoke, final Platform<ArmInstruction, Size> platform) {
+    public InstructionsAndTiming<ArmInstruction> generate(SimpleMethodInvoke invoke,
+                                                          Platform<ArmInstruction, Size> platform) {
 
-        final MethodOrConstructorSymbol call = invoke.call;
-        final InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
-        final SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
+        MethodOrConstructorSymbol call = invoke.call;
+        InstructionsAndTiming<ArmInstruction> instructions = new InstructionsAndTiming<>();
+        SizeHelper<ArmInstruction, Size> sizeHelper = platform.getSizeHelper();
 
         instructions.add(new Comment("Backing up R8 because having this in R1 is bad"));
         instructions.add(new Push(Register.R8));
@@ -53,9 +52,10 @@ public class RegularCallTile implements ITile<ArmInstruction, Size, SimpleMethod
         instructions.add(new Ldr(Register.R8, Register.R8, sizeHelper));
 
         try {
-            final long by = platform.getSelectorIndex().getOffset(PkgClassResolver.generateUniqueName(call, call.dclName));
+            long by = platform.getSelectorIndex().getOffset(PkgClassResolver.generateUniqueName(call,
+                    call.dclName));
             instructions.add(new Ldr(Register.R8, Register.R8, new Immediate12((short) by), sizeHelper));
-        } catch (final UndeclaredException e) {
+        } catch (UndeclaredException e) {
             // shouldn't get here
             e.printStackTrace();
         }

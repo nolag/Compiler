@@ -6,7 +6,7 @@ import cs444.codegen.instructions.InstructionArg;
 public class Byte extends ArmInstruction {
     public final String val;
 
-    protected Byte(final String val) {
+    protected Byte(String val) {
         super(0, 0);
         this.val = val;
     }

@@ -15,8 +15,8 @@ public class Mls extends ArmInstruction {
     public final Register sub;
     public final SizeHelper<ArmInstruction, Size> sizeHelper;
 
-    public Mls(final Condition c, final Register dest, final Register lhs, final Register rhs, final Register sub,
-            final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    public Mls(Condition c, Register dest, Register lhs, Register rhs, Register sub,
+               SizeHelper<ArmInstruction, Size> sizeHelper) {
         super(2);
         this.c = c;
         this.dest = dest;
@@ -26,8 +26,8 @@ public class Mls extends ArmInstruction {
         this.sizeHelper = sizeHelper;
     }
 
-    public Mls(final Register dest, final Register lhs, final Register rhs, final Register sub,
-            final SizeHelper<ArmInstruction, Size> sizeHelper) {
+    public Mls(Register dest, Register lhs, Register rhs, Register sub,
+               SizeHelper<ArmInstruction, Size> sizeHelper) {
         this(Condition.AL, dest, lhs, rhs, sub, sizeHelper);
     }
 

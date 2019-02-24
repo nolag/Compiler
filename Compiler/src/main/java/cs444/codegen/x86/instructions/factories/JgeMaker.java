@@ -13,7 +13,7 @@ public class JgeMaker implements JxxMaker {
     private JgeMaker() { }
 
     @Override
-    public Jge make(final Immediate where, final SizeHelper<X86Instruction, Size> sizeHelper) {
+    public Jge make(Immediate where, SizeHelper<X86Instruction, Size> sizeHelper) {
         return new Jge(where, sizeHelper);
     }
 }
