@@ -34,8 +34,6 @@ public class AsmAndLinkCallback implements ITestCallbacks {
         }
     }
 
-    //TODO this class's stuff can be in parallel, check if it's worth it.
-
     private static boolean isAlive(Process p) {
         try {
             p.exitValue();
@@ -61,15 +59,12 @@ public class AsmAndLinkCallback implements ITestCallbacks {
     }
 
     @Override
-    public boolean afterCompile(File file, Collection<Platform<?, ?>> platforms) throws IOException,
-            InterruptedException {
-
+    public boolean afterCompile(File file, Collection<Platform<?, ?>> platforms) {
         String stdOut = getExpectedOutput(file, true);
         String stdErr = getExpectedOutput(file, false);
-
         int expectedReturnCode = getExpectedReturnCode(file);
 
-        for (Platform<?, ?> platform : platforms) {
+        return platforms.parallelStream().map(platform -> {
             OperatingSystem<?> os = null;
 
             for (OperatingSystem<?> tmp : platform.getOperatingSystems()) {
@@ -105,8 +100,9 @@ public class AsmAndLinkCallback implements ITestCallbacks {
                 System.out.println("In: " + file);
                 return false;
             }
-        }
-        return true;
+
+            return true;
+        }).allMatch(s -> s);
     }
 
     private int getExpectedReturnCode(File file) {
@@ -141,8 +137,7 @@ public class AsmAndLinkCallback implements ITestCallbacks {
         }
     }
 
-    private boolean assembleOutput(File folder, OperatingSystem<?> os) throws IOException,
-            InterruptedException {
+    private boolean assembleOutput(File folder, OperatingSystem<?> os)  {
 
         if (os == null) {
             System.out.println("No operating system, skipping os!");
@@ -165,59 +160,64 @@ public class AsmAndLinkCallback implements ITestCallbacks {
         return execAndWait(command, null, null) == 0;
     }
 
-    private int execAndWait(String[] command, String out, String err) throws InterruptedException,
-            IOException {
-        Process proc = Runtime.getRuntime().exec(command);
-        StringBuilder commandStr = new StringBuilder();
-        for (String part : command) {
-            commandStr.append(part).append(" ");
-        }
+    private int execAndWait(String[] command, String out, String err) {
+        Process proc;
+        try {
+            proc = Runtime.getRuntime().exec(command);
 
-        // any error message?
-        StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream());
+            StringBuilder commandStr = new StringBuilder();
+            for (String part : command) {
+                commandStr.append(part).append(" ");
+            }
 
-        // any output?
-        StreamGobbler outputGobbler = new StreamGobbler(proc.getInputStream());
+            // any error message?
+            StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream());
 
-        // consume all output from err and out
-        errorGobbler.start();
-        outputGobbler.start();
+            // any output?
+            StreamGobbler outputGobbler = new StreamGobbler(proc.getInputStream());
 
-        long now = System.currentTimeMillis();
-        long timeoutInMillis = 60000L;
-        long finish = now + timeoutInMillis;
-        while (isAlive(proc) && (System.currentTimeMillis() < finish)) {
-            Thread.sleep(10);
-        }
+            // consume all output from err and out
+            errorGobbler.start();
+            outputGobbler.start();
 
-        if (isAlive(proc)) {
-            proc.destroy();
+            long now = System.currentTimeMillis();
+            long timeoutInMillis = 60000L;
+            long finish = now + timeoutInMillis;
+            while (isAlive(proc) && (System.currentTimeMillis() < finish)) {
+                Thread.sleep(10);
+            }
+
+            if (isAlive(proc)) {
+                proc.destroy();
+                errorGobbler.join();
+                outputGobbler.join();
+                return -1;
+            }
+
             errorGobbler.join();
             outputGobbler.join();
-            return -1;
+
+            if (null != out && !out.equals(outputGobbler.getMessage().replace("\r", ""))) {
+                System.out.println(commandStr + "\nExpected:\n" + out + "\n Got:\n" + outputGobbler.getMessage());
+                return -2;
+            }
+
+            if (null != err && !err.equals(errorGobbler.getMessage().replace("\r", ""))) {
+                System.out.println(commandStr + "\nExpected:\n" + err + "\n Got:\n" + errorGobbler.getMessage());
+                return -3;
+            }
+
+            int retVal = proc.exitValue();
+            if (retVal != 0 && err == null && out == null) {
+                System.out.println(commandStr);
+                System.out.println(outputGobbler.getMessage().replace("\r", ""));
+                System.out.println(errorGobbler.getMessage().replace("\r", ""));
+            }
+
+            return retVal;
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
-
-        errorGobbler.join();
-        outputGobbler.join();
-
-        if (null != out && !out.equals(outputGobbler.getMessage().replace("\r", ""))) {
-            System.out.println(commandStr + "\nExpected:\n" + out + "\n Got:\n" + outputGobbler.getMessage());
-            return -2;
-        }
-
-        if (null != err && !err.equals(errorGobbler.getMessage().replace("\r", ""))) {
-            System.out.println(commandStr + "\nExpected:\n" + err + "\n Got:\n" + errorGobbler.getMessage());
-            return -3;
-        }
-
-        int retVal = proc.exitValue();
-        if (retVal != 0 && err == null && out == null) {
-            System.out.println(commandStr);
-            System.out.println(outputGobbler.getMessage().replace("\r", ""));
-            System.out.println(errorGobbler.getMessage().replace("\r", ""));
-        }
-
-        return retVal;
     }
 
     class StreamGobbler extends Thread {
