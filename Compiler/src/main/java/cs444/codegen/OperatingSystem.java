@@ -1,6 +1,7 @@
 package cs444.codegen;
 
 import java.io.File;
+import java.util.Optional;
 
 public abstract class OperatingSystem<T extends Platform<?, ?>> {
     public final String name;
@@ -41,7 +42,14 @@ public abstract class OperatingSystem<T extends Platform<?, ?>> {
 
     public abstract String[] getLinkCmd(String execName);
 
+    protected Optional<String> getEmulationCmd() {
+        return Optional.empty();
+    }
+
     public String[] getExecuteCmd(String execName) {
-        return new String[]{getOutputDir() + execName + execEnding};
+        Optional<String> emulationCmd = getEmulationCmd();
+        return emulationCmd.isPresent() ?
+                new String[]{emulationCmd.get(), getOutputDir() + execName + execEnding} :
+                new String[]{getOutputDir() + execName + execEnding};
     }
 }
