@@ -105,23 +105,6 @@ public class PkgClassInfo {
         }
     }
 
-    // NOTE: this method is for tests only
-    public void clear(Map<String, Map<String, PkgClassResolver>> nameSpaces,
-                      Map<String, APkgClassResolver> symbolMap, List<APkgClassResolver> pkgs) {
-
-        this.nameSpaces.clear();
-        //because each entry is a map, we need to clone the maps or they will have entries put into them.
-        for (Entry<String, Map<String, PkgClassResolver>> entry : nameSpaces.entrySet()) {
-            Map<String, PkgClassResolver> resolverClone = new HashMap<>(entry.getValue());
-            this.nameSpaces.put(entry.getKey(), resolverClone);
-        }
-
-        this.symbolMap.clear();
-        this.symbolMap.putAll(symbolMap);
-        this.pkgs.clear();
-        this.pkgs.addAll(pkgs);
-    }
-
     public void clear() {
         nameSpaces.clear();
         symbolMap.clear();

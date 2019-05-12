@@ -24,11 +24,6 @@ public class TestHelper {
     private static ITestCallbacks callbacks;
     private static boolean outputAsmFiles;
     private static Set<Platform<?, ?>> platforms;
-    // Holds stdlib so that it can be reused
-    private static boolean hasStdlib = false;
-    private static Map<String, Map<String, PkgClassResolver>> nameSpaces;
-    private static Map<String, APkgClassResolver> symbolMap;
-    private static List<APkgClassResolver> pkgs;
 
     public static void assertReturnCodeForFiles(String path, int expectedReturnCode,
                                                 boolean printErrors,
@@ -149,46 +144,16 @@ public class TestHelper {
         }
     }
 
-    public static void setupMaps() {
-        if (!hasStdlib) {
-            PkgClassInfo.instance.clear();
-            List<String> files = getAllFiles(new File(TEST_LOCATION + "StdLib"));
-            platforms = new HashSet<>();
-            Set<String> opts = Collections.emptySet();
-            for (String platformStr : testPlatforms) {
-                platforms.add(CompilerSettings.platformMap.get(platformStr).getPlatform(opts));
-            }
-            Compiler.compile(files, true, false, platforms);
-            PkgClassInfo info = PkgClassInfo.instance;
-            nameSpaces = new HashMap<>();
-            // because each entry is a map, we need to clone the maps or they
-            // will have entries put into them.
-            for (Entry<String, Map<String, PkgClassResolver>> entry : info.nameSpaces.entrySet()) {
-                Map<String, PkgClassResolver> resolverClone = new HashMap<>(entry.getValue());
-                nameSpaces.put(entry.getKey(), resolverClone);
-            }
-
-            symbolMap = new HashMap<>(info.symbolMap);
-            pkgs = new ArrayList<>(info.pkgs);
-            hasStdlib = true;
-        }
-    }
-
-    private static int compileAndTest(List<String> files, boolean printErrors,
-                                      boolean includeStdlib) throws IOException,
-            InterruptedException {
-
+    private static int compileAndTest(List<String> files, boolean printErrors, boolean includeStdlib) {
         PkgClassResolver.reset();
         TileSet.reset();
         CodeGenVisitor.reset();
 
         if (includeStdlib) {
-            setupMaps();
-            PkgClassInfo.instance.clear(nameSpaces, symbolMap, pkgs);
-        } else {
-            PkgClassInfo.instance.clear();
+            files.addAll(getAllFiles(new File(TEST_LOCATION + "StdLib")));
         }
 
+        PkgClassInfo.instance.clear();
         Set<String> opts = Collections.emptySet();
         platforms = new HashSet<>();
         for (String platformStr : testPlatforms) {
