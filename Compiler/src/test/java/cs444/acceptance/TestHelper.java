@@ -20,7 +20,7 @@ public class TestHelper {
 
     public static final String TEST_LOCATION = Compiler.BASE_DIRECTORY + "JoosPrograms/";
     // NOTE: this needs to change pending on the platform you are running/testing on.
-    public static final String[] testPlatforms = {"-x64", "-x86", "-a32"};
+    public static final String[] testPlatforms = {"-x86"};
     private static ITestCallbacks callbacks;
     private static boolean outputAsmFiles;
     private static Set<Platform<?, ?>> platforms;
@@ -41,7 +41,7 @@ public class TestHelper {
         List<String> failFiles = new ArrayList<String>();
         for (File file : folder.listFiles()) {
             String fileName = file.getName();
-
+            
             if (ignoreList.contains(fileName)) {
                 System.out.print("*"); // skip file
                 filesSkipped++;

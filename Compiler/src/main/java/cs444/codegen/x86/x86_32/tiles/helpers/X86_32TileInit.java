@@ -26,7 +26,7 @@ public class X86_32TileInit extends X86TileInit {
         set.arrayValues.add(LongArrayValueTile.getTile());
         set.assigns.add(LongAssignmentTile.getTile());
         set.dcls.add(LongDclTile.getTile());
-        set.divs.add(LongDivTile.getTile());
+        set.divs.add(LongDivTile.getTile(true, true));
         set.eqs.add(LongJxxTile.getTile(null, JneMaker.maker, JeMaker.maker, EqExprSymbol.class));
         set.ges.add(LongJxxTile.getTile(JlMaker.maker, JgMaker.maker, JbeMaker.maker,
                 GeExprSymbol.class));
@@ -39,7 +39,7 @@ public class X86_32TileInit extends X86TileInit {
         set.nameValues.add(LongNameValueTile.getTile());
         set.negs.add(LongNegTile.getTile());
         set.nes.add(LongJxxTile.getTile(JneMaker.maker, null, JneMaker.maker, NeExprSymbol.class));
-        set.rems.add(LongRemTile.getTile());
+        set.rems.add(LongDivTile.getTile(false, false));
         set.rss.add(LongRightShiftTile.getTile());
         set.subs.add(LongBinTile.getTile(SubOpMaker.maker, SbbOpMaker.maker, true,
                 SubtractExprSymbol.class));

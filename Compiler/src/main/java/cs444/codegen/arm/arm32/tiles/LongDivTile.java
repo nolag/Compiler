@@ -19,8 +19,8 @@ import cs444.parser.symbols.ast.expressions.DivideExprSymbol;
 import cs444.parser.symbols.ast.expressions.RemainderExprSymbol;
 
 public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstruction, Size, T> {
-    private static LongDivTile<DivideExprSymbol> div = new LongDivTile<DivideExprSymbol>(true, true);
-    private static LongDivTile<RemainderExprSymbol> rem = new LongDivTile<RemainderExprSymbol>(false, false);
+    private static LongDivTile<DivideExprSymbol> div = new LongDivTile<>(true, true);
+    private static LongDivTile<RemainderExprSymbol> rem = new LongDivTile<>(false, false);
     public final boolean divide;
     public final boolean bothForNeg;
 
