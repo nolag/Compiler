@@ -41,7 +41,7 @@ public class TestHelper {
         List<String> failFiles = new ArrayList<String>();
         for (File file : folder.listFiles()) {
             String fileName = file.getName();
-            
+
             if (ignoreList.contains(fileName)) {
                 System.out.print("*"); // skip file
                 filesSkipped++;
