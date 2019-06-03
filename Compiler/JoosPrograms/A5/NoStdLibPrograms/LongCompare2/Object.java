@@ -16,7 +16,10 @@ public class Object{
         
         l = -1;
         if(l >= l2) i = i + 64;
-        
+
+        l2 = l;
+        if (!(l2 >= l)) i = i + 128;
+
         return i;
     }
 }
