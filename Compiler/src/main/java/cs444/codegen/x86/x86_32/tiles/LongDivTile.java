@@ -53,7 +53,9 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<X86Instructio
         instructions.add(new Push(Register.SOURCE, sizeHelper));
         instructions.add(new Push(Register.DESTINATION, sizeHelper));
         instructions.add(new Push(Register.BASE, sizeHelper));
-        instructions.add(new Push(Register.FRAME, sizeHelper));
+        if (divide) {
+            instructions.add(new Push(Register.FRAME, sizeHelper));
+        }
 
         long myNum = CodeGenVisitor.getNewLblNum();
         Typeable numerator = (Typeable) div.children.get(0);
@@ -103,20 +105,24 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<X86Instructio
         instructions.add(new Add(Register.ACCUMULATOR, Immediate.ONE, sizeHelper));
         instructions.add(new Adc(Register.DATA, Immediate.ZERO, sizeHelper));
         instructions.add(platform.makeLabel(noNegDen));
-        
-        instructions.add(platform.makeComment("Store division result in EBP:EBX"));
-        instructions.add(new Xor(Register.FRAME, Register.FRAME, sizeHelper));
-        instructions.add(new Xor(Register.BASE, Register.BASE, sizeHelper));
+
+        if (divide) {
+            instructions.add(platform.makeComment("Store division result in EBP:EBX"));
+            instructions.add(new Xor(Register.FRAME, Register.FRAME, sizeHelper));
+            instructions.add(new Xor(Register.BASE, Register.BASE, sizeHelper));
+        }
 
         instructions.add(platform.makeComment("Push the negation result, to reuse ECX for shift amount"));
         instructions.add(new Push(Register.COUNTER, sizeHelper));
+
+        // TODO split the first div part and the second so there's no condition code
+        // Also it can simplify the logic once there's nothing left for the higher bits
 
         instructions.add(platform.makeComment("Bit shift"));
         String largeNumberShift = "largeNumberShift" + myNum;
         String doneNumberShift = "doneNumberShift" + myNum;
         instructions.add(new Cmp(Register.DATA, Immediate.ZERO, sizeHelper));
         instructions.add(new Jne(new Immediate(largeNumberShift), sizeHelper));
-        // bsr shoudl be 31 - bsr
         instructions.add(new Bsr(Register.COUNTER, Register.ACCUMULATOR, Size.DWORD, sizeHelper));
         instructions.add(new Sub(Register.COUNTER, Immediate.THIRTY_ONE, sizeHelper));
         instructions.add(new Neg(Register.COUNTER, sizeHelper));
@@ -189,6 +195,7 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<X86Instructio
         String noNeg = "notNegative" + myNum;
         instructions.add(platform.makeComment("Fix negative numbers"));
         instructions.add(new Pop(Register.COUNTER, sizeHelper));
+        // TODO instead of shifting one in the counter for divide, just the value 1 << to the counter >> instead of substracting
         instructions.add(new Cmp(Register.COUNTER, Immediate.ZERO, sizeHelper));
         instructions.add(new Je(new Immediate(noNeg), sizeHelper));
         instructions.add(new Not(Register.ACCUMULATOR, sizeHelper));
@@ -198,7 +205,10 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<X86Instructio
         instructions.add(platform.makeLabel(noNeg));
 
         instructions.add(platform.makeComment("Pop saved registers"));
-        instructions.add(new Pop(Register.FRAME, sizeHelper));
+        if (divide) {
+            instructions.add(new Pop(Register.FRAME, sizeHelper));
+        }
+
         instructions.add(new Pop(Register.BASE, sizeHelper));
         instructions.add(new Pop(Register.DESTINATION, sizeHelper));
         instructions.add(new Pop(Register.SOURCE, sizeHelper));

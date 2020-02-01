@@ -13,7 +13,9 @@ public class Object{
         if(l2 <= l) i = i + 8;
         if(!(l2 > l)) i = i + 16;
         if(!(l2 >= l2)) i = i + 32;
-        
+        l2 = l;
+        if (!(l2 >= l)) i = i + 64;
+
         return i;
     }
 }

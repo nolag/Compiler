@@ -23,6 +23,9 @@ public class Object{
         l = 0;
         l = (long) x;
         if(l != -2147483648) i = i + 64;
+        l = 117264517261579267L;
+        x = (int)l;
+        if (x != 136467459) i = i + 128;
         return i;
     }
 }

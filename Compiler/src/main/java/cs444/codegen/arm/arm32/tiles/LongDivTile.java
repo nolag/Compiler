@@ -8,6 +8,7 @@ import cs444.codegen.arm.Operand2.Shift;
 import cs444.codegen.arm.arm32.tiles.helpers.Arm32TileHelper;
 import cs444.codegen.arm.instructions.*;
 import cs444.codegen.arm.instructions.bases.ArmInstruction;
+import cs444.codegen.arm.instructions.bases.Branch;
 import cs444.codegen.arm.instructions.bases.Branch.Condition;
 import cs444.codegen.generic.tiles.helpers.LongOnlyTile;
 import cs444.codegen.generic.tiles.helpers.TileHelper;
@@ -50,7 +51,6 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
         TileHelper<ArmInstruction, Size> tileHelper = platform.getTileHelper();
 
         instructions.add(new Push(Register.R8, Register.R9, Register.R10, Register.R11));
-
         instructions.addAll(platform.getBest(t1));
         tileHelper.makeLong(t1, instructions, sizeHelper);
         instructions.add(new Push(Register.R0, Register.R2));
@@ -127,23 +127,12 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
         instructions.add(new B(Condition.EQ, loopEnd));
         instructions.add(platform.makeComment("No need to check the overflow, first set can't overflow"));
         instructions.add(new Mov(Register.R11, new ConstantShift(Register.R11, (byte) 1, Shift.LSL), sizeHelper));
-        instructions.add(new Orr(Condition.VS, Register.R7, Register.R7, Immediate8.ONE, sizeHelper));
         instructions.add(platform.makeComment("This is the actual long division part for a bit"));
         instructions.add(new And(Register.R6, Register.R9, Register.R3, sizeHelper));
         instructions.add(new Cmp(Register.R6, Immediate8.ZERO, sizeHelper));
         instructions.add(new Add(Condition.NE, Register.R11, Register.R11, Immediate8.ONE, sizeHelper));
 
-        String lt = "firstLess" + mynum;
-        instructions.add(new Cmp(Register.R7, Register.R2, sizeHelper));
-        instructions.add(new Orr(Condition.GT, Register.R8, Register.R8, Register.R9, sizeHelper));
-        instructions.add(new Sub(Condition.GT, Register.R11, Register.R11, Register.R0, sizeHelper));
-        instructions.add(new Sbc(Condition.GT, Register.R7, Register.R7, Register.R2, sizeHelper));
-        instructions.add(new B(Condition.LT, lt));
-        instructions.add(new Cmp(Register.R11, Register.R0, sizeHelper));
-        instructions.add(new Orr(Condition.HS, Register.R8, Register.R8, Register.R9, sizeHelper));
-        instructions.add(new Sub(Condition.HS, Register.R11, Register.R11, Register.R0, sizeHelper));
-        instructions.add(new Sbc(Condition.HS, Register.R7, Register.R7, Register.R2, sizeHelper));
-        instructions.add(platform.makeLabel(lt));
+        subtract(platform, "firstSub" + mynum, Register.R8, instructions, sizeHelper);
 
         instructions.add(platform.makeComment("End of the actual long division part for a bit"));
         instructions.add(new Mov(Register.R9, new ConstantShift(Register.R9, (byte) 1, Shift.LSR), sizeHelper));
@@ -162,26 +151,17 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
         tileHelper.setupLbl(loopStart, instructions);
         instructions.add(new Cmp(Register.R9, Immediate8.ZERO, sizeHelper));
         instructions.add(new B(Condition.EQ, loopEnd));
-        instructions.add(new Mov(true, Condition.AL, Register.R11, new ConstantShift(Register.R11, (byte) 1,
-                Shift.LSL), sizeHelper));
         instructions.add(new Mov(Register.R7, new ConstantShift(Register.R7, (byte) 1, Shift.LSL), sizeHelper));
-        instructions.add(new Orr(Condition.HS, Register.R7, Register.R7, Immediate8.ONE, sizeHelper));
+        instructions.add(new Orr(Register.R7, Register.R7, new ConstantShift(Register.R11, (byte) 31,
+                Shift.LSR), sizeHelper));
+        instructions.add(new Mov(Register.R11, new ConstantShift(Register.R11, (byte) 1,
+                Shift.LSL), sizeHelper));
         instructions.add(platform.makeComment("This is the actual long division part for a bit"));
         instructions.add(new And(Register.R6, Register.R9, Register.R1, sizeHelper));
         instructions.add(new Cmp(Register.R6, Immediate8.ZERO, sizeHelper));
         instructions.add(new Add(Condition.NE, Register.R11, Register.R11, Immediate8.ONE, sizeHelper));
 
-        lt = "secondLess" + mynum;
-        instructions.add(new Cmp(Register.R7, Register.R2, sizeHelper));
-        instructions.add(new Orr(Condition.GT, Register.R5, Register.R5, Register.R9, sizeHelper));
-        instructions.add(new Sub(Condition.GT, Register.R11, Register.R11, Register.R0, sizeHelper));
-        instructions.add(new Sbc(Condition.GT, Register.R7, Register.R7, Register.R2, sizeHelper));
-        instructions.add(new B(Condition.LT, lt));
-        instructions.add(new Cmp(Register.R11, Register.R0, sizeHelper));
-        instructions.add(new Orr(Condition.HS, Register.R5, Register.R5, Register.R9, sizeHelper));
-        instructions.add(new Sub(Condition.HS, Register.R11, Register.R11, Register.R0, sizeHelper));
-        instructions.add(new Sbc(Condition.HS, Register.R7, Register.R7, Register.R2, sizeHelper));
-        instructions.add(platform.makeLabel(lt));
+        subtract(platform, "secondSub" + mynum, Register.R5, instructions, sizeHelper);
 
         instructions.add(platform.makeComment("End of the actual long division part for a bit"));
         instructions.add(new Mov(Register.R9, new ConstantShift(Register.R9, (byte) 1, Shift.LSR), sizeHelper));
@@ -200,5 +180,20 @@ public class LongDivTile<T extends BinOpExpr> extends LongOnlyTile<ArmInstructio
 
         instructions.add(new Pop(Register.R8, Register.R9, Register.R10, Register.R11));
         return instructions;
+    }
+
+    private void subtract(
+            Platform<ArmInstruction, Size> platform,
+            String jumpLbl,
+            Register divReg,
+            InstructionsAndTiming<ArmInstruction> instructions,
+            SizeHelper<ArmInstruction, Size> sizeHelper) {
+        instructions.add(new Cmp(Register.R7, Register.R2, sizeHelper));
+        instructions.add(new Cmp(Register.R11, Register.R0, sizeHelper, Condition.EQ));
+        instructions.add(new B(Condition.LO, jumpLbl));
+        instructions.add(new Orr(divReg, divReg, Register.R9, sizeHelper));
+        instructions.add(new Sub(true, Condition.GE, Register.R11, Register.R11, Register.R0, sizeHelper));
+        instructions.add(new Sbc(Register.R7, Register.R7, Register.R2, sizeHelper));
+        instructions.add(platform.makeLabel(jumpLbl));
     }
 }
